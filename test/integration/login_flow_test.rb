@@ -1,0 +1,67 @@
+require "test_helper"
+
+class LoginFlowTest < ActionDispatch::IntegrationTest
+  test "logging in with a one-time code" do
+    post session_path, params: { email: users(:ilker).email }
+    assert_redirected_to new_sessions_code_path
+
+    post sessions_code_path, params: { code: last_delivered_login_code }
+    assert_redirected_to root_url
+
+    get root_path
+    assert_response :success
+  end
+
+  test "wrong code keeps the user on the code page" do
+    post session_path, params: { email: users(:ilker).email }
+
+    post sessions_code_path, params: { code: "000000" }
+    assert_redirected_to new_sessions_code_path
+    assert_match(/Kod hatalı/, flash[:alert])
+  end
+
+  test "code page without a pending email goes back to login" do
+    get new_sessions_code_path
+    assert_redirected_to new_session_path
+  end
+
+  test "resend invalidates the previous code" do
+    post session_path, params: { email: users(:ilker).email }
+    stale_code = last_delivered_login_code
+
+    post sessions_resend_path
+    assert_redirected_to new_sessions_code_path
+    fresh_code = last_delivered_login_code
+
+    post sessions_code_path, params: { code: stale_code }
+    assert_redirected_to new_sessions_code_path
+
+    post sessions_code_path, params: { code: fresh_code }
+    assert_redirected_to root_url
+  end
+
+  test "logging out" do
+    sign_in_as users(:ilker)
+
+    delete session_path
+    assert_redirected_to welcome_path
+
+    get root_path
+    assert_redirected_to welcome_path
+  end
+
+  test "unauthenticated visitors land on the welcome screen" do
+    get root_path
+    assert_redirected_to welcome_path
+  end
+
+  test "authenticated users skip the auth screens" do
+    sign_in_as users(:ilker)
+
+    get welcome_path
+    assert_redirected_to root_url
+
+    get new_session_path
+    assert_redirected_to root_url
+  end
+end

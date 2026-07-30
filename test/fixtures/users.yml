@@ -1,0 +1,7 @@
+ilker:
+  email: ilker@example.com
+  name: İlker
+  terms_accepted_at: <%= 1.week.ago %>
+
+incomplete:
+  email: yeni@example.com

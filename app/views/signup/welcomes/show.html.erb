@@ -1,0 +1,17 @@
+<% content_for :title, "Hoş geldin · Rokapi" %>
+
+<h1>Hoş geldin, <%= Current.user.name %></h1>
+
+<p class="hint">Hesabın hazır. İlk maceraların bizden.</p>
+
+<div class="card">
+  <h2>Ücretsiz plan</h2>
+  <strong>%100 kullanım</strong>
+  <ul>
+    <li>Her ay ≈ 1-2 kısa macera</li>
+    <li>Yalnızca senin başlattığın oturumlarda azalır</li>
+    <li>Kodla bir odaya katılmak zaten hep ücretsiz</li>
+  </ul>
+</div>
+
+<%= link_to "Devam et", root_path, class: "btn btn--primary" %>
