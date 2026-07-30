@@ -33,3 +33,9 @@
 # Ignore key files for decrypting credentials and more.
 /config/*.key
 
+# Ignore claude.
+/.claude
+CLAUDE.md
+
+# Ignore docs.
+/docs
