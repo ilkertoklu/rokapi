@@ -1,0 +1,18 @@
+<%# locals: (form:, legend:, attribute:, options:, selected:, rebase: false) -%>
+<fieldset class="choices" data-controller="choices">
+  <legend><%= legend %></legend>
+  <div class="chips">
+    <% options.each do |option| %>
+      <label class="chip">
+        <% data = rebase ? { action: "choices#show stats#rebase", stats_klass_param: option.key } : { action: "choices#show" } %>
+        <%= form.radio_button attribute, option.key, data: data %>
+        <span><%= option.label %></span>
+      </label>
+    <% end %>
+  </div>
+  <% options.each do |option| %>
+    <p class="choice-description" data-choices-target="description" data-key="<%= option.key %>" <%= "hidden" unless option.key == selected %>>
+      <strong><%= option.label %>:</strong> <%= option.description %>
+    </p>
+  <% end %>
+</fieldset>

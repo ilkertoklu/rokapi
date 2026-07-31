@@ -1,0 +1,65 @@
+<% content_for :title, "Yeni macera · Rokapi" %>
+
+<h1>Yeni macera</h1>
+
+<% if @mode.nil? %>
+  <p class="hint">Nasıl oynamak istersin?</p>
+
+  <div class="stack">
+    <%= link_to new_game_session_path(mode: :solo), class: "card card--link" do %>
+      <h2>Tek kişilik</h2>
+      <p class="hint">1 oyuncu · 15-60 dk · sana özel hikâye</p>
+    <% end %>
+
+    <div class="card card--disabled">
+      <h2>Çok kişilik</h2>
+      <p class="hint">2-5 oyuncu · 30-90 dk · ortak hikâye · yakında</p>
+    </div>
+  </div>
+<% else %>
+  <%= form_with url: game_sessions_path, scope: :game_session do |form| %>
+    <fieldset class="choices">
+      <legend>Görev</legend>
+
+      <% @adventures.each do |adventure| %>
+        <label class="option">
+          <%= form.radio_button :adventure_id, adventure.id, checked: adventure == @adventures.first %>
+          <span class="option__title"><%= adventure.title %></span>
+          <span class="option__text"><%= adventure.hook %></span>
+        </label>
+      <% end %>
+
+      <label class="option">
+        <%= form.radio_button :adventure_id, "" %>
+        <span class="option__title">Sürpriz</span>
+        <span class="option__text">Anlatıcı bilinmeyen bir dünya kursun.</span>
+      </label>
+    </fieldset>
+
+    <fieldset class="choices">
+      <legend>Ton</legend>
+      <div class="segmented">
+        <% GameSession::TONES.each do |value, label| %>
+          <label class="segment">
+            <%= form.radio_button :tone, value, checked: value == "balanced" %>
+            <span><%= label %></span>
+          </label>
+        <% end %>
+      </div>
+    </fieldset>
+
+    <fieldset class="choices">
+      <legend>Uzunluk</legend>
+      <div class="segmented">
+        <% GameSession::LENGTHS.each do |value, label| %>
+          <label class="segment">
+            <%= form.radio_button :length, value, checked: value == "medium" %>
+            <span><%= label %><small><%= solo_duration(value) %></small></span>
+          </label>
+        <% end %>
+      </div>
+    </fieldset>
+
+    <%= form.submit "Karakterini oluştur", class: "btn btn--primary" %>
+  <% end %>
+<% end %>

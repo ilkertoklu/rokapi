@@ -1,0 +1,35 @@
+@layer components {
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    padding: 1.25rem;
+
+    h2 {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      margin: 0 0 .5rem;
+    }
+
+    ul {
+      margin: .5rem 0 0;
+      padding-inline-start: 1.1rem;
+      color: var(--color-ink-muted);
+      font-size: .92rem;
+    }
+  }
+
+  .card--link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+
+    &:active {
+      border-color: var(--color-accent);
+    }
+  }
+
+  .card--disabled {
+    opacity: .45;
+  }
+}

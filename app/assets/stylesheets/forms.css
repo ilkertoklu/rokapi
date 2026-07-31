@@ -1,0 +1,85 @@
+@layer components {
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 0;
+  }
+
+  label {
+    display: block;
+    color: var(--color-ink-muted);
+    font-size: .9rem;
+    font-weight: 600;
+    margin-block-end: .4rem;
+  }
+
+  input[type="email"],
+  input[type="text"] {
+    inline-size: 100%;
+    padding: .9rem 1rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-control);
+    color: var(--color-ink);
+    font: inherit;
+
+    &:focus {
+      outline: 2px solid var(--color-accent);
+      outline-offset: -1px;
+    }
+  }
+
+  input.code-input {
+    font-size: 1.8rem;
+    letter-spacing: .5em;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .terms {
+    display: flex;
+    gap: .6rem;
+    align-items: flex-start;
+    color: var(--color-ink-muted);
+    font-size: .9rem;
+
+    input {
+      inline-size: 1.15rem;
+      block-size: 1.15rem;
+      margin-block-start: .15rem;
+      accent-color: var(--color-accent);
+    }
+
+    a {
+      color: var(--color-accent-bright);
+    }
+  }
+
+  .stat-row {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+
+    .stat-row__label {
+      flex: 1;
+      color: var(--color-ink-muted);
+    }
+
+    input {
+      inline-size: 3.2rem;
+      padding: .4rem 0;
+      text-align: center;
+      background: var(--color-surface);
+      border: 1px solid var(--color-line);
+      border-radius: var(--radius-control);
+      color: var(--color-ink);
+      font: 700 1.05rem var(--font-ui);
+      -moz-appearance: textfield;
+
+      &::-webkit-inner-spin-button {
+        display: none;
+      }
+    }
+  }
+}

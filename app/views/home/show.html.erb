@@ -4,7 +4,14 @@
 </div>
 
 <div class="stack">
-  <button class="btn btn--primary" disabled>Yeni macera kur</button>
+  <% if @resumable_game_session %>
+    <%= link_to game_session_path(@resumable_game_session), class: "card card--link" do %>
+      <h2>Maceraya devam et</h2>
+      <p class="hint"><%= @resumable_game_session.title %></p>
+    <% end %>
+  <% end %>
+
+  <%= link_to "Yeni macera kur", new_game_session_path, class: "btn btn--primary" %>
   <button class="btn btn--secondary" disabled>Kod ile katıl</button>
 </div>
 

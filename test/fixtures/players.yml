@@ -1,0 +1,4 @@
+ilker_solo_host:
+  game_session: ilker_solo
+  user: ilker
+  host: true

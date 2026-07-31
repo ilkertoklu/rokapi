@@ -1,0 +1,128 @@
+@layer components {
+  fieldset.choices {
+    border: 0;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+
+    legend {
+      color: var(--color-ink-muted);
+      font-size: .9rem;
+      font-weight: 600;
+      padding: 0;
+      margin-block-end: .4rem;
+    }
+
+    input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+    }
+  }
+
+  .option {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
+    padding: 1rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-card);
+    cursor: pointer;
+
+    &:has(:checked) {
+      border-color: var(--color-accent);
+      background: var(--color-accent-soft);
+    }
+
+    &:has(:focus-visible) {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+    }
+
+    .option__title {
+      font-family: var(--font-display);
+      font-weight: 600;
+    }
+
+    .option__text {
+      color: var(--color-ink-faint);
+      font-size: .9rem;
+    }
+  }
+
+  .segmented {
+    display: flex;
+    gap: .4rem;
+
+    .segment {
+      position: relative;
+      flex: 1;
+      padding: .6rem .5rem;
+      background: var(--color-surface);
+      border: 1px solid var(--color-line);
+      border-radius: var(--radius-control);
+      text-align: center;
+      font-size: .92rem;
+      font-weight: 600;
+      cursor: pointer;
+
+      small {
+        display: block;
+        color: var(--color-ink-faint);
+        font-weight: 400;
+      }
+
+      &:has(:checked) {
+        border-color: var(--color-accent);
+        background: var(--color-accent-soft);
+        color: var(--color-accent-bright);
+      }
+
+      &:has(:focus-visible) {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .4rem;
+
+    .chip {
+      position: relative;
+      padding: .45rem .9rem;
+      background: var(--color-surface);
+      border: 1px solid var(--color-line);
+      border-radius: var(--radius-pill);
+      font-size: .92rem;
+      font-weight: 600;
+      cursor: pointer;
+
+      &:has(:checked) {
+        border-color: var(--color-accent);
+        background: var(--color-accent-soft);
+        color: var(--color-accent-bright);
+      }
+
+      &:has(:focus-visible) {
+        outline: 2px solid var(--color-accent);
+        outline-offset: 2px;
+      }
+    }
+  }
+
+  .choice-description {
+    margin: 0;
+    color: var(--color-ink-faint);
+    font-size: .9rem;
+
+    strong {
+      color: var(--color-ink-muted);
+    }
+  }
+}

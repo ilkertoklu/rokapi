@@ -7,12 +7,13 @@
   adresine gönderdik.
 </p>
 
-<%= form_with url: sessions_code_path do |form| %>
+<%= form_with url: sessions_code_path, data: { controller: "code", code_length_value: LoginCode::CODE_LENGTH } do |form| %>
   <%= form.text_field :code, class: "code-input",
-        inputmode: "numeric", pattern: "[0-9]*", maxlength: 6,
-        autocomplete: "one-time-code", required: true, autofocus: true %>
+        inputmode: "numeric", pattern: "[0-9]*", maxlength: LoginCode::CODE_LENGTH,
+        autocomplete: "one-time-code", required: true, autofocus: true,
+        data: { code_target: "input", action: "input->code#update" } %>
 
-  <%= form.submit "Doğrula", class: "btn btn--primary" %>
+  <%= form.submit "Doğrula", class: "btn btn--primary", data: { code_target: "submit" } %>
 <% end %>
 
 <div data-controller="countdown">

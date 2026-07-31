@@ -1,6 +1,8 @@
 class User < ApplicationRecord
   has_many :sessions, dependent: :destroy
   has_many :login_codes, dependent: :destroy
+  has_many :players, dependent: :destroy
+  has_many :game_sessions, through: :players
 
   normalizes :email, with: ->(email) { email.strip.downcase.presence }
 
@@ -16,7 +18,7 @@ class User < ApplicationRecord
   end
 
   def verify_login_code(code)
-    login_codes.active.order(created_at: :desc).first&.verify(code) || false
+    login_codes.active.order(created_at: :desc).first&.verify(code)
   end
 
   def profile_complete?
