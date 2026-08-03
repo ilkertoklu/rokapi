@@ -10,10 +10,12 @@ class Narrator
   def narrate_outcome(roll)
     return if roll.resolved?
 
-    response = new_chat(instructions: outcome_instructions).ask(outcome_prompt(roll))
+    response = new_chat(instructions: outcome_instructions).with_schema(OutcomeSchema).ask(outcome_prompt(roll))
     record_call :outcome, response
 
-    data = structure_in(Reply.new(response.content.to_s)) || raise(MalformedResponse, "structure block missing")
+    data = response.content
+    raise MalformedResponse, "structured output missing" unless data.is_a?(Hash)
+
     roll.resolve! resolution: resolution_in(data), effects: data["effects"]
   end
 
@@ -206,13 +208,6 @@ class Narrator
       <<~PROMPT
         #{persona}
         Görevin yalnızca zar sonucunu çözümlemek. Yeni sahne yazma, seçenek üretme.
-
-        Çıktın tek bir ```json çitli bloktur; öncesinde ve sonrasında hiçbir şey yazma:
-        {
-          "resolution": "zar sonucunun ne olduğunu anlatan 1-2 cümle",
-          "effects": {"hp": 0}
-        }
-        - effects.hp sonucun cana etkisidir: başarısızlıkta genelde -2..-6, başarıda 0, iyileşme anlarında pozitif.
       PROMPT
     end
 

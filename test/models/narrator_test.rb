@@ -30,9 +30,10 @@ class NarratorTest < ActiveSupport::TestCase
 
     call = @game_session.llm_calls.sole
     assert_equal "scene", call.purpose
-    expected = RubyLLM.models.find(call.model).cost_for(RubyLLM::Tokens.build(input: 1000, output: 500))
-    assert_equal (expected.total.to_f * 1_000_000).round, call.cost_in_microcents
-    assert_operator call.cost_in_microcents, :>, 0
+    model = RubyLLM.models.find(call.model)
+    assert_equal (1000 * model.input_price_per_million + 500 * model.output_price_per_million).round,
+      call.cost_in_microdollars
+    assert_operator call.cost_in_microdollars, :>, 0
   end
 
   test "the stage lands on screen before narration streams into it" do
@@ -121,10 +122,10 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal 3, scene.choices.count
   end
 
-  test "an outcome without a resolution is malformed" do
+  test "an outcome with a blank resolution is malformed" do
     roll = play_first_scene
 
-    stub_llm(FakeChat.new(%(```json\n{"effects": {"hp": -4}}\n```))) do
+    stub_llm(FakeChat.new(%({"resolution": "", "effects": {"hp": -4}}))) do
       assert_raises Narrator::MalformedResponse do
         roll.narrate_outcome
       end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_01_090001) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_03_221456) do
   create_table "adventures", force: :cascade do |t|
     t.text "brief", null: false
     t.datetime "created_at", null: false
@@ -68,7 +68,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_01_090001) do
   end
 
   create_table "llm_calls", force: :cascade do |t|
-    t.integer "cost_in_microcents", null: false
+    t.integer "cost_in_microdollars", null: false
     t.datetime "created_at", null: false
     t.integer "game_session_id", null: false
     t.integer "input_tokens", null: false

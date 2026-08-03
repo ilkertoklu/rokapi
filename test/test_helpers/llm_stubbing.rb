@@ -18,11 +18,7 @@ module LlmStubbing
   SECOND_SCENE_RESPONSE = SCENE_RESPONSE.sub('"title": "Eski Han"', '"title": "Ahır"')
     .sub("Yağmur hanın kiremitlerini dövüyor", "Ahırın kapısı içeriden sürgülenmiş")
 
-  OUTCOME_RESPONSE = <<~TEXT
-    ```json
-    {"resolution": "Çekmece açıldı ama elini kestin.", "effects": {"hp": -4}}
-    ```
-  TEXT
+  OUTCOME_RESPONSE = %({"resolution": "Çekmece açıldı ama elini kestin.", "effects": {"hp": -4}})
 
   FINALE_RESPONSE = <<~TEXT
     ```json
@@ -63,6 +59,11 @@ class FakeChat
     self
   end
 
+  def with_schema(*)
+    @schema = true
+    self
+  end
+
   def ask(prompt)
     @prompt = prompt
 
@@ -73,7 +74,9 @@ class FakeChat
       end
     end
 
-    RubyLLM::Message.new(role: :assistant, content: @text, model_id: @model_id,
-                         input_tokens: @input_tokens, output_tokens: @output_tokens)
+    message = RubyLLM::Message.new(role: :assistant, content: @text, model_id: @model_id,
+                                   input_tokens: @input_tokens, output_tokens: @output_tokens)
+    message.content = JSON.parse(@text) if @schema
+    message
   end
 end

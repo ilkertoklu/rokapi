@@ -52,7 +52,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".finale__outcome", text: "Zafer"
     assert_select ".highlights", text: /Zar atıldı/
     assert_equal %w[scene outcome scene], game_session.llm_calls.order(:id).pluck(:purpose)
-    assert_operator game_session.llm_calls.sum(:cost_in_microcents), :>, 0
+    assert_operator game_session.llm_calls.sum(:cost_in_microdollars), :>, 0
   end
 
   test "the scene keeps its layout when the narrator stops writing" do

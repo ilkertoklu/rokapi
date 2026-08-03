@@ -18,4 +18,21 @@ class Scene::GenerateJobTest < ActiveSupport::TestCase
 
     assert game_session.current_scene.failed?
   end
+
+  test "a rejected narrator fails the scene without retrying" do
+    game_session = game_sessions(:ilker_solo)
+    game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host)
+
+    rejected = Object.new
+    def rejected.with_instructions(*) = self
+    def rejected.ask(*) = raise RubyLLM::UnauthorizedError.new(nil, "bad key")
+
+    stub_llm(rejected) do
+      assert_raises RubyLLM::UnauthorizedError do
+        Scene::GenerateJob.new(game_session).perform_now
+      end
+    end
+
+    assert game_session.current_scene.failed?
+  end
 end
