@@ -1,14 +1,15 @@
 <% content_for :title, "Giriş yap · Rokapi" %>
 
-<h1>Giriş yap</h1>
+<%= form_with url: session_path, class: "flow" do |form| %>
+  <%= render "back", to: welcome_path, title: "Giriş yap" %>
 
-<%= form_with url: session_path do |form| %>
   <div>
     <%= form.label :email, "E-posta" %>
     <%= form.email_field :email, placeholder: "seninadresin@posta.com", required: true, autofocus: true, autocomplete: "email" %>
   </div>
 
-  <%= form.submit "Kod gönder", class: "btn btn--primary" %>
+  <div class="sticky-footer stack">
+    <%= form.submit "Kod gönder", class: "btn btn--primary" %>
+    <p class="hint">Hesabın yok mu? <%= link_to "Hesap oluştur", new_signup_path %></p>
+  </div>
 <% end %>
-
-<p class="hint">Hesabın yok mu? <%= link_to "Hesap oluştur", new_signup_path %></p>

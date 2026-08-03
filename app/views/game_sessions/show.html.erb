@@ -1,19 +1,9 @@
 <% content_for :title, "#{@game_session.title} · Rokapi" %>
 
-<h1><%= @game_session.title %></h1>
-<p class="hint">
-  <%= tone_label(@game_session.tone) %> · <%= solo_length_label(@game_session.length) %>
-</p>
+<%= turbo_stream_from @game_session %>
 
-<div class="card">
-  <h2><%= Current.user.name %></h2>
-  <p class="hint"><%= @character.summary %></p>
-  <p>Can <strong><%= @character.hp %> / <%= @character.max_hp %></strong></p>
+<div class="game" data-controller="sheet">
+  <%= render "game_sessions/stage", game_session: @game_session %>
+
+  <%= render "characters/sheet", character: @character %>
 </div>
-
-<div class="card">
-  <h2>Anlatıcı hazırlanıyor</h2>
-  <p class="hint">İlk sahne yakında burada yazılacak.</p>
-</div>
-
-<%= link_to "Ana ekrana dön", root_path, class: "btn btn--secondary" %>

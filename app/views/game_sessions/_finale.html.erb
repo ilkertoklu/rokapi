@@ -1,0 +1,43 @@
+<%# locals: (game_session:) -%>
+<% finale = game_session.current_scene %>
+
+<div class="finale">
+  <div class="finale__crest">
+    <span class="ember ember--large"></span>
+    <p class="finale__outcome"><%= game_session.outcome_victory? ? "Zafer" : "Yenilgi" %></p>
+    <h1><%= finale.title %></h1>
+  </div>
+
+  <p class="finale__closing"><%= finale.narration %></p>
+
+  <hr>
+
+  <div class="highlights">
+    <div>
+      <strong><%= duration_label(game_session.duration) %></strong>
+      <span>Süre</span>
+    </div>
+    <div>
+      <strong><%= game_session.rolls.count %></strong>
+      <span>Zar atıldı</span>
+    </div>
+    <div>
+      <strong><%= game_session.survivors_count %></strong>
+      <span>Hayatta</span>
+    </div>
+  </div>
+
+  <ul class="party">
+    <% game_session.players.includes(:user).each do |player| %>
+      <li>
+        <span class="avatar"><%= player.initial %></span>
+        <span><%= player.user.name %></span>
+      </li>
+    <% end %>
+  </ul>
+</div>
+
+<div class="stage__footer">
+  <%= link_to "Yeni macera", new_game_session_path, class: "btn btn--primary" %>
+  <%= link_to "Ana ekrana dön", root_path, class: "btn btn--ghost" %>
+</div>

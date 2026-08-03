@@ -1,0 +1,25 @@
+<%# locals: (scene:) -%>
+<%= render "scenes/location", scene: scene %>
+
+<% writing = scene.narrating? || scene.played? %>
+
+<div class="narration">
+  <p class="scene__speaker"><span class="ember <%= "ember--pulsing" if writing %>"></span> Anlatıcı</p>
+  <div id="scene_narration" class="narration__body"><%= scene.narration %></div>
+</div>
+
+<% if writing %>
+  <div class="stage__footer">
+    <p class="writing">
+      Anlatıcı sahneyi yazıyor
+      <span class="writing__dots"><span></span><span></span><span></span></span>
+    </p>
+  </div>
+<% elsif scene.failed? %>
+  <div class="stage__footer stalled">
+    <p class="hint">Anlatıcı duraksadı. Hikâyeyi kaldığı yerden sürdürebilirsin.</p>
+    <%= button_to "Yeniden dene", game_session_narration_path(scene.game_session), class: "btn btn--secondary" %>
+  </div>
+<% elsif scene.choosing? %>
+  <%= render "scenes/choices", scene: scene %>
+<% end %>

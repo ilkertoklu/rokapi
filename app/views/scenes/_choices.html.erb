@@ -1,0 +1,21 @@
+<%# locals: (scene:) -%>
+<details class="action-panel">
+  <summary class="action-panel__handle">
+    <span class="action-panel__grip"></span>
+    <span class="action-panel__prompt">Sıra sende</span>
+  </summary>
+
+  <div class="action-panel__body">
+    <% scene.choices.each do |choice| %>
+      <%= button_to game_session_chosen_choice_path(scene.game_session, choice_id: choice.id), class: "choice" do %>
+        <span class="choice__label"><%= choice.label %></span>
+        <span class="stat-chip"><%= Character::STAT_ABBREVIATIONS.fetch(choice.stat) %> <%= format("%+d", choice.modifier) %></span>
+      <% end %>
+    <% end %>
+
+    <button class="character-button" data-action="sheet#open">
+      <%= render "glyph", name: "person" %>
+      <span>Karakterim</span>
+    </button>
+  </div>
+</details>

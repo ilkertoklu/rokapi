@@ -12,6 +12,10 @@ Rails.application.routes.draw do
   resources :game_sessions, only: %i[new create show] do
     scope module: :game_sessions do
       resource :character, only: %i[new create]
+      resource :chosen_choice, only: :create
+      resource :roll, only: :create
+      resource :acknowledgement, only: :create
+      resource :narration, only: :create
     end
   end
 

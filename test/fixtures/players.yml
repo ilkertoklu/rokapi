@@ -2,3 +2,8 @@ ilker_solo_host:
   game_session: ilker_solo
   user: ilker
   host: true
+
+ilker_without_character_host:
+  game_session: ilker_without_character
+  user: ilker
+  host: true

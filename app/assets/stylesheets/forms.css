@@ -8,51 +8,66 @@
 
   label {
     display: block;
-    color: var(--color-ink-muted);
-    font-size: .9rem;
-    font-weight: 600;
-    margin-block-end: .4rem;
+    color: var(--color-ink-faint);
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .125em;
+    margin-block-end: .5rem;
   }
 
   input[type="email"],
   input[type="text"] {
     inline-size: 100%;
-    padding: .9rem 1rem;
+    block-size: 58px;
+    padding-inline: 1.125rem;
     background: var(--color-surface);
     border: 1px solid var(--color-line);
-    border-radius: var(--radius-control);
+    border-radius: 16px;
     color: var(--color-ink);
-    font: inherit;
+    font-family: var(--font-ui);
+    font-size: 1.0625rem;
+    font-weight: 600;
 
     &:focus {
-      outline: 2px solid var(--color-accent);
-      outline-offset: -1px;
+      border-color: var(--color-accent);
+      outline: none;
     }
   }
 
   input.code-input {
-    font-size: 1.8rem;
-    letter-spacing: .5em;
+    block-size: 60px;
+    border-radius: 14px;
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: 600;
+    letter-spacing: .45em;
+    text-indent: .45em;
     text-align: center;
     font-variant-numeric: tabular-nums;
   }
 
   .terms {
     display: flex;
-    gap: .6rem;
+    gap: .7rem;
     align-items: flex-start;
-    color: var(--color-ink-muted);
-    font-size: .9rem;
+    color: var(--color-ink-faint);
+    font-size: .82rem;
+    font-weight: 400;
+    letter-spacing: normal;
+    line-height: 1.5;
 
     input {
-      inline-size: 1.15rem;
-      block-size: 1.15rem;
-      margin-block-start: .15rem;
+      inline-size: 24px;
+      block-size: 24px;
+      flex: none;
+      border-radius: 8px;
       accent-color: var(--color-accent);
     }
 
     a {
-      color: var(--color-accent-bright);
+      color: var(--color-ink);
+      text-decoration: none;
+      border-block-end: 1px solid rgba(239, 231, 216, .35);
     }
   }
 

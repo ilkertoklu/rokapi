@@ -2,7 +2,7 @@ require "test_helper"
 
 class CharacterTest < ActiveSupport::TestCase
   setup do
-    @player = players(:ilker_solo_host)
+    @player = players(:ilker_without_character_host)
     @base = Character.base_stats_for("warrior")
   end
 
@@ -33,6 +33,14 @@ class CharacterTest < ActiveSupport::TestCase
   test "rejects stats below class base or above the cap" do
     assert_not build_character(@base.merge("strength" => 13, "agility" => 18)).valid?
     assert_not build_character(@base.merge("strength" => 20)).valid?
+  end
+
+  test "bonus_for follows the modifier formula" do
+    character = characters(:ilker_hero)
+
+    assert_equal 3, character.bonus_for("strength")
+    assert_equal(-1, character.bonus_for("intelligence"))
+    assert_equal 1, character.bonus_for("wisdom")
   end
 
   test "rejects unknown options" do

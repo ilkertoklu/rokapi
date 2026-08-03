@@ -28,4 +28,8 @@ class User < ApplicationRecord
   def complete_profile!(name:)
     update! name: name, terms_accepted_at: Time.current
   end
+
+  def initial
+    name.to_s.first&.upcase
+  end
 end

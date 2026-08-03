@@ -19,17 +19,49 @@
     }
   }
 
-  .card--link {
-    display: block;
-    text-decoration: none;
-    color: inherit;
+  .greeting {
+    font-family: var(--font-display);
+    font-size: 2.25rem;
+    font-weight: 600;
+    line-height: 1.15;
+    margin: 0;
+  }
 
-    &:active {
-      border-color: var(--color-accent);
+  .plan {
+    inline-size: 100%;
+    margin-block-start: 1.9rem;
+    padding: 1.125rem 1.125rem 1rem;
+    background: var(--color-surface-sunken);
+    border: 1px solid rgba(224, 140, 74, .3);
+    border-radius: 20px;
+    text-align: start;
+
+    ul {
+      display: flex;
+      flex-direction: column;
+      gap: .55rem;
+      margin: .9rem 0 0;
+      padding: 0;
+      list-style: none;
+      color: var(--color-ink-muted);
+      font-size: .82rem;
     }
   }
 
-  .card--disabled {
-    opacity: .45;
+  .plan__name {
+    margin: 0;
+    color: var(--color-accent);
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .17em;
+    text-transform: uppercase;
+  }
+
+  .plan__headline {
+    margin: .5rem 0 0;
+    font-family: var(--font-display);
+    font-size: 1.875rem;
+    font-weight: 600;
+    color: var(--color-ink);
   }
 }

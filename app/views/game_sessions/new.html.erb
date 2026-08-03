@@ -1,38 +1,58 @@
 <% content_for :title, "Yeni macera · Rokapi" %>
 
-<h1>Yeni macera</h1>
-
 <% if @mode.nil? %>
-  <p class="hint">Nasıl oynamak istersin?</p>
+  <%= render "back", to: root_path, title: "Yeni macera" %>
+
+  <p class="lede">Nasıl oynamak istersin?</p>
 
   <div class="stack">
-    <%= link_to new_game_session_path(mode: :solo), class: "card card--link" do %>
-      <h2>Tek kişilik</h2>
-      <p class="hint">1 oyuncu · 15-60 dk · sana özel hikâye</p>
+    <%= link_to new_game_session_path(mode: :solo), class: "pick" do %>
+      <span class="pick__icon"><%= render "glyph", name: "person" %></span>
+      <span class="pick__body">
+        <span class="pick__title">Tek kişilik</span>
+        <span class="pick__text">1 oyuncu · 15-60 dk · sana özel hikâye</span>
+      </span>
+      <span class="pick__mark"></span>
     <% end %>
 
-    <div class="card card--disabled">
-      <h2>Çok kişilik</h2>
-      <p class="hint">2-5 oyuncu · 30-90 dk · ortak hikâye · yakında</p>
+    <div class="pick pick--disabled">
+      <span class="pick__icon"><%= render "glyph", name: "people" %></span>
+      <span class="pick__body">
+        <span class="pick__title">Çok kişilik</span>
+        <span class="pick__text">2-5 oyuncu · 30-90 dk · ortak hikâye · yakında</span>
+      </span>
+      <span class="pick__mark"></span>
     </div>
   </div>
+
+  <p class="hint">Çok kişilikte bir oda kodu paylaşır, arkadaşların kodla katılır.</p>
 <% else %>
-  <%= form_with url: game_sessions_path, scope: :game_session do |form| %>
+  <%= form_with url: game_sessions_path, scope: :game_session, class: "flow" do |form| %>
+    <%= render "back", to: new_game_session_path, title: "Yeni macera" %>
+
     <fieldset class="choices">
       <legend>Görev</legend>
 
       <% @adventures.each do |adventure| %>
-        <label class="option">
+        <label class="pick">
           <%= form.radio_button :adventure_id, adventure.id, checked: adventure == @adventures.first %>
-          <span class="option__title"><%= adventure.title %></span>
-          <span class="option__text"><%= adventure.hook %></span>
+          <span class="pick__icon"><%= render "glyph", name: "bell" %></span>
+          <span class="pick__body">
+            <span class="pick__title"><%= adventure.title %></span>
+            <span class="pick__text"><%= adventure.hook %></span>
+          </span>
+          <span class="pick__mark"></span>
         </label>
       <% end %>
 
-      <label class="option">
-        <%= form.radio_button :adventure_id, "" %>
-        <span class="option__title">Sürpriz</span>
-        <span class="option__text">Anlatıcı bilinmeyen bir dünya kursun.</span>
+      <label class="pick">
+        <%= form.radio_button :adventure_id, "", checked: false %>
+        <span class="pick__icon"><%= render "glyph", name: "compass" %></span>
+        <span class="pick__body">
+          <span class="pick__title">Sürpriz</span>
+          <span class="pick__text">Anlatıcı bilinmeyen bir dünya kursun.</span>
+        </span>
+        <span class="pick__mark"></span>
       </label>
     </fieldset>
 
@@ -60,6 +80,8 @@
       </div>
     </fieldset>
 
-    <%= form.submit "Karakterini oluştur", class: "btn btn--primary" %>
+    <div class="sticky-footer">
+      <%= form.submit "Karakterini oluştur", class: "btn btn--primary" %>
+    </div>
   <% end %>
 <% end %>

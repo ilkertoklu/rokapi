@@ -9,12 +9,13 @@
   }
 
   .screen {
+    position: relative;
     max-inline-size: 26rem;
     margin-inline: auto;
     min-block-size: 100dvh;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 1.25rem;
     padding: calc(1.5rem + env(safe-area-inset-top))
              clamp(1.25rem, 6vw, 2rem)
@@ -32,15 +33,18 @@
     text-align: center;
 
     h1 {
-      font-size: clamp(2.4rem, 12vw, 3.2rem);
+      font-size: clamp(2.4rem, 12vw, 3.125rem);
+      font-weight: 500;
       letter-spacing: .02em;
     }
 
     p {
-      color: var(--color-ink-muted);
+      color: var(--color-ink-faint);
       font-family: var(--font-display);
       font-style: italic;
-      margin: .25rem 0 0;
+      font-size: 1.125rem;
+      line-height: 1.5;
+      margin: 1.25rem 0 0;
     }
   }
 

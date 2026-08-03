@@ -1,10 +1,10 @@
 <% content_for :title, "Karakterini oluştur · Rokapi" %>
 
-<h1>Karakterini oluştur</h1>
-
-<%= form_with model: @character, url: game_session_character_path(@game_session),
+<%= form_with model: @character, url: game_session_character_path(@game_session), class: "flow",
       data: { controller: "stats", stats_free_value: Character::FREE_POINTS, stats_cap_value: Character::STAT_CAP,
               stats_klass_value: @character.klass, stats_bases_value: Character::Klass.base_stats_by_key.to_json } do |form| %>
+
+  <%= render "back", to: new_game_session_path(mode: :solo), title: "Karakterini oluştur" %>
 
   <%= render "choice_fieldset", form: form, legend: "Irk", attribute: :race,
         options: Character::Race.all, selected: @character.race %>
@@ -30,5 +30,7 @@
     <% end %>
   </fieldset>
 
-  <%= form.submit "Hazırım", class: "btn btn--primary", data: { stats_target: "submit" } %>
+  <div class="sticky-footer">
+    <%= form.submit "Hazırım", class: "btn btn--primary", data: { stats_target: "submit" } %>
+  </div>
 <% end %>

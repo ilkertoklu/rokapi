@@ -1,0 +1,18 @@
+<%# locals: (roll:) -%>
+<div class="d20 <%= "d20--settled" if roll&.resolved? %>">
+  <div class="d20__face">
+    <span class="d20__die">d20</span>
+
+    <% if roll.nil? || roll.failed? %>
+      <span class="d20__value">?</span>
+    <% elsif roll.resolved? %>
+      <span class="d20__value"><%= roll.value %></span>
+    <% else %>
+      <span class="d20__reel" aria-label="Zar dönüyor">
+        <span class="d20__strip" style="--cells: <%= roll.faces.size %>">
+          <% roll.faces.each do |face| %><span><%= face %></span><% end %>
+        </span>
+      </span>
+    <% end %>
+  </div>
+</div>

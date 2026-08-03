@@ -1,0 +1,14 @@
+ilker_hero:
+  player: ilker_solo_host
+  race: human
+  klass: warrior
+  background: soldier
+  stats:
+    strength: 16
+    agility: 11
+    constitution: 15
+    intelligence: 8
+    wisdom: 12
+    charisma: 14
+  hp: 31
+  max_hp: 31

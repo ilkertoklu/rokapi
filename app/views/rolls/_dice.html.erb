@@ -1,0 +1,44 @@
+<%# locals: (choice:, roll:, game_session:) -%>
+<div class="dice">
+  <p class="dice__prompt"><%= choice.label %></p>
+
+  <%= render "rolls/die", roll: roll %>
+
+  <dl class="dice__facts">
+    <div>
+      <dt>Zorluk <span>· anlatıcı</span></dt>
+      <dd>
+        <%= choice.difficulty_label.capitalize %>
+        <span class="target">Hedef <%= choice.difficulty %></span>
+      </dd>
+    </div>
+    <div>
+      <dt>Katkı</dt>
+      <dd>
+        <%= Character::STATS.fetch(choice.stat) %> <%= choice.stat_value %>
+        <span class="arrow">→</span>
+        <span class="modifier"><%= format("%+d", choice.modifier) %></span>
+      </dd>
+    </div>
+  </dl>
+
+  <% if choice.difficulty_reason.present? %>
+    <p class="dice__reason"><%= choice.difficulty_reason %></p>
+  <% end %>
+</div>
+
+<div class="stage__footer">
+  <% if roll.nil? %>
+    <%= button_to "Zarı at", game_session_roll_path(game_session), class: "btn btn--primary" %>
+  <% elsif roll.failed? %>
+    <div class="stalled">
+      <p class="hint">Anlatıcı duraksadı. Zarın sonucu henüz yazılamadı.</p>
+      <%= button_to "Yeniden dene", game_session_narration_path(game_session), class: "btn btn--secondary" %>
+    </div>
+  <% else %>
+    <p class="writing">
+      Anlatıcı sonucu yazıyor
+      <span class="writing__dots"><span></span><span></span><span></span></span>
+    </p>
+  <% end %>
+</div>

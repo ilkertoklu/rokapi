@@ -1,8 +1,8 @@
 <% content_for :title, "Kaydını tamamla · Rokapi" %>
 
-<h1>Kaydını tamamla</h1>
+<%= form_with url: signup_profile_path, class: "flow" do |form| %>
+  <h1>Kaydını tamamla</h1>
 
-<%= form_with url: signup_profile_path do |form| %>
   <div>
     <%= form.label :name, "Adın" %>
     <%= form.text_field :name, placeholder: "Adın", required: true, autofocus: true, autocomplete: "given-name" %>
@@ -13,5 +13,7 @@
     <span><a href="#">Kullanım Koşulları</a> ve <a href="#">Gizlilik Politikası</a>'nı kabul ediyorum.</span>
   </label>
 
-  <%= form.submit "Başla", class: "btn btn--primary" %>
+  <div class="sticky-footer">
+    <%= form.submit "Başla", class: "btn btn--primary" %>
+  </div>
 <% end %>

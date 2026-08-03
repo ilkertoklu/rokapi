@@ -1,0 +1,25 @@
+<%# locals: (name:) -%>
+<svg class="glyph" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <% case name %>
+  <% when "back" %>
+    <path d="M15 18l-6-6 6-6"></path>
+  <% when "pin" %>
+    <path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11Z"></path>
+    <circle cx="12" cy="10" r="2.4"></circle>
+  <% when "bell" %>
+    <path d="M6 9a6 6 0 0 1 12 0c0 5 2 6 2 6H4s2-1 2-6Z"></path>
+    <path d="M10 19a2 2 0 0 0 4 0"></path>
+  <% when "compass" %>
+    <circle cx="12" cy="12" r="9"></circle>
+    <path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"></path>
+  <% when "person" %>
+    <circle cx="12" cy="7" r="4"></circle>
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+  <% when "people" %>
+    <circle cx="9" cy="7" r="4"></circle>
+    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+  <% end %>
+</svg>

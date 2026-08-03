@@ -1,0 +1,36 @@
+<%# locals: (character:) -%>
+<div class="sheet" data-sheet-target="sheet" hidden>
+  <button class="sheet__scrim" data-action="sheet#close" aria-label="Kapat"></button>
+
+  <div class="sheet__panel">
+    <button class="sheet__handle" data-action="sheet#close" aria-label="Kapat"></button>
+
+    <header class="sheet__header">
+      <span class="avatar"><%= character.player.initial %></span>
+      <strong><%= character.player.user.name %></strong>
+      <em><%= character.summary %></em>
+    </header>
+
+    <div class="vitals">
+      <div class="vitals__row">
+        <span class="vitals__label">Can</span>
+        <span class="vitals__count"><%= character.hp %> <span>/ <%= character.max_hp %></span></span>
+      </div>
+      <div class="vitals__track">
+        <div class="vitals__fill" style="inline-size: <%= character.hp_percentage %>%"></div>
+      </div>
+    </div>
+
+    <p class="vitals__label">Temel özellikler</p>
+    <dl class="sheet__stats">
+      <% Character::STATS.each do |key, label| %>
+        <div>
+          <dt><%= label %></dt>
+          <dd><%= character.stats[key] %> <span><%= format("%+d", character.bonus_for(key)) %></span></dd>
+        </div>
+      <% end %>
+    </dl>
+
+    <%= link_to "Ana ekrana dön", root_path, class: "btn btn--ghost" %>
+  </div>
+</div>

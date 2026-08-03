@@ -1,0 +1,18 @@
+<%# locals: (game_session:) -%>
+<div id="game_stage" class="stage">
+  <% if (spinning = game_session.unresolved_roll) %>
+    <%= render "rolls/dice", choice: spinning.choice, roll: spinning, game_session: game_session %>
+  <% elsif (roll = game_session.unseen_roll) %>
+    <%= render "rolls/outcome", roll: roll, game_session: game_session %>
+  <% elsif game_session.finished? %>
+    <%= render "game_sessions/finale", game_session: game_session %>
+  <% elsif (scene = game_session.current_scene) %>
+    <% if scene.rolling? %>
+      <%= render "rolls/dice", choice: scene.chosen_choice, roll: nil, game_session: game_session %>
+    <% else %>
+      <%= render "scenes/scene", scene: scene %>
+    <% end %>
+  <% else %>
+    <%= render "game_sessions/opening", game_session: game_session %>
+  <% end %>
+</div>

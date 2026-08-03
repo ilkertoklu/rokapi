@@ -9,11 +9,12 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
 
   test "setting up a solo adventure from mode pick to waiting screen" do
     get new_game_session_path
-    assert_select "h2", text: "Tek kişilik"
+    assert_select ".page-head h1", text: "Yeni macera"
+    assert_select ".pick__title", text: "Tek kişilik"
 
     get new_game_session_path(mode: :solo)
-    assert_select ".option__title", text: "Kayıp Kervan"
-    assert_select ".option__title", text: "Sürpriz"
+    assert_select ".pick__title", text: "Kayıp Kervan"
+    assert_select ".pick__title", text: "Sürpriz"
 
     post game_sessions_path, params: {
       game_session: { adventure_id: adventures(:kayip_kervan).id, tone: "dark", length: "short" }
@@ -27,8 +28,8 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to game_session_path(game_session)
 
     follow_redirect!
-    assert_select "h1", text: "Kayıp Kervan"
-    assert_select "h2", text: "Anlatıcı hazırlanıyor"
+    assert_select ".location h1", text: "Kayıp Kervan"
+    assert_select ".writing", text: /Anlatıcı hazırlanıyor/
     assert game_session.reload.playing?
     assert game_session.player_for(users(:sevval)).ready?
   end
@@ -102,7 +103,7 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
     game_session = create_solo_session
 
     get root_path
-    assert_select "h2", text: "Maceraya devam et"
+    assert_select ".resume__title", text: "Maceraya devam et"
     assert_select "a[href=?]", game_session_path(game_session)
   end
 

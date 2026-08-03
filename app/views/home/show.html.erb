@@ -1,18 +1,21 @@
-<div class="brand">
-  <h1>Rokapi</h1>
-  <p>Zarları at, hikâyeni yaz.<br>Her oturum yeni bir macera.</p>
-</div>
+<%= button_to session_path, method: :delete, form_class: "profile", class: "profile__badge",
+      aria: { label: "Çıkış yap" }, data: { turbo_confirm: "Çıkış yapılsın mı?" } do %>
+  <%= Current.user.initial %>
+<% end %>
+
+<%= render "brand" %>
 
 <div class="stack">
   <% if @resumable_game_session %>
-    <%= link_to game_session_path(@resumable_game_session), class: "card card--link" do %>
-      <h2>Maceraya devam et</h2>
-      <p class="hint"><%= @resumable_game_session.title %></p>
+    <%= link_to game_session_path(@resumable_game_session), class: "resume" do %>
+      <span class="resume__icon"><%= render "glyph", name: "bell" %></span>
+      <span class="resume__body">
+        <span class="resume__title">Maceraya devam et</span>
+        <span class="resume__text"><%= resume_summary(@resumable_game_session) %></span>
+      </span>
     <% end %>
   <% end %>
 
   <%= link_to "Yeni macera kur", new_game_session_path, class: "btn btn--primary" %>
   <button class="btn btn--secondary" disabled>Kod ile katıl</button>
 </div>
-
-<%= button_to "Çıkış yap", session_path, method: :delete, class: "btn btn--ghost" %>

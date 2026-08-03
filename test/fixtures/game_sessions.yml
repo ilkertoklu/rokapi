@@ -5,3 +5,11 @@ ilker_solo:
   tone: balanced
   length: short
   state: lobby
+
+ilker_without_character:
+  adventure: golun_sirri
+  creator: ilker
+  mode: solo
+  tone: balanced
+  length: medium
+  state: lobby

@@ -1,0 +1,21 @@
+<%# locals: (roll:, game_session:) -%>
+<div class="outcome outcome--<%= roll.success? ? "success" : "failure" %>">
+  <%= render "rolls/die", roll: roll %>
+
+  <p class="outcome__math">
+    <%= roll.value %> <span><%= format("%+d", roll.modifier) %> <%= Character::STATS.fetch(roll.choice.stat).downcase %></span>
+    = <strong><%= roll.total %></strong> · hedef <%= roll.target %> · <%= roll.choice.difficulty_label.capitalize %>
+  </p>
+
+  <p class="outcome__verdict"><%= roll.success? ? "BAŞARILI" : "BAŞARISIZ" %></p>
+
+  <p class="outcome__resolution"><%= roll.resolution %></p>
+
+  <% if roll.hp_change.nonzero? %>
+    <p class="outcome__effect"><%= format("%+d", roll.hp_change) %> Can</p>
+  <% end %>
+</div>
+
+<div class="stage__footer">
+  <%= button_to "Devam et", game_session_acknowledgement_path(game_session), class: "btn btn--primary" %>
+</div>

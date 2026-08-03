@@ -3,6 +3,9 @@ class Player < ApplicationRecord
   belongs_to :user
 
   has_one :character, dependent: :destroy
+  has_many :rolls, dependent: :destroy
+
+  delegate :initial, to: :user
 
   def ready_up!(character_attributes)
     transaction do

@@ -4,15 +4,26 @@
   --color-bg: #15120E;
   --color-surface: #1F1A14;
   --color-surface-raised: #241D14;
+  --color-surface-sunken: #1A1610;
+  --color-surface-lifted: #2E2519;
+  --color-well: #0F0C09;
   --color-ink: #EFE7D8;
+  --color-ink-prose: #E4DAC9;
   --color-ink-muted: #CFC2AD;
   --color-ink-faint: #A1937E;
+  --color-ink-soft: #9A8D78;
   --color-ink-dim: #8a7c66;
   --color-accent: #E08C4A;
   --color-accent-bright: #E8A468;
+  --color-accent-pale: #F0CBA0;
   --color-accent-soft: rgba(224, 140, 74, .16);
   --color-on-accent: #1A130B;
   --color-positive: #8FA876;
+  --color-positive-bright: #A6C089;
+  --color-negative: #CC6B4A;
+  --color-negative-bright: #E0926F;
+  --color-dot-past: #4A4234;
+  --color-dot-upcoming: #322A20;
   --color-line: rgba(239, 231, 216, .12);
 
   --font-display: "Spectral", serif;

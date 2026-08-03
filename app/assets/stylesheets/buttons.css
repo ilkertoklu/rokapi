@@ -33,6 +33,27 @@
     cursor: default;
   }
 
+  .btn--primary:disabled {
+    background: var(--color-accent-soft);
+    color: var(--color-accent-pale);
+    opacity: 1;
+  }
+
+  .resend {
+    inline-size: 100%;
+    padding: .5rem;
+    background: none;
+    border: 0;
+    color: var(--color-ink-soft);
+    font: 600 .82rem var(--font-ui);
+    text-align: center;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: default;
+    }
+  }
+
   .stepper {
     inline-size: 44px;
     block-size: 44px;

@@ -4,6 +4,10 @@ class Character < ApplicationRecord
     "intelligence" => "Zekâ", "wisdom" => "Sezgi", "charisma" => "Karizma"
   }.freeze
   STAT_KEYS = STATS.keys.freeze
+  STAT_ABBREVIATIONS = {
+    "strength" => "GÜÇ", "agility" => "ÇEV", "constitution" => "DAY",
+    "intelligence" => "ZEK", "wisdom" => "SEZ", "charisma" => "KAR"
+  }.freeze
   FREE_POINTS = 6
   STAT_CAP = 18
 
@@ -24,6 +28,14 @@ class Character < ApplicationRecord
 
   def summary
     [ Race.fetch(race).label, Klass.fetch(klass).label, Background.fetch(background).label ].join(" · ")
+  end
+
+  def bonus_for(stat_key)
+    (stats.fetch(stat_key) - 10) / 2
+  end
+
+  def hp_percentage
+    (hp * 100.0 / max_hp).round
   end
 
   private

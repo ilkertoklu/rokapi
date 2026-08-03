@@ -1,0 +1,21 @@
+<%# locals: (game_session:) -%>
+<header class="location">
+  <div class="location__place">
+    <span class="location__pin"><%= render "glyph", name: "pin" %></span>
+    <div>
+      <h1><%= game_session.title %></h1>
+      <p><%= tone_label(game_session.tone) %> · <%= solo_length_label(game_session.length) %></p>
+    </div>
+  </div>
+</header>
+
+<div class="narration">
+  <p class="scene__speaker"><span class="ember ember--pulsing"></span> Anlatıcı</p>
+</div>
+
+<div class="stage__footer">
+  <p class="writing">
+    Anlatıcı hazırlanıyor
+    <span class="writing__dots"><span></span><span></span><span></span></span>
+  </p>
+</div>
