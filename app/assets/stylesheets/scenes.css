@@ -11,6 +11,12 @@
     margin: .75rem 1rem 0;
   }
 
+  @media (min-width: 48rem) and (min-height: 48rem) {
+    .screen:has(.game) {
+      block-size: min(52rem, 100dvh - 3rem);
+    }
+  }
+
   .game {
     position: relative;
     display: flex;

@@ -9,6 +9,12 @@
     }
   }
 
+  @media (min-width: 48rem) and (min-height: 48rem) {
+    .sheet {
+      position: absolute;
+    }
+  }
+
   .sheet__scrim {
     position: absolute;
     inset: 0;

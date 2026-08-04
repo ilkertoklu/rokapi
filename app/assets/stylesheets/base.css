@@ -22,6 +22,28 @@
              calc(1.5rem + env(safe-area-inset-bottom));
   }
 
+  @media (min-width: 48rem) and (min-height: 48rem) {
+    body {
+      display: grid;
+      place-items: center;
+      min-block-size: 100dvh;
+      background-color: color-mix(in srgb, var(--color-bg) 50%, black);
+      background-image: radial-gradient(48rem 48rem at 50% 42%,
+        color-mix(in srgb, var(--color-accent) 9%, transparent), transparent 65%);
+    }
+
+    .screen {
+      inline-size: 26rem;
+      block-size: min(52rem, 100dvh - 3rem);
+      min-block-size: 0;
+      overflow-y: auto;
+      background: var(--color-bg);
+      border: 1px solid color-mix(in srgb, var(--color-accent) 22%, transparent);
+      border-radius: 46px;
+      box-shadow: 0 30px 70px -20px rgba(0, 0, 0, .8);
+    }
+  }
+
   h1 {
     font-family: var(--font-display);
     font-weight: 600;
