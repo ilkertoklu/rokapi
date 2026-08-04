@@ -88,7 +88,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert @game_session.current_scene.choosing?
   end
 
-  test "an unresolved roll is never resolved twice" do
+  test "a roll is never resolved twice" do
     roll = play_first_scene
 
     resolve roll

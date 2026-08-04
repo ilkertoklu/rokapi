@@ -10,7 +10,7 @@
 
   <ol class="progress" aria-label="<%= scene.counter %>">
     <% (1..scene.game_session.scene_budget).each do |position| %>
-      <li class="progress__dot progress__dot--<%= scene.progress_at(position) %>"></li>
+      <li class="progress__dot progress__dot--<%= progress_at(scene, position) %>"></li>
     <% end %>
   </ol>
 </header>

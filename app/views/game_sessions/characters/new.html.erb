@@ -22,8 +22,7 @@
       <div class="stat-row">
         <span class="stat-row__label"><%= label %></span>
         <button type="button" class="stepper" data-action="stats#decrement" data-stats-key-param="<%= key %>">−</button>
-        <%= form.number_field "stats[#{key}]", value: @base_stats[key], readonly: true,
-              name: "character[stats][#{key}]",
+        <%= number_field_tag "character[stats][#{key}]", @base_stats[key], readonly: true,
               data: { stats_target: "value", key: key } %>
         <button type="button" class="stepper" data-action="stats#increment" data-stats-key-param="<%= key %>">+</button>
       </div>

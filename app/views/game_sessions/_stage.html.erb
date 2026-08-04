@@ -1,6 +1,6 @@
 <%# locals: (game_session:) -%>
 <div id="game_stage" class="stage">
-  <% if (spinning = game_session.unresolved_roll) %>
+  <% if (spinning = game_session.pending_roll) %>
     <%= render "rolls/dice", choice: spinning.choice, roll: spinning, game_session: game_session %>
   <% elsif (roll = game_session.unseen_roll) %>
     <%= render "rolls/outcome", roll: roll, game_session: game_session %>

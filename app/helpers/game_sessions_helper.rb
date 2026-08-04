@@ -18,6 +18,12 @@ module GameSessionsHelper
     minutes >= 60 ? "#{minutes / 60}sa #{minutes % 60}dk" : "#{minutes}dk"
   end
 
+  def progress_at(scene, position)
+    return "current" if position == scene.position
+
+    position < scene.position ? "past" : "upcoming"
+  end
+
   def resume_summary(game_session)
     scene = game_session.current_scene
 

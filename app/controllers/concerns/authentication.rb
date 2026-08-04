@@ -3,7 +3,6 @@ module Authentication
 
   included do
     before_action :require_authentication
-    after_action :ensure_development_login_code_not_leaked
     helper_method :authenticated?
   end
 
@@ -84,11 +83,5 @@ module Authentication
 
     def reveal_development_login_code(login_code)
       flash[:development_login_code] = login_code.code if Rails.env.development?
-    end
-
-    def ensure_development_login_code_not_leaked
-      unless Rails.env.development?
-        raise "Leaking login code via flash in #{Rails.env}?" if flash[:development_login_code].present?
-      end
     end
 end

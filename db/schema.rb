@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_03_221456) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_04_082720) do
   create_table "adventures", force: :cascade do |t|
     t.text "brief", null: false
     t.datetime "created_at", null: false
@@ -58,13 +58,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_03_221456) do
     t.string "length", null: false
     t.string "mode", null: false
     t.string "outcome"
-    t.string "room_code"
     t.string "state", default: "lobby", null: false
     t.string "tone", null: false
     t.datetime "updated_at", null: false
     t.index ["adventure_id"], name: "index_game_sessions_on_adventure_id"
     t.index ["creator_id"], name: "index_game_sessions_on_creator_id"
-    t.index ["room_code"], name: "index_game_sessions_on_room_code", unique: true, where: "state = 'lobby' AND room_code IS NOT NULL"
   end
 
   create_table "llm_calls", force: :cascade do |t|

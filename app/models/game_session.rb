@@ -44,8 +44,8 @@ class GameSession < ApplicationRecord
     scenes.chronological.last
   end
 
-  def unresolved_roll
-    rolls.unresolved.order(:id).first
+  def pending_roll
+    rolls.pending.order(:id).first
   end
 
   def unseen_roll
@@ -56,8 +56,8 @@ class GameSession < ApplicationRecord
     unseen_roll&.acknowledge!
   end
 
-  def stalled
-    roll = unresolved_roll
+  def stalled_work
+    roll = pending_roll
     return roll if roll&.failed?
 
     scene = current_scene
@@ -94,7 +94,7 @@ class GameSession < ApplicationRecord
   end
 
   def resume_narration!
-    case (stuck = stalled)
+    case (stuck = stalled_work)
     when Roll
       stuck.narrate_outcome_later
     when Scene

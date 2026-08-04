@@ -3,7 +3,7 @@ class Scene < ApplicationRecord
 
   UNWRITTEN_STATES = %w[narrating failed].freeze
 
-  belongs_to :game_session
+  belongs_to :game_session, touch: true
   belongs_to :active_player, class_name: "Player"
 
   has_many :choices, dependent: :destroy
@@ -37,11 +37,5 @@ class Scene < ApplicationRecord
 
   def counter
     "#{position}. durak"
-  end
-
-  def progress_at(other)
-    return "current" if other == position
-
-    other < position ? "past" : "upcoming"
   end
 end

@@ -7,7 +7,7 @@ class Roll < ApplicationRecord
 
   has_one :scene, through: :choice
 
-  scope :unresolved, -> { where(resolution: nil) }
+  scope :pending, -> { where(resolution: nil) }
   scope :unseen, -> { where(acknowledged_at: nil).where.not(resolution: nil) }
 
   after_create_commit :narrate_outcome_later
