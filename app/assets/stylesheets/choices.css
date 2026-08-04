@@ -93,4 +93,11 @@
       color: var(--color-ink-muted);
     }
   }
+
+  @media (any-hover: hover) {
+    .chip:hover,
+    .segment:hover {
+      border-color: var(--color-accent);
+    }
+  }
 }

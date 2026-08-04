@@ -32,7 +32,7 @@
     margin-block-start: 1.9rem;
     padding: 1.125rem 1.125rem 1rem;
     background: var(--color-surface-sunken);
-    border: 1px solid rgba(224, 140, 74, .3);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
     border-radius: 20px;
     text-align: start;
 
@@ -51,10 +51,6 @@
   .plan__name {
     margin: 0;
     color: var(--color-accent);
-    font-size: .75rem;
-    font-weight: 700;
-    letter-spacing: .17em;
-    text-transform: uppercase;
   }
 
   .plan__headline {

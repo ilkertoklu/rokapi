@@ -64,4 +64,11 @@
     font-size: 1.3rem;
     cursor: pointer;
   }
+
+  @media (any-hover: hover) {
+    .btn:not(:disabled):hover,
+    .stepper:hover {
+      filter: brightness(1.1);
+    }
+  }
 }

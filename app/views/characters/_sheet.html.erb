@@ -3,7 +3,7 @@
   <button class="sheet__scrim" data-action="sheet#close" aria-label="Kapat"></button>
 
   <div class="sheet__panel">
-    <button class="sheet__handle" data-action="sheet#close" aria-label="Kapat"></button>
+    <button class="sheet__handle" data-action="sheet#close" aria-label="Kapat"><span class="grip"></span></button>
 
     <header class="sheet__header">
       <span class="avatar"><%= character.player.initial %></span>
@@ -13,7 +13,7 @@
 
     <div class="vitals">
       <div class="vitals__row">
-        <span class="vitals__label">Can</span>
+        <span class="vitals__label overline">Can</span>
         <span class="vitals__count"><%= character.hp %> <span>/ <%= character.max_hp %></span></span>
       </div>
       <div class="vitals__track">
@@ -21,7 +21,7 @@
       </div>
     </div>
 
-    <p class="vitals__label">Temel özellikler</p>
+    <p class="vitals__label overline">Temel özellikler</p>
     <dl class="sheet__stats">
       <% Character::STATS.each do |key, label| %>
         <div>

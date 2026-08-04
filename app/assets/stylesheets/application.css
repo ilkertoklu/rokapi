@@ -16,7 +16,7 @@
   --color-accent: #E08C4A;
   --color-accent-bright: #E8A468;
   --color-accent-pale: #F0CBA0;
-  --color-accent-soft: rgba(224, 140, 74, .16);
+  --color-accent-soft: color-mix(in srgb, var(--color-accent) 16%, transparent);
   --color-on-accent: #1A130B;
   --color-positive: #8FA876;
   --color-positive-bright: #A6C089;
@@ -24,7 +24,8 @@
   --color-negative-bright: #E0926F;
   --color-dot-past: #4A4234;
   --color-dot-upcoming: #322A20;
-  --color-line: rgba(239, 231, 216, .12);
+  --color-line: color-mix(in srgb, var(--color-ink) 12%, transparent);
+  --color-line-soft: color-mix(in srgb, var(--color-ink) 8%, transparent);
 
   --font-display: "Spectral", serif;
   --font-ui: "Hanken Grotesk", system-ui, sans-serif;

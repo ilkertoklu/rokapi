@@ -4,7 +4,7 @@
 <% writing = scene.narrating? || scene.played? %>
 
 <div class="narration">
-  <p class="scene__speaker"><span class="ember <%= "ember--pulsing" if writing %>"></span> Anlatıcı</p>
+  <p class="scene__speaker overline"><span class="ember <%= "ember--pulsing" if writing %>"></span> Anlatıcı</p>
   <div id="scene_narration" class="narration__body"><%= scene.narration %></div>
 </div>
 
@@ -16,9 +16,11 @@
     </p>
   </div>
 <% elsif scene.failed? %>
-  <div class="stage__footer stalled">
-    <p class="hint">Anlatıcı duraksadı. Hikâyeyi kaldığı yerden sürdürebilirsin.</p>
-    <%= button_to "Yeniden dene", game_session_narration_path(scene.game_session), class: "btn btn--secondary" %>
+  <div class="stage__footer">
+    <div class="stalled">
+      <p class="hint">Anlatıcı duraksadı. Hikâyeyi kaldığı yerden sürdürebilirsin.</p>
+      <%= button_to "Yeniden dene", game_session_narration_path(scene.game_session), class: "btn btn--secondary" %>
+    </div>
   </div>
 <% elsif scene.choosing? %>
   <%= render "scenes/choices", scene: scene %>

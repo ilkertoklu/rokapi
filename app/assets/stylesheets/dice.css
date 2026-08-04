@@ -1,0 +1,282 @@
+@layer components {
+  .dice,
+  .outcome {
+    position: relative;
+    flex: 1;
+    min-block-size: 0;
+    overflow-x: clip;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 2rem;
+    text-align: center;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset-block-start: 12%;
+      inset-inline-start: 50%;
+      translate: -50% 0;
+      inline-size: 330px;
+      block-size: 330px;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+  }
+
+  .dice::before {
+    background: radial-gradient(circle, var(--color-accent-soft), transparent 65%);
+  }
+
+  .dice__prompt {
+    max-inline-size: 18rem;
+    margin: 0 0 2rem;
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--color-ink-prose);
+  }
+
+  .d20 {
+    --d20-shape: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+    position: relative;
+    inline-size: 150px;
+    block-size: 150px;
+    flex: none;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset: -16px;
+      border-radius: 50%;
+      background: radial-gradient(circle, color-mix(in srgb, var(--color-accent) 28%, transparent), transparent 70%);
+      animation: ember-pulse 2.4s ease-in-out infinite;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--color-accent);
+      clip-path: var(--d20-shape);
+    }
+  }
+
+  .d20--settled::before {
+    animation: none;
+  }
+
+  .d20__face {
+    position: absolute;
+    inset: 3px;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-surface-sunken);
+    clip-path: var(--d20-shape);
+  }
+
+  .d20__die {
+    color: var(--color-ink-dim);
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .17em;
+  }
+
+  .d20__value {
+    font-family: var(--font-display);
+    font-size: 3.5rem;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--color-accent-bright);
+  }
+
+  .d20__reel {
+    --cell: 58px;
+    position: relative;
+    display: block;
+    inline-size: 110px;
+    block-size: var(--cell);
+    overflow: hidden;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(180deg, var(--color-surface-sunken), transparent 32%,
+        transparent 68%, var(--color-surface-sunken));
+      animation: reel-clear .25s var(--roll) forwards;
+    }
+  }
+
+  .d20__strip {
+    display: block;
+    animation: dice-roll var(--roll) cubic-bezier(.08, .6, .15, 1) forwards;
+
+    span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      block-size: var(--cell);
+      font-family: var(--font-display);
+      font-size: 3.25rem;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--color-accent-bright);
+    }
+  }
+
+  .dice__facts {
+    inline-size: 100%;
+    max-inline-size: 19rem;
+    display: flex;
+    flex-direction: column;
+    gap: .55rem;
+    margin: 1.6rem 0 0;
+
+    > div {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .75rem;
+      padding: .7rem .95rem;
+      background: var(--color-surface-sunken);
+      border: 1px solid var(--color-line-soft);
+      border-radius: 13px;
+    }
+
+    dt {
+      color: var(--color-ink-soft);
+      font-size: .72rem;
+      letter-spacing: .08em;
+    }
+
+    dd {
+      display: flex;
+      align-items: center;
+      gap: .55rem;
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 1rem;
+      color: var(--color-ink);
+    }
+
+    .target {
+      padding: .15rem .6rem;
+      border-radius: var(--radius-pill);
+      background: var(--color-accent-soft);
+      color: var(--color-accent);
+      font-family: var(--font-ui);
+      font-size: .8rem;
+      font-weight: 700;
+    }
+
+    .arrow {
+      color: var(--color-ink-soft);
+    }
+
+    .modifier {
+      color: var(--color-positive-bright);
+      font-weight: 700;
+    }
+  }
+
+  .dice__reason {
+    margin: .6rem 0 0;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: .82rem;
+    color: var(--color-ink-soft);
+  }
+
+  .outcome--success::before {
+    background: radial-gradient(circle, color-mix(in srgb, var(--color-positive) 18%, transparent), transparent 65%);
+  }
+
+  .outcome--failure::before {
+    background: radial-gradient(circle, color-mix(in srgb, var(--color-negative) 18%, transparent), transparent 65%);
+  }
+
+  .outcome--success .d20::after {
+    background: var(--color-positive);
+  }
+
+  .outcome--failure .d20::after {
+    background: var(--color-negative);
+  }
+
+  .outcome__math {
+    margin: 1rem 0 0;
+    color: var(--color-ink-soft);
+    font-size: .9rem;
+
+    strong {
+      color: var(--color-ink);
+    }
+  }
+
+  .outcome__verdict {
+    margin: .7rem 0 0;
+    font-family: var(--font-display);
+    font-size: 2.125rem;
+    font-weight: 600;
+    letter-spacing: .06em;
+  }
+
+  .outcome--success .outcome__verdict {
+    color: var(--color-positive-bright);
+  }
+
+  .outcome--failure .outcome__verdict {
+    color: var(--color-negative);
+  }
+
+  .outcome__resolution {
+    margin: 1.1rem 0 0;
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    line-height: 1.7;
+    color: var(--color-ink-prose);
+  }
+
+  .outcome__effect {
+    margin: 1.1rem 0 0;
+    padding: .5rem .95rem;
+    border-radius: var(--radius-pill);
+    font-size: .82rem;
+    font-weight: 700;
+  }
+
+  .outcome--success .outcome__effect {
+    background: color-mix(in srgb, var(--color-positive) 14%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-positive) 30%, transparent);
+    color: var(--color-positive-bright);
+  }
+
+  .outcome--failure .outcome__effect {
+    background: color-mix(in srgb, var(--color-negative) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-negative) 30%, transparent);
+    color: var(--color-negative-bright);
+  }
+
+  @keyframes dice-roll {
+    from {
+      translate: 0 0;
+    }
+
+    to {
+      translate: 0 calc(var(--cell) * (1 - var(--cells)));
+    }
+  }
+
+  @keyframes reel-clear {
+    to {
+      opacity: 0;
+    }
+  }
+}
