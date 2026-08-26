@@ -13,7 +13,7 @@ class StatusEffect < ApplicationRecord
     "#{name} (#{format('%+d', modifier)} zar, #{duration_label})"
   end
 
-  def tick!
+  def tick
     return if turns_left.nil?
 
     turns_left > 1 ? update!(turns_left: turns_left - 1) : destroy!

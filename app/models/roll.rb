@@ -44,7 +44,7 @@ class Roll < ApplicationRecord
     acknowledged_at.present?
   end
 
-  def acknowledge!
+  def acknowledge
     update! acknowledged_at: Time.current
     scene.game_session.continue_narration_later
   end
@@ -70,14 +70,14 @@ class Roll < ApplicationRecord
     Roll::NarrateJob.perform_later self
   end
 
-  def narration_failed!
+  def stall_narration
     update! failed_at: Time.current
   end
 
-  def resolve!(resolution:, effects:)
+  def resolve(resolution:, effects:)
     transaction do
       update! resolution: resolution, effects: effects, failed_at: nil
-      apply_effects!
+      apply_effects
     end
   end
 
@@ -99,10 +99,10 @@ class Roll < ApplicationRecord
       end
     end
 
-    def apply_effects!
+    def apply_effects
       character = player.character
-      character.status_effects.each(&:tick!)
-      character.adjust_hp! hp_change
+      character.status_effects.each(&:tick)
+      character.adjust_hp hp_change
 
       Array(effects.to_h["items_lost"]).each { |name| character.lose_item name }
       items_gained.each do |grant|

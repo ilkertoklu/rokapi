@@ -15,13 +15,13 @@ class Narrator
     data = response.content
     raise MalformedResponse, "structured output missing" unless data.is_a?(Hash)
 
-    roll.resolve! resolution: resolution_in(data), effects: effects_in(data, roll)
+    roll.resolve resolution: resolution_in(data), effects: effects_in(data, roll)
   end
 
-  def continue!
+  def continue
     return unless owed?
 
-    plan! if @game_session.story_bible.blank?
+    plan if @game_session.story_bible.blank?
     generate_scene
   end
 
@@ -33,7 +33,7 @@ class Narrator
       scene.played? && !scene.finale? && scene.roll&.acknowledged?
     end
 
-    def plan!
+    def plan
       response = new_chat(instructions: @briefing.plan_instructions).with_schema(BibleSchema).ask(@briefing.plan_prompt)
       record_call :plan, response
 
@@ -46,7 +46,7 @@ class Narrator
     def generate_scene
       scene = next_scene
       data, prose = ask_streaming(scene)
-      close_scene! scene, data, prose
+      close_scene scene, data, prose
     end
 
     def next_scene
@@ -67,7 +67,7 @@ class Narrator
         if data
           visible = relay(scene, reply.prose, visible)
         elsif (data = structure_in(reply))
-          open_scene! scene, data
+          open_scene scene, data
         end
       end
 
@@ -103,28 +103,28 @@ class Narrator
       raise MalformedResponse, "repair failed"
     end
 
-    def open_scene!(scene, data)
-      validate! scene, data
+    def open_scene(scene, data)
+      validate scene, data
       scene.update! title: data.fetch("title"), location: data["location"]
     rescue KeyError => error
       raise MalformedResponse, error.message
     end
 
-    def close_scene!(scene, data, prose)
+    def close_scene(scene, data, prose)
       finale = data["finale"] == true
 
       ApplicationRecord.transaction do
         scene.update! narration: prose, finale: finale, state: finale ? :played : :choosing
 
         if finale
-          @game_session.finish! outcome_in(data)
+          @game_session.finish outcome_in(data)
         else
           create_choices scene, Array(data["choices"])
         end
       end
     end
 
-    def validate!(scene, data)
+    def validate(scene, data)
       data.fetch("title")
       choices = Array(data["choices"])
 

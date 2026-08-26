@@ -80,7 +80,7 @@ class NarratorTest < ActiveSupport::TestCase
     stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
     assert_equal 1, @game_session.scenes.count, "the narrator must idle while the outcome is unread"
 
-    roll.acknowledge!
+    roll.acknowledge
     stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
 
     assert_equal 2, @game_session.scenes.count
@@ -120,7 +120,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert_empty characters(:ilker_hero).status_effects, "a brilliant success must not stack a bonus"
     assert_empty roll.reload.statuses_gained
 
-    roll.acknowledge!
+    roll.acknowledge
     stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
     roll = roll_with(value: 20)
     stub_llm(FakeChat.new(boon)) { roll.narrate_outcome }
@@ -156,7 +156,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "the narrator sees the inventory, the statuses and what was used" do
     characters(:ilker_hero).status_effects.create! name: "Kararlı", modifier: 1, turns_left: 2
     roll = play_first_scene
-    items(:sifa_iksiri).use!
+    items(:sifa_iksiri).use
 
     fake = FakeChat.new(OUTCOME_RESPONSE)
     stub_llm(fake) { roll.narrate_outcome }
@@ -171,9 +171,9 @@ class NarratorTest < ActiveSupport::TestCase
 
   test "a used item is settled by the outcome and not raised again by the next scene" do
     roll = play_first_scene
-    items(:sifa_iksiri).use!
+    items(:sifa_iksiri).use
     resolve roll
-    roll.acknowledge!
+    roll.acknowledge
 
     scene_call = FakeChat.new(SECOND_SCENE_RESPONSE)
     stub_llm(scene_call) { narrate }
@@ -188,8 +188,8 @@ class NarratorTest < ActiveSupport::TestCase
     stub_llm(FakeChat.new(SCENE_RESPONSE)) { narrate }
     scene = @game_session.current_scene
     choice = scene.choices.find_by!(stat: "strength")
-    choice.choose!
-    roll = choice.roll!(by: scene.active_player)
+    choice.choose
+    roll = choice.roll_dice(by: scene.active_player)
 
     assert_equal(-2, roll.status_modifier)
     assert_equal roll.value + 3 - 2, roll.total
@@ -276,7 +276,7 @@ class NarratorTest < ActiveSupport::TestCase
       stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
       roll = choose_and_roll(@game_session.current_scene)
       resolve roll
-      roll.acknowledge!
+      roll.acknowledge
     end
 
     scene_call = FakeChat.new(SECOND_SCENE_RESPONSE)
@@ -304,7 +304,7 @@ class NarratorTest < ActiveSupport::TestCase
     stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
     roll = roll_with(value: 2)
     resolve roll
-    roll.acknowledge!
+    roll.acknowledge
     @game_session.update! length: "short"
     @game_session.scenes.where(position: 2).update_all(position: @game_session.scene_budget)
 
@@ -354,7 +354,7 @@ class NarratorTest < ActiveSupport::TestCase
     characters(:ilker_hero).update! hp: 12
     play_and_continue
     stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
-    items(:sifa_iksiri).use!
+    items(:sifa_iksiri).use
     roll = choose_and_roll(@game_session.current_scene)
 
     fake = FakeChat.new(OUTCOME_RESPONSE)
@@ -366,7 +366,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "the healing hint rests while the character stands strong" do
     play_and_continue
     stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
-    items(:sifa_iksiri).use!
+    items(:sifa_iksiri).use
     roll = choose_and_roll(@game_session.current_scene)
 
     fake = FakeChat.new(OUTCOME_RESPONSE)
@@ -378,13 +378,13 @@ class NarratorTest < ActiveSupport::TestCase
 
   test "the healing hint pauses right after a find" do
     characters(:ilker_hero).update! hp: 5
-    items(:sifa_iksiri).use!
+    items(:sifa_iksiri).use
     roll = play_first_scene
 
     fake = FakeChat.new(%({"resolution": "Rafta bir tılsım buldun.",
       "effects": {"hp": 0, "items_gained": [{"name": "Eski tılsım", "kind": "quest", "description": "", "hp": 0, "uses": 0}]}}))
     stub_llm(fake) { roll.narrate_outcome }
-    roll.acknowledge!
+    roll.acknowledge
     stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
     next_roll = choose_and_roll(@game_session.current_scene)
 
@@ -412,13 +412,13 @@ class NarratorTest < ActiveSupport::TestCase
     2.times do
       roll = roll_strength(@game_session.current_scene)
       resolve roll
-      roll.acknowledge!
+      roll.acknowledge
       stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
     end
 
     roll = roll_strength(@game_session.current_scene)
     resolve roll
-    roll.acknowledge!
+    roll.acknowledge
 
     scene_call = FakeChat.new(SECOND_SCENE_RESPONSE)
     stub_llm(scene_call) { narrate }
@@ -524,7 +524,7 @@ class NarratorTest < ActiveSupport::TestCase
     end
     roll = build_roll
     resolve roll
-    roll.acknowledge!
+    roll.acknowledge
 
     scene_call = FakeChat.new(FINALE_RESPONSE)
     stub_llm(scene_call) { narrate }
@@ -535,7 +535,7 @@ class NarratorTest < ActiveSupport::TestCase
 
   private
     def narrate
-      Narrator.new(@game_session).continue!
+      Narrator.new(@game_session).continue
     end
 
     def resolve(roll)
@@ -550,26 +550,26 @@ class NarratorTest < ActiveSupport::TestCase
     def play_and_continue
       roll = play_first_scene
       resolve roll
-      roll.acknowledge!
+      roll.acknowledge
       roll
     end
 
     def choose_and_roll(scene)
       choice = scene.choices.first
-      choice.choose!
-      choice.roll!(by: scene.active_player)
+      choice.choose
+      choice.roll_dice(by: scene.active_player)
     end
 
     def roll_strength(scene)
       choice = scene.choices.find_by!(stat: "strength")
-      choice.choose!
-      choice.roll!(by: scene.active_player)
+      choice.choose
+      choice.roll_dice(by: scene.active_player)
     end
 
     def roll_with(value:)
       scene = @game_session.current_scene
       choice = scene.choices.find_by!(stat: "strength")
-      choice.choose!
+      choice.choose
       scene.played!
       choice.create_roll! player: scene.active_player, value: value, modifier: choice.modifier,
         status_modifier: 0, target: choice.difficulty
@@ -580,7 +580,7 @@ class NarratorTest < ActiveSupport::TestCase
         active_player: players(:ilker_solo_host), state: :choosing, title: "Ara"
       choice = scene.choices.create! label: "Devam", stat: "strength", modifier: 3,
         difficulty: 12, difficulty_label: "orta"
-      choice.choose!
-      choice.roll!(by: players(:ilker_solo_host))
+      choice.choose
+      choice.roll_dice(by: players(:ilker_solo_host))
     end
 end

@@ -44,7 +44,7 @@ class Character < ApplicationRecord
     (hp * 100.0 / max_hp).round
   end
 
-  def adjust_hp!(delta)
+  def adjust_hp(delta)
     update! hp: (hp + delta).clamp(0, max_hp) unless delta.zero?
   end
 

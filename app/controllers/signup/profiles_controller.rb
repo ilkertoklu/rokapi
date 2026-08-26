@@ -6,7 +6,7 @@ class Signup::ProfilesController < ApplicationController
 
   def create
     if terms_accepted?
-      Current.user.complete_profile! name: name
+      Current.user.complete_profile name: name
       redirect_to signup_welcome_path
     else
       redirect_to new_signup_profile_path, alert: "Devam etmek için koşulları kabul etmelisin."

@@ -8,7 +8,7 @@ class GameSessions::CharactersController < ApplicationController
   end
 
   def create
-    @player.ready_up!(character_params)
+    @player.ready_up(character_params)
     redirect_to game_session_path(@game_session)
   rescue ActiveRecord::RecordInvalid
     redirect_to new_game_session_character_path(@game_session), alert: "Karakter geçersiz. Seçimlerini ve puan dağılımını kontrol et."

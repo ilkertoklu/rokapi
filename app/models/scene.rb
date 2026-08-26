@@ -29,10 +29,10 @@ class Scene < ApplicationRecord
     chosen_choice&.roll
   end
 
-  def roll!(by:)
+  def roll_dice(by:)
     raise OutOfTurn unless rolling?
 
-    chosen_choice.roll!(by: by)
+    chosen_choice.roll_dice(by: by)
   end
 
   def counter

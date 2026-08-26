@@ -18,11 +18,11 @@ class GameSessionTest < ActiveSupport::TestCase
   test "starts when every player is ready" do
     game_session = game_sessions(:ilker_solo)
 
-    game_session.start_when_ready!
+    game_session.start_when_ready
     assert game_session.lobby?
 
     game_session.players.sole.update!(ready: true)
-    game_session.start_when_ready!
+    game_session.start_when_ready
     assert game_session.reload.playing?
   end
 
@@ -32,8 +32,8 @@ class GameSessionTest < ActiveSupport::TestCase
       state: :choosing, title: "Eski Han"
     choice = scene.choices.create! label: "Defteri oku", stat: "intelligence",
       modifier: -1, difficulty: 10, difficulty_label: "kolay"
-    choice.choose!
-    choice.roll!(by: players(:ilker_solo_host))
+    choice.choose
+    choice.roll_dice(by: players(:ilker_solo_host))
     LlmCall.record! game_session: game_session, purpose: :scene,
       response: RubyLLM::Message.new(role: :assistant, content: "x", model_id: "gpt-5-mini",
                                      input_tokens: 10, output_tokens: 10)

@@ -16,12 +16,12 @@ class Item < ApplicationRecord
     instant? && uses_left.to_i.positive?
   end
 
-  def use!
+  def use
     transaction do
       raise Unusable if self.class.usable.where(id: id).update_all([ "uses_left = uses_left - 1, used_at = ?", Time.current ]).zero?
 
       reload
-      character.adjust_hp! hp_effect
+      character.adjust_hp hp_effect
     end
   end
 

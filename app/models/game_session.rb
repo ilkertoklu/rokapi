@@ -32,7 +32,7 @@ class GameSession < ApplicationRecord
     players.find_by(user: user)
   end
 
-  def start_when_ready!
+  def start_when_ready
     update! state: :playing if lobby? && players.where(ready: false).none?
   end
 
@@ -52,8 +52,8 @@ class GameSession < ApplicationRecord
     rolls.unseen.order(:id).first
   end
 
-  def acknowledge_roll!
-    unseen_roll&.acknowledge!
+  def acknowledge_roll
+    unseen_roll&.acknowledge
   end
 
   def stalled_work
@@ -69,7 +69,7 @@ class GameSession < ApplicationRecord
       attributes: { method: :morph }
   end
 
-  def finish!(outcome)
+  def finish(outcome)
     update! state: :finished, outcome: outcome, ended_at: Time.current
   end
 
@@ -82,18 +82,18 @@ class GameSession < ApplicationRecord
   end
 
   def continue_narration
-    Narrator.new(self).continue!
+    Narrator.new(self).continue
   end
 
   def continue_narration_later
     Scene::GenerateJob.perform_later self
   end
 
-  def narration_failed!
+  def stall_narration
     current_scene&.failed!
   end
 
-  def resume_narration!
+  def resume_narration
     case (stuck = stalled_work)
     when Roll
       stuck.narrate_outcome_later

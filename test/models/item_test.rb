@@ -9,7 +9,7 @@ class ItemTest < ActiveSupport::TestCase
   test "using a potion heals up to max hp and spends a use" do
     @character.update! hp: 20
 
-    @potion.use!
+    @potion.use
 
     assert_equal 27, @character.reload.hp
     assert_equal 0, @potion.uses_left
@@ -17,7 +17,7 @@ class ItemTest < ActiveSupport::TestCase
   end
 
   test "healing never exceeds max hp" do
-    @potion.use!
+    @potion.use
 
     assert_equal @character.max_hp, @character.reload.hp
   end
@@ -25,17 +25,17 @@ class ItemTest < ActiveSupport::TestCase
   test "a spent or passive item cannot be used" do
     @potion.update! uses_left: 0
 
-    assert_raises(Item::Unusable) { @potion.use! }
-    assert_raises(Item::Unusable) { items(:uzun_kilic).use! }
+    assert_raises(Item::Unusable) { @potion.use }
+    assert_raises(Item::Unusable) { items(:uzun_kilic).use }
   end
 
   test "a stale copy cannot double-spend the last use" do
     @character.update! hp: 10
     stale = Item.find(@potion.id)
 
-    @potion.use!
+    @potion.use
 
-    assert_raises(Item::Unusable) { stale.use! }
+    assert_raises(Item::Unusable) { stale.use }
     assert_equal 0, stale.reload.uses_left
     assert_equal 17, @character.reload.hp
   end
@@ -47,7 +47,7 @@ class ItemTest < ActiveSupport::TestCase
   end
 
   test "spent items drop out of the carried inventory but stay on record" do
-    @potion.use!
+    @potion.use
 
     assert_not_includes @character.items.carried, @potion
     assert_includes @character.items, @potion
@@ -58,7 +58,7 @@ class ItemTest < ActiveSupport::TestCase
     assert_includes @character.items.healing, @potion
     assert_not_includes @character.items.healing, items(:uzun_kilic)
 
-    @potion.use!
+    @potion.use
     assert_empty @character.items.healing
   end
 

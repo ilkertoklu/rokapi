@@ -93,7 +93,7 @@ class CharacterTest < ActiveSupport::TestCase
   test "losing takes carried items and statuses, never spent history" do
     character = characters(:ilker_hero)
     character.status_effects.create! name: "Yorgun", modifier: -1, expires_when: "dinlenene dek"
-    items(:sifa_iksiri).use!
+    items(:sifa_iksiri).use
 
     character.lose_item "Han defteri"
     character.lose_item "Şifa iksiri"
@@ -107,10 +107,10 @@ class CharacterTest < ActiveSupport::TestCase
   test "damage and healing stay within 0 and max hp" do
     character = characters(:ilker_hero)
 
-    character.adjust_hp!(-99)
+    character.adjust_hp(-99)
     assert_equal 0, character.hp
 
-    character.adjust_hp!(99)
+    character.adjust_hp(99)
     assert_equal character.max_hp, character.hp
   end
 

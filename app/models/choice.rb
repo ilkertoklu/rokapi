@@ -13,7 +13,7 @@ class Choice < ApplicationRecord
     chosen_at.present?
   end
 
-  def choose!
+  def choose
     transaction do
       raise Scene::OutOfTurn unless scene.choosing?
 
@@ -22,7 +22,7 @@ class Choice < ApplicationRecord
     end
   end
 
-  def roll!(by:)
+  def roll_dice(by:)
     transaction do
       raise Scene::OutOfTurn unless scene.rolling? && chosen?
 

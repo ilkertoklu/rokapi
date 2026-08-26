@@ -135,7 +135,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     post game_session_chosen_choice_path(game_session, choice_id: choice.id)
     post game_session_roll_path(game_session)
     clear_enqueued_jobs
-    game_session.rolls.sole.narration_failed!
+    game_session.rolls.sole.stall_narration
 
     get game_session_path(game_session)
     assert_select ".stalled"

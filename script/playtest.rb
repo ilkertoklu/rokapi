@@ -49,7 +49,7 @@ def start_game(adventure_title, tone, length, race, klass, background)
   Current.session = Session.new(user: user)
   adventure = adventure_title == "surprise" ? nil : Adventure.find_by!(title: adventure_title)
   game_session = GameSession.create!(mode: :solo, adventure: adventure, tone: tone, length: length, creator: user)
-  timed("plan+sahne1") { game_session.players.first.ready_up!(race: race, klass: klass, background: background, stats: allocate_stats(klass)) }
+  timed("plan+sahne1") { game_session.players.first.ready_up(race: race, klass: klass, background: background, stats: allocate_stats(klass)) }
   game_session.reload
   puts "SESSION #{game_session.id} — #{game_session.title} (#{RubyLLM.config.default_model})"
   puts "KİTAP: #{JSON.pretty_generate(game_session.story_bible)}" if ENV["SHOW_BIBLE"]
@@ -59,15 +59,15 @@ end
 
 def take(game_session, choice)
   puts "\n>>> SEÇİM: #{choice.label}"
-  choice.choose!
+  choice.choose
   play_out game_session
 end
 
 def play_out(game_session)
   scene = game_session.current_scene
-  roll = timed("çözümleme") { scene.roll!(by: scene.active_player) }
+  roll = timed("çözümleme") { scene.roll_dice(by: scene.active_player) }
   show_roll roll.reload
-  timed("sahne") { roll.acknowledge! }
+  timed("sahne") { roll.acknowledge }
   show_scene game_session.reload.current_scene
 end
 
@@ -98,7 +98,7 @@ when "drink"
   game_session = load_game(ARGV[0])
   character = game_session.players.first.character
   item = character.items.healing.first || abort("şifa eşyası yok")
-  item.use!
+  item.use
   puts "#{item.name} içildi → CAN #{character.reload.hp}/#{character.max_hp}"
 when "resume"
   catch_up load_game(ARGV[0])
@@ -115,7 +115,7 @@ when "auto"
     scene = game_session.current_scene
     character = scene.active_player.character
     if character.hp_percentage < 50 && (potion = character.items.healing.first)
-      potion.use!
+      potion.use
       puts "\n>>> #{potion.name} içildi → CAN #{character.reload.hp}/#{character.max_hp}"
     end
 
