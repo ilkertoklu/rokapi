@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_07_120100) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_26_201642) do
   create_table "adventures", force: :cascade do |t|
     t.text "brief", null: false
     t.datetime "created_at", null: false
@@ -50,8 +50,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_07_120100) do
 
   create_table "game_sessions", force: :cascade do |t|
     t.integer "adventure_id"
-    t.text "context_summary"
-    t.integer "context_summary_position", default: 0, null: false
     t.datetime "created_at", null: false
     t.integer "creator_id", null: false
     t.datetime "ended_at"
@@ -59,7 +57,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_07_120100) do
     t.string "mode", null: false
     t.string "outcome"
     t.string "state", default: "lobby", null: false
-    t.text "story_outline"
+    t.json "story_bible"
     t.string "tone", null: false
     t.datetime "updated_at", null: false
     t.index ["adventure_id"], name: "index_game_sessions_on_adventure_id"

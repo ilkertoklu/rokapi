@@ -7,7 +7,7 @@ class Narrator::OutcomeSchema < RubyLLM::Schema
         string :name, description: "Eşyanın Türkçe adı"
         string :kind, enum: %w[instant passive quest],
           description: "instant: kullanılınca etki eder ve tükenir; passive: taşındığı sürece hikâyede iş görür; quest: görev eşyası"
-        string :description, description: "Eşyanın ne işe yaradığını söyleyen 2-4 kelime; instant için boş bırak"
+        string :description, description: "Eşyanın ne işe yaradığını söyleyen kısa bir yüklem, örn. 'kilitleri açar', 'köprüye bağlanır'; instant için boş bırak"
         integer :hp, description: "instant eşya kullanılınca cana etkisi; diğer türlerde 0"
         integer :uses, description: "instant eşyanın kaç kez kullanılabileceği; diğer türlerde 0"
       end

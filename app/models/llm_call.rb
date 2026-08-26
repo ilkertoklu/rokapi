@@ -1,7 +1,7 @@
 class LlmCall < ApplicationRecord
   belongs_to :game_session
 
-  enum :purpose, %w[scene outcome summary repair].index_by(&:itself)
+  enum :purpose, %w[plan scene outcome repair].index_by(&:itself)
 
   def self.record!(game_session:, purpose:, response:)
     create!(

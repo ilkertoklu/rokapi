@@ -10,7 +10,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
   test "playing a solo adventure from setup to victory" do
     game_session = nil
 
-    stub_llm(FakeChat.new(SCENE_RESPONSE)) do
+    stub_llm(FakeChat.new(PLAN_RESPONSE), FakeChat.new(SCENE_RESPONSE)) do
       perform_enqueued_jobs { game_session = start_playing }
     end
 
@@ -53,7 +53,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".highlights", text: /Zar atıldı/
     assert_select "[data-controller=share][data-share-text-value*=?]", "Dönüş — Zafer"
     assert_select "[data-share-text-value*=?]", "Kayıp Kervan"
-    assert_equal %w[scene outcome scene], game_session.llm_calls.order(:id).pluck(:purpose)
+    assert_equal %w[plan scene outcome scene], game_session.llm_calls.order(:id).pluck(:purpose)
     assert_operator game_session.llm_calls.sum(:cost_in_microdollars), :>, 0
   end
 
@@ -114,7 +114,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".outcome__effect", text: "-4 Can"
     assert_select ".action-panel", count: 0
     assert_equal 1, game_session.scenes.count
-    assert_equal %w[scene outcome], game_session.llm_calls.order(:id).pluck(:purpose)
+    assert_equal %w[plan scene outcome], game_session.llm_calls.order(:id).pluck(:purpose)
 
     post game_session_acknowledgement_path(game_session)
     get game_session_path(game_session)
@@ -158,7 +158,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     get game_session_path(game_session)
     assert_select ".stalled"
 
-    stub_llm(FakeChat.new(SCENE_RESPONSE)) do
+    stub_llm(FakeChat.new(PLAN_RESPONSE), FakeChat.new(SCENE_RESPONSE)) do
       perform_enqueued_jobs do
         post game_session_narration_path(game_session)
       end
@@ -257,7 +257,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
 
     def play_to_choices
       start_playing.tap do |game_session|
-        stub_llm(FakeChat.new(SCENE_RESPONSE)) { perform_enqueued_jobs }
+        stub_llm(FakeChat.new(PLAN_RESPONSE), FakeChat.new(SCENE_RESPONSE)) { perform_enqueued_jobs }
         assert game_session.current_scene.choosing?
       end
     end

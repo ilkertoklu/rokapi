@@ -20,6 +20,13 @@ module LlmStubbing
 
   OUTCOME_RESPONSE = %({"resolution": "Çekmece açıldı ama elini kestin.", "effects": {"hp": -4}})
 
+  PLAN_RESPONSE = %({"title": "Boran Tuzu", "premise": "Akçabük kışa tuzsuz giriyor.", "personal_stake": "Şevket Çavuş eski bir borç.",
+    "antagonist": {"name": "Nail Aral", "want": "Köprüyü korumak.", "method": "Konakları kullanıyor.", "first_sign": "Kesik kayışlar."},
+    "ally": {"name": "Elif", "want": "Ağabeyini bulmak.", "secret": "Nail babası."},
+    "twist": "Pusu değil, uyarı.",
+    "beats": ["Katır geri dönüyor.", "İzler taşa kırılıyor.", "Yaralı sürücü.", "Elif itiraf ediyor.", "Köprü ayağı yarık.", "Nail ile yüz yüze.", "Kervan hafifletilip geçiyor."],
+    "finale_question": "Tuz köye yetişecek mi?", "victory": "Yeterli tuz iniyor.", "defeat": "Köprü kopuyor."})
+
   FINALE_RESPONSE = <<~TEXT
     ```json
     {"title": "Dönüş", "location": "Akçabük", "choices": [], "finale": true, "outcome": "victory"}
@@ -76,7 +83,14 @@ class FakeChat
 
     message = RubyLLM::Message.new(role: :assistant, content: @text, model_id: @model_id,
                                    input_tokens: @input_tokens, output_tokens: @output_tokens)
-    message.content = JSON.parse(@text) if @schema
+    message.content = structured_content if @schema
     message
   end
+
+  private
+    def structured_content
+      JSON.parse(@text)
+    rescue JSON::ParserError
+      @text
+    end
 end

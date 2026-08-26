@@ -25,6 +25,7 @@ class Scene::GenerateJobTest < ActiveSupport::TestCase
 
     rejected = Object.new
     def rejected.with_instructions(*) = self
+    def rejected.with_schema(*) = self
     def rejected.ask(*) = raise RubyLLM::UnauthorizedError.new(nil, "bad key")
 
     stub_llm(rejected) do

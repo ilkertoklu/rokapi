@@ -110,6 +110,23 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal [ "Sırılsıklam" ], roll.statuses_gained.pluck("name")
   end
 
+  test "a positive status is earned only by a natural twenty" do
+    stub_llm(FakeChat.new(SCENE_RESPONSE)) { narrate }
+    boon = %({"resolution": "Kapı açıldı.", "effects": {"hp": 0,
+      "statuses_gained": [{"name": "Sağlam Tutuş", "modifier": 2, "turns": 2, "expires_when": ""}]}})
+
+    roll = roll_with(value: 19)
+    stub_llm(FakeChat.new(boon)) { roll.narrate_outcome }
+    assert_empty characters(:ilker_hero).status_effects, "a brilliant success must not stack a bonus"
+    assert_empty roll.reload.statuses_gained
+
+    roll.acknowledge!
+    stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
+    roll = roll_with(value: 20)
+    stub_llm(FakeChat.new(boon)) { roll.narrate_outcome }
+    assert characters(:ilker_hero).status_effects.exists?(name: "Sağlam Tutuş")
+  end
+
   test "a resolution may replace an item it takes away" do
     roll = play_first_scene
 
@@ -215,22 +232,97 @@ class NarratorTest < ActiveSupport::TestCase
     assert @game_session.scenes.sole.narrating?
   end
 
-  test "the first scene's plan becomes the hidden story skeleton" do
-    planned = SCENE_RESPONSE.sub('{"title": "Eski Han"',
-      '{"plan": "Kervanı Boran Loncası kaçırdı; asma köprü tuzaklı.", "title": "Eski Han"')
-    stub_llm(FakeChat.new(planned)) { narrate }
+  test "the story bible is written before the first scene" do
+    @game_session.update! story_bible: nil
+    plan_call = FakeChat.new(PLAN_RESPONSE)
+    scene_call = FakeChat.new(SCENE_RESPONSE)
 
-    assert_equal "Kervanı Boran Loncası kaçırdı; asma köprü tuzaklı.", @game_session.reload.story_outline
+    stub_llm(plan_call, scene_call) { narrate }
 
-    roll = choose_and_roll(@game_session.current_scene)
-    resolve roll
-    roll.acknowledge!
+    assert_includes plan_call.prompt, "SAHNE SAYISI: 7"
+    assert_includes plan_call.prompt, "Savaşçı"
+    assert_equal "Nail Aral", @game_session.reload.story_bible.dig("antagonist", "name")
+    assert_equal %w[plan scene], @game_session.llm_calls.order(:id).pluck(:purpose)
+    assert @game_session.current_scene.choosing?
+  end
+
+  test "a bible that never arrives leaves the story unstarted" do
+    @game_session.update! story_bible: nil
+
+    stub_llm(FakeChat.new("Kitap yok.")) do
+      assert_raises(Narrator::MalformedResponse) { narrate }
+    end
+
+    assert_nil @game_session.reload.story_bible
+    assert_empty @game_session.scenes
+  end
+
+  test "a written bible is not written twice" do
+    scene_call = FakeChat.new(SCENE_RESPONSE)
+
+    stub_llm(scene_call) { narrate }
+
+    assert_equal %w[scene], @game_session.llm_calls.pluck(:purpose)
+    assert_includes scene_call.prompt, "HİKÂYE KİTABI"
+    assert_includes scene_call.prompt, "Nail Aral"
+    assert_includes scene_call.prompt, "VURUŞ: Meydana kesik kayışlı katır dönüyor."
+    assert_includes scene_call.prompt, "GİRİŞ:"
+  end
+
+  test "the whole story so far reaches the narrator unabridged" do
+    play_and_continue
+
+    3.times do
+      stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
+      roll = choose_and_roll(@game_session.current_scene)
+      resolve roll
+      roll.acknowledge!
+    end
 
     scene_call = FakeChat.new(SECOND_SCENE_RESPONSE)
     stub_llm(scene_call) { narrate }
 
-    assert_includes scene_call.prompt, "HİKÂYE İSKELETİ"
-    assert_includes scene_call.prompt, "Boran Loncası"
+    assert_includes scene_call.prompt, "[1] Eski Han @ Akçabük"
+    assert_includes scene_call.prompt, "[4] Ahır @ Akçabük"
+    assert_includes scene_call.prompt, "Çekmece açıldı ama elini kestin."
+    assert_includes scene_call.prompt, "VURUŞ: Köprü ayağındaki yarık görülüyor."
+    assert_equal 4, scene_call.prompt.scan("→ Seçim:").size
+    assert_empty @game_session.llm_calls.where(purpose: "repair")
+  end
+
+  test "the surprise adventure takes its name from the bible" do
+    @game_session.update! adventure: nil
+    assert_equal "Kayıp Kervan", @game_session.title
+
+    @game_session.update! story_bible: nil
+    assert_equal "Sürpriz macera", @game_session.title
+  end
+
+  test "the finale is told the tally of the dice" do
+    play_and_continue
+
+    stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
+    roll = roll_with(value: 2)
+    resolve roll
+    roll.acknowledge!
+    @game_session.update! length: "short"
+    @game_session.scenes.where(position: 2).update_all(position: @game_session.scene_budget)
+
+    scene_call = FakeChat.new(FINALE_RESPONSE)
+    stub_llm(scene_call) { narrate }
+
+    assert_match(/ZAR BİLANÇOSU: \d+ başarı, \d+ başarısızlık; doruk zarı AĞIR BAŞARISIZLIK/, scene_call.prompt)
+    assert @game_session.reload.finished?
+  end
+
+  test "the easy and hard stats of recent scenes are steered away from" do
+    play_and_continue
+
+    scene_call = FakeChat.new(SECOND_SCENE_RESPONSE)
+    stub_llm(scene_call) { narrate }
+
+    assert_includes scene_call.prompt, %(ÇEŞİTLİLİK: Son sahnelerin seçenekleri: "Tozlu defteri oku", "Çekmeceyi zorla", "Ahırı sessizce dinle".)
+    assert_includes scene_call.prompt, "Kolay seçenek Zekâ, zor seçenek — statındaydı"
   end
 
   test "a downed character forces the defeat finale" do
@@ -329,7 +421,7 @@ class NarratorTest < ActiveSupport::TestCase
     roll.acknowledge!
 
     scene_call = FakeChat.new(SECOND_SCENE_RESPONSE)
-    stub_llm(scene_call, FakeChat.new("özet")) { narrate }
+    stub_llm(scene_call) { narrate }
 
     assert_match(/TEKRAR:.*Güç/, scene_call.prompt)
   end
@@ -435,49 +527,10 @@ class NarratorTest < ActiveSupport::TestCase
     roll.acknowledge!
 
     scene_call = FakeChat.new(FINALE_RESPONSE)
-    stub_llm(scene_call, FakeChat.new("özet")) { narrate }
+    stub_llm(scene_call) { narrate }
 
     assert_includes scene_call.prompt, "FİNAL"
     assert @game_session.reload.finished?
-  end
-
-  test "each scene ages out of the recent window exactly once" do
-    play_and_continue
-
-    4.times do
-      stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
-      roll = choose_and_roll(@game_session.current_scene)
-      resolve roll
-      roll.acknowledge!
-    end
-
-    assert_equal 3, @game_session.reload.context_summary_position
-    assert_equal 3, @game_session.llm_calls.summary.count
-  end
-
-  test "summarising never delays the scene the player is waiting for" do
-    play_and_continue
-    3.times do
-      stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
-      roll = choose_and_roll(@game_session.current_scene)
-      resolve roll
-      roll.acknowledge!
-    end
-    summaries_before = @game_session.llm_calls.summary.count
-    assert_operator summaries_before, :>, 0, "the fixture must be deep enough to summarise"
-
-    seen = []
-    fake = FakeChat.split_at_structure(SECOND_SCENE_RESPONSE) do
-      seen << { scenes: @game_session.scenes.count, summaries: @game_session.llm_calls.summary.count }
-    end
-
-    stub_llm(fake) { narrate }
-
-    assert_equal @game_session.scenes.count, seen.first[:scenes],
-      "the scene row must exist before the narrator starts writing"
-    assert_equal summaries_before, seen.first[:summaries],
-      "summarising must not run ahead of the scene the player is waiting for"
-    assert_operator @game_session.llm_calls.summary.count, :>, summaries_before
   end
 
   private

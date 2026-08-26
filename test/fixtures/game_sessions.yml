@@ -5,6 +5,31 @@ ilker_solo:
   tone: balanced
   length: short
   state: lobby
+  story_bible:
+    title: Kayıp Kervan
+    premise: Akçabük kışa tuzsuz giriyor; kervan Boranlı Geçit'te kayıp.
+    personal_stake: Kervan başı Şevket bir kuşatmada bölüğe erzak taşımıştı.
+    antagonist:
+      name: Nail Aral
+      want: Köprü çökmeden kervanı durdurmak.
+      method: Konakları ve yan patikaları kullanıyor.
+      first_sign: Kesik kayışlı katır.
+    ally:
+      name: Elif
+      want: Ağabeyini bulmak.
+      secret: Nail babası.
+    twist: Pusu değil, uyarı.
+    beats:
+      - Meydana kesik kayışlı katır dönüyor.
+      - Dere kıyısında izler taşa kırılıyor.
+      - Karaocak Konağı'nda yaralı sürücü.
+      - Sarnıçlı Konak'ta Elif itiraf ediyor.
+      - Köprü ayağındaki yarık görülüyor.
+      - Nail ile köprü başında yüz yüze.
+      - Kervan hafifletilip geçiyor ya da köprü kopuyor.
+    finale_question: Tuz köye yetişecek mi?
+    victory: Yeterli tuz köye iniyor.
+    defeat: Köprü kopuyor.
 
 ilker_without_character:
   adventure: golun_sirri

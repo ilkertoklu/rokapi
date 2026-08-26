@@ -1,8 +1,6 @@
 class Narrator
   class MalformedResponse < StandardError; end
 
-  RECENT_SCENES = 2
-
   def initialize(game_session)
     @game_session = game_session
     @briefing = Briefing.new(game_session)
@@ -17,11 +15,14 @@ class Narrator
     data = response.content
     raise MalformedResponse, "structured output missing" unless data.is_a?(Hash)
 
-    roll.resolve! resolution: resolution_in(data), effects: effects_in(data)
+    roll.resolve! resolution: resolution_in(data), effects: effects_in(data, roll)
   end
 
   def continue!
-    generate_scene if owed?
+    return unless owed?
+
+    plan! if @game_session.story_bible.blank?
+    generate_scene
   end
 
   private
@@ -32,11 +33,20 @@ class Narrator
       scene.played? && !scene.finale? && scene.roll&.acknowledged?
     end
 
+    def plan!
+      response = new_chat(instructions: @briefing.plan_instructions).with_schema(BibleSchema).ask(@briefing.plan_prompt)
+      record_call :plan, response
+
+      bible = response.content
+      raise MalformedResponse, "story bible missing" unless bible.is_a?(Hash) && bible["beats"].present?
+
+      @game_session.update! story_bible: bible
+    end
+
     def generate_scene
       scene = next_scene
       data, prose = ask_streaming(scene)
       close_scene! scene, data, prose
-      fold_context_summary
     end
 
     def next_scene
@@ -104,7 +114,6 @@ class Narrator
       finale = data["finale"] == true
 
       ApplicationRecord.transaction do
-        @game_session.update! story_outline: data["plan"] if scene.position == 1 && data["plan"].present?
         scene.update! narration: prose, finale: finale, state: finale ? :played : :choosing
 
         if finale
@@ -135,12 +144,18 @@ class Narrator
       data["resolution"].presence || raise(MalformedResponse, "resolution missing")
     end
 
-    def effects_in(data)
+    def effects_in(data, roll)
       effects = data["effects"].to_h
       grants = Array(effects["items_gained"]) + Array(effects["statuses_gained"])
       raise MalformedResponse, "nameless grant" if grants.any? { |grant| grant["name"].blank? }
 
-      effects
+      effects.merge "statuses_gained" => earned_statuses(Array(effects["statuses_gained"]), roll)
+    end
+
+    def earned_statuses(statuses, roll)
+      return statuses if roll.grade == :critical
+
+      statuses.reject { |status| status["modifier"].to_i.positive? }
     end
 
     def outcome_in(data)
@@ -164,24 +179,6 @@ class Narrator
           difficulty_reason: choice["difficulty_reason"]
         )
       end
-    end
-
-    def fold_context_summary
-      aged_out = scenes_aged_out_of_recent_window
-      return if aged_out.empty?
-
-      response = new_chat(model: helper_model).ask(@briefing.summary_prompt(aged_out))
-      record_call :summary, response
-      @game_session.update! context_summary: response.content.to_s,
-                            context_summary_position: aged_out.last.position
-    end
-
-    def scenes_aged_out_of_recent_window
-      recent = @game_session.scenes.written.chronological.last(RECENT_SCENES)
-      return [] if recent.size < RECENT_SCENES
-
-      @game_session.scenes.written.chronological
-        .where(position: (@game_session.context_summary_position + 1)...recent.first.position).to_a
     end
 
     def helper_model

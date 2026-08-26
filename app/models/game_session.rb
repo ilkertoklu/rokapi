@@ -25,7 +25,7 @@ class GameSession < ApplicationRecord
   after_update_commit :continue_narration_later, if: -> { playing? && state_previously_changed? }
 
   def title
-    adventure&.title || "Sürpriz macera"
+    adventure&.title || story_bible&.dig("title").presence || "Sürpriz macera"
   end
 
   def player_for(user)
