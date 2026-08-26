@@ -1,3 +1,14 @@
-<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="256" cy="256" r="256" fill="red"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="112" fill="#1A1610"/>
+  <rect x="7" y="7" width="498" height="498" rx="106" fill="none" stroke="#9A8C78" stroke-opacity="0.4" stroke-width="10"/>
+  <circle cx="256" cy="316" r="152" fill="#E08C4A" opacity="0.10"/>
+  <polygon points="256,52 294,112 294,292 218,292 218,112" fill="#EFE7D8"/>
+  <polygon points="256,52 294,112 294,292 256,292" fill="#CFC2AD"/>
+  <line x1="256" y1="124" x2="256" y2="282" stroke="#1A1610" stroke-opacity="0.5" stroke-width="10" stroke-linecap="round"/>
+  <path d="M116 300 L144 276 L368 276 L396 300 L372 338 L140 338 Z" fill="#E08C4A"/>
+  <path d="M140 338 L372 338 L364 318 L148 318 Z" fill="#B86A32"/>
+  <rect x="234" y="338" width="44" height="74" fill="#6A5F4D"/>
+  <path d="M234 358 L278 350 M234 378 L278 370 M234 398 L278 390" stroke="#1A1610" stroke-opacity="0.6" stroke-width="7"/>
+  <polygon points="256,404 290,438 256,472 222,438" fill="#E08C4A"/>
+  <polygon points="256,424 270,438 256,452 242,438" fill="#1A1610"/>
 </svg>
