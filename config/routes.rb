@@ -16,6 +16,10 @@ Rails.application.routes.draw do
       resource :roll, only: :create
       resource :acknowledgement, only: :create
       resource :narration, only: :create
+
+      resources :items, only: [] do
+        resource :use, only: :create, module: :items
+      end
     end
   end
 

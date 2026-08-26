@@ -16,6 +16,9 @@
     <button class="character-button" data-action="sheet#open">
       <%= render "glyph", name: "person" %>
       <span>Karakterim</span>
+      <% if (ready = scene.active_player.character.items.usable.count).positive? %>
+        <span class="character-button__hint"><%= ready %> eşya hazır</span>
+      <% end %>
     </button>
   </div>
 </details>

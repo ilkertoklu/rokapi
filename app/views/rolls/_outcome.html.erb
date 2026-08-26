@@ -7,12 +7,27 @@
     = <strong><%= roll.total %></strong> · hedef <%= roll.target %> · <%= roll.choice.difficulty_label.capitalize %>
   </p>
 
-  <p class="outcome__verdict"><%= roll.success? ? "BAŞARILI" : "BAŞARISIZ" %></p>
+  <p class="outcome__verdict"><%= outcome_verdict(roll) %></p>
 
   <p class="outcome__resolution"><%= roll.resolution %></p>
 
   <% if roll.hp_change.nonzero? %>
     <p class="outcome__effect"><%= format("%+d", roll.hp_change) %> Can</p>
+  <% end %>
+
+  <% roll.items_gained.each do |gain| %>
+    <p class="outcome__gain">
+      <span class="outcome__gain-icon"><%= render "glyph", name: item_glyph(gain["kind"]) %></span>
+      <span class="outcome__gain-label overline">Envantere eklendi</span>
+      <span class="outcome__gain-name"><%= gain["name"] %></span>
+    </p>
+  <% end %>
+
+  <% roll.statuses_gained.each do |status| %>
+    <p class="outcome__gain">
+      <span class="outcome__gain-label overline">Statü</span>
+      <span class="outcome__gain-name"><%= status["name"] %></span>
+    </p>
   <% end %>
 </div>
 

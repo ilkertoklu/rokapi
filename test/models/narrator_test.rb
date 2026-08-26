@@ -88,6 +88,262 @@ class NarratorTest < ActiveSupport::TestCase
     assert @game_session.current_scene.choosing?
   end
 
+  test "outcome effects reach the inventory and the statuses" do
+    character = characters(:ilker_hero)
+    character.status_effects.create! name: "Yorgun", modifier: -1, expires_when: "dinlenene dek"
+    roll = play_first_scene
+
+    fake = FakeChat.new(%({"resolution": "Sandıkta bir merhem buldun ama sırılsıklam oldun.",
+      "effects": {"hp": -2,
+        "items_gained": [{"name": "Sarı merhem", "kind": "instant", "description": "", "hp": 5, "uses": 1}],
+        "items_lost": ["Han defteri"],
+        "statuses_gained": [{"name": "Sırılsıklam", "modifier": -2, "turns": 2, "expires_when": ""}],
+        "statuses_lost": ["Yorgun"]}}))
+    stub_llm(fake) { roll.narrate_outcome }
+
+    assert_equal 31 - 2, character.reload.hp
+    assert character.items.usable.exists?(name: "Sarı merhem")
+    assert_not character.items.exists?(name: "Han defteri")
+    assert_equal 2, character.status_effects.find_by!(name: "Sırılsıklam").turns_left
+    assert_not character.status_effects.exists?(name: "Yorgun")
+    assert_equal [ "Sarı merhem" ], roll.reload.items_gained.pluck("name")
+    assert_equal [ "Sırılsıklam" ], roll.statuses_gained.pluck("name")
+  end
+
+  test "a resolution may replace an item it takes away" do
+    roll = play_first_scene
+
+    fake = FakeChat.new(%({"resolution": "Şişen kırıldı ama enkazda yenisini buldun.",
+      "effects": {"hp": 0,
+        "items_gained": [{"name": "Şifa iksiri", "kind": "instant", "description": "", "hp": 6, "uses": 1}],
+        "items_lost": ["Şifa iksiri"]}}))
+    stub_llm(fake) { roll.narrate_outcome }
+
+    potions = characters(:ilker_hero).items.usable.where(name: "Şifa iksiri")
+    assert_equal 6, potions.sole.hp_effect, "the lost copy goes first so the replacement survives"
+  end
+
+  test "an outcome granting a nameless item is malformed" do
+    roll = play_first_scene
+
+    assert_no_difference -> { Item.count } do
+      stub_llm(FakeChat.new(%({"resolution": "Bir şey buldun.",
+        "effects": {"hp": 0, "items_gained": [{"name": "", "kind": "instant"}]}}))) do
+        assert_raises(Narrator::MalformedResponse) { roll.narrate_outcome }
+      end
+    end
+
+    assert_nil roll.reload.resolution
+  end
+
+  test "the narrator sees the inventory, the statuses and what was used" do
+    characters(:ilker_hero).status_effects.create! name: "Kararlı", modifier: 1, turns_left: 2
+    roll = play_first_scene
+    items(:sifa_iksiri).use!
+
+    fake = FakeChat.new(OUTCOME_RESPONSE)
+    stub_llm(fake) { roll.narrate_outcome }
+
+    assert_includes fake.prompt, "ENVANTER:"
+    assert_includes fake.prompt, "Uzun kılıç"
+    assert_includes fake.prompt, "Han defteri (görev eşyası)"
+    assert_not_includes fake.prompt, "Şifa iksiri (anında", "a spent item must drop out of the inventory"
+    assert_includes fake.prompt, "STATÜ ETKİLERİ: Kararlı (+1 zar, 2 tur)"
+    assert_includes fake.prompt, "KULLANILAN EŞYA: Şifa iksiri (+7 can)"
+  end
+
+  test "a used item is settled by the outcome and not raised again by the next scene" do
+    roll = play_first_scene
+    items(:sifa_iksiri).use!
+    resolve roll
+    roll.acknowledge!
+
+    scene_call = FakeChat.new(SECOND_SCENE_RESPONSE)
+    stub_llm(scene_call) { narrate }
+
+    assert_not_includes scene_call.prompt, "KULLANILAN EŞYA"
+  end
+
+  test "statuses weigh on the roll and wear off with it" do
+    character = characters(:ilker_hero)
+    character.status_effects.create! name: "Sırılsıklam", modifier: -2, turns_left: 1
+
+    stub_llm(FakeChat.new(SCENE_RESPONSE)) { narrate }
+    scene = @game_session.current_scene
+    choice = scene.choices.find_by!(stat: "strength")
+    choice.choose!
+    roll = choice.roll!(by: scene.active_player)
+
+    assert_equal(-2, roll.status_modifier)
+    assert_equal roll.value + 3 - 2, roll.total
+    assert_equal roll.total >= roll.target, roll.success?
+
+    fake = FakeChat.new(OUTCOME_RESPONSE)
+    stub_llm(fake) { roll.narrate_outcome }
+
+    assert_includes fake.prompt, "-2 (statü)"
+    assert_empty character.status_effects.reload, "a one-turn status must not outlive its roll"
+  end
+
+  test "the outcome prompt carries the grade of the roll" do
+    stub_llm(FakeChat.new(SCENE_RESPONSE)) { narrate }
+    roll = roll_with(value: 20)
+
+    fake = FakeChat.new(OUTCOME_RESPONSE)
+    stub_llm(fake) { roll.narrate_outcome }
+
+    assert_includes fake.prompt, "KRİTİK BAŞARI (doğal 20"
+  end
+
+  test "a deep miss reaches the narrator with its distance" do
+    stub_llm(FakeChat.new(SCENE_RESPONSE)) { narrate }
+    roll = roll_with(value: 2)
+
+    fake = FakeChat.new(OUTCOME_RESPONSE)
+    stub_llm(fake) { roll.narrate_outcome }
+
+    assert_includes fake.prompt, "AĞIR BAŞARISIZLIK (hedefin 9 puan altında)"
+  end
+
+  test "a scene reusing a stat across choices is malformed" do
+    doubled = SCENE_RESPONSE.sub('"stat": "intelligence"', '"stat": "strength"')
+
+    stub_llm(FakeChat.new(doubled)) do
+      assert_raises(Narrator::MalformedResponse) { narrate }
+    end
+
+    assert @game_session.scenes.sole.narrating?
+  end
+
+  test "the first scene's plan becomes the hidden story skeleton" do
+    planned = SCENE_RESPONSE.sub('{"title": "Eski Han"',
+      '{"plan": "Kervanı Boran Loncası kaçırdı; asma köprü tuzaklı.", "title": "Eski Han"')
+    stub_llm(FakeChat.new(planned)) { narrate }
+
+    assert_equal "Kervanı Boran Loncası kaçırdı; asma köprü tuzaklı.", @game_session.reload.story_outline
+
+    roll = choose_and_roll(@game_session.current_scene)
+    resolve roll
+    roll.acknowledge!
+
+    scene_call = FakeChat.new(SECOND_SCENE_RESPONSE)
+    stub_llm(scene_call) { narrate }
+
+    assert_includes scene_call.prompt, "HİKÂYE İSKELETİ"
+    assert_includes scene_call.prompt, "Boran Loncası"
+  end
+
+  test "a downed character forces the defeat finale" do
+    characters(:ilker_hero).update! hp: 0
+
+    scene_call = FakeChat.new(FINALE_RESPONSE.sub('"outcome": "victory"', '"outcome": "defeat"'))
+    stub_llm(scene_call) { narrate }
+
+    assert_includes scene_call.prompt, "KARAKTER YIĞILDI"
+    assert @game_session.reload.finished?
+    assert @game_session.outcome_defeat?
+  end
+
+  test "a downed character is denied another scene and a victory alike" do
+    characters(:ilker_hero).update! hp: 0
+
+    stub_llm(FakeChat.new(SCENE_RESPONSE)) do
+      assert_raises(Narrator::MalformedResponse) { narrate }
+    end
+    stub_llm(FakeChat.new(FINALE_RESPONSE)) do
+      assert_raises(Narrator::MalformedResponse) { narrate }
+    end
+
+    assert @game_session.scenes.sole.narrating?
+    assert_not @game_session.reload.finished?
+  end
+
+  test "the missing healing item is flagged once the need is real" do
+    characters(:ilker_hero).update! hp: 12
+    play_and_continue
+    stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
+    items(:sifa_iksiri).use!
+    roll = choose_and_roll(@game_session.current_scene)
+
+    fake = FakeChat.new(OUTCOME_RESPONSE)
+    stub_llm(fake) { roll.narrate_outcome }
+
+    assert_includes fake.prompt, "EKSİK:"
+  end
+
+  test "the healing hint rests while the character stands strong" do
+    play_and_continue
+    stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
+    items(:sifa_iksiri).use!
+    roll = choose_and_roll(@game_session.current_scene)
+
+    fake = FakeChat.new(OUTCOME_RESPONSE)
+    stub_llm(fake) { roll.narrate_outcome }
+
+    assert_not_includes fake.prompt, "EKSİK:",
+      "a healthy character early in the story must not spawn potions"
+  end
+
+  test "the healing hint pauses right after a find" do
+    characters(:ilker_hero).update! hp: 5
+    items(:sifa_iksiri).use!
+    roll = play_first_scene
+
+    fake = FakeChat.new(%({"resolution": "Rafta bir tılsım buldun.",
+      "effects": {"hp": 0, "items_gained": [{"name": "Eski tılsım", "kind": "quest", "description": "", "hp": 0, "uses": 0}]}}))
+    stub_llm(fake) { roll.narrate_outcome }
+    roll.acknowledge!
+    stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
+    next_roll = choose_and_roll(@game_session.current_scene)
+
+    fake = FakeChat.new(OUTCOME_RESPONSE)
+    stub_llm(fake) { next_roll.narrate_outcome }
+
+    assert_not_includes fake.prompt, "EKSİK:",
+      "back-to-back finds cheapen the loot"
+  end
+
+  test "no healing hint while a potion is still carried" do
+    play_and_continue
+    stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
+    roll = choose_and_roll(@game_session.current_scene)
+
+    fake = FakeChat.new(OUTCOME_RESPONSE)
+    stub_llm(fake) { roll.narrate_outcome }
+
+    assert_not_includes fake.prompt, "EKSİK:"
+  end
+
+  test "the world adapts when one stat is spammed" do
+    stub_llm(FakeChat.new(SCENE_RESPONSE)) { narrate }
+
+    2.times do
+      roll = roll_strength(@game_session.current_scene)
+      resolve roll
+      roll.acknowledge!
+      stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
+    end
+
+    roll = roll_strength(@game_session.current_scene)
+    resolve roll
+    roll.acknowledge!
+
+    scene_call = FakeChat.new(SECOND_SCENE_RESPONSE)
+    stub_llm(scene_call, FakeChat.new("özet")) { narrate }
+
+    assert_match(/TEKRAR:.*Güç/, scene_call.prompt)
+  end
+
+  test "a badly wounded character earns a breather in the scene prompt" do
+    characters(:ilker_hero).update! hp: 9
+    play_and_continue
+
+    scene_call = FakeChat.new(SECOND_SCENE_RESPONSE)
+    stub_llm(scene_call) { narrate }
+
+    assert_includes scene_call.prompt, "AĞIR YARALI"
+  end
+
   test "a roll is never resolved twice" do
     roll = play_first_scene
 
@@ -249,6 +505,21 @@ class NarratorTest < ActiveSupport::TestCase
       choice = scene.choices.first
       choice.choose!
       choice.roll!(by: scene.active_player)
+    end
+
+    def roll_strength(scene)
+      choice = scene.choices.find_by!(stat: "strength")
+      choice.choose!
+      choice.roll!(by: scene.active_player)
+    end
+
+    def roll_with(value:)
+      scene = @game_session.current_scene
+      choice = scene.choices.find_by!(stat: "strength")
+      choice.choose!
+      scene.played!
+      choice.create_roll! player: scene.active_player, value: value, modifier: choice.modifier,
+        status_modifier: 0, target: choice.difficulty
     end
 
     def build_roll

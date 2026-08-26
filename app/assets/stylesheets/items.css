@@ -1,0 +1,160 @@
+@layer components {
+  .statuses {
+    margin: .75rem 0 1.25rem;
+    padding: .15rem .9rem;
+    list-style: none;
+    background: var(--color-surface);
+    border: 1px solid var(--color-line-soft);
+    border-radius: 14px;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      padding: .75rem 0;
+
+      &:not(:last-child) {
+        border-block-end: 1px solid var(--color-line-soft);
+      }
+    }
+  }
+
+  .statuses__dot {
+    inline-size: 7px;
+    block-size: 7px;
+    border-radius: 50%;
+    flex: none;
+  }
+
+  .statuses__dot--positive {
+    background: var(--color-positive);
+  }
+
+  .statuses__dot--negative {
+    background: var(--color-negative);
+  }
+
+  .statuses__name {
+    flex: 1;
+    font-size: .9rem;
+    font-weight: 600;
+  }
+
+  .statuses__duration {
+    color: var(--color-ink-dim);
+    font-size: .78rem;
+  }
+
+  .statuses__chip {
+    inline-size: 56px;
+    padding-block: .25rem;
+    border-radius: 7px;
+    font-size: .75rem;
+    font-weight: 700;
+    text-align: center;
+    flex: none;
+  }
+
+  .statuses__chip--positive {
+    background: color-mix(in srgb, var(--color-positive) 14%, transparent);
+    color: var(--color-positive-bright);
+  }
+
+  .statuses__chip--negative {
+    background: color-mix(in srgb, var(--color-negative) 12%, transparent);
+    color: var(--color-negative-bright);
+  }
+
+  .inventory {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    margin: .75rem 0 1.25rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .inventory__row {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    padding: .7rem .8rem;
+    background: var(--color-surface-raised);
+    border-radius: 13px;
+  }
+
+  .inventory__row--quest {
+    border: 1px dashed color-mix(in srgb, var(--color-accent) 30%, transparent);
+  }
+
+  .inventory__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 34px;
+    block-size: 34px;
+    background: var(--color-well);
+    border-radius: 9px;
+    flex: none;
+    color: var(--color-ink-muted);
+
+    .glyph {
+      inline-size: 18px;
+      block-size: 18px;
+    }
+  }
+
+  .inventory__row--quest .inventory__icon,
+  .inventory__badge {
+    color: var(--color-accent);
+  }
+
+  .inventory__body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-inline-size: 0;
+  }
+
+  .inventory__name {
+    font-family: var(--font-display);
+    font-size: 1rem;
+  }
+
+  .inventory__meta {
+    color: var(--color-positive);
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .02em;
+  }
+
+  .inventory__badge {
+    padding: .18rem .5rem;
+    border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+    border-radius: 6px;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .03em;
+    white-space: nowrap;
+    flex: none;
+  }
+
+  .inventory__count {
+    color: var(--color-ink-dim);
+    font-size: .82rem;
+    font-weight: 700;
+  }
+
+  .inventory__use {
+    min-block-size: 44px;
+    padding: 0 1rem;
+    background: var(--color-accent-soft);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+    border-radius: 11px;
+    color: var(--color-accent);
+    font-family: var(--font-ui);
+    font-size: .75rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+}

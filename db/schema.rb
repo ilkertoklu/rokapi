@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_04_082720) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_07_120100) do
   create_table "adventures", force: :cascade do |t|
     t.text "brief", null: false
     t.datetime "created_at", null: false
@@ -59,10 +59,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_082720) do
     t.string "mode", null: false
     t.string "outcome"
     t.string "state", default: "lobby", null: false
+    t.text "story_outline"
     t.string "tone", null: false
     t.datetime "updated_at", null: false
     t.index ["adventure_id"], name: "index_game_sessions_on_adventure_id"
     t.index ["creator_id"], name: "index_game_sessions_on_creator_id"
+  end
+
+  create_table "items", force: :cascade do |t|
+    t.integer "character_id", null: false
+    t.datetime "created_at", null: false
+    t.string "description"
+    t.integer "hp_effect", default: 0, null: false
+    t.string "kind", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "used_at"
+    t.integer "uses_left"
+    t.index ["character_id"], name: "index_items_on_character_id"
   end
 
   create_table "llm_calls", force: :cascade do |t|
@@ -108,6 +122,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_082720) do
     t.integer "modifier", null: false
     t.integer "player_id", null: false
     t.text "resolution"
+    t.integer "status_modifier", default: 0, null: false
     t.boolean "success", null: false
     t.integer "target", null: false
     t.datetime "updated_at", null: false
@@ -142,6 +157,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_082720) do
     t.index ["user_id"], name: "index_sessions_on_user_id"
   end
 
+  create_table "status_effects", force: :cascade do |t|
+    t.integer "character_id", null: false
+    t.datetime "created_at", null: false
+    t.string "expires_when"
+    t.integer "modifier", null: false
+    t.string "name", null: false
+    t.integer "turns_left"
+    t.datetime "updated_at", null: false
+    t.index ["character_id", "name"], name: "index_status_effects_on_character_id_and_name", unique: true
+    t.check_constraint "turns_left IS NOT NULL OR expires_when IS NOT NULL", name: "status_effects_have_a_duration"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", null: false
@@ -155,6 +182,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_082720) do
   add_foreign_key "choices", "scenes"
   add_foreign_key "game_sessions", "adventures"
   add_foreign_key "game_sessions", "users", column: "creator_id"
+  add_foreign_key "items", "characters"
   add_foreign_key "llm_calls", "game_sessions"
   add_foreign_key "login_codes", "users"
   add_foreign_key "players", "game_sessions"
@@ -164,4 +192,5 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_082720) do
   add_foreign_key "scenes", "game_sessions"
   add_foreign_key "scenes", "players", column: "active_player_id"
   add_foreign_key "sessions", "users"
+  add_foreign_key "status_effects", "characters"
 end

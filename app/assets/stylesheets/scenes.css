@@ -41,10 +41,12 @@
   }
 
   .stage__footer {
+    --footer-gap: .6rem;
+
     flex: none;
     display: flex;
     flex-direction: column;
-    gap: .6rem;
+    gap: var(--footer-gap);
     padding: .9rem 1.5rem calc(.9rem + env(safe-area-inset-bottom));
   }
 
@@ -57,6 +59,13 @@
     border: 1px dashed color-mix(in srgb, var(--color-negative) 35%, transparent);
     border-radius: var(--radius-control);
     text-align: center;
+  }
+
+  .overdue {
+    visibility: hidden;
+    block-size: 0;
+    margin-block-start: calc(-1 * var(--footer-gap));
+    animation: overdue-reveal 0s 45s forwards;
   }
 
   .location {
@@ -346,6 +355,15 @@
       font-family: var(--font-display);
       font-size: .95rem;
     }
+
+    .character-button__hint {
+      margin-inline-start: auto;
+      color: var(--color-ink-soft);
+      font-family: var(--font-ui);
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .03em;
+    }
   }
 
   .finale {
@@ -457,6 +475,14 @@
 
     50% {
       opacity: 1;
+    }
+  }
+
+  @keyframes overdue-reveal {
+    to {
+      visibility: visible;
+      block-size: auto;
+      margin-block-start: 0;
     }
   }
 }

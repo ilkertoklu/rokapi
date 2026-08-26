@@ -1,0 +1,24 @@
+<%# locals: (game_session:, item:, hp_before:) -%>
+<div class="outcome outcome--restored">
+  <span class="outcome__badge"><%= render "glyph", name: "flask" %></span>
+
+  <p class="outcome__verdict"><%= format("%+d", item.character.hp - hp_before) %> Can</p>
+
+  <div class="outcome__vitals">
+    <div class="vitals__row">
+      <span class="vitals__label overline">Can</span>
+      <span class="vitals__count">
+        <%= hp_before %> <span>→</span> <%= item.character.hp %> <span>/ <%= item.character.max_hp %></span>
+      </span>
+    </div>
+    <div class="vitals__track">
+      <div class="vitals__fill vitals__fill--restored" style="inline-size: <%= item.character.hp_percentage %>%"></div>
+    </div>
+  </div>
+
+  <p class="outcome__resolution"><%= item.name %> etkisini gösterdi.</p>
+</div>
+
+<div class="stage__footer">
+  <%= link_to "Tamam", game_session_path(game_session), class: "btn btn--primary" %>
+</div>

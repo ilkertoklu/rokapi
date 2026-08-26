@@ -24,6 +24,14 @@ module GameSessionsHelper
     position < scene.position ? "past" : "upcoming"
   end
 
+  def finale_share_text(game_session)
+    outcome = game_session.outcome_victory? ? "Zafer" : "Yenilgi"
+    highlights = [ game_session.title, duration_label(game_session.duration),
+                   "#{game_session.rolls.count} zar", "#{game_session.survivors_count} hayatta" ].join(" · ")
+
+    "#{game_session.current_scene.title} — #{outcome}\n#{highlights}"
+  end
+
   def resume_summary(game_session)
     scene = game_session.current_scene
 

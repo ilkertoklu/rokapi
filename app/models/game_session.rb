@@ -100,6 +100,8 @@ class GameSession < ApplicationRecord
     when Scene
       stuck.narrating!
       continue_narration_later
+    else
+      continue_narration_later unless current_scene&.narrating?
     end
   end
 end

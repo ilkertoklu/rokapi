@@ -37,7 +37,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     end
 
     get game_session_path(game_session)
-    assert_select ".outcome__verdict", text: /BAŞARILI|BAŞARISIZ/
+    assert_select ".outcome__verdict", text: /BAŞARI|FELAKET/
     assert_select ".outcome__resolution", text: "Çekmece açıldı ama elini kestin."
     assert_equal 1, game_session.scenes.count, "the story must not run ahead of the player"
 
@@ -51,6 +51,8 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     get game_session_path(game_session)
     assert_select ".finale__outcome", text: "Zafer"
     assert_select ".highlights", text: /Zar atıldı/
+    assert_select "[data-controller=share][data-share-text-value*=?]", "Dönüş — Zafer"
+    assert_select "[data-share-text-value*=?]", "Kayıp Kervan"
     assert_equal %w[scene outcome scene], game_session.llm_calls.order(:id).pluck(:purpose)
     assert_operator game_session.llm_calls.sum(:cost_in_microdollars), :>, 0
   end
@@ -164,6 +166,38 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
 
     assert game_session.current_scene.choosing?
     assert_equal 1, game_session.scenes.count
+  end
+
+  test "a lost narration job can be nudged back to work" do
+    game_session = play_to_choices
+    choice = game_session.current_scene.choices.find_by!(stat: "strength")
+    post game_session_chosen_choice_path(game_session, choice_id: choice.id)
+    stub_llm(FakeChat.new(OUTCOME_RESPONSE)) do
+      perform_enqueued_jobs { post game_session_roll_path(game_session) }
+    end
+    post game_session_acknowledgement_path(game_session)
+    clear_enqueued_jobs
+
+    get game_session_path(game_session)
+    assert_select ".overdue form[action=?]", game_session_narration_path(game_session)
+
+    stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) do
+      perform_enqueued_jobs { post game_session_narration_path(game_session) }
+    end
+
+    assert_equal 2, game_session.scenes.count
+    assert game_session.current_scene.choosing?
+  end
+
+  test "a nudge while the narrator is writing does not double the work" do
+    game_session = play_to_choices
+    game_session.current_scene.narrating!
+
+    assert_no_enqueued_jobs only: Scene::GenerateJob do
+      post game_session_narration_path(game_session)
+    end
+
+    assert_redirected_to game_session_path(game_session)
   end
 
   test "rolling out of turn does not blow up" do

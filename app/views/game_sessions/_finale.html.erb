@@ -39,5 +39,10 @@
 
 <div class="stage__footer">
   <%= link_to "Yeni macera", new_game_session_path, class: "btn btn--primary" %>
+  <%= tag.button class: "btn btn--secondary",
+        data: { controller: "share", action: "share#share", share_text_value: finale_share_text(game_session), share_copied_value: "Kopyalandı" } do %>
+    <%= render "glyph", name: "share" %>
+    <span data-share-target="label">Özeti paylaş</span>
+  <% end %>
   <%= link_to "Ana ekrana dön", root_path, class: "btn btn--ghost" %>
 </div>

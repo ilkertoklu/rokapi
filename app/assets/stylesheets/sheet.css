@@ -117,6 +117,10 @@
     background: linear-gradient(90deg, var(--color-negative), var(--color-accent));
   }
 
+  .vitals__fill--restored {
+    background: linear-gradient(90deg, var(--color-negative), var(--color-positive));
+  }
+
   .sheet__stats {
     display: grid;
     grid-template-columns: repeat(2, 1fr);

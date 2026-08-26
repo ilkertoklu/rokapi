@@ -14,6 +14,12 @@
       Anlatıcı sahneyi yazıyor
       <span class="writing__dots"><span></span><span></span><span></span></span>
     </p>
+    <div class="overdue">
+      <div class="stalled">
+        <p class="hint">Anlatıcı gecikti. Hikâyeyi kaldığı yerden sürdürebilirsin.</p>
+        <%= button_to "Yeniden dene", game_session_narration_path(scene.game_session), class: "btn btn--secondary" %>
+      </div>
+    </div>
   </div>
 <% elsif scene.failed? %>
   <div class="stage__footer">

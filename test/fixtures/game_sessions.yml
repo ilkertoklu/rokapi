@@ -13,3 +13,11 @@ ilker_without_character:
   tone: balanced
   length: medium
   state: lobby
+
+deniz_solo:
+  adventure: kayip_kervan
+  creator: deniz
+  mode: solo
+  tone: balanced
+  length: short
+  state: playing

@@ -28,13 +28,12 @@ class Choice < ApplicationRecord
 
       scene.played!
 
-      value = rand(1..Roll::DIE)
       create_roll!(
         player: by,
-        value: value,
+        value: rand(1..Roll::DIE),
         modifier: modifier,
-        target: difficulty,
-        success: value + modifier >= difficulty
+        status_modifier: by.character.status_modifier,
+        target: difficulty
       )
     end
   end

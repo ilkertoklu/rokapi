@@ -28,6 +28,14 @@
     color: var(--color-accent-bright);
   }
 
+  .btn .glyph {
+    display: inline-block;
+    inline-size: 16px;
+    block-size: 16px;
+    margin-inline-end: .4rem;
+    vertical-align: -3px;
+  }
+
   .btn:disabled {
     opacity: .45;
     cursor: default;

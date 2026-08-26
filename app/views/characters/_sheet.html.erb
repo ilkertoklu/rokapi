@@ -1,5 +1,5 @@
 <%# locals: (character:) -%>
-<div class="sheet" data-sheet-target="sheet" hidden>
+<div id="character_sheet" class="sheet" data-sheet-target="sheet" hidden>
   <button class="sheet__scrim" data-action="sheet#close" aria-label="Kapat"></button>
 
   <div class="sheet__panel">
@@ -20,6 +20,45 @@
         <div class="vitals__fill" style="inline-size: <%= character.hp_percentage %>%"></div>
       </div>
     </div>
+
+    <% if character.status_effects.any? %>
+      <p class="vitals__label overline">Statü etkileri</p>
+      <ul class="statuses">
+        <% character.status_effects.each do |status| %>
+          <li>
+            <span class="statuses__dot <%= status.positive? ? "statuses__dot--positive" : "statuses__dot--negative" %>"></span>
+            <span class="statuses__name"><%= status.name %></span>
+            <span class="statuses__duration"><%= status.duration_label %></span>
+            <span class="statuses__chip <%= status.positive? ? "statuses__chip--positive" : "statuses__chip--negative" %>"><%= format("%+d", status.modifier) %> zar</span>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+
+    <% if (items = character.items.carried).any? %>
+      <p class="vitals__label overline">Envanter</p>
+      <ul class="inventory">
+        <% items.each do |item| %>
+          <li class="inventory__row <%= "inventory__row--quest" if item.quest? %>">
+            <span class="inventory__icon"><%= render "glyph", name: item_glyph(item.kind) %></span>
+            <span class="inventory__body">
+              <span class="inventory__name"><%= item.name %></span>
+              <% if item.instant? %>
+                <span class="inventory__meta">Anında · <%= format("%+d", item.hp_effect) %> Can</span>
+              <% elsif item.description.present? %>
+                <span class="inventory__meta"><%= item.description %></span>
+              <% end %>
+            </span>
+            <% if item.quest? %>
+              <span class="inventory__badge">Görev eşyası</span>
+            <% elsif item.usable? %>
+              <span class="inventory__count">×<%= item.uses_left %></span>
+              <%= button_to "Kullan", game_session_item_use_path(character.game_session, item), class: "inventory__use" %>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
 
     <p class="vitals__label overline">Temel özellikler</p>
     <dl class="sheet__stats">

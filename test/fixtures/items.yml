@@ -1,0 +1,23 @@
+uzun_kilic:
+  character: ilker_hero
+  name: Uzun kılıç
+  kind: passive
+
+sifa_iksiri:
+  character: ilker_hero
+  name: Şifa iksiri
+  kind: instant
+  hp_effect: 7
+  uses_left: 1
+
+han_defteri:
+  character: ilker_hero
+  name: Han defteri
+  kind: quest
+
+deniz_iksiri:
+  character: deniz_hero
+  name: Şifa iksiri
+  kind: instant
+  hp_effect: 7
+  uses_left: 1

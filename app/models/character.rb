@@ -13,6 +13,11 @@ class Character < ApplicationRecord
 
   belongs_to :player
 
+  has_many :items, dependent: :delete_all
+  has_many :status_effects, dependent: :delete_all
+
+  delegate :game_session, to: :player
+
   normalizes :stats, with: ->(stats) { stats.to_h.transform_values(&:to_i) }
 
   validates :race, inclusion: { in: Race.keys }
@@ -21,6 +26,7 @@ class Character < ApplicationRecord
   validate :stats_match_allocation
 
   before_validation :derive_hp, on: :create
+  after_create :grant_starting_gear
 
   def self.base_stats_for(klass)
     Klass.fetch(klass).base_stats
@@ -36,6 +42,44 @@ class Character < ApplicationRecord
 
   def hp_percentage
     (hp * 100.0 / max_hp).round
+  end
+
+  def adjust_hp!(delta)
+    update! hp: (hp + delta).clamp(0, max_hp) unless delta.zero?
+  end
+
+  def sturdy?
+    hp_percentage > 60
+  end
+
+  def wounded?
+    hp.positive? && hp_percentage <= 33
+  end
+
+  def status_modifier
+    status_effects.sum(:modifier)
+  end
+
+  def gain_item(name:, kind:, description: nil, hp: 0, uses: nil)
+    items.create! name: name, kind: kind, description: description.presence,
+      hp_effect: (kind == "instant" ? hp.to_i : 0),
+      uses_left: ([ uses.to_i, 1 ].max if kind == "instant")
+  end
+
+  def lose_item(name)
+    items.carried.where(name: name).delete_all
+  end
+
+  def gain_status(name:, modifier:, turns: 0, expires_when: nil)
+    turns_left = turns.to_i.positive? ? turns.to_i : (2 if expires_when.blank?)
+
+    status_effects.where(name: name).delete_all
+    status_effects.create! name: name, modifier: modifier.to_i.clamp(-2, 2),
+      turns_left: turns_left, expires_when: expires_when.presence
+  end
+
+  def lose_status(name)
+    status_effects.where(name: name).delete_all
   end
 
   private
@@ -57,5 +101,9 @@ class Character < ApplicationRecord
 
       self.max_hp = archetype.base_hp + (stats["constitution"].to_i - 10)
       self.hp = max_hp
+    end
+
+    def grant_starting_gear
+      Klass.fetch(klass).gear.each { |piece| items.create! piece }
     end
 end

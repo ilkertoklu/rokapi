@@ -12,3 +12,18 @@ ilker_hero:
     charisma: 14
   hp: 31
   max_hp: 31
+
+deniz_hero:
+  player: deniz_solo_host
+  race: human
+  klass: healer
+  background: soldier
+  stats:
+    strength: 10
+    agility: 9
+    constitution: 16
+    intelligence: 12
+    wisdom: 18
+    charisma: 11
+  hp: 28
+  max_hp: 28
