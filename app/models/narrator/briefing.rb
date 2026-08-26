@@ -214,7 +214,7 @@ class Narrator::Briefing
       used = roll.player.character.items.used_since(roll.scene.created_at)
       return if used.none?
 
-      "KULLANILAN EŞYA: #{used.map { |item| "#{item.name} (#{format('%+d', item.hp_effect)} can)" }.join("; ")} — etkisini hikâyeye işle; envanterden zaten düştü, items_lost'a yazma."
+      "KULLANILAN EŞYA: #{used.map { |item| "#{item.name} (#{format('%+d', item.hp_effect)} can)" }.join("; ")} — canı zaten uygulandı ve envanterden düştü; anlatıda içildiği görünsün, hp'ye ve items_lost'a yeniden yazma."
     end
 
     def player_name(player)
