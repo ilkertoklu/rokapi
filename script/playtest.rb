@@ -33,7 +33,7 @@ def timed(label)
 end
 
 def allocate_stats(klass)
-  stats = Character.base_stats_for(klass).dup
+  stats = Character::Klass.fetch(klass).base_stats.dup
   Character::FREE_POINTS.times do
     key = stats.select { |_, value| value < Character::STAT_CAP }.max_by { |_, value| value }.first
     stats[key] += 1

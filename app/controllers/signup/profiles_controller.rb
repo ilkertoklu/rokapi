@@ -6,20 +6,14 @@ class Signup::ProfilesController < ApplicationController
 
   def create
     if terms_accepted?
-      Current.user.complete_profile name: name
+      Current.user.complete_profile name: params.expect(:name)
       redirect_to signup_welcome_path
     else
       redirect_to new_signup_profile_path, alert: "Devam etmek için koşulları kabul etmelisin."
     end
-  rescue ActiveRecord::RecordInvalid
-    redirect_to new_signup_profile_path, alert: "Adını yaz."
   end
 
   private
-    def name
-      params.expect(:name)
-    end
-
     def terms_accepted?
       params[:terms] == "1"
     end

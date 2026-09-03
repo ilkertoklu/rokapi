@@ -1,13 +1,12 @@
 class User < ApplicationRecord
-  has_many :sessions, dependent: :destroy
-  has_many :login_codes, dependent: :destroy
+  has_many :sessions, dependent: :delete_all
+  has_many :login_codes, dependent: :delete_all
   has_many :players, dependent: :destroy
   has_many :game_sessions, through: :players
 
   normalizes :email, with: ->(email) { email.strip.downcase.presence }
 
   validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
-  validates :name, presence: true, allow_nil: true
 
   def send_login_code
     login_codes.delete_all

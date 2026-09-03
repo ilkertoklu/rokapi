@@ -44,12 +44,12 @@ class UserTest < ActiveSupport::TestCase
     assert_not users(:incomplete).profile_complete?
   end
 
-  test "complete_profile requires a name" do
+  test "complete_profile names the user and accepts the terms" do
     user = users(:incomplete)
 
-    assert_raises(ActiveRecord::RecordInvalid) { user.complete_profile(name: "") }
-
     user.complete_profile(name: "Yeni")
+
     assert user.profile_complete?
+    assert_equal "Yeni", user.name
   end
 end

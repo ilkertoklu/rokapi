@@ -8,9 +8,10 @@
     <% elsif roll.resolved? %>
       <span class="d20__value"><%= roll.value %></span>
     <% else %>
+      <% faces = die_reel_faces(roll) %>
       <span class="d20__reel" aria-label="Zar dönüyor">
-        <span class="d20__strip" style="--cells: <%= roll.faces.size %>">
-          <% roll.faces.each do |face| %><span><%= face %></span><% end %>
+        <span class="d20__strip" style="--cells: <%= faces.size %>">
+          <% faces.each do |face| %><span><%= face %></span><% end %>
         </span>
       </span>
     <% end %>

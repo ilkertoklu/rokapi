@@ -3,7 +3,7 @@ require "test_helper"
 class SoloSetupFlowTest < ActionDispatch::IntegrationTest
   setup do
     sign_in_as users(:sevval)
-    @valid_stats = Character.base_stats_for("warrior")
+    @valid_stats = Character::Klass.fetch("warrior").base_stats
       .merge("strength" => 16, "constitution" => 15, "charisma" => 14)
   end
 
@@ -47,22 +47,18 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
 
     post game_session_character_path(game_session), params: {
       character: { race: "elf", klass: "warrior", background: "traveler",
-                   stats: Character.base_stats_for("warrior") }
+                   stats: Character::Klass.fetch("warrior").base_stats }
     }
     assert_redirected_to new_game_session_character_path(game_session)
     assert_nil game_session.player_for(users(:sevval)).character
   end
 
-  test "tampered setup values fall back to defaults instead of erroring" do
-    post game_sessions_path, params: {
-      game_session: { adventure_id: "999999", tone: "hacked", length: "hacked" }
-    }
+  test "tampered setup values are refused" do
+    assert_raises ArgumentError do
+      post game_sessions_path, params: { game_session: { adventure_id: "", tone: "hacked", length: "short" } }
+    end
 
-    game_session = users(:sevval).game_sessions.sole
-    assert_redirected_to new_game_session_character_path(game_session)
-    assert_nil game_session.adventure
-    assert game_session.balanced?
-    assert game_session.medium?
+    assert_empty users(:sevval).game_sessions
   end
 
   test "session without a character redirects to character creation" do

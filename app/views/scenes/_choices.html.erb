@@ -7,7 +7,7 @@
 
   <div class="action-panel__body">
     <% scene.choices.each do |choice| %>
-      <%= button_to game_session_chosen_choice_path(scene.game_session, choice_id: choice.id), class: "choice" do %>
+      <%= button_to game_session_choice_selection_path(scene.game_session, choice), class: "choice" do %>
         <span class="choice__label"><%= choice.label %></span>
         <span class="stat-chip"><%= Character::STAT_ABBREVIATIONS.fetch(choice.stat) %> <%= format("%+d", choice.modifier) %></span>
       <% end %>

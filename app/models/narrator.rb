@@ -21,8 +21,9 @@ class Narrator
   def continue
     return unless owed?
 
+    scene = next_scene
     plan if @game_session.story_bible.blank?
-    generate_scene
+    generate_scene scene
   end
 
   private
@@ -43,8 +44,7 @@ class Narrator
       @game_session.update! story_bible: bible
     end
 
-    def generate_scene
-      scene = next_scene
+    def generate_scene(scene)
       data, prose = ask_streaming(scene)
       close_scene scene, data, prose
     end
@@ -92,11 +92,7 @@ class Narrator
     end
 
     def repair(json)
-      response = new_chat(model: helper_model).ask(<<~PROMPT)
-        Aşağıdaki bozuk JSON'u düzelt. Yanıt olarak YALNIZCA geçerli JSON döndür, başka hiçbir şey yazma:
-
-        #{json}
-      PROMPT
+      response = new_chat(model: helper_model).ask(@briefing.repair_prompt(json))
       record_call :repair, response
       JSON.parse response.content.to_s.sub(/\A\s*```(?:json)?/, "").sub(/```\s*\z/m, "").strip
     rescue JSON::ParserError

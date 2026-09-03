@@ -1,4 +1,6 @@
 class Character::Klass < Data.define(:key, :label, :description, :base_hp, :base_stats, :gear)
+  extend Character::Trait
+
   ALL = [
     new(key: "warrior", label: "Savaşçı", description: "Ön safta dövüşür; uzun kılıç ve yuvarlak kalkanla başlar.",
         base_hp: 26, base_stats: { "strength" => 14, "agility" => 11, "constitution" => 13, "intelligence" => 8, "wisdom" => 12, "charisma" => 12 }.freeze,
@@ -19,13 +21,6 @@ class Character::Klass < Data.define(:key, :label, :description, :base_hp, :base
         base_hp: 20, base_stats: { "strength" => 9, "agility" => 12, "constitution" => 10, "intelligence" => 12, "wisdom" => 12, "charisma" => 15 }.freeze,
         gear: [ { name: "Kopuz", kind: "passive", description: "moral verir" } ].freeze)
   ].freeze
-  BY_KEY = ALL.index_by(&:key).freeze
 
-  class << self
-    def all = ALL
-    def keys = BY_KEY.keys
-    def [](key) = BY_KEY[key]
-    def fetch(key) = BY_KEY.fetch(key)
-    def base_stats_by_key = BY_KEY.transform_values(&:base_stats)
-  end
+  def self.base_stats_by_key = by_key.transform_values(&:base_stats)
 end

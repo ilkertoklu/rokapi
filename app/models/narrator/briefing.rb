@@ -5,14 +5,12 @@ class Narrator::Briefing
     "dark" => "Karanlık — gölgeler ağır basar, bedeller serttir, güven zor kazanılır; korku PEGI-12 sınırında kalır."
   }.freeze
 
-  GRADES = {
-    critical: "KRİTİK BAŞARI (doğal 20 — istisnai an)",
-    brilliant: "PARLAK BAŞARI (hedef %{margin} puan farkla aşıldı)",
-    solid: "BAŞARILI",
-    narrow: "KIL PAYI BAŞARI (ucu ucuna)",
-    failure: "BAŞARISIZ",
-    heavy: "AĞIR BAŞARISIZLIK (hedefin %{margin} puan altında)",
-    catastrophe: "FELAKET (doğal 1 — olabilecek en kötüsü)"
+  GRADE_NOTES = {
+    critical: "doğal 20 — istisnai an",
+    brilliant: "hedef %{margin} puan farkla aşıldı",
+    narrow: "ucu ucuna",
+    heavy: "hedefin %{margin} puan altında",
+    catastrophe: "doğal 1 — olabilecek en kötüsü"
   }.freeze
 
   def initialize(game_session)
@@ -131,6 +129,14 @@ class Narrator::Briefing
       wounded_block(scene), pacing_block(scene), action_block ].compact.join("\n\n")
   end
 
+  def repair_prompt(json)
+    <<~PROMPT
+      Aşağıdaki bozuk JSON'u düzelt. Yanıt olarak YALNIZCA geçerli JSON döndür, başka hiçbir şey yazma:
+
+      #{json}
+    PROMPT
+  end
+
   private
     def persona
       "#{identity}\n#{language_rules}"
@@ -163,21 +169,20 @@ class Narrator::Briefing
     end
 
     def bible_block
-      bible = @game_session.story_bible
-      return if bible.blank?
+      return if @game_session.story_bible.blank?
 
-      antagonist = bible["antagonist"].to_h
-      ally = bible["ally"].to_h
+      antagonist = @game_session.story_antagonist.to_h
+      ally = @game_session.story_ally.to_h
       <<~TEXT.strip
         HİKÂYE KİTABI (gizli — oyuncuya söylenmez, sahnelerle yaşatılır):
-        Macera: #{bible["title"]}. #{bible["premise"]}
-        Kişisel bağ: #{bible["personal_stake"]}
+        Macera: #{@game_session.story_title}. #{@game_session.story_premise}
+        Kişisel bağ: #{@game_session.story_personal_stake}
         Karşıt güç: #{antagonist["name"]} — istediği: #{antagonist["want"]} Yöntemi: #{antagonist["method"]} İlk izi: #{antagonist["first_sign"]}
         Müttefik: #{ally["name"]} — istediği: #{ally["want"]} Sırrı: #{ally["secret"]}
-        Dönüş: #{bible["twist"]}
-        Finalin sorusu: #{bible["finale_question"]}
-        Zafer: #{bible["victory"]}
-        Yenilgi: #{bible["defeat"]}
+        Dönüş: #{@game_session.story_twist}
+        Finalin sorusu: #{@game_session.story_finale_question}
+        Zafer: #{@game_session.story_victory}
+        Yenilgi: #{@game_session.story_defeat}
       TEXT
     end
 
@@ -208,7 +213,7 @@ class Narrator::Briefing
     end
 
     def beat_line(scene)
-      beat = Array(@game_session.story_bible.to_h["beats"])[scene.position - 1]
+      beat = Array(@game_session.story_beats)[scene.position - 1]
       "VURUŞ: #{beat}" if beat.present?
     end
 
@@ -307,7 +312,7 @@ class Narrator::Briefing
     end
 
     def history_block
-      scenes = @game_session.scenes.played.chronological.includes(choices: :roll)
+      scenes = @game_session.scenes.played.chronological.includes(roll: :choice)
       return if scenes.none?
 
       "HİKÂYE ŞİMDİYE DEK (sahne sahne, oyuncunun seçimi ve zar sonucuyla):\n" + scenes.map { |scene| history_entry(scene) }.join("\n\n")
@@ -330,7 +335,8 @@ class Narrator::Briefing
     end
 
     def grade_label(roll)
-      GRADES.fetch(roll.grade) % { margin: roll.margin.abs }
+      note = GRADE_NOTES[roll.grade]
+      note ? "#{roll.grade_label} (#{note % { margin: roll.margin.abs }})" : roll.grade_label
     end
 
     def action_block

@@ -28,10 +28,6 @@ class Character < ApplicationRecord
   before_validation :derive_hp, on: :create
   after_create :grant_starting_gear
 
-  def self.base_stats_for(klass)
-    Klass.fetch(klass).base_stats
-  end
-
   def summary
     [ Race.fetch(race).label, Klass.fetch(klass).label, Background.fetch(background).label ].join(" · ")
   end

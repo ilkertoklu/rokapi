@@ -1,0 +1,27 @@
+<% content_for :title, "Yeni macera · Rokapi" %>
+
+<%= render "back", to: root_path, title: "Yeni macera" %>
+
+<p class="lede">Nasıl oynamak istersin?</p>
+
+<div class="stack">
+  <%= link_to new_game_session_path(mode: :solo), class: "pick" do %>
+    <span class="pick__icon"><%= render "glyph", name: "person" %></span>
+    <span class="pick__body">
+      <span class="pick__title">Tek kişilik</span>
+      <span class="pick__text">1 oyuncu · 15-60 dk · sana özel hikâye</span>
+    </span>
+    <span class="pick__mark"></span>
+  <% end %>
+
+  <div class="pick pick--disabled">
+    <span class="pick__icon"><%= render "glyph", name: "people" %></span>
+    <span class="pick__body">
+      <span class="pick__title">Çok kişilik</span>
+      <span class="pick__text">2-5 oyuncu · 30-90 dk · ortak hikâye · yakında</span>
+    </span>
+    <span class="pick__mark"></span>
+  </div>
+</div>
+
+<p class="hint">Çok kişilikte bir oda kodu paylaşır, arkadaşların kodla katılır.</p>

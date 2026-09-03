@@ -246,7 +246,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert @game_session.current_scene.choosing?
   end
 
-  test "a bible that never arrives leaves the story unstarted" do
+  test "a bible that never arrives leaves the first scene unwritten" do
     @game_session.update! story_bible: nil
 
     stub_llm(FakeChat.new("Kitap yok.")) do
@@ -254,7 +254,8 @@ class NarratorTest < ActiveSupport::TestCase
     end
 
     assert_nil @game_session.reload.story_bible
-    assert_empty @game_session.scenes
+    assert @game_session.scenes.sole.narrating?
+    assert_nil @game_session.scenes.sole.title
   end
 
   test "a written bible is not written twice" do

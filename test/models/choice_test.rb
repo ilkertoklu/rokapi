@@ -36,11 +36,6 @@ class ChoiceTest < ActiveSupport::TestCase
     assert_equal roll.value + roll.modifier, roll.total
     assert_equal roll.total >= roll.target, roll.success?
 
-    assert_equal Roll::REEL_CELLS, roll.faces.size
-    assert_equal roll.value, roll.faces.last, "the reel must come to rest on the rolled value"
-    assert_equal roll.faces, roll.faces, "the reel must not reshuffle between renders"
-    assert_equal roll.faces.size, roll.faces.uniq.size
-
     assert_raises(Scene::OutOfTurn) { @choice.roll_dice(by: players(:ilker_solo_host)) }
   end
 

@@ -1,11 +1,20 @@
 class Roll < ApplicationRecord
   DIE = 20
-  REEL_CELLS = 17
+  GRADE_LABELS = {
+    critical: "KRİTİK BAŞARI", brilliant: "PARLAK BAŞARI", solid: "BAŞARILI", narrow: "KIL PAYI BAŞARI",
+    failure: "BAŞARISIZ", heavy: "AĞIR BAŞARISIZLIK", catastrophe: "FELAKET"
+  }.freeze
+  EMPTY_EFFECTS = { "hp" => 0, "items_gained" => [], "items_lost" => [], "statuses_gained" => [], "statuses_lost" => [] }.freeze
 
   belongs_to :choice
   belongs_to :player
 
   has_one :scene, through: :choice
+
+  store_accessor :effects, :hp, suffix: :change
+  store_accessor :effects, :items_gained, :items_lost, :statuses_gained, :statuses_lost
+
+  normalizes :effects, with: ->(effects) { EMPTY_EFFECTS.merge(effects.to_h) }
 
   scope :pending, -> { where(resolution: nil) }
   scope :unseen, -> { where(acknowledged_at: nil).where.not(resolution: nil) }
@@ -27,9 +36,8 @@ class Roll < ApplicationRecord
     success? ? success_grade : failure_grade
   end
 
-  def faces
-    others = (1..DIE).to_a - [ value ]
-    others.shuffle(random: Random.new(id)).first(REEL_CELLS - 1) << value
+  def grade_label
+    GRADE_LABELS.fetch(grade)
   end
 
   def resolved?
@@ -49,24 +57,11 @@ class Roll < ApplicationRecord
     scene.game_session.continue_narration_later
   end
 
-  def hp_change
-    effects.to_h["hp"].to_i
-  end
-
-  def items_gained
-    Array(effects.to_h["items_gained"])
-  end
-
-  def statuses_gained
-    Array(effects.to_h["statuses_gained"])
-  end
-
   def narrate_outcome
     Narrator.new(scene.game_session).narrate_outcome(self)
   end
 
   def narrate_outcome_later
-    update! failed_at: nil if failed?
     Roll::NarrateJob.perform_later self
   end
 
@@ -74,9 +69,14 @@ class Roll < ApplicationRecord
     update! failed_at: Time.current
   end
 
+  def resume_narration
+    update! failed_at: nil
+    narrate_outcome_later
+  end
+
   def resolve(resolution:, effects:)
     transaction do
-      update! resolution: resolution, effects: effects, failed_at: nil
+      update! resolution: resolution, effects: effects
       apply_effects
     end
   end
@@ -104,12 +104,12 @@ class Roll < ApplicationRecord
       character.status_effects.each(&:tick)
       character.adjust_hp hp_change
 
-      Array(effects.to_h["items_lost"]).each { |name| character.lose_item name }
+      items_lost.each { |name| character.lose_item name }
       items_gained.each do |grant|
         character.gain_item name: grant["name"], kind: grant["kind"],
           description: grant["description"], hp: grant["hp"], uses: grant["uses"]
       end
-      Array(effects.to_h["statuses_lost"]).each { |name| character.lose_status name }
+      statuses_lost.each { |name| character.lose_status name }
       statuses_gained.each do |grant|
         character.gain_status name: grant["name"], modifier: grant["modifier"],
           turns: grant["turns"], expires_when: grant["expires_when"]

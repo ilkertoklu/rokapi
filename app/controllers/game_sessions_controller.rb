@@ -3,12 +3,15 @@ class GameSessionsController < ApplicationController
     with: -> { redirect_to root_path, alert: "Çok fazla macera kuruldu. Biraz bekle." }
 
   def new
-    @mode = params[:mode].presence_in(GameSession.modes.keys)
-    @adventures = Adventure.order(:id) if @mode
+    if params[:mode].presence_in(GameSession.modes.keys)
+      @adventures = Adventure.order(:id)
+    else
+      render :modes
+    end
   end
 
   def create
-    game_session = GameSession.create!(mode: :solo, **setup_attributes)
+    game_session = GameSession.create!(mode: :solo, **game_session_params)
     redirect_to new_game_session_character_path(game_session)
   end
 
@@ -20,13 +23,7 @@ class GameSessionsController < ApplicationController
   end
 
   private
-    def setup_attributes
-      permitted = params.expect(game_session: [ :adventure_id, :tone, :length ])
-
-      {
-        adventure: Adventure.find_by(id: permitted[:adventure_id]),
-        tone: permitted[:tone].presence_in(GameSession.tones.keys),
-        length: permitted[:length].presence_in(GameSession.lengths.keys)
-      }.compact
+    def game_session_params
+      params.expect(game_session: [ :adventure_id, :tone, :length ])
     end
 end

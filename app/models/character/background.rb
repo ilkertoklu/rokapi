@@ -1,4 +1,6 @@
 class Character::Background < Data.define(:key, :label, :description)
+  extend Character::Trait
+
   ALL = [
     new(key: "soldier", label: "Asker", description: "Disiplin ve savaş görmüşlük."),
     new(key: "criminal", label: "Suçlu", description: "Sokakların kuralsız okulu."),
@@ -7,12 +9,4 @@ class Character::Background < Data.define(:key, :label, :description)
     new(key: "traveler", label: "Gezgin", description: "Uzak yollar, yabancı sofralar."),
     new(key: "artisan", label: "Zanaatkâr", description: "Usta eller, sabırlı iş.")
   ].freeze
-  BY_KEY = ALL.index_by(&:key).freeze
-
-  class << self
-    def all = ALL
-    def keys = BY_KEY.keys
-    def [](key) = BY_KEY[key]
-    def fetch(key) = BY_KEY.fetch(key)
-  end
 end

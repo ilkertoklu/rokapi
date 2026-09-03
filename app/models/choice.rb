@@ -1,7 +1,7 @@
 class Choice < ApplicationRecord
   belongs_to :scene
 
-  has_one :roll, dependent: :destroy
+  has_one :roll, dependent: :delete
 
   scope :chosen, -> { where.not(chosen_at: nil) }
 

@@ -11,7 +11,7 @@ class GameSession < ApplicationRecord
   has_many :choices, through: :scenes
   has_many :rolls, through: :choices
   has_many :players, dependent: :destroy
-  has_many :llm_calls, dependent: :destroy
+  has_many :llm_calls, dependent: :delete_all
 
   enum :mode, %w[solo multi].index_by(&:itself)
   enum :tone, TONES.keys.index_by(&:itself), default: "balanced"
@@ -19,13 +19,16 @@ class GameSession < ApplicationRecord
   enum :state, %w[lobby playing finished].index_by(&:itself), default: "lobby"
   enum :outcome, %w[victory defeat].index_by(&:itself), prefix: true
 
+  store_accessor :story_bible, :title, :premise, :personal_stake, :antagonist, :ally, :twist, :beats,
+    :finale_question, :victory, :defeat, prefix: :story
+
   scope :ongoing, -> { where.not(state: :finished) }
 
   after_create -> { players.create!(user: creator, host: true) }
   after_update_commit :continue_narration_later, if: -> { playing? && state_previously_changed? }
 
   def title
-    adventure&.title || story_bible&.dig("title").presence || "Sürpriz macera"
+    adventure&.title || story_title.presence || "Sürpriz macera"
   end
 
   def player_for(user)
@@ -96,7 +99,7 @@ class GameSession < ApplicationRecord
   def resume_narration
     case (stuck = stalled_work)
     when Roll
-      stuck.narrate_outcome_later
+      stuck.resume_narration
     when Scene
       stuck.narrating!
       continue_narration_later

@@ -7,6 +7,8 @@ class Scene < ApplicationRecord
   belongs_to :active_player, class_name: "Player"
 
   has_many :choices, dependent: :destroy
+  has_one :chosen_choice, -> { chosen }, class_name: "Choice"
+  has_one :roll, through: :chosen_choice
 
   enum :state, %w[narrating choosing rolling played failed].index_by(&:itself), default: "narrating"
 
@@ -21,12 +23,8 @@ class Scene < ApplicationRecord
     broadcast_append_to game_session, target: :scene_narration, html: ERB::Util.html_escape(text)
   end
 
-  def chosen_choice
-    choices.detect(&:chosen?)
-  end
-
-  def roll
-    chosen_choice&.roll
+  def narrator_writing?
+    narrating? || played?
   end
 
   def roll_dice(by:)

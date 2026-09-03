@@ -4,7 +4,7 @@ class GameSessions::CharactersController < ApplicationController
 
   def new
     @character = @player.build_character(race: "human", klass: "warrior", background: "soldier")
-    @base_stats = Character.base_stats_for(@character.klass)
+    @character.stats = Character::Klass.fetch(@character.klass).base_stats
   end
 
   def create

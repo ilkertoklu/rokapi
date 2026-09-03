@@ -1,14 +1,12 @@
 <%# locals: (scene:) -%>
 <%= render "scenes/location", scene: scene %>
 
-<% writing = scene.narrating? || scene.played? %>
-
 <div class="narration">
-  <p class="scene__speaker overline"><span class="ember <%= "ember--pulsing" if writing %>"></span> Anlatıcı</p>
+  <p class="scene__speaker overline"><span class="ember <%= "ember--pulsing" if scene.narrator_writing? %>"></span> Anlatıcı</p>
   <div id="scene_narration" class="narration__body"><%= scene.narration %></div>
 </div>
 
-<% if writing %>
+<% if scene.narrator_writing? %>
   <div class="stage__footer">
     <p class="writing">
       Anlatıcı sahneyi yazıyor

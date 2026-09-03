@@ -3,7 +3,7 @@ class Player < ApplicationRecord
   belongs_to :user
 
   has_one :character, dependent: :destroy
-  has_many :rolls, dependent: :destroy
+  has_many :rolls, dependent: :delete_all
 
   delegate :initial, to: :user
 

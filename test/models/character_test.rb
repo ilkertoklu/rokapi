@@ -3,7 +3,7 @@ require "test_helper"
 class CharacterTest < ActiveSupport::TestCase
   setup do
     @player = players(:ilker_without_character_host)
-    @base = Character.base_stats_for("warrior")
+    @base = Character::Klass.fetch("warrior").base_stats
   end
 
   test "class base stats are balanced and complete" do
@@ -44,7 +44,7 @@ class CharacterTest < ActiveSupport::TestCase
   end
 
   test "a new character carries the class starting gear" do
-    base = Character.base_stats_for("healer")
+    base = Character::Klass.fetch("healer").base_stats
     character = @player.create_character!(
       race: "human", klass: "healer", background: "soldier",
       stats: base.merge("wisdom" => 18, "constitution" => 16)

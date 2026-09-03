@@ -25,7 +25,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".character-button span", text: "Karakterim"
 
     choice = game_session.current_scene.choices.find_by!(stat: "strength")
-    post game_session_chosen_choice_path(game_session, choice_id: choice.id)
+    post game_session_choice_selection_path(game_session, choice)
 
     get game_session_path(game_session)
     assert_select ".dice__prompt", text: choice.label
@@ -80,7 +80,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     game_session = play_to_choices
 
     choice = game_session.current_scene.choices.find_by!(stat: "strength")
-    post game_session_chosen_choice_path(game_session, choice_id: choice.id)
+    post game_session_choice_selection_path(game_session, choice)
     post game_session_roll_path(game_session)
     value = game_session.rolls.sole.value
 
@@ -103,7 +103,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     game_session = play_to_choices
 
     choice = game_session.current_scene.choices.find_by!(stat: "strength")
-    post game_session_chosen_choice_path(game_session, choice_id: choice.id)
+    post game_session_choice_selection_path(game_session, choice)
 
     stub_llm(FakeChat.new(OUTCOME_RESPONSE)) do
       perform_enqueued_jobs { post game_session_roll_path(game_session) }
@@ -132,7 +132,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     game_session = play_to_choices
 
     choice = game_session.current_scene.choices.find_by!(stat: "strength")
-    post game_session_chosen_choice_path(game_session, choice_id: choice.id)
+    post game_session_choice_selection_path(game_session, choice)
     post game_session_roll_path(game_session)
     clear_enqueued_jobs
     game_session.rolls.sole.stall_narration
@@ -148,6 +148,29 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert game_session.rolls.sole.reload.resolved?
     get game_session_path(game_session)
     assert_select ".outcome__verdict"
+  end
+
+  test "a story bible that never arrives can be sent back to the narrator" do
+    game_session = start_playing
+    clear_enqueued_jobs
+
+    stub_llm(FakeChat.new("Kitap yok.")) do
+      job = Scene::GenerateJob.new(game_session)
+      2.times { job.perform_now }
+      assert_raises(Narrator::MalformedResponse) { job.perform_now }
+    end
+    clear_enqueued_jobs
+
+    get game_session_path(game_session)
+    assert_select ".stalled"
+    assert_select ".location h1", text: "Kayıp Kervan"
+
+    stub_llm(FakeChat.new(PLAN_RESPONSE), FakeChat.new(SCENE_RESPONSE)) do
+      perform_enqueued_jobs { post game_session_narration_path(game_session) }
+    end
+
+    assert game_session.current_scene.choosing?
+    assert_equal 1, game_session.scenes.count
   end
 
   test "a stalled narrator can be sent back to work" do
@@ -171,7 +194,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
   test "a lost narration job can be nudged back to work" do
     game_session = play_to_choices
     choice = game_session.current_scene.choices.find_by!(stat: "strength")
-    post game_session_chosen_choice_path(game_session, choice_id: choice.id)
+    post game_session_choice_selection_path(game_session, choice)
     stub_llm(FakeChat.new(OUTCOME_RESPONSE)) do
       perform_enqueued_jobs { post game_session_roll_path(game_session) }
     end
@@ -213,8 +236,8 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     game_session = play_to_choices
     choice = game_session.current_scene.choices.first
 
-    post game_session_chosen_choice_path(game_session, choice_id: choice.id)
-    post game_session_chosen_choice_path(game_session, choice_id: choice.id)
+    post game_session_choice_selection_path(game_session, choice)
+    post game_session_choice_selection_path(game_session, choice)
     assert_redirected_to game_session_path(game_session)
 
     assert_equal 1, game_session.current_scene.choices.chosen.count
@@ -227,7 +250,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     choice = scene.choices.create! label: "Defteri oku", stat: "intelligence",
       modifier: -1, difficulty: 10, difficulty_label: "kolay"
 
-    post game_session_chosen_choice_path(game_session, choice_id: choice.id)
+    post game_session_choice_selection_path(game_session, choice)
     assert_response :not_found
 
     post game_session_roll_path(game_session)
@@ -249,7 +272,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
 
       post game_session_character_path(game_session), params: {
         character: { race: "elf", klass: "warrior", background: "traveler",
-                     stats: Character.base_stats_for("warrior").merge("strength" => 16, "constitution" => 15, "charisma" => 14) }
+                     stats: Character::Klass.fetch("warrior").base_stats.merge("strength" => 16, "constitution" => 15, "charisma" => 14) }
       }
 
       game_session
