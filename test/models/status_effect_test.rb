@@ -24,6 +24,12 @@ class StatusEffectTest < ActiveSupport::TestCase
     assert_equal "kuruyana dek", status.duration_label
   end
 
+  test "the database keeps modifiers within the dice range" do
+    assert_raises(ActiveRecord::StatementInvalid) do
+      @character.status_effects.create! name: "Kararlı", modifier: 3, turns_left: 2
+    end
+  end
+
   test "statuses sum into the character's dice modifier" do
     @character.status_effects.create! name: "Kararlı", modifier: 1, turns_left: 2
     @character.status_effects.create! name: "Yorgun", modifier: -2, expires_when: "dinlenene dek"

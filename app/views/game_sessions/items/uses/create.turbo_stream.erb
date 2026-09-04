@@ -1,4 +1,4 @@
 <%= turbo_stream.update :game_stage, partial: "game_sessions/items/uses/use",
-      locals: { game_session: @game_session, item: @item, hp_before: @hp_before } %>
+      locals: { game_session: @game_session, item: @item, restored: @restored } %>
 <%= turbo_stream.replace :character_sheet, partial: "characters/sheet",
       locals: { character: @item.character } %>

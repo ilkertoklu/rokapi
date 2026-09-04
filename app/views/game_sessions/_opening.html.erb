@@ -4,7 +4,7 @@
     <span class="location__pin"><%= render "glyph", name: "pin" %></span>
     <div>
       <h1><%= game_session.title %></h1>
-      <p><%= tone_label(game_session.tone) %> · <%= solo_length_label(game_session.length) %></p>
+      <p><%= GameSession::TONES.fetch(game_session.tone) %> · <%= GameSession::LENGTHS.fetch(game_session.length) %> · <%= solo_duration(game_session.length) %></p>
     </div>
   </div>
 </header>

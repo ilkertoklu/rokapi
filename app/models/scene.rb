@@ -12,8 +12,7 @@ class Scene < ApplicationRecord
 
   scope :chronological, -> { order(:position) }
 
-  after_create_commit -> { game_session.broadcast_stage }
-  after_update_commit -> { game_session.broadcast_stage }
+  after_save_commit -> { game_session.broadcast_stage }
 
   def broadcast_narration(text)
     broadcast_append_to game_session, target: :scene_narration, html: ERB::Util.html_escape(text)

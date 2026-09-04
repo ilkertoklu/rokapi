@@ -140,6 +140,39 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal 6, potions.sole.hp_effect, "the lost copy goes first so the replacement survives"
   end
 
+  test "a granted item and status arrive normalized" do
+    roll = play_first_scene
+
+    fake = FakeChat.new(%({"resolution": "Sandıkta bir merhem buldun ama sırılsıklam oldun.",
+      "effects": {"hp": 0,
+        "items_gained": [{"name": "Sarı merhem", "kind": "instant", "description": "", "hp": 5, "uses": 0}],
+        "statuses_gained": [{"name": "Sırılsıklam", "modifier": -5, "turns": 0, "expires_when": ""}]}}))
+    stub_llm(fake) { roll.narrate_outcome }
+
+    ointment = characters(:ilker_hero).items.find_by!(name: "Sarı merhem")
+    assert_equal 1, ointment.uses_left, "uses must be at least 1 or the item arrives dead"
+    assert_equal 5, ointment.hp_effect
+
+    soaked = characters(:ilker_hero).status_effects.find_by!(name: "Sırılsıklam")
+    assert_equal(-2, soaked.modifier, "narrator modifiers are clamped to the dice range")
+    assert_equal 2, soaked.turns_left, "an open-ended status would never wear off"
+    assert_nil soaked.expires_when
+    assert_equal(-2, roll.reload.statuses_gained.sole["modifier"], "the roll keeps the effects as applied")
+  end
+
+  test "an outcome granting an item of unknown kind is malformed" do
+    roll = play_first_scene
+
+    assert_no_difference -> { Item.count } do
+      stub_llm(FakeChat.new(%({"resolution": "Bir şey buldun.",
+        "effects": {"hp": 0, "items_gained": [{"name": "Eski tılsım", "kind": "relic"}]}}))) do
+        assert_raises(Narrator::MalformedResponse) { roll.narrate_outcome }
+      end
+    end
+
+    assert_nil roll.reload.resolution
+  end
+
   test "an outcome granting a nameless item is malformed" do
     roll = play_first_scene
 

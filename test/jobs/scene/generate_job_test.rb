@@ -19,6 +19,14 @@ class Scene::GenerateJobTest < ActiveSupport::TestCase
     assert game_session.current_scene.failed?
   end
 
+  test "one narration at a time per game session" do
+    job = Scene::GenerateJob.new(game_sessions(:ilker_solo))
+
+    assert job.concurrency_limited?
+    assert_equal 1, Scene::GenerateJob.concurrency_limit
+    assert_includes job.concurrency_key, "GameSession/#{game_sessions(:ilker_solo).id}"
+  end
+
   test "a rejected narrator fails the scene without retrying" do
     game_session = game_sessions(:ilker_solo)
     game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host)

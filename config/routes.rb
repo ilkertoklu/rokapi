@@ -3,7 +3,7 @@ Rails.application.routes.draw do
 
   resource :welcome, only: :show
 
-  resource :signup, only: %i[new create]
+  resource :signup, only: :new
   namespace :signup do
     resource :profile, only: %i[new create]
     resource :welcome, only: :show

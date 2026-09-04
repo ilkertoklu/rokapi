@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_03_090002) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_04_090003) do
   create_table "adventures", force: :cascade do |t|
     t.text "brief", null: false
     t.datetime "created_at", null: false
@@ -163,6 +163,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_03_090002) do
     t.integer "turns_left"
     t.datetime "updated_at", null: false
     t.index ["character_id", "name"], name: "index_status_effects_on_character_id_and_name", unique: true
+    t.check_constraint "modifier BETWEEN -2 AND 2", name: "status_effects_modifier_within_dice_range"
     t.check_constraint "turns_left IS NOT NULL OR expires_when IS NOT NULL", name: "status_effects_have_a_duration"
   end
 

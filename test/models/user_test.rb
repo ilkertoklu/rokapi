@@ -39,6 +39,11 @@ class UserTest < ActiveSupport::TestCase
     assert_not user.verify_login_code(code), "kod tüketildikten sonra tekrar kullanılamaz"
   end
 
+  test "the initial is uppercased the Turkish way" do
+    assert_equal "İ", User.new(name: "ilker").initial
+    assert_equal "I", User.new(name: "ışık").initial
+  end
+
   test "profile_complete?" do
     assert users(:ilker).profile_complete?
     assert_not users(:incomplete).profile_complete?

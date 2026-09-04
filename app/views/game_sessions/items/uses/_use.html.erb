@@ -1,14 +1,14 @@
-<%# locals: (game_session:, item:, hp_before:) -%>
+<%# locals: (game_session:, item:, restored:) -%>
 <div class="outcome outcome--restored">
   <span class="outcome__badge"><%= render "glyph", name: "flask" %></span>
 
-  <p class="outcome__verdict"><%= format("%+d", item.character.hp - hp_before) %> Can</p>
+  <p class="outcome__verdict"><%= format("%+d", restored) %> Can</p>
 
   <div class="outcome__vitals">
     <div class="vitals__row">
       <span class="vitals__label overline">Can</span>
       <span class="vitals__count">
-        <%= hp_before %> <span>→</span> <%= item.character.hp %> <span>/ <%= item.character.max_hp %></span>
+        <%= item.character.hp - restored %> <span>→</span> <%= item.character.hp %> <span>/ <%= item.character.max_hp %></span>
       </span>
     </div>
     <div class="vitals__track">

@@ -41,7 +41,9 @@ class Character < ApplicationRecord
   end
 
   def adjust_hp(delta)
+    before = hp
     update! hp: (hp + delta).clamp(0, max_hp) unless delta.zero?
+    hp - before
   end
 
   def sturdy?
@@ -56,22 +58,13 @@ class Character < ApplicationRecord
     status_effects.sum(:modifier)
   end
 
-  def gain_item(name:, kind:, description: nil, hp: 0, uses: nil)
-    items.create! name: name, kind: kind, description: description.presence,
-      hp_effect: (kind == "instant" ? hp.to_i : 0),
-      uses_left: ([ uses.to_i, 1 ].max if kind == "instant")
-  end
-
   def lose_item(name)
     items.carried.where(name: name).delete_all
   end
 
-  def gain_status(name:, modifier:, turns: 0, expires_when: nil)
-    turns_left = turns.to_i.positive? ? turns.to_i : (2 if expires_when.blank?)
-
+  def gain_status(name:, **attributes)
     status_effects.where(name: name).delete_all
-    status_effects.create! name: name, modifier: modifier.to_i.clamp(-2, 2),
-      turns_left: turns_left, expires_when: expires_when.presence
+    status_effects.create! name: name, **attributes
   end
 
   def lose_status(name)
@@ -80,10 +73,8 @@ class Character < ApplicationRecord
 
   private
     def stats_match_allocation
-      archetype = Klass[klass]
-      return if archetype.nil?
+      return unless (base = Klass[klass]&.base_stats)
 
-      base = archetype.base_stats
       values = STAT_KEYS.index_with { |key| stats.to_h[key].to_i }
       out_of_range = values.any? { |key, value| value < base[key] || value > STAT_CAP }
       misallocated = values.values.sum != base.values.sum + FREE_POINTS
@@ -92,10 +83,9 @@ class Character < ApplicationRecord
     end
 
     def derive_hp
-      archetype = Klass[klass]
-      return if archetype.nil? || stats.blank?
+      return unless stats.present? && (chosen = Klass[klass])
 
-      self.max_hp = archetype.base_hp + (stats["constitution"].to_i - 10)
+      self.max_hp = chosen.base_hp + (stats["constitution"].to_i - 10)
       self.hp = max_hp
     end
 

@@ -59,31 +59,10 @@ class CharacterTest < ActiveSupport::TestCase
     assert_equal 7, potion.hp_effect
   end
 
-  test "a gained item arrives with at least one use" do
-    ointment = characters(:ilker_hero).gain_item(name: "Sarı merhem", kind: "instant", hp: 5, uses: 0)
-
-    assert_equal 1, ointment.uses_left, "uses must be at least 1 or the item arrives dead"
-    assert_equal 5, ointment.hp_effect
-  end
-
-  test "a gained status is clamped to the dice range" do
-    resolute = characters(:ilker_hero).gain_status(name: "Kararlı", modifier: 5, turns: 2)
-
-    assert_equal 2, resolute.modifier, "narrator modifiers are clamped"
-    assert_equal 2, resolute.turns_left
-  end
-
-  test "a status with no duration lasts two turns" do
-    soaked = characters(:ilker_hero).gain_status(name: "Sırılsıklam", modifier: -1, turns: 0, expires_when: "")
-
-    assert_equal 2, soaked.turns_left, "an open-ended status would never wear off"
-    assert_nil soaked.expires_when
-  end
-
   test "a regained status replaces its namesake instead of stacking" do
     character = characters(:ilker_hero)
-    character.gain_status(name: "Sırılsıklam", modifier: -2, turns: 2)
-    character.gain_status(name: "Sırılsıklam", modifier: -1, turns: 3)
+    character.gain_status(name: "Sırılsıklam", modifier: -2, turns_left: 2)
+    character.gain_status(name: "Sırılsıklam", modifier: -1, turns_left: 3)
 
     soaked = character.status_effects.where(name: "Sırılsıklam").sole
     assert_equal(-1, soaked.modifier)

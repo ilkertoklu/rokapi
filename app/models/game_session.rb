@@ -16,13 +16,13 @@ class GameSession < ApplicationRecord
   enum :mode, %w[solo multi].index_by(&:itself)
   enum :tone, TONES.keys.index_by(&:itself), default: "balanced", validate: true
   enum :length, LENGTHS.keys.index_by(&:itself), default: "medium", validate: true
-  enum :state, %w[lobby playing finished].index_by(&:itself), default: "lobby"
+  enum :state, %w[lobby playing].index_by(&:itself), default: "lobby"
   enum :outcome, %w[victory defeat].index_by(&:itself), prefix: true
 
   store_accessor :story_bible, :title, :premise, :personal_stake, :antagonist, :ally, :twist, :beats,
     :finale_question, :victory, :defeat, prefix: :story
 
-  scope :ongoing, -> { where.not(state: :finished) }
+  scope :ongoing, -> { where(ended_at: nil) }
 
   after_create -> { players.create!(user: creator) }
 
@@ -70,8 +70,12 @@ class GameSession < ApplicationRecord
       attributes: { method: :morph }
   end
 
+  def finished?
+    ended_at.present?
+  end
+
   def finish(outcome)
-    update! state: :finished, outcome: outcome, ended_at: Time.current
+    update! outcome: outcome, ended_at: Time.current
   end
 
   def duration

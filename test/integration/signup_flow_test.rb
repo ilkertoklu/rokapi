@@ -2,7 +2,7 @@ require "test_helper"
 
 class SignupFlowTest < ActionDispatch::IntegrationTest
   test "signing up: email, code, profile, welcome" do
-    post signup_path, params: { email: "taze@posta.com" }
+    post session_path, params: { email: "taze@posta.com" }
     assert_redirected_to new_sessions_code_path
 
     user = User.find_by!(email: "taze@posta.com")
@@ -36,9 +36,19 @@ class SignupFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_signup_profile_path
   end
 
-  test "invalid email is rejected with an alert" do
-    post signup_path, params: { email: "gecersiz" }
+  test "the signup screen sends its form through the login flow" do
+    get new_signup_path
+
+    assert_select "form[action=?]", session_path
+    assert_select "a[href=?]", new_session_path
+  end
+
+  test "invalid email returns to the screen it was typed on" do
+    post session_path, params: { email: "gecersiz" }, headers: { "HTTP_REFERER" => new_signup_url }
     assert_redirected_to new_signup_path
     assert_equal "Geçerli bir e-posta adresi gir.", flash[:alert]
+
+    post session_path, params: { email: "gecersiz" }
+    assert_redirected_to new_session_path
   end
 end

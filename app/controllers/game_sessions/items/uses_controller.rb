@@ -5,7 +5,6 @@ class GameSessions::Items::UsesController < ApplicationController
 
   def create
     @item = @player.character.items.usable.find(params[:item_id])
-    @hp_before = @player.character.hp
-    @item.use
+    @restored = @item.use
   end
 end

@@ -105,14 +105,8 @@ class Roll < ApplicationRecord
       character.adjust_hp hp_change
 
       items_lost.each { |name| character.lose_item name }
-      items_gained.each do |grant|
-        character.gain_item name: grant["name"], kind: grant["kind"],
-          description: grant["description"], hp: grant["hp"], uses: grant["uses"]
-      end
+      items_gained.each { |item| character.items.create! item }
       statuses_lost.each { |name| character.lose_status name }
-      statuses_gained.each do |grant|
-        character.gain_status name: grant["name"], modifier: grant["modifier"],
-          turns: grant["turns"], expires_when: grant["expires_when"]
-      end
+      statuses_gained.each { |status| character.gain_status(**status.symbolize_keys) }
     end
 end

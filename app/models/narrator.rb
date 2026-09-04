@@ -142,16 +142,38 @@ class Narrator
 
     def effects_in(data, roll)
       effects = data["effects"].to_h
-      grants = Array(effects["items_gained"]) + Array(effects["statuses_gained"])
-      raise MalformedResponse, "nameless grant" if grants.any? { |grant| grant["name"].blank? }
 
-      effects.merge "statuses_gained" => earned_statuses(Array(effects["statuses_gained"]), roll)
+      { "hp" => effects["hp"].to_i,
+        "items_gained" => Array(effects["items_gained"]).map { |grant| item_in(grant) },
+        "items_lost" => Array(effects["items_lost"]),
+        "statuses_gained" => earned_statuses(Array(effects["statuses_gained"]).map { |grant| status_in(grant) }, roll),
+        "statuses_lost" => Array(effects["statuses_lost"]) }
+    end
+
+    def item_in(grant)
+      kind = grant["kind"].presence_in(Item.kinds.keys) || raise(MalformedResponse, "unknown item kind #{grant["kind"].inspect}")
+
+      { "name" => name_in(grant), "kind" => kind, "description" => grant["description"].presence,
+        "hp_effect" => (kind == "instant" ? grant["hp"].to_i : 0),
+        "uses_left" => ([ grant["uses"].to_i, 1 ].max if kind == "instant") }
+    end
+
+    def status_in(grant)
+      turns = grant["turns"].to_i
+      expires_when = grant["expires_when"].presence
+
+      { "name" => name_in(grant), "modifier" => grant["modifier"].to_i.clamp(-2, 2),
+        "turns_left" => (turns.positive? ? turns : (2 if expires_when.nil?)), "expires_when" => expires_when }
+    end
+
+    def name_in(grant)
+      grant["name"].presence || raise(MalformedResponse, "nameless grant")
     end
 
     def earned_statuses(statuses, roll)
       return statuses if roll.grade == :critical
 
-      statuses.reject { |status| status["modifier"].to_i.positive? }
+      statuses.reject { |status| status["modifier"].positive? }
     end
 
     def outcome_in(data)

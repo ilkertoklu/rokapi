@@ -223,6 +223,23 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to game_session_path(game_session)
   end
 
+  test "a nudge while the next scene is still queued does not double the work" do
+    game_session = play_to_choices
+    choice = game_session.current_scene.choices.find_by!(stat: "strength")
+    post game_session_choice_selection_path(game_session, choice)
+    stub_llm(FakeChat.new(OUTCOME_RESPONSE)) do
+      perform_enqueued_jobs { post game_session_roll_path(game_session) }
+    end
+    post game_session_acknowledgement_path(game_session)
+    post game_session_narration_path(game_session)
+    assert_enqueued_jobs 2, only: Scene::GenerateJob
+
+    stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { perform_enqueued_jobs }
+
+    assert_equal 2, game_session.scenes.count
+    assert_equal 3, game_session.current_scene.choices.count
+  end
+
   test "rolling out of turn does not blow up" do
     game_session = play_to_choices
     assert game_session.current_scene.choosing?

@@ -5,8 +5,7 @@ class Session < ApplicationRecord
 
   before_create { self.last_active_at ||= Time.current }
 
-  def resumed
+  def resume
     update! last_active_at: Time.current if last_active_at < ACTIVITY_REFRESH_INTERVAL.ago
-    self
   end
 end

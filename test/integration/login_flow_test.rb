@@ -12,6 +12,13 @@ class LoginFlowTest < ActionDispatch::IntegrationTest
     assert_response :success
   end
 
+  test "the code stays out of the logs" do
+    post session_path, params: { email: users(:ilker).email }
+    post sessions_code_path, params: { code: last_delivered_login_code }
+
+    assert_equal "[FILTERED]", request.filtered_parameters["code"]
+  end
+
   test "wrong code keeps the user on the code page" do
     post session_path, params: { email: users(:ilker).email }
 
