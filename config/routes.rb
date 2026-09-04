@@ -9,7 +9,11 @@ Rails.application.routes.draw do
     resource :welcome, only: :show
   end
 
-  resources :game_sessions, only: %i[new create show] do
+  namespace :game_sessions do
+    resource :solo, only: %i[new create]
+  end
+
+  resources :game_sessions, only: %i[new show] do
     scope module: :game_sessions do
       resource :character, only: %i[new create]
       resource :roll, only: :create

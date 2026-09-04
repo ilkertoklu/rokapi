@@ -1,12 +1,12 @@
 require "test_helper"
 
 class GameSessionTest < ActiveSupport::TestCase
-  test "creating a session enrolls the creator as host" do
+  include ActiveJob::TestHelper
+
+  test "creating a session enrolls the creator" do
     game_session = GameSession.create!(creator: users(:ilker), mode: :solo, adventure: adventures(:golun_sirri))
 
-    player = game_session.players.sole
-    assert_equal users(:ilker), player.user
-    assert player.host?
+    assert_equal users(:ilker), game_session.players.sole.user
     assert game_session.lobby?
   end
 
@@ -15,14 +15,20 @@ class GameSessionTest < ActiveSupport::TestCase
     assert_equal "Sürpriz macera", GameSession.new.title
   end
 
-  test "starts when every player is ready" do
-    game_session = game_sessions(:ilker_solo)
+  test "starts and calls the narrator once every player has a character" do
+    game_session = game_sessions(:ilker_without_character)
 
-    game_session.start_when_ready
+    assert_no_enqueued_jobs only: Scene::GenerateJob do
+      game_session.start_when_ready
+    end
     assert game_session.lobby?
 
-    game_session.players.sole.update!(ready: true)
-    game_session.start_when_ready
+    players(:ilker_without_character_host).create_character! race: "human", klass: "warrior", background: "soldier",
+      stats: Character::Klass.fetch("warrior").base_stats.merge("strength" => 16, "constitution" => 15, "charisma" => 14)
+
+    assert_enqueued_with job: Scene::GenerateJob, args: [ game_session ] do
+      game_session.start_when_ready
+    end
     assert game_session.reload.playing?
   end
 
@@ -33,7 +39,7 @@ class GameSessionTest < ActiveSupport::TestCase
     choice = scene.choices.create! label: "Defteri oku", stat: "intelligence",
       modifier: -1, difficulty: 10, difficulty_label: "kolay"
     choice.choose
-    choice.roll_dice(by: players(:ilker_solo_host))
+    scene.roll_dice(by: players(:ilker_solo_host))
     LlmCall.record! game_session: game_session, purpose: :scene,
       response: RubyLLM::Message.new(role: :assistant, content: "x", model_id: "gpt-5-mini",
                                      input_tokens: 10, output_tokens: 10)

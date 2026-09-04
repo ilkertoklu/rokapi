@@ -10,7 +10,6 @@ class Player < ApplicationRecord
   def ready_up(character_attributes)
     transaction do
       create_character! character_attributes
-      update! ready: true
       game_session.start_when_ready
     end
   end

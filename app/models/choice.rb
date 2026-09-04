@@ -23,18 +23,7 @@ class Choice < ApplicationRecord
   end
 
   def roll_dice(by:)
-    transaction do
-      raise Scene::OutOfTurn unless scene.rolling? && chosen?
-
-      scene.played!
-
-      create_roll!(
-        player: by,
-        value: rand(1..Roll::DIE),
-        modifier: modifier,
-        status_modifier: by.character.status_modifier,
-        target: difficulty
-      )
-    end
+    create_roll! player: by, value: rand(1..Roll::DIE), modifier: modifier,
+      status_modifier: by.character.status_modifier, target: difficulty
   end
 end

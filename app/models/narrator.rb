@@ -29,7 +29,7 @@ class Narrator
   private
     def owed?
       scene = @game_session.current_scene
-      return true if scene.nil? || scene.narrating? || scene.failed?
+      return true if scene.nil? || scene.narrating?
 
       scene.played? && !scene.finale? && scene.roll&.acknowledged?
     end
@@ -50,7 +50,7 @@ class Narrator
     end
 
     def next_scene
-      @game_session.scenes.unwritten.chronological.last ||
+      @game_session.scenes.narrating.chronological.last ||
         @game_session.scenes.create!(position: (@game_session.scenes.maximum(:position) || 0) + 1,
                                      active_player: @game_session.players.order(:created_at).first)
     end

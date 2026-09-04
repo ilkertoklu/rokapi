@@ -4,7 +4,7 @@
       data: { controller: "stats", stats_free_value: Character::FREE_POINTS, stats_cap_value: Character::STAT_CAP,
               stats_klass_value: @character.klass, stats_bases_value: Character::Klass.base_stats_by_key.to_json } do |form| %>
 
-  <%= render "back", to: new_game_session_path(mode: :solo), title: "Karakterini oluştur" %>
+  <%= render "back", to: new_game_sessions_solo_path, title: "Karakterini oluştur" %>
 
   <%= render "choice_fieldset", form: form, legend: "Irk", attribute: :race,
         options: Character::Race.all, selected: @character.race %>
@@ -18,14 +18,15 @@
   <fieldset class="choices">
     <legend>Temel özellikler <span class="hint" data-stats-target="remaining"></span></legend>
 
-    <% Character::STATS.each do |key, label| %>
-      <div class="stat-row">
-        <span class="stat-row__label"><%= label %></span>
-        <button type="button" class="stepper" data-action="stats#decrement" data-stats-key-param="<%= key %>">−</button>
-        <%= number_field_tag "character[stats][#{key}]", @character.stats[key], readonly: true,
-              data: { stats_target: "value", key: key } %>
-        <button type="button" class="stepper" data-action="stats#increment" data-stats-key-param="<%= key %>">+</button>
-      </div>
+    <%= form.fields_for :stats do |stats| %>
+      <% Character::STATS.each do |key, label| %>
+        <div class="stat-row">
+          <span class="stat-row__label"><%= label %></span>
+          <%= tag.button "−", type: "button", class: "stepper", data: { action: "stats#decrement", stats_key_param: key } %>
+          <%= stats.number_field key, value: @character.stats[key], readonly: true, data: { stats_target: "value", key: key } %>
+          <%= tag.button "+", type: "button", class: "stepper", data: { action: "stats#increment", stats_key_param: key } %>
+        </div>
+      <% end %>
     <% end %>
   </fieldset>
 

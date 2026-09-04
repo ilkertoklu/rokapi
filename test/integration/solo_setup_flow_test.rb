@@ -11,31 +11,37 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
     get new_game_session_path
     assert_select ".page-head h1", text: "Yeni macera"
     assert_select ".pick__title", text: "Tek kişilik"
+    assert_select "a[href=?]", new_game_sessions_solo_path
 
-    get new_game_session_path(mode: :solo)
+    get new_game_sessions_solo_path
     assert_select ".pick__title", text: "Kayıp Kervan"
     assert_select ".pick__title", text: "Sürpriz"
 
-    post game_sessions_path, params: {
+    post game_sessions_solo_path, params: {
       game_session: { adventure_id: adventures(:kayip_kervan).id, tone: "dark", length: "short" }
     }
     game_session = users(:sevval).game_sessions.sole
     assert_redirected_to new_game_session_character_path(game_session)
 
-    post game_session_character_path(game_session), params: {
-      character: { race: "elf", klass: "warrior", background: "traveler", stats: @valid_stats }
-    }
+    get new_game_session_character_path(game_session)
+    assert_select "input[name=?][value=?]", "character[stats][strength]", "14"
+    assert_select ".choice-description:not([hidden])", 3
+
+    assert_enqueued_with job: Scene::GenerateJob, args: [ game_session ] do
+      post game_session_character_path(game_session), params: {
+        character: { race: "elf", klass: "warrior", background: "traveler", stats: @valid_stats }
+      }
+    end
     assert_redirected_to game_session_path(game_session)
 
     follow_redirect!
     assert_select ".location h1", text: "Kayıp Kervan"
     assert_select ".writing", text: /Anlatıcı hazırlanıyor/
     assert game_session.reload.playing?
-    assert game_session.player_for(users(:sevval)).ready?
   end
 
   test "surprise adventures have no adventure record" do
-    post game_sessions_path, params: { game_session: { adventure_id: "", tone: "fun", length: "medium" } }
+    post game_sessions_solo_path, params: { game_session: { adventure_id: "", tone: "fun", length: "medium" } }
 
     game_session = users(:sevval).game_sessions.sole
     assert_nil game_session.adventure
@@ -54,10 +60,10 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "tampered setup values are refused" do
-    assert_raises ArgumentError do
-      post game_sessions_path, params: { game_session: { adventure_id: "", tone: "hacked", length: "short" } }
-    end
+    post game_sessions_solo_path, params: { game_session: { adventure_id: "", tone: "hacked", length: "short" } }
 
+    assert_redirected_to new_game_sessions_solo_path
+    assert_equal "Kurulum geçersiz. Seçimlerini kontrol et.", flash[:alert]
     assert_empty users(:sevval).game_sessions
   end
 
@@ -105,7 +111,7 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
 
   private
     def create_solo_session
-      post game_sessions_path, params: {
+      post game_sessions_solo_path, params: {
         game_session: { adventure_id: adventures(:kayip_kervan).id, tone: "balanced", length: "short" }
       }
       users(:sevval).game_sessions.sole

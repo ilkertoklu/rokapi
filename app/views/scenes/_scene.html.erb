@@ -6,19 +6,8 @@
   <div id="scene_narration" class="narration__body"><%= scene.narration %></div>
 </div>
 
-<% if scene.narrator_writing? %>
-  <div class="stage__footer">
-    <p class="writing">
-      Anlatıcı sahneyi yazıyor
-      <span class="writing__dots"><span></span><span></span><span></span></span>
-    </p>
-    <div class="overdue">
-      <div class="stalled">
-        <p class="hint">Anlatıcı gecikti. Hikâyeyi kaldığı yerden sürdürebilirsin.</p>
-        <%= button_to "Yeniden dene", game_session_narration_path(scene.game_session), class: "btn btn--secondary" %>
-      </div>
-    </div>
-  </div>
+<% if scene.choosing? %>
+  <%= render "scenes/choices", scene: scene %>
 <% elsif scene.failed? %>
   <div class="stage__footer">
     <div class="stalled">
@@ -26,6 +15,19 @@
       <%= button_to "Yeniden dene", game_session_narration_path(scene.game_session), class: "btn btn--secondary" %>
     </div>
   </div>
-<% elsif scene.choosing? %>
-  <%= render "scenes/choices", scene: scene %>
+<% elsif scene.narrator_writing? %>
+  <div class="stage__footer">
+    <p class="writing">
+      Anlatıcı sahneyi yazıyor
+      <span class="writing__dots"><span></span><span></span><span></span></span>
+    </p>
+    <% if scene.played? %>
+      <div class="overdue">
+        <div class="stalled">
+          <p class="hint">Anlatıcı gecikti. Hikâyeyi kaldığı yerden sürdürebilirsin.</p>
+          <%= button_to "Yeniden dene", game_session_narration_path(scene.game_session), class: "btn btn--secondary" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
 <% end %>

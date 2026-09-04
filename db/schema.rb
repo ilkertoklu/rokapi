@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_26_201642) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_03_090002) do
   create_table "adventures", force: :cascade do |t|
     t.text "brief", null: false
     t.datetime "created_at", null: false
@@ -102,8 +102,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_26_201642) do
   create_table "players", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "game_session_id", null: false
-    t.boolean "host", default: false, null: false
-    t.boolean "ready", default: false, null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["game_session_id", "user_id"], name: "index_players_on_game_session_id_and_user_id", unique: true
@@ -132,6 +130,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_26_201642) do
   create_table "scenes", force: :cascade do |t|
     t.integer "active_player_id", null: false
     t.datetime "created_at", null: false
+    t.datetime "failed_at"
     t.boolean "finale", default: false, null: false
     t.integer "game_session_id", null: false
     t.string "location"

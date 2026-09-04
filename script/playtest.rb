@@ -121,10 +121,10 @@ when "auto"
 
     choices = scene.choices.order(:difficulty).to_a
     take game_session, case strategy
-                       when "bold" then choices.last
-                       when "safe" then choices.first
-                       else choices[rng.rand(3)]
-                       end
+    when "bold" then choices.last
+    when "safe" then choices.first
+    else choices[rng.rand(3)]
+    end
     game_session.reload
   end
 else

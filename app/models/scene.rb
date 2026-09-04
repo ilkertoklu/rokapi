@@ -1,8 +1,6 @@
 class Scene < ApplicationRecord
   class OutOfTurn < StandardError; end
 
-  UNWRITTEN_STATES = %w[narrating failed].freeze
-
   belongs_to :game_session, touch: true
   belongs_to :active_player, class_name: "Player"
 
@@ -10,11 +8,9 @@ class Scene < ApplicationRecord
   has_one :chosen_choice, -> { chosen }, class_name: "Choice"
   has_one :roll, through: :chosen_choice
 
-  enum :state, %w[narrating choosing rolling played failed].index_by(&:itself), default: "narrating"
+  enum :state, %w[narrating choosing rolling played].index_by(&:itself), default: "narrating"
 
   scope :chronological, -> { order(:position) }
-  scope :written, -> { where.not(state: UNWRITTEN_STATES) }
-  scope :unwritten, -> { where(state: UNWRITTEN_STATES) }
 
   after_create_commit -> { game_session.broadcast_stage }
   after_update_commit -> { game_session.broadcast_stage }
@@ -23,14 +19,30 @@ class Scene < ApplicationRecord
     broadcast_append_to game_session, target: :scene_narration, html: ERB::Util.html_escape(text)
   end
 
+  def failed?
+    failed_at.present?
+  end
+
   def narrator_writing?
-    narrating? || played?
+    (narrating? || played?) && !failed?
+  end
+
+  def stall_narration
+    update! failed_at: Time.current
+  end
+
+  def resume_narration
+    update! failed_at: nil
+    game_session.continue_narration_later
   end
 
   def roll_dice(by:)
-    raise OutOfTurn unless rolling?
+    transaction do
+      raise OutOfTurn unless rolling?
 
-    chosen_choice.roll_dice(by: by)
+      played!
+      chosen_choice.roll_dice(by: by)
+    end
   end
 
   def counter

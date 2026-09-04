@@ -24,10 +24,10 @@ class ChoiceTest < ActiveSupport::TestCase
   end
 
   test "the dice are rolled once, on the chosen choice of a rolling scene" do
-    assert_raises(Scene::OutOfTurn) { @choice.roll_dice(by: players(:ilker_solo_host)) }
+    assert_raises(Scene::OutOfTurn) { @scene.roll_dice(by: players(:ilker_solo_host)) }
 
     @choice.choose
-    roll = @choice.roll_dice(by: players(:ilker_solo_host))
+    roll = @scene.roll_dice(by: players(:ilker_solo_host))
 
     assert @scene.reload.played?
     assert_includes 1..Roll::DIE, roll.value
@@ -36,12 +36,12 @@ class ChoiceTest < ActiveSupport::TestCase
     assert_equal roll.value + roll.modifier, roll.total
     assert_equal roll.total >= roll.target, roll.success?
 
-    assert_raises(Scene::OutOfTurn) { @choice.roll_dice(by: players(:ilker_solo_host)) }
+    assert_raises(Scene::OutOfTurn) { @scene.roll_dice(by: players(:ilker_solo_host)) }
   end
 
   test "hp effects clamp between zero and max" do
     @choice.choose
-    roll = @choice.roll_dice(by: players(:ilker_solo_host))
+    roll = @scene.roll_dice(by: players(:ilker_solo_host))
 
     roll.resolve resolution: "Ağır darbe.", effects: { "hp" => -99 }
     assert_equal 0, characters(:ilker_hero).reload.hp

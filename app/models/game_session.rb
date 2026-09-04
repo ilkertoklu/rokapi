@@ -14,8 +14,8 @@ class GameSession < ApplicationRecord
   has_many :llm_calls, dependent: :delete_all
 
   enum :mode, %w[solo multi].index_by(&:itself)
-  enum :tone, TONES.keys.index_by(&:itself), default: "balanced"
-  enum :length, LENGTHS.keys.index_by(&:itself), default: "medium"
+  enum :tone, TONES.keys.index_by(&:itself), default: "balanced", validate: true
+  enum :length, LENGTHS.keys.index_by(&:itself), default: "medium", validate: true
   enum :state, %w[lobby playing finished].index_by(&:itself), default: "lobby"
   enum :outcome, %w[victory defeat].index_by(&:itself), prefix: true
 
@@ -24,8 +24,7 @@ class GameSession < ApplicationRecord
 
   scope :ongoing, -> { where.not(state: :finished) }
 
-  after_create -> { players.create!(user: creator, host: true) }
-  after_update_commit :continue_narration_later, if: -> { playing? && state_previously_changed? }
+  after_create -> { players.create!(user: creator) }
 
   def title
     adventure&.title || story_title.presence || "Sürpriz macera"
@@ -36,7 +35,10 @@ class GameSession < ApplicationRecord
   end
 
   def start_when_ready
-    update! state: :playing if lobby? && players.where(ready: false).none?
+    if lobby? && players.where.missing(:character).none?
+      update! state: :playing
+      continue_narration_later
+    end
   end
 
   def scene_budget
@@ -60,11 +62,7 @@ class GameSession < ApplicationRecord
   end
 
   def stalled_work
-    roll = pending_roll
-    return roll if roll&.failed?
-
-    scene = current_scene
-    scene if scene&.failed?
+    [ pending_roll, current_scene ].compact.find(&:failed?)
   end
 
   def broadcast_stage
@@ -93,18 +91,14 @@ class GameSession < ApplicationRecord
   end
 
   def stall_narration
-    current_scene&.failed!
+    current_scene&.stall_narration
   end
 
   def resume_narration
-    case (stuck = stalled_work)
-    when Roll
+    if (stuck = stalled_work)
       stuck.resume_narration
-    when Scene
-      stuck.narrating!
+    elsif !current_scene&.narrating?
       continue_narration_later
-    else
-      continue_narration_later unless current_scene&.narrating?
     end
   end
 end

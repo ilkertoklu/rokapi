@@ -17,7 +17,5 @@ class LlmCall < ApplicationRecord
   def self.microdollars_for(response)
     cost = RubyLLM.models.find(response.model_id).cost_for(response)
     (cost.total.to_f * 1_000_000).round
-  rescue RubyLLM::ModelNotFoundError
-    0
   end
 end

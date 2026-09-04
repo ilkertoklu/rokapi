@@ -189,7 +189,7 @@ class NarratorTest < ActiveSupport::TestCase
     scene = @game_session.current_scene
     choice = scene.choices.find_by!(stat: "strength")
     choice.choose
-    roll = choice.roll_dice(by: scene.active_player)
+    roll = scene.roll_dice(by: scene.active_player)
 
     assert_equal(-2, roll.status_modifier)
     assert_equal roll.value + 3 - 2, roll.total
@@ -558,13 +558,13 @@ class NarratorTest < ActiveSupport::TestCase
     def choose_and_roll(scene)
       choice = scene.choices.first
       choice.choose
-      choice.roll_dice(by: scene.active_player)
+      scene.roll_dice(by: scene.active_player)
     end
 
     def roll_strength(scene)
       choice = scene.choices.find_by!(stat: "strength")
       choice.choose
-      choice.roll_dice(by: scene.active_player)
+      scene.roll_dice(by: scene.active_player)
     end
 
     def roll_with(value:)
@@ -582,6 +582,6 @@ class NarratorTest < ActiveSupport::TestCase
       choice = scene.choices.create! label: "Devam", stat: "strength", modifier: 3,
         difficulty: 12, difficulty_label: "orta"
       choice.choose
-      choice.roll_dice(by: players(:ilker_solo_host))
+      scene.roll_dice(by: players(:ilker_solo_host))
     end
 end

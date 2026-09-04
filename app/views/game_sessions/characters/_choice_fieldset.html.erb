@@ -11,8 +11,9 @@
     <% end %>
   </div>
   <% options.each do |option| %>
-    <p class="choice-description" data-choices-target="description" data-key="<%= option.key %>" <%= "hidden" unless option.key == selected %>>
+    <%= tag.p class: "choice-description", hidden: option.key != selected,
+        data: { choices_target: "description", key: option.key } do %>
       <strong><%= option.label %>:</strong> <%= option.description %>
-    </p>
+    <% end %>
   <% end %>
 </fieldset>

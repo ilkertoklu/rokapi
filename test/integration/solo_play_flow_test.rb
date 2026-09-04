@@ -176,7 +176,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
   test "a stalled narrator can be sent back to work" do
     game_session = start_playing
     clear_enqueued_jobs
-    game_session.scenes.create! position: 1, active_player: game_session.players.sole, state: :failed
+    game_session.scenes.create! position: 1, active_player: game_session.players.sole, failed_at: Time.current
 
     get game_session_path(game_session)
     assert_select ".stalled"
@@ -265,7 +265,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     end
 
     def start_playing
-      post game_sessions_path, params: {
+      post game_sessions_solo_path, params: {
         game_session: { adventure_id: adventures(:kayip_kervan).id, tone: "balanced", length: "short" }
       }
       game_session = users(:sevval).game_sessions.sole
