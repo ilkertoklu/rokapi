@@ -87,16 +87,8 @@ class Narrator
 
     def structure_in(reply)
       reply.structure
-    rescue JSON::ParserError
-      repair(reply.json)
-    end
-
-    def repair(json)
-      response = new_chat(model: helper_model).ask(@briefing.repair_prompt(json))
-      record_call :repair, response
-      JSON.parse response.content.to_s.sub(/\A\s*```(?:json)?/, "").sub(/```\s*\z/m, "").strip
-    rescue JSON::ParserError
-      raise MalformedResponse, "repair failed"
+    rescue JSON::ParserError => error
+      raise MalformedResponse, error.message
     end
 
     def open_scene(scene, data)
@@ -199,14 +191,8 @@ class Narrator
       end
     end
 
-    def helper_model
-      Rails.configuration.x.llm.helper_model
-    end
-
-    def new_chat(model: nil, instructions: nil)
-      chat = RubyLLM.chat(model: model)
-      chat.with_instructions(instructions) if instructions
-      chat
+    def new_chat(instructions:)
+      RubyLLM.chat.with_instructions(instructions)
     end
 
     def record_call(purpose, response)

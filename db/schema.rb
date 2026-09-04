@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_04_090003) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_04_120001) do
   create_table "adventures", force: :cascade do |t|
     t.text "brief", null: false
     t.datetime "created_at", null: false
@@ -56,7 +56,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_04_090003) do
     t.string "length", null: false
     t.string "mode", null: false
     t.string "outcome"
-    t.string "state", default: "lobby", null: false
+    t.datetime "started_at"
     t.json "story_bible"
     t.string "tone", null: false
     t.datetime "updated_at", null: false

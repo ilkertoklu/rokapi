@@ -406,7 +406,7 @@
 
   .highlights {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
 
     strong {
       display: block;
@@ -420,33 +420,6 @@
       font-size: .72rem;
       letter-spacing: .08em;
       text-transform: uppercase;
-      color: var(--color-ink-soft);
-    }
-  }
-
-  .party {
-    display: flex;
-    justify-content: center;
-    gap: .9rem;
-    margin: 1.5rem 0 0;
-    padding: 0;
-    list-style: none;
-
-    li {
-      text-align: center;
-    }
-
-    .avatar {
-      display: flex;
-      inline-size: 40px;
-      block-size: 40px;
-      margin: 0 auto;
-    }
-
-    span:last-child {
-      display: block;
-      margin-block-start: .3rem;
-      font-size: .75rem;
       color: var(--color-ink-soft);
     }
   }

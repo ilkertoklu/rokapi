@@ -129,14 +129,6 @@ class Narrator::Briefing
       wounded_block(scene), pacing_block(scene), action_block ].compact.join("\n\n")
   end
 
-  def repair_prompt(json)
-    <<~PROMPT
-      Aşağıdaki bozuk JSON'u düzelt. Yanıt olarak YALNIZCA geçerli JSON döndür, başka hiçbir şey yazma:
-
-      #{json}
-    PROMPT
-  end
-
   private
     def persona
       "#{identity}\n#{language_rules}"

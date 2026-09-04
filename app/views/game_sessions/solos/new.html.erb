@@ -44,10 +44,10 @@
   <fieldset class="choices">
     <legend>Uzunluk</legend>
     <div class="segmented">
-      <% GameSession::LENGTHS.each do |value, label| %>
+      <% GameSession::Length.all.each do |length| %>
         <label class="segment">
-          <%= form.radio_button :length, value, checked: value == "medium" %>
-          <span><%= label %><small><%= solo_duration(value) %></small></span>
+          <%= form.radio_button :length, length.key, checked: length.key == "medium" %>
+          <span><%= length.label %><small><%= length.estimate %></small></span>
         </label>
       <% end %>
     </div>

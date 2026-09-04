@@ -7,7 +7,7 @@ class GameSessionTest < ActiveSupport::TestCase
     game_session = GameSession.create!(creator: users(:ilker), mode: :solo, adventure: adventures(:golun_sirri))
 
     assert_equal users(:ilker), game_session.players.sole.user
-    assert game_session.lobby?
+    assert_not game_session.started?
   end
 
   test "title falls back for surprise adventures" do
@@ -21,7 +21,7 @@ class GameSessionTest < ActiveSupport::TestCase
     assert_no_enqueued_jobs only: Scene::GenerateJob do
       game_session.start_when_ready
     end
-    assert game_session.lobby?
+    assert_not game_session.started?
 
     players(:ilker_without_character_host).create_character! race: "human", klass: "warrior", background: "soldier",
       stats: Character::Klass.fetch("warrior").base_stats.merge("strength" => 16, "constitution" => 15, "charisma" => 14)
@@ -29,7 +29,7 @@ class GameSessionTest < ActiveSupport::TestCase
     assert_enqueued_with job: Scene::GenerateJob, args: [ game_session ] do
       game_session.start_when_ready
     end
-    assert game_session.reload.playing?
+    assert game_session.reload.started?
   end
 
   test "destroying a session cascades through every play record" do

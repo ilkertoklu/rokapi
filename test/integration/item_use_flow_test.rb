@@ -5,7 +5,7 @@ class ItemUseFlowTest < ActionDispatch::IntegrationTest
     sign_in_as users(:ilker)
 
     @game_session = game_sessions(:ilker_solo)
-    @game_session.update! state: :playing
+    @game_session.update! started_at: Time.current
     @game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host),
       state: :choosing, title: "Eski Han", narration: "Yağmur."
     @character = characters(:ilker_hero)

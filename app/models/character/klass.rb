@@ -1,5 +1,5 @@
 class Character::Klass < Data.define(:key, :label, :description, :base_hp, :base_stats, :gear)
-  extend Character::Trait
+  extend Catalog
 
   ALL = [
     new(key: "warrior", label: "Savaşçı", description: "Ön safta dövüşür; uzun kılıç ve yuvarlak kalkanla başlar.",

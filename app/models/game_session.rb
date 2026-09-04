@@ -1,8 +1,5 @@
 class GameSession < ApplicationRecord
   TONES = { "fun" => "Eğlenceli", "balanced" => "Dengeli", "dark" => "Karanlık" }.freeze
-  LENGTHS = { "short" => "Kısa", "medium" => "Orta", "long" => "Uzun" }.freeze
-
-  SCENE_BUDGETS = { "short" => 7, "medium" => 12, "long" => 18 }.freeze
 
   belongs_to :adventure, optional: true
   belongs_to :creator, class_name: "User", default: -> { Current.user }
@@ -15,8 +12,7 @@ class GameSession < ApplicationRecord
 
   enum :mode, %w[solo multi].index_by(&:itself)
   enum :tone, TONES.keys.index_by(&:itself), default: "balanced", validate: true
-  enum :length, LENGTHS.keys.index_by(&:itself), default: "medium", validate: true
-  enum :state, %w[lobby playing].index_by(&:itself), default: "lobby"
+  enum :length, Length.keys.index_by(&:itself), default: "medium", validate: true
   enum :outcome, %w[victory defeat].index_by(&:itself), prefix: true
 
   store_accessor :story_bible, :title, :premise, :personal_stake, :antagonist, :ally, :twist, :beats,
@@ -34,15 +30,19 @@ class GameSession < ApplicationRecord
     players.find_by(user: user)
   end
 
+  def started?
+    started_at.present?
+  end
+
   def start_when_ready
-    if lobby? && players.where.missing(:character).none?
-      update! state: :playing
+    if !started? && players.where.missing(:character).none?
+      update! started_at: Time.current
       continue_narration_later
     end
   end
 
   def scene_budget
-    SCENE_BUDGETS.fetch(length)
+    Length.fetch(length).scenes
   end
 
   def current_scene
@@ -55,10 +55,6 @@ class GameSession < ApplicationRecord
 
   def unseen_roll
     rolls.unseen.order(:id).first
-  end
-
-  def acknowledge_roll
-    unseen_roll&.acknowledge
   end
 
   def stalled_work
@@ -80,10 +76,6 @@ class GameSession < ApplicationRecord
 
   def duration
     ended_at - created_at
-  end
-
-  def survivors_count
-    players.joins(:character).where(characters: { hp: 1.. }).count
   end
 
   def continue_narration

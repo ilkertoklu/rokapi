@@ -5,5 +5,3 @@ RubyLLM.configure do |config|
   config.default_model = "gpt-5.4"
   config.use_new_acts_as = true
 end
-
-Rails.application.config.x.llm.helper_model = "gpt-5-mini"

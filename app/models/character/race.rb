@@ -1,5 +1,5 @@
 class Character::Race < Data.define(:key, :label, :description)
-  extend Character::Trait
+  extend Catalog
 
   ALL = [
     new(key: "human", label: "İnsan", description: "Çok yönlü ve dengeli; her sınıfa kolay uyum sağlar."),

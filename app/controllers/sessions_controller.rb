@@ -1,4 +1,6 @@
 class SessionsController < ApplicationController
+  include LoginCodes
+
   require_unauthenticated_access except: :destroy
   skip_before_action :ensure_profile_complete
   rate_limit to: 5, within: 3.minutes, only: :create,

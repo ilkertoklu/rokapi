@@ -1,4 +1,4 @@
-module Character::Trait
+module Catalog
   def all = self::ALL
   def keys = by_key.keys
   def [](key) = by_key[key]

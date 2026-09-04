@@ -37,7 +37,7 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_select ".location h1", text: "Kayıp Kervan"
     assert_select ".writing", text: /Anlatıcı hazırlanıyor/
-    assert game_session.reload.playing?
+    assert game_session.reload.started?
   end
 
   test "surprise adventures have no adventure record" do

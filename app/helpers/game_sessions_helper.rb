@@ -1,10 +1,4 @@
 module GameSessionsHelper
-  SOLO_DURATIONS = { "short" => "~15 dk", "medium" => "~30 dk", "long" => "~60 dk" }.freeze
-
-  def solo_duration(length)
-    SOLO_DURATIONS.fetch(length)
-  end
-
   def duration_label(duration)
     minutes = (duration / 60).round
     minutes >= 60 ? "#{minutes / 60}sa #{minutes % 60}dk" : "#{minutes}dk"
@@ -18,8 +12,7 @@ module GameSessionsHelper
 
   def finale_share_text(game_session)
     outcome = game_session.outcome_victory? ? "Zafer" : "Yenilgi"
-    highlights = [ game_session.title, duration_label(game_session.duration),
-                   "#{game_session.rolls.count} zar", "#{game_session.survivors_count} hayatta" ].join(" · ")
+    highlights = [ game_session.title, duration_label(game_session.duration), "#{game_session.rolls.count} zar" ].join(" · ")
 
     "#{game_session.current_scene.title} — #{outcome}\n#{highlights}"
   end

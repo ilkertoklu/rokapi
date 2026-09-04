@@ -1,5 +1,5 @@
 class Character::Background < Data.define(:key, :label, :description)
-  extend Character::Trait
+  extend Catalog
 
   ALL = [
     new(key: "soldier", label: "Asker", description: "Disiplin ve savaş görmüşlük."),

@@ -21,20 +21,7 @@
       <strong><%= game_session.rolls.count %></strong>
       <span>Zar atıldı</span>
     </div>
-    <div>
-      <strong><%= game_session.survivors_count %></strong>
-      <span>Hayatta</span>
-    </div>
   </div>
-
-  <ul class="party">
-    <% game_session.players.includes(:user).each do |player| %>
-      <li>
-        <span class="avatar"><%= player.initial %></span>
-        <span><%= player.user.name %></span>
-      </li>
-    <% end %>
-  </ul>
 </div>
 
 <div class="stage__footer">

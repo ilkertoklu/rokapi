@@ -321,7 +321,6 @@ class NarratorTest < ActiveSupport::TestCase
     assert_includes scene_call.prompt, "Çekmece açıldı ama elini kestin."
     assert_includes scene_call.prompt, "VURUŞ: Köprü ayağındaki yarık görülüyor."
     assert_equal 4, scene_call.prompt.scan("→ Seçim:").size
-    assert_empty @game_session.llm_calls.where(purpose: "repair")
   end
 
   test "the surprise adventure takes its name from the bible" do
@@ -542,7 +541,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert_not @game_session.reload.finished?
   end
 
-  test "malformed structure block raises after a failed repair" do
+  test "a broken structure block is malformed" do
     stub_llm(FakeChat.new("Anlatı geldi ama yapı yok. ```json {bozuk``` ")) do
       assert_raises Narrator::MalformedResponse do
         narrate

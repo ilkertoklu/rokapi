@@ -1,4 +1,6 @@
 class Sessions::ResendsController < ApplicationController
+  include LoginCodes
+
   require_unauthenticated_access
   rate_limit to: 3, within: 5.minutes,
     with: -> { redirect_to new_sessions_code_path, alert: "Çok sık kod istendi. Birkaç dakika bekle." }

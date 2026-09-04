@@ -1,10 +1,11 @@
 <%# locals: (game_session:) -%>
+<% length = GameSession::Length.fetch(game_session.length) %>
 <header class="location">
   <div class="location__place">
     <span class="location__pin"><%= render "glyph", name: "pin" %></span>
     <div>
       <h1><%= game_session.title %></h1>
-      <p><%= GameSession::TONES.fetch(game_session.tone) %> · <%= GameSession::LENGTHS.fetch(game_session.length) %> · <%= solo_duration(game_session.length) %></p>
+      <p><%= GameSession::TONES.fetch(game_session.tone) %> · <%= length.label %> · <%= length.estimate %></p>
     </div>
   </div>
 </header>
