@@ -1,4 +1,5 @@
-<%# locals: (game_session:) -%>
+<%# locals: (scene:) -%>
+<% game_session = scene.game_session %>
 <% length = GameSession::Length.fetch(game_session.length) %>
 <header class="location">
   <div class="location__place">
@@ -11,9 +12,7 @@
 </header>
 
 <div class="narration">
-  <p class="scene__speaker overline"><span class="ember ember--pulsing"></span> Anlatıcı</p>
+  <p class="scene__speaker overline"><span class="ember <%= "ember--pulsing" if scene.narrator_writing? %>"></span> Anlatıcı</p>
 </div>
 
-<div class="stage__footer">
-  <%= render "game_sessions/writing", text: "Anlatıcı hazırlanıyor" %>
-</div>
+<%= render "game_sessions/waiting", scene: scene, text: "Anlatıcı hazırlanıyor" %>

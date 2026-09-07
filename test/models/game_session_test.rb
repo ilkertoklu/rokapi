@@ -4,7 +4,7 @@ class GameSessionTest < ActiveSupport::TestCase
   include ActiveJob::TestHelper
 
   test "creating a session enrolls the creator" do
-    game_session = GameSession.create!(creator: users(:ilker), mode: :solo, adventure: adventures(:golun_sirri))
+    game_session = GameSession.create!(creator: users(:ilker), quest: "sunken_village")
 
     assert_equal users(:ilker), game_session.players.sole.user
     assert_equal game_session.players.sole, game_session.host
@@ -19,18 +19,20 @@ class GameSessionTest < ActiveSupport::TestCase
   test "starts and calls the narrator once every player has a character" do
     game_session = game_sessions(:ilker_without_character)
 
-    assert_no_enqueued_jobs only: Scene::GenerateJob do
+    assert_no_enqueued_jobs only: Scene::NarrateJob do
       game_session.start_when_ready
     end
     assert_not game_session.started?
+    assert_empty game_session.scenes
 
     players(:ilker_without_character_host).create_character! race: "human", klass: "warrior", background: "soldier",
       stats: Character::Klass.fetch("warrior").base_stats.merge("strength" => 16, "constitution" => 15, "charisma" => 14)
 
-    assert_enqueued_with job: Scene::GenerateJob, args: [ game_session ] do
+    assert_enqueued_with job: Scene::NarrateJob do
       game_session.start_when_ready
     end
     assert game_session.reload.started?
+    assert game_session.scenes.sole.narrating?
   end
 
   test "destroying a session cascades through every play record" do
@@ -38,7 +40,7 @@ class GameSessionTest < ActiveSupport::TestCase
     scene = game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host),
       state: :choosing, title: "Eski Han"
     choice = scene.choices.create! label: "Defteri oku", stat: "intelligence",
-      modifier: -1, difficulty: 10
+      modifier: -1, target: 10
     choice.choose
     scene.roll_dice(by: players(:ilker_solo_host))
     LlmCall.record game_session: game_session, purpose: :scene,

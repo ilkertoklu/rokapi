@@ -30,7 +30,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     get game_session_path(game_session)
     assert_select ".dice__prompt", text: choice.label
     assert_select ".d20__value", text: "?"
-    assert_select ".dice__facts dd", text: /Hedef #{choice.difficulty}/
+    assert_select ".dice__facts dd", text: /Hedef #{choice.target}/
 
     stub_llm(FakeChat.new(OUTCOME_RESPONSE)) do
       perform_enqueued_jobs { post game_session_roll_path(game_session) }
@@ -59,8 +59,8 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
 
   test "the scene keeps its layout when the narrator stops writing" do
     game_session = start_playing
-    scene = game_session.scenes.create! position: 1, active_player: game_session.players.sole,
-      state: :narrating, title: "Eski Han", narration: "Yağmur."
+    scene = game_session.current_scene
+    scene.update! title: "Eski Han", narration: "Yağmur."
 
     get game_session_path(game_session)
     assert_select ".writing", 1
@@ -155,7 +155,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     clear_enqueued_jobs
 
     stub_llm(FakeChat.new("Kitap yok.")) do
-      job = Scene::GenerateJob.new(game_session)
+      job = Scene::NarrateJob.new(game_session.current_scene)
       2.times { job.perform_now }
       assert_raises(Narrator::MalformedResponse) { job.perform_now }
     end
@@ -176,7 +176,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
   test "a stalled narrator can be sent back to work" do
     game_session = start_playing
     clear_enqueued_jobs
-    game_session.scenes.create! position: 1, active_player: game_session.players.sole, stalled_at: Time.current
+    game_session.current_scene.stall_narration
 
     get game_session_path(game_session)
     assert_select ".stalled"
@@ -212,18 +212,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert game_session.current_scene.choosing?
   end
 
-  test "a nudge while the narrator is writing does not double the work" do
-    game_session = play_to_choices
-    game_session.current_scene.narrating!
-
-    assert_no_enqueued_jobs only: Scene::GenerateJob do
-      post game_session_narration_path(game_session)
-    end
-
-    assert_redirected_to game_session_path(game_session)
-  end
-
-  test "a nudge while the next scene is still queued does not double the work" do
+  test "a nudge while the next scene is owed does not double the work" do
     game_session = play_to_choices
     choice = game_session.current_scene.choices.find_by!(stat: "strength")
     post game_session_choice_selection_path(game_session, choice)
@@ -232,7 +221,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     end
     post game_session_acknowledgement_path(game_session)
     post game_session_narration_path(game_session)
-    assert_enqueued_jobs 2, only: Scene::GenerateJob
+    assert_enqueued_jobs 2, only: Scene::NarrateJob
 
     stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { perform_enqueued_jobs }
 
@@ -265,7 +254,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     scene = game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host),
       state: :choosing, title: "Eski Han"
     choice = scene.choices.create! label: "Defteri oku", stat: "intelligence",
-      modifier: -1, difficulty: 10
+      modifier: -1, target: 10
 
     post game_session_choice_selection_path(game_session, choice)
     assert_response :not_found
@@ -283,7 +272,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
 
     def start_playing
       post game_sessions_solo_path, params: {
-        game_session: { adventure_id: adventures(:kayip_kervan).id, tone: "balanced", length: "short" }
+        game_session: { quest: "lost_caravan", tone: "balanced", length: "short" }
       }
       game_session = users(:sevval).game_sessions.sole
 

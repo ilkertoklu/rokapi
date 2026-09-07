@@ -18,7 +18,7 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
     assert_select ".pick__title", text: "Sürpriz"
 
     post game_sessions_solo_path, params: {
-      game_session: { adventure_id: adventures(:kayip_kervan).id, tone: "dark", length: "short" }
+      game_session: { quest: "lost_caravan", tone: "dark", length: "short" }
     }
     game_session = users(:sevval).game_sessions.sole
     assert_redirected_to new_game_session_character_path(game_session)
@@ -27,7 +27,7 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
     assert_select "input[name=?][value=?]", "character[stats][strength]", "14"
     assert_select ".choice-description:not([hidden])", 3
 
-    assert_enqueued_with job: Scene::GenerateJob, args: [ game_session ] do
+    assert_enqueued_with job: Scene::NarrateJob do
       post game_session_character_path(game_session), params: {
         character: { race: "elf", klass: "warrior", background: "traveler", stats: @valid_stats }
       }
@@ -38,13 +38,14 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
     assert_select ".location h1", text: "Kayıp Kervan"
     assert_select ".writing", text: /Anlatıcı hazırlanıyor/
     assert game_session.reload.started?
+    assert game_session.scenes.sole.narrating?
   end
 
-  test "surprise adventures have no adventure record" do
-    post game_sessions_solo_path, params: { game_session: { adventure_id: "", tone: "fun", length: "medium" } }
+  test "surprise adventures have no quest record" do
+    post game_sessions_solo_path, params: { game_session: { quest: "", tone: "fun", length: "medium" } }
 
     game_session = users(:sevval).game_sessions.sole
-    assert_nil game_session.adventure
+    assert_nil game_session.quest
     assert_equal "Sürpriz macera", game_session.title
   end
 
@@ -60,10 +61,14 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "tampered setup values are refused" do
-    post game_sessions_solo_path, params: { game_session: { adventure_id: "", tone: "hacked", length: "short" } }
+    post game_sessions_solo_path, params: { game_session: { quest: "", tone: "hacked", length: "short" } }
 
     assert_redirected_to new_game_sessions_solo_path
     assert_equal "Kurulum geçersiz. Seçimlerini kontrol et.", flash[:alert]
+
+    post game_sessions_solo_path, params: { game_session: { quest: "hacked", tone: "balanced", length: "short" } }
+
+    assert_redirected_to new_game_sessions_solo_path
     assert_empty users(:sevval).game_sessions
   end
 
@@ -112,7 +117,7 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
   private
     def create_solo_session
       post game_sessions_solo_path, params: {
-        game_session: { adventure_id: adventures(:kayip_kervan).id, tone: "balanced", length: "short" }
+        game_session: { quest: "lost_caravan", tone: "balanced", length: "short" }
       }
       users(:sevval).game_sessions.sole
     end

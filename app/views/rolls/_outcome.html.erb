@@ -4,7 +4,7 @@
 
   <p class="outcome__math">
     <%= roll.value %> <span><%= format("%+d", roll.modifier) %> <%= Character::Stat.fetch(roll.choice.stat).label.downcase %></span>
-    = <strong><%= roll.total %></strong> · hedef <%= roll.target %> · <%= roll.choice.difficulty_label.capitalize %>
+    = <strong><%= roll.total %></strong> · hedef <%= roll.target %> · <%= roll.choice.difficulty.capitalize %>
   </p>
 
   <p class="outcome__verdict"><%= outcome_verdict(roll) %></p>

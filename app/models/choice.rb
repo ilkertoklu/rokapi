@@ -1,7 +1,11 @@
 class Choice < ApplicationRecord
+  TARGET_RANGE = 5..19
+
   belongs_to :scene
 
   has_one :roll, dependent: :delete
+
+  normalizes :target, with: ->(target) { target.clamp(TARGET_RANGE) }
 
   scope :chosen, -> { where.not(chosen_at: nil) }
 
@@ -9,10 +13,10 @@ class Choice < ApplicationRecord
     scene.active_player.character.stats.fetch(stat)
   end
 
-  def easy? = difficulty <= 11
-  def hard? = difficulty >= 16
+  def easy? = target <= 11
+  def hard? = target >= 16
 
-  def difficulty_label
+  def difficulty
     case
     when easy? then "kolay"
     when hard? then "zor"
@@ -34,7 +38,6 @@ class Choice < ApplicationRecord
   end
 
   def roll_dice(by:)
-    create_roll! player: by, value: rand(1..Roll::DIE), modifier: modifier,
-      status_modifier: by.character.status_modifier, target: difficulty
+    create_roll! player: by, value: rand(1..Roll::DIE), status_modifier: by.character.status_modifier
   end
 end

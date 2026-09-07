@@ -1,6 +1,8 @@
 class Scene < ApplicationRecord
   class OutOfTurn < StandardError; end
 
+  include Stallable
+
   belongs_to :game_session, touch: true
   belongs_to :active_player, class_name: "Player"
 
@@ -18,21 +20,24 @@ class Scene < ApplicationRecord
     broadcast_update_to game_session, target: :scene_narration, html: ERB::Util.html_escape(text)
   end
 
-  def stalled?
-    stalled_at.present?
+  def first?
+    position == 1
+  end
+
+  def opening?
+    first? && title.nil?
   end
 
   def narrator_writing?
-    (narrating? || played?) && !stalled?
+    narrating? && !stalled?
   end
 
-  def stall_narration
-    update! stalled_at: Time.current
+  def narrate
+    Narrator.new(game_session).narrate_scene(self)
   end
 
-  def resume_narration
-    update! stalled_at: nil
-    game_session.continue_narration_later
+  def narrate_later
+    Scene::NarrateJob.perform_later self
   end
 
   def roll_dice(by:)

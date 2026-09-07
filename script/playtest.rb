@@ -12,7 +12,7 @@ def show_scene(scene)
     puts "\n*** OYUN BİTTİ: #{session.outcome.upcase} *** maliyet $#{format('%.3f', session.llm_calls.sum(:cost_in_microdollars) / 1e6)}"
   else
     scene.choices.order(:id).each_with_index do |choice, index|
-      puts "  #{index + 1}) [#{Character::Stat.fetch(choice.stat).label} #{format('%+d', choice.modifier)} | #{choice.difficulty_label} hedef #{choice.difficulty}] #{choice.label} — #{choice.difficulty_reason}"
+      puts "  #{index + 1}) [#{Character::Stat.fetch(choice.stat).label} #{format('%+d', choice.modifier)} | #{choice.difficulty} hedef #{choice.target}] #{choice.label} — #{choice.difficulty_reason}"
     end
   end
 end
@@ -41,14 +41,14 @@ def allocate_stats(klass)
   stats
 end
 
-def start_game(adventure_title, tone, length, race, klass, background)
+def start_game(quest_title, tone, length, race, klass, background)
   user = User.find_or_create_by!(email: "playtest-#{ENV.fetch('BOT', 'a')}@rokapi.test") do |new_user|
     new_user.name = ENV.fetch("BOT_NAME", "Ege")
     new_user.terms_accepted_at = Time.current
   end
   Current.session = Session.new(user: user)
-  adventure = adventure_title == "surprise" ? nil : Adventure.find_by!(title: adventure_title)
-  game_session = GameSession.create!(mode: :solo, adventure: adventure, tone: tone, length: length, creator: user)
+  quest = quest_title == "surprise" ? nil : GameSession::Quest.all.find { |candidate| candidate.title == quest_title } || abort("görev yok: #{quest_title}")
+  game_session = GameSession.create!(quest: quest&.key, tone: tone, length: length, creator: user)
   timed("plan+sahne1") { game_session.players.first.ready_up(race: race, klass: klass, background: background, stats: allocate_stats(klass)) }
   game_session.reload
   puts "SESSION #{game_session.id} — #{game_session.title} (#{RubyLLM.config.default_model})"
@@ -76,7 +76,7 @@ def catch_up(game_session)
   if scene.rolling?
     play_out game_session
   elsif !scene.choosing?
-    timed("devam") { game_session.continue_narration }
+    timed("devam") { game_session.current_scene.narrate }
     show_scene game_session.reload.current_scene
   end
 end
@@ -119,7 +119,7 @@ when "auto"
       puts "\n>>> #{potion.name} içildi → CAN #{character.reload.hp}/#{character.max_hp}"
     end
 
-    choices = scene.choices.order(:difficulty).to_a
+    choices = scene.choices.order(:target).to_a
     take game_session, case strategy
     when "bold" then choices.last
     when "safe" then choices.first

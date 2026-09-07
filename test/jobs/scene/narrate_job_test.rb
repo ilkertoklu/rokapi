@@ -1,12 +1,12 @@
 require "test_helper"
 
-class Scene::GenerateJobTest < ActiveSupport::TestCase
+class Scene::NarrateJobTest < ActiveSupport::TestCase
   test "a narrator that keeps failing leaves the scene stalled" do
     game_session = game_sessions(:ilker_solo)
-    game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host)
+    scene = game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host)
 
     stub_llm(FakeChat.new("Anlatı geldi ama yapı yok.")) do
-      job = Scene::GenerateJob.new(game_session)
+      job = Scene::NarrateJob.new(scene)
 
       2.times { job.perform_now }
       assert game_session.current_scene.narrating?
@@ -21,11 +21,11 @@ class Scene::GenerateJobTest < ActiveSupport::TestCase
 
   test "a rejected narrator stalls the scene without retrying" do
     game_session = game_sessions(:ilker_solo)
-    game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host)
+    scene = game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host)
 
     stub_llm(broken_chat(RubyLLM::UnauthorizedError.new(nil, "bad key"))) do
       assert_raises RubyLLM::UnauthorizedError do
-        Scene::GenerateJob.new(game_session).perform_now
+        Scene::NarrateJob.new(scene).perform_now
       end
     end
 
@@ -34,11 +34,11 @@ class Scene::GenerateJobTest < ActiveSupport::TestCase
 
   test "a failure the narrator never anticipated still stalls the scene" do
     game_session = game_sessions(:ilker_solo)
-    game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host)
+    scene = game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host)
 
     stub_llm(broken_chat(Faraday::TimeoutError.new)) do
       assert_raises Faraday::TimeoutError do
-        Scene::GenerateJob.new(game_session).perform_now
+        Scene::NarrateJob.new(scene).perform_now
       end
     end
 

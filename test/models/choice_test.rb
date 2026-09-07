@@ -4,7 +4,7 @@ class ChoiceTest < ActiveSupport::TestCase
   setup do
     @scene = game_sessions(:ilker_solo).scenes.create! position: 1,
       active_player: players(:ilker_solo_host), state: :choosing, title: "Eski Han"
-    @choice = @scene.choices.create! label: "Çekmeceyi zorla", stat: "strength", modifier: 3, difficulty: 14
+    @choice = @scene.choices.create! label: "Çekmeceyi zorla", stat: "strength", modifier: 3, target: 14
   end
 
   test "choose marks the choice and moves the scene to rolling" do
@@ -15,16 +15,16 @@ class ChoiceTest < ActiveSupport::TestCase
   end
 
   test "a scene accepts only one chosen choice" do
-    other = @scene.choices.create! label: "Defteri oku", stat: "intelligence", modifier: -1, difficulty: 10
+    other = @scene.choices.create! label: "Defteri oku", stat: "intelligence", modifier: -1, target: 10
     @choice.choose
 
     assert_raises(Scene::OutOfTurn) { other.choose }
   end
 
-  test "the difficulty label follows the target" do
-    assert_equal "kolay", Choice.new(difficulty: 10).difficulty_label
-    assert_equal "orta", Choice.new(difficulty: 12).difficulty_label
-    assert_equal "zor", Choice.new(difficulty: 16).difficulty_label
+  test "the target label follows the target" do
+    assert_equal "kolay", Choice.new(target: 10).difficulty
+    assert_equal "orta", Choice.new(target: 12).difficulty
+    assert_equal "zor", Choice.new(target: 16).difficulty
   end
 
   test "the dice are rolled once, on the chosen choice of a rolling scene" do

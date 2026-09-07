@@ -4,8 +4,8 @@ class RollsHelperTest < ActionView::TestCase
   setup do
     scene = game_sessions(:ilker_solo).scenes.create! position: 1, active_player: players(:ilker_solo_host),
       state: :choosing, title: "Sınama"
-    choice = scene.choices.create! label: "Dene", stat: "strength", modifier: 3, difficulty: 14
-    @roll = choice.create_roll! player: players(:ilker_solo_host), value: 14, modifier: 3, status_modifier: 0, target: 14
+    choice = scene.choices.create! label: "Dene", stat: "strength", modifier: 3, target: 14
+    @roll = choice.create_roll! player: players(:ilker_solo_host), value: 14, status_modifier: 0
   end
 
   test "the reel comes to rest on the rolled value and never reshuffles" do
