@@ -15,7 +15,7 @@
     <div>
       <dt class="overline">Katkı</dt>
       <dd>
-        <%= Character::STATS.fetch(choice.stat) %> <%= choice.stat_value %>
+        <%= Character::Stat.fetch(choice.stat).label %> <%= choice.stat_value %>
         <span class="arrow">→</span>
         <span class="modifier"><%= format("%+d", choice.modifier) %></span>
       </dd>
@@ -34,9 +34,6 @@
     <%= render "game_sessions/stalled", game_session: game_session,
           hint: "Anlatıcı duraksadı. Zarın sonucu henüz yazılamadı." %>
   <% else %>
-    <p class="writing">
-      Anlatıcı sonucu yazıyor
-      <span class="writing__dots"><span></span><span></span><span></span></span>
-    </p>
+    <%= render "game_sessions/writing", text: "Anlatıcı sonucu yazıyor" %>
   <% end %>
 </div>

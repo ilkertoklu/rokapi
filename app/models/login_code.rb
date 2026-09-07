@@ -10,8 +10,10 @@ class LoginCode < ApplicationRecord
   scope :active, -> { where(expires_at: Time.current...).where(attempts_count: ...MAX_ATTEMPTS) }
   scope :stale, -> { where(expires_at: ..Time.current) }
 
-  before_create { self.code = SecureRandom.random_number(10**CODE_LENGTH).to_s.rjust(CODE_LENGTH, "0") }
-  before_create { self.expires_at ||= EXPIRATION_TIME.from_now }
+  before_create do
+    self.code = SecureRandom.random_number(10**CODE_LENGTH).to_s.rjust(CODE_LENGTH, "0")
+    self.expires_at ||= EXPIRATION_TIME.from_now
+  end
 
   def self.cleanup
     stale.delete_all

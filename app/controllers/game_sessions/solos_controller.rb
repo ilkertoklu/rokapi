@@ -7,7 +7,7 @@ class GameSessions::SolosController < ApplicationController
   end
 
   def create
-    game_session = GameSession.create!(mode: :solo, **game_session_params)
+    game_session = GameSession.solo.create!(game_session_params)
     redirect_to new_game_session_character_path(game_session)
   rescue ActiveRecord::RecordInvalid
     redirect_to new_game_sessions_solo_path, alert: "Kurulum geçersiz. Seçimlerini kontrol et."

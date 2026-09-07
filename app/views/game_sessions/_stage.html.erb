@@ -2,14 +2,12 @@
 <div id="game_stage" class="stage">
   <% scene = game_session.current_scene %>
   <% roll = scene&.roll %>
-  <% if roll && !roll.resolved? %>
-    <%= render "rolls/dice", choice: roll.choice, roll: roll, game_session: game_session %>
+  <% if scene&.rolling? || roll&.pending? %>
+    <%= render "rolls/dice", choice: scene.chosen_choice, roll: roll, game_session: game_session %>
   <% elsif roll&.unseen? %>
     <%= render "rolls/outcome", roll: roll, game_session: game_session %>
   <% elsif game_session.finished? %>
     <%= render "game_sessions/finale", game_session: game_session %>
-  <% elsif scene&.rolling? %>
-    <%= render "rolls/dice", choice: scene.chosen_choice, roll: nil, game_session: game_session %>
   <% elsif scene %>
     <%= render "scenes/scene", scene: scene %>
   <% else %>

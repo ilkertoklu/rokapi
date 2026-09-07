@@ -3,7 +3,7 @@
   <%= render "rolls/die", roll: roll %>
 
   <p class="outcome__math">
-    <%= roll.value %> <span><%= format("%+d", roll.modifier) %> <%= Character::STATS.fetch(roll.choice.stat).downcase %></span>
+    <%= roll.value %> <span><%= format("%+d", roll.modifier) %> <%= Character::Stat.fetch(roll.choice.stat).label.downcase %></span>
     = <strong><%= roll.total %></strong> · hedef <%= roll.target %> · <%= roll.choice.difficulty_label.capitalize %>
   </p>
 

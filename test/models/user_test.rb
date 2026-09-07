@@ -30,7 +30,7 @@ class UserTest < ActiveSupport::TestCase
     code = user.send_login_code.code
 
     assert user.verify_login_code(code)
-    assert_not user.verify_login_code(code), "kod tüketildikten sonra tekrar kullanılamaz"
+    assert_not user.verify_login_code(code), "a consumed code cannot be used again"
   end
 
   test "the initial is uppercased the Turkish way" do

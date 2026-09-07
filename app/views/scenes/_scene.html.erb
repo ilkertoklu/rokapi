@@ -15,10 +15,7 @@
   </div>
 <% elsif scene.narrator_writing? %>
   <div class="stage__footer">
-    <p class="writing">
-      Anlatıcı sahneyi yazıyor
-      <span class="writing__dots"><span></span><span></span><span></span></span>
-    </p>
+    <%= render "game_sessions/writing", text: "Anlatıcı sahneyi yazıyor" %>
     <% if scene.played? %>
       <div class="overdue">
         <%= render "game_sessions/stalled", game_session: scene.game_session,

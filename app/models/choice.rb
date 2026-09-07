@@ -9,11 +9,14 @@ class Choice < ApplicationRecord
     scene.active_player.character.stats.fetch(stat)
   end
 
+  def easy? = difficulty <= 11
+  def hard? = difficulty >= 16
+
   def difficulty_label
-    case difficulty
-    when ..11 then "kolay"
-    when 12..15 then "orta"
-    else "zor"
+    case
+    when easy? then "kolay"
+    when hard? then "zor"
+    else "orta"
     end
   end
 

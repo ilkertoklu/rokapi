@@ -158,7 +158,7 @@ class Narrator
     end
 
     def earned_statuses(statuses, roll)
-      return statuses if roll.grade == :critical
+      return statuses if roll.critical?
 
       statuses.reject { |status| status["modifier"].positive? }
     end
@@ -185,7 +185,7 @@ class Narrator
     end
 
     def stat_in(choice)
-      choice["stat"].presence_in(Character::STAT_KEYS) || raise(MalformedResponse, "unknown stat #{choice["stat"].inspect}")
+      choice["stat"].presence_in(Character::Stat.keys) || raise(MalformedResponse, "unknown stat #{choice["stat"].inspect}")
     end
 
     def difficulty_in(choice)

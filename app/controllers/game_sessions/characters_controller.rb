@@ -4,8 +4,7 @@ class GameSessions::CharactersController < ApplicationController
   before_action :redirect_if_created
 
   def new
-    @character = @player.build_character(race: "human", klass: "warrior", background: "soldier")
-    @character.stats = Character::Klass.fetch(@character.klass).base_stats
+    @character = @player.build_character
   end
 
   def create
@@ -21,6 +20,6 @@ class GameSessions::CharactersController < ApplicationController
     end
 
     def character_params
-      params.expect(character: [ :race, :klass, :background, stats: Character::STAT_KEYS ])
+      params.expect(character: [ :race, :klass, :background, stats: Character::Stat.keys ])
     end
 end

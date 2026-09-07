@@ -176,7 +176,7 @@ class Narrator::Briefing
       stats = @game_session.rolls.order(id: :desc).limit(3).pluck("choices.stat")
       return unless stats.size == 3 && stats.uniq.size == 1
 
-      label = Character::STATS.fetch(stats.first)
+      label = Character::Stat.fetch(stats.first).label
       "TEKRAR: Oyuncu üst üste üç kez #{label} kullandı. Dünya buna uyum sağlar: bu sahnede #{label} yolunu ya kapat ya da belirgin biçimde zorlaştır."
     end
 
@@ -191,7 +191,7 @@ class Narrator::Briefing
     end
 
     def stat_labels(stats)
-      stats.map { |stat| Character::STATS.fetch(stat) }.join("/").presence || "—"
+      stats.map { |stat| Character::Stat.fetch(stat).label }.join("/").presence || "—"
     end
 
     def pacing_block(scene)
@@ -264,8 +264,8 @@ class Narrator::Briefing
 
     def character_block(scene)
       character = scene.active_player.character
-      stats = Character::STAT_KEYS.map { |key| "#{Character::STATS.fetch(key)} #{character.stats[key]}" }.join(", ")
-      [ "KARAKTER: #{scene.active_player.user.name} — #{character.summary}. Can #{character.hp}/#{character.max_hp}. Statlar: #{stats}.",
+      stats = Character::Stat.all.map { |stat| "#{stat.label} #{character.stats[stat.key]}" }.join(", ")
+      [ "KARAKTER: #{character.user.name} — #{character.summary}. Can #{character.hp}/#{character.max_hp}. Statlar: #{stats}.",
         inventory_line(character), statuses_line(character) ].compact.join("\n")
     end
 

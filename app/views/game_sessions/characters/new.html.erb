@@ -19,12 +19,12 @@
     <legend>Temel özellikler <span class="hint" data-stats-target="remaining"></span></legend>
 
     <%= form.fields_for :stats do |stats| %>
-      <% Character::STATS.each do |key, label| %>
+      <% Character::Stat.all.each do |stat| %>
         <div class="stat-row">
-          <span class="stat-row__label"><%= label %></span>
-          <%= tag.button "−", type: "button", class: "stepper", data: { action: "stats#decrement", stats_key_param: key } %>
-          <%= stats.number_field key, value: @character.stats[key], readonly: true, data: { stats_target: "value", key: key } %>
-          <%= tag.button "+", type: "button", class: "stepper", data: { action: "stats#increment", stats_key_param: key } %>
+          <span class="stat-row__label"><%= stat.label %></span>
+          <%= tag.button "−", type: "button", class: "stepper", data: { action: "stats#decrement", stats_key_param: stat.key } %>
+          <%= stats.number_field stat.key, value: @character.stats[stat.key], readonly: true, data: { stats_target: "value", key: stat.key } %>
+          <%= tag.button "+", type: "button", class: "stepper", data: { action: "stats#increment", stats_key_param: stat.key } %>
         </div>
       <% end %>
     <% end %>

@@ -1,8 +1,8 @@
 class Narrator::Reply
   FENCE = "```"
 
-  def initialize(buffer = +"")
-    @buffer = buffer
+  def initialize
+    @buffer = +""
   end
 
   def <<(chunk)

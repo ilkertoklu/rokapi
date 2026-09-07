@@ -1,16 +1,8 @@
 class NarrationJob < ApplicationJob
   queue_as :narration
 
-  self.enqueue_after_transaction_commit = true
-
-  rescue_from StandardError do |error|
-    arguments.first.stall_narration
-    raise error
-  end
-
   retry_on RubyLLM::RateLimitError, RubyLLM::ServerError, RubyLLM::ServiceUnavailableError,
-    RubyLLM::OverloadedError, Narrator::MalformedResponse, wait: :polynomially_longer, attempts: 3 do |job, error|
-    job.arguments.first.stall_narration
-    raise error
-  end
+    RubyLLM::OverloadedError, Narrator::MalformedResponse, wait: :polynomially_longer, attempts: 3
+
+  after_discard { |job, error| job.arguments.first.stall_narration }
 end

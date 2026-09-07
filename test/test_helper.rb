@@ -18,8 +18,8 @@ module SessionTestHelper
   def sign_in_as(user)
     session = user.sessions.create!
     jar = ActionDispatch::TestRequest.create.cookie_jar
-    jar.signed[:session_token] = session.signed_id
-    cookies[:session_token] = jar[:session_token]
+    jar.signed[:session_id] = session.id
+    cookies[:session_id] = jar[:session_id]
     session
   end
 end

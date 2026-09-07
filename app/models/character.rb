@@ -1,13 +1,4 @@
 class Character < ApplicationRecord
-  STATS = {
-    "strength" => "Güç", "agility" => "Çeviklik", "constitution" => "Dayanıklılık",
-    "intelligence" => "Zekâ", "wisdom" => "Sezgi", "charisma" => "Karizma"
-  }.freeze
-  STAT_KEYS = STATS.keys.freeze
-  STAT_ABBREVIATIONS = {
-    "strength" => "GÜÇ", "agility" => "ÇEV", "constitution" => "DAY",
-    "intelligence" => "ZEK", "wisdom" => "SEZ", "charisma" => "KAR"
-  }.freeze
   FREE_POINTS = 6
   STAT_CAP = 18
 
@@ -16,7 +7,12 @@ class Character < ApplicationRecord
   has_many :items, dependent: :delete_all
   has_many :status_effects, dependent: :delete_all
 
-  delegate :game_session, to: :player
+  delegate :game_session, :user, to: :player
+
+  attribute :race, default: "human"
+  attribute :klass, default: "warrior"
+  attribute :background, default: "soldier"
+  attribute :stats, default: -> { Klass.fetch("warrior").base_stats }
 
   normalizes :stats, with: ->(stats) { stats.to_h.transform_values(&:to_i) }
 
@@ -59,7 +55,7 @@ class Character < ApplicationRecord
   end
 
   def lose_item(name)
-    items.carried.where(name: name).delete_all
+    items.carried.find_by(name: name)&.delete
   end
 
   def gain_status(name:, **attributes)
@@ -75,7 +71,7 @@ class Character < ApplicationRecord
     def stats_match_allocation
       return unless (base = Klass[klass]&.base_stats)
 
-      values = STAT_KEYS.index_with { |key| stats.to_h[key].to_i }
+      values = Stat.keys.index_with { |key| stats.to_h[key].to_i }
       out_of_range = values.any? { |key, value| value < base[key] || value > STAT_CAP }
       misallocated = values.values.sum != base.values.sum + FREE_POINTS
 

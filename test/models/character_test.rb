@@ -11,7 +11,7 @@ class CharacterTest < ActiveSupport::TestCase
     assert_equal 1, sums.uniq.size
 
     Character::Klass.all.each do |klass|
-      assert_equal Character::STAT_KEYS.sort, klass.base_stats.keys.sort
+      assert_equal Character::Stat.keys.sort, klass.base_stats.keys.sort
     end
   end
 

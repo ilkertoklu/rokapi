@@ -29,9 +29,6 @@
       <% if notice %>
         <p class="flash flash--notice"><%= notice %></p>
       <% end %>
-      <% if flash[:development_login_code] %>
-        <p class="flash flash--dev">Geliştirme kodu: <strong><%= flash[:development_login_code] %></strong></p>
-      <% end %>
 
       <%= yield %>
     </main>

@@ -6,8 +6,8 @@
     <button class="sheet__handle" data-action="sheet#close" aria-label="Kapat"><span class="grip"></span></button>
 
     <header class="sheet__header">
-      <span class="avatar"><%= character.player.user.initial %></span>
-      <strong><%= character.player.user.name %></strong>
+      <span class="avatar"><%= character.user.initial %></span>
+      <strong><%= character.user.name %></strong>
       <em><%= character.summary %></em>
     </header>
 
@@ -62,10 +62,10 @@
 
     <p class="vitals__label overline">Temel özellikler</p>
     <dl class="sheet__stats">
-      <% Character::STATS.each do |key, label| %>
+      <% Character::Stat.all.each do |stat| %>
         <div>
-          <dt><%= label %></dt>
-          <dd><%= character.stats[key] %> <span><%= format("%+d", character.bonus_for(key)) %></span></dd>
+          <dt><%= stat.label %></dt>
+          <dd><%= character.stats[stat.key] %> <span><%= format("%+d", character.bonus_for(stat.key)) %></span></dd>
         </div>
       <% end %>
     </dl>

@@ -25,11 +25,11 @@ class LoginCodeTest < ActiveSupport::TestCase
     login_code = @user.login_codes.create!
 
     (LoginCode::MAX_ATTEMPTS - 1).times { assert_not @user.verify_login_code("000000") }
-    assert @user.verify_login_code(login_code.code), "son denemeden önce doğru kod hâlâ geçerli"
+    assert @user.verify_login_code(login_code.code), "the right code still works before the last attempt"
 
     login_code = @user.login_codes.create!
     LoginCode::MAX_ATTEMPTS.times { @user.verify_login_code("000000") }
-    assert_not @user.verify_login_code(login_code.code), "deneme hakkı bitince doğru kod bile geçmez"
+    assert_not @user.verify_login_code(login_code.code), "even the right code fails once the attempts run out"
   end
 
   test "cleanup deletes stale codes" do

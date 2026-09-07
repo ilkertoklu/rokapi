@@ -109,10 +109,4 @@
     background: color-mix(in srgb, var(--color-positive) 16%, transparent);
     color: var(--color-positive);
   }
-
-  .flash--dev {
-    background: var(--color-surface-raised);
-    color: var(--color-ink-muted);
-    border: 1px dashed var(--color-line);
-  }
 }

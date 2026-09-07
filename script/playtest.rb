@@ -12,7 +12,7 @@ def show_scene(scene)
     puts "\n*** OYUN BİTTİ: #{session.outcome.upcase} *** maliyet $#{format('%.3f', session.llm_calls.sum(:cost_in_microdollars) / 1e6)}"
   else
     scene.choices.order(:id).each_with_index do |choice, index|
-      puts "  #{index + 1}) [#{Character::STATS[choice.stat]} #{format('%+d', choice.modifier)} | #{choice.difficulty_label} hedef #{choice.difficulty}] #{choice.label} — #{choice.difficulty_reason}"
+      puts "  #{index + 1}) [#{Character::Stat.fetch(choice.stat).label} #{format('%+d', choice.modifier)} | #{choice.difficulty_label} hedef #{choice.difficulty}] #{choice.label} — #{choice.difficulty_reason}"
     end
   end
 end

@@ -41,6 +41,14 @@ class Roll < ApplicationRecord
     resolution.present?
   end
 
+  def pending?
+    !resolved?
+  end
+
+  def critical?
+    grade == :critical
+  end
+
   def acknowledged?
     acknowledged_at.present?
   end
