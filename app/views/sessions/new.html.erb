@@ -1,15 +1,27 @@
-<% content_for :title, "Giriş yap · Rokapi" %>
+<% content_for :title, "Tek kullanımlık kod · Rokapi" %>
 
-<%= form_with url: session_path, class: "flow" do |form| %>
-  <%= render "back", to: welcome_path, title: "Giriş yap" %>
+<div class="flow" data-controller="code" data-code-length-value="<%= LoginCode::CODE_LENGTH %>">
+  <%= render "back", to: new_login_code_path, title: "Tek kullanımlık kod" %>
 
-  <div>
-    <%= form.label :email, "E-posta" %>
-    <%= form.email_field :email, placeholder: "seninadresin@posta.com", required: true, autofocus: true, autocomplete: "email" %>
-  </div>
+  <p class="hint">
+    Tek kullanımlık 6 haneli kodu <strong><%= session[:pending_email] %></strong>
+    adresine gönderdik.
+  </p>
+
+  <%= form_with url: session_path, id: "code_form" do |form| %>
+    <%= form.text_field :code, class: "code-input",
+          inputmode: "numeric", pattern: "[0-9]*", maxlength: LoginCode::CODE_LENGTH,
+          autocomplete: "one-time-code", required: true, autofocus: true,
+          data: { code_target: "input", action: "input->code#update" } %>
+  <% end %>
 
   <div class="sticky-footer stack">
-    <%= form.submit "Kod gönder", class: "btn btn--primary" %>
-    <p class="hint">Hesabın yok mu? <%= link_to "Hesap oluştur", new_signup_path %></p>
+    <%= submit_tag "Doğrula", form: "code_form", class: "btn btn--primary", data: { code_target: "submit" } %>
+
+    <div data-controller="countdown">
+      <%= button_to login_codes_resend_path, class: "resend", data: { countdown_target: "button" } do %>
+        Kodu tekrar gönder<span data-countdown-target="timer"></span>
+      <% end %>
+    </div>
   </div>
-<% end %>
+</div>

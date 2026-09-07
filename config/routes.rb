@@ -30,11 +30,11 @@ Rails.application.routes.draw do
     end
   end
 
-  resource :session, only: %i[new create destroy]
-  namespace :sessions do
-    resource :code, only: %i[new create]
+  resources :login_codes, only: %i[new create]
+  namespace :login_codes do
     resource :resend, only: :create
   end
+  resource :session, only: %i[new create destroy]
 
   get "up" => "rails/health#show", as: :rails_health_check
 end

@@ -1,7 +1,7 @@
-<% content_for :title, "Hesabını oluştur · Rokapi" %>
+<% content_for :title, "Giriş yap · Rokapi" %>
 
 <%= form_with url: login_codes_path, class: "flow" do |form| %>
-  <%= render "back", to: welcome_path, title: "Hesabını oluştur" %>
+  <%= render "back", to: welcome_path, title: "Giriş yap" %>
 
   <div>
     <%= form.label :email, "E-posta" %>
@@ -10,6 +10,6 @@
 
   <div class="sticky-footer stack">
     <%= form.submit "Kod gönder", class: "btn btn--primary" %>
-    <p class="hint">Hesabın var mı? <%= link_to "Giriş yap", new_login_code_path %></p>
+    <p class="hint">Hesabın yok mu? <%= link_to "Hesap oluştur", new_signup_path %></p>
   </div>
 <% end %>

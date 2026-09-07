@@ -1,4 +1,4 @@
-module LoginCodes
+module PendingLogin
   extend ActiveSupport::Concern
 
   private

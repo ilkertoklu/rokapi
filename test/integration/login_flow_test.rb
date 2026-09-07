@@ -2,10 +2,10 @@ require "test_helper"
 
 class LoginFlowTest < ActionDispatch::IntegrationTest
   test "logging in with a one-time code" do
-    post session_path, params: { email: users(:ilker).email }
-    assert_redirected_to new_sessions_code_path
+    post login_codes_path, params: { email: users(:ilker).email }
+    assert_redirected_to new_session_path
 
-    post sessions_code_path, params: { code: LoginCode.last.code }
+    post session_path, params: { code: LoginCode.last.code }
     assert_redirected_to root_url
 
     get root_path
@@ -13,37 +13,37 @@ class LoginFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "the code stays out of the logs" do
-    post session_path, params: { email: users(:ilker).email }
-    post sessions_code_path, params: { code: LoginCode.last.code }
+    post login_codes_path, params: { email: users(:ilker).email }
+    post session_path, params: { code: LoginCode.last.code }
 
     assert_equal "[FILTERED]", request.filtered_parameters["code"]
   end
 
   test "wrong code keeps the user on the code page" do
-    post session_path, params: { email: users(:ilker).email }
+    post login_codes_path, params: { email: users(:ilker).email }
 
-    post sessions_code_path, params: { code: "000000" }
-    assert_redirected_to new_sessions_code_path
+    post session_path, params: { code: "000000" }
+    assert_redirected_to new_session_path
     assert_match(/Kod hatalı/, flash[:alert])
   end
 
   test "code page without a pending email goes back to login" do
-    get new_sessions_code_path
-    assert_redirected_to new_session_path
+    get new_session_path
+    assert_redirected_to new_login_code_path
   end
 
   test "resend invalidates the previous code" do
-    post session_path, params: { email: users(:ilker).email }
+    post login_codes_path, params: { email: users(:ilker).email }
     stale_code = LoginCode.last.code
 
-    post sessions_resend_path
-    assert_redirected_to new_sessions_code_path
+    post login_codes_resend_path
+    assert_redirected_to new_session_path
     fresh_code = LoginCode.last.code
 
-    post sessions_code_path, params: { code: stale_code }
-    assert_redirected_to new_sessions_code_path
+    post session_path, params: { code: stale_code }
+    assert_redirected_to new_session_path
 
-    post sessions_code_path, params: { code: fresh_code }
+    post session_path, params: { code: fresh_code }
     assert_redirected_to root_url
   end
 
@@ -68,7 +68,7 @@ class LoginFlowTest < ActionDispatch::IntegrationTest
     get welcome_path
     assert_redirected_to root_url
 
-    get new_session_path
+    get new_login_code_path
     assert_redirected_to root_url
   end
 end
