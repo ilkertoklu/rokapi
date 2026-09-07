@@ -2,11 +2,12 @@ require "test_helper"
 
 class LoginCodeMailerTest < ActionMailer::TestCase
   test "code email carries the code in subject and body" do
-    email = LoginCodeMailer.with(user: users(:ilker), code: "123456").code
+    login_code = users(:ilker).login_codes.create!
+    email = LoginCodeMailer.with(login_code: login_code).code
 
     assert_equal [ "ilker@example.com" ], email.to
-    assert_equal "Rokapi kodun: 123456", email.subject
-    assert_match "123456", email.text_part.body.to_s
-    assert_match "123456", email.html_part.body.to_s
+    assert_equal "Rokapi kodun: #{login_code.code}", email.subject
+    assert_match login_code.code, email.text_part.body.to_s
+    assert_match login_code.code, email.html_part.body.to_s
   end
 end

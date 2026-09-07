@@ -22,11 +22,6 @@ module SessionTestHelper
     cookies[:session_token] = jar[:session_token]
     session
   end
-
-  def last_delivered_login_code
-    job = enqueued_jobs.reverse.find { |j| j["job_class"] == "ActionMailer::MailDeliveryJob" }
-    ActiveJob::Arguments.deserialize(job["arguments"]).last[:params][:code]
-  end
 end
 
 class ActionDispatch::IntegrationTest

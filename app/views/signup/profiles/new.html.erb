@@ -5,7 +5,7 @@
 
   <div>
     <%= form.label :name, "Adın" %>
-    <%= form.text_field :name, placeholder: "Adın", required: true, autofocus: true, autocomplete: "given-name" %>
+    <%= form.text_field :name, placeholder: "Adın", required: true, autofocus: true, autocomplete: "given-name", maxlength: User::NAME_LENGTH %>
   </div>
 
   <label class="terms">

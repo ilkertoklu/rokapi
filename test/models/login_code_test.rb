@@ -5,12 +5,11 @@ class LoginCodeTest < ActiveSupport::TestCase
     @user = users(:ilker)
   end
 
-  test "generates a six digit code and stores only its digest" do
+  test "generates a six digit code and stores it encrypted" do
     login_code = @user.login_codes.create!
 
     assert_match(/\A\d{6}\z/, login_code.code)
-    assert_equal LoginCode.digest(login_code.code), login_code.code_digest
-    assert_not_includes login_code.attributes.values, login_code.code
+    assert_not_equal login_code.code, login_code.ciphertext_for(:code)
   end
 
   test "expires" do

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_04_120001) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_090001) do
   create_table "adventures", force: :cascade do |t|
     t.text "brief", null: false
     t.datetime "created_at", null: false
@@ -91,7 +91,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_04_120001) do
 
   create_table "login_codes", force: :cascade do |t|
     t.integer "attempts_count", default: 0, null: false
-    t.string "code_digest", null: false
+    t.string "code", null: false
     t.datetime "created_at", null: false
     t.datetime "expires_at", null: false
     t.datetime "updated_at", null: false

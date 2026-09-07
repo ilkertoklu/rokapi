@@ -6,7 +6,7 @@ class SignupFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_sessions_code_path
 
     user = User.find_by!(email: "taze@posta.com")
-    post sessions_code_path, params: { code: last_delivered_login_code }
+    post sessions_code_path, params: { code: LoginCode.last.code }
     assert_redirected_to new_signup_profile_path
 
     post signup_profile_path, params: { name: "Taze", terms: "1" }

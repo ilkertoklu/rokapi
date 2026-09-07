@@ -5,7 +5,7 @@ class LoginFlowTest < ActionDispatch::IntegrationTest
     post session_path, params: { email: users(:ilker).email }
     assert_redirected_to new_sessions_code_path
 
-    post sessions_code_path, params: { code: last_delivered_login_code }
+    post sessions_code_path, params: { code: LoginCode.last.code }
     assert_redirected_to root_url
 
     get root_path
@@ -14,7 +14,7 @@ class LoginFlowTest < ActionDispatch::IntegrationTest
 
   test "the code stays out of the logs" do
     post session_path, params: { email: users(:ilker).email }
-    post sessions_code_path, params: { code: last_delivered_login_code }
+    post sessions_code_path, params: { code: LoginCode.last.code }
 
     assert_equal "[FILTERED]", request.filtered_parameters["code"]
   end
@@ -34,11 +34,11 @@ class LoginFlowTest < ActionDispatch::IntegrationTest
 
   test "resend invalidates the previous code" do
     post session_path, params: { email: users(:ilker).email }
-    stale_code = last_delivered_login_code
+    stale_code = LoginCode.last.code
 
     post sessions_resend_path
     assert_redirected_to new_sessions_code_path
-    fresh_code = last_delivered_login_code
+    fresh_code = LoginCode.last.code
 
     post sessions_code_path, params: { code: stale_code }
     assert_redirected_to new_sessions_code_path
