@@ -29,7 +29,6 @@ module Authentication
 
     def resume_session
       if session = find_session_by_cookie
-        session.resume
         set_current_session session
       end
     end
