@@ -3,11 +3,10 @@ class GameSessions::SolosController < ApplicationController
     with: -> { redirect_to root_path, alert: "Çok fazla macera kuruldu. Biraz bekle." }
 
   def new
-    @adventures = Adventure.order(:id)
   end
 
   def create
-    game_session = GameSession.solo.create!(game_session_params)
+    game_session = GameSession.create!(game_session_params)
     redirect_to new_game_session_character_path(game_session)
   rescue ActiveRecord::RecordInvalid
     redirect_to new_game_sessions_solo_path, alert: "Kurulum geçersiz. Seçimlerini kontrol et."
@@ -15,6 +14,6 @@ class GameSessions::SolosController < ApplicationController
 
   private
     def game_session_params
-      params.expect(game_session: [ :adventure_id, :tone, :length ])
+      params.expect(game_session: [ :quest, :tone, :length ])
     end
 end

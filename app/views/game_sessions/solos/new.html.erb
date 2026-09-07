@@ -6,20 +6,20 @@
   <fieldset class="choices">
     <legend>Görev</legend>
 
-    <% @adventures.each do |adventure| %>
+    <% GameSession::Quest.all.each do |quest| %>
       <label class="pick">
-        <%= form.radio_button :adventure_id, adventure.id, checked: adventure == @adventures.first %>
+        <%= form.radio_button :quest, quest.key, checked: quest == GameSession::Quest.all.first %>
         <span class="pick__icon"><%= render "glyph", name: "bell" %></span>
         <span class="pick__body">
-          <span class="pick__title"><%= adventure.title %></span>
-          <span class="pick__text"><%= adventure.hook %></span>
+          <span class="pick__title"><%= quest.title %></span>
+          <span class="pick__text"><%= quest.hook %></span>
         </span>
         <span class="pick__mark"></span>
       </label>
     <% end %>
 
     <label class="pick">
-      <%= form.radio_button :adventure_id, "", checked: false %>
+      <%= form.radio_button :quest, "", checked: false %>
       <span class="pick__icon"><%= render "glyph", name: "compass" %></span>
       <span class="pick__body">
         <span class="pick__title">Sürpriz</span>

@@ -10,16 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_090004) do
-  create_table "adventures", force: :cascade do |t|
-    t.text "brief", null: false
-    t.datetime "created_at", null: false
-    t.string "hook", null: false
-    t.string "title", null: false
-    t.datetime "updated_at", null: false
-    t.index ["title"], name: "index_adventures_on_title", unique: true
-  end
-
+ActiveRecord::Schema[8.1].define(version: 2026_09_08_090005) do
   create_table "characters", force: :cascade do |t|
     t.string "background", null: false
     t.datetime "created_at", null: false
@@ -36,30 +27,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_090004) do
   create_table "choices", force: :cascade do |t|
     t.datetime "chosen_at"
     t.datetime "created_at", null: false
-    t.integer "difficulty", null: false
     t.string "difficulty_reason"
     t.string "label", null: false
     t.integer "modifier", default: 0, null: false
     t.integer "scene_id", null: false
     t.string "stat", null: false
+    t.integer "target", null: false
     t.datetime "updated_at", null: false
     t.index ["scene_id"], name: "index_choices_on_chosen_scene", unique: true, where: "chosen_at IS NOT NULL"
     t.index ["scene_id"], name: "index_choices_on_scene_id"
   end
 
   create_table "game_sessions", force: :cascade do |t|
-    t.integer "adventure_id"
     t.datetime "created_at", null: false
     t.integer "creator_id", null: false
     t.datetime "ended_at"
     t.string "length", null: false
-    t.string "mode", null: false
     t.string "outcome"
+    t.string "quest"
     t.datetime "started_at"
     t.json "story_bible"
     t.string "tone", null: false
     t.datetime "updated_at", null: false
-    t.index ["adventure_id"], name: "index_game_sessions_on_adventure_id"
     t.index ["creator_id"], name: "index_game_sessions_on_creator_id"
   end
 
@@ -112,13 +101,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_090004) do
     t.integer "choice_id", null: false
     t.datetime "created_at", null: false
     t.json "effects"
-    t.integer "modifier", null: false
     t.integer "player_id", null: false
     t.text "resolution"
     t.datetime "stalled_at"
     t.integer "status_modifier", default: 0, null: false
     t.boolean "success", null: false
-    t.integer "target", null: false
     t.datetime "updated_at", null: false
     t.integer "value", null: false
     t.index ["choice_id"], name: "index_rolls_on_choice_id", unique: true
@@ -144,7 +131,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_090004) do
   create_table "sessions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "ip_address"
-    t.datetime "last_active_at", null: false
     t.datetime "updated_at", null: false
     t.string "user_agent"
     t.integer "user_id", null: false
@@ -175,7 +161,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_090004) do
 
   add_foreign_key "characters", "players"
   add_foreign_key "choices", "scenes"
-  add_foreign_key "game_sessions", "adventures"
   add_foreign_key "game_sessions", "users", column: "creator_id"
   add_foreign_key "items", "characters"
   add_foreign_key "llm_calls", "game_sessions"

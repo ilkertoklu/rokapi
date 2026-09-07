@@ -1,7 +1,6 @@
 ilker_solo:
-  adventure: kayip_kervan
+  quest: lost_caravan
   creator: ilker
-  mode: solo
   tone: balanced
   length: short
   story_bible:
@@ -31,16 +30,14 @@ ilker_solo:
     defeat: Köprü kopuyor.
 
 ilker_without_character:
-  adventure: golun_sirri
+  quest: sunken_village
   creator: ilker
-  mode: solo
   tone: balanced
   length: medium
 
 deniz_solo:
-  adventure: kayip_kervan
+  quest: lost_caravan
   creator: deniz
-  mode: solo
   tone: balanced
   length: short
   started_at: <%= 1.hour.ago %>
