@@ -265,6 +265,17 @@ class NarratorTest < ActiveSupport::TestCase
     assert @game_session.scenes.sole.narrating?
   end
 
+  test "a choice without a label is malformed" do
+    unlabeled = SCENE_RESPONSE.sub('"label": "Çekmeceyi zorla", ', "")
+
+    stub_llm(FakeChat.new(unlabeled)) do
+      assert_raises(Narrator::MalformedResponse) { narrate }
+    end
+
+    assert @game_session.scenes.sole.narrating?
+    assert_empty @game_session.scenes.sole.choices
+  end
+
   test "the story bible is written before the first scene" do
     @game_session.update! story_bible: nil
     plan_call = FakeChat.new(PLAN_RESPONSE)

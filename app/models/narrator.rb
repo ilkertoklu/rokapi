@@ -93,9 +93,7 @@ class Narrator
 
     def open_scene(scene, data)
       validate scene, data
-      scene.update! title: data.fetch("title"), location: data["location"]
-    rescue KeyError => error
-      raise MalformedResponse, error.message
+      scene.update! title: data["title"], location: data["location"]
     end
 
     def close_scene(scene, data, prose)
@@ -113,7 +111,8 @@ class Narrator
     end
 
     def validate(scene, data)
-      data.fetch("title")
+      raise MalformedResponse, "title missing" if data["title"].blank?
+
       choices = Array(data["choices"])
 
       if scene.active_player.character.hp.zero?
@@ -177,18 +176,26 @@ class Narrator
       character = scene.active_player.character
 
       choices.each do |choice|
-        stat = choice.fetch("stat")
-        raise MalformedResponse, "unknown stat #{stat}" unless Character::STAT_KEYS.include?(stat)
+        stat = stat_in(choice)
 
         scene.choices.create!(
-          label: choice.fetch("label"),
+          label: choice["label"].presence || raise(MalformedResponse, "unlabeled choice"),
           stat: stat,
           modifier: character.bonus_for(stat),
-          difficulty: choice.fetch("difficulty").to_i.clamp(5, 19),
+          difficulty: difficulty_in(choice),
           difficulty_label: choice["difficulty_label"].presence_in(%w[kolay orta zor]) || "orta",
           difficulty_reason: choice["difficulty_reason"]
         )
       end
+    end
+
+    def stat_in(choice)
+      choice["stat"].presence_in(Character::STAT_KEYS) || raise(MalformedResponse, "unknown stat #{choice["stat"].inspect}")
+    end
+
+    def difficulty_in(choice)
+      difficulty = Integer(choice["difficulty"], exception: false) || raise(MalformedResponse, "difficulty missing")
+      difficulty.clamp(5, 19)
     end
 
     def new_chat(instructions:)

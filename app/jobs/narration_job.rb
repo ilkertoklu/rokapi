@@ -3,7 +3,7 @@ class NarrationJob < ApplicationJob
 
   self.enqueue_after_transaction_commit = true
 
-  rescue_from RubyLLM::Error, RubyLLM::ModelNotFoundError do |error|
+  rescue_from StandardError do |error|
     arguments.first.stall_narration
     raise error
   end

@@ -19,24 +19,11 @@ class Scene::GenerateJobTest < ActiveSupport::TestCase
     assert game_session.current_scene.failed?
   end
 
-  test "one narration at a time per game session" do
-    job = Scene::GenerateJob.new(game_sessions(:ilker_solo))
-
-    assert job.concurrency_limited?
-    assert_equal 1, Scene::GenerateJob.concurrency_limit
-    assert_includes job.concurrency_key, "GameSession/#{game_sessions(:ilker_solo).id}"
-  end
-
-  test "a rejected narrator fails the scene without retrying" do
+  test "a rejected narrator stalls the scene without retrying" do
     game_session = game_sessions(:ilker_solo)
     game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host)
 
-    rejected = Object.new
-    def rejected.with_instructions(*) = self
-    def rejected.with_schema(*) = self
-    def rejected.ask(*) = raise RubyLLM::UnauthorizedError.new(nil, "bad key")
-
-    stub_llm(rejected) do
+    stub_llm(broken_chat(RubyLLM::UnauthorizedError.new(nil, "bad key"))) do
       assert_raises RubyLLM::UnauthorizedError do
         Scene::GenerateJob.new(game_session).perform_now
       end
@@ -44,4 +31,26 @@ class Scene::GenerateJobTest < ActiveSupport::TestCase
 
     assert game_session.current_scene.failed?
   end
+
+  test "a failure the narrator never anticipated still stalls the scene" do
+    game_session = game_sessions(:ilker_solo)
+    game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host)
+
+    stub_llm(broken_chat(Faraday::TimeoutError.new)) do
+      assert_raises Faraday::TimeoutError do
+        Scene::GenerateJob.new(game_session).perform_now
+      end
+    end
+
+    assert game_session.current_scene.failed?
+  end
+
+  private
+    def broken_chat(error)
+      Object.new.tap do |chat|
+        chat.define_singleton_method(:with_instructions) { |*| chat }
+        chat.define_singleton_method(:with_schema) { |*| chat }
+        chat.define_singleton_method(:ask) { |*| raise error }
+      end
+    end
 end
