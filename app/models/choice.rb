@@ -9,6 +9,14 @@ class Choice < ApplicationRecord
     scene.active_player.character.stats.fetch(stat)
   end
 
+  def difficulty_label
+    case difficulty
+    when ..11 then "kolay"
+    when 12..15 then "orta"
+    else "zor"
+    end
+  end
+
   def chosen?
     chosen_at.present?
   end

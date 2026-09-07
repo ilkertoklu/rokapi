@@ -1,10 +1,4 @@
 class Narrator::Briefing
-  TONE_DIRECTIVES = {
-    "fun" => "Eğlenceli — tempo hafif, mizah durumlardan ve diyalogdan doğar, sahne başına bir iki espri yeter ve gerilim yükselse de sürer (dorukta ve finalde bile bir kuru replik bulunur); dünya yine de gerçektir, tehlike ciddiye alınır, parodiye kaçılmaz.",
-    "balanced" => "Dengeli — klasik macera: umut ile tehlike dengede, zaferin tadı bedeliyle gelir.",
-    "dark" => "Karanlık — gölgeler ağır basar, bedeller serttir, güven zor kazanılır; korku PEGI-12 sınırında kalır."
-  }.freeze
-
   GRADE_NOTES = {
     critical: "doğal 20 — istisnai an",
     brilliant: "hedef %{margin} puan farkla aşıldı",
@@ -108,7 +102,7 @@ class Narrator::Briefing
         "location": "konum adı",
         "choices": [
           {"label": "seçenek metni", "stat": "strength|agility|constitution|intelligence|wisdom|charisma",
-           "difficulty": 12, "difficulty_label": "kolay|orta|zor", "difficulty_reason": "kazanç ve risk"}
+           "difficulty": 12, "difficulty_reason": "kazanç ve risk"}
         ],
         "finale": false,
         "outcome": null
@@ -157,7 +151,7 @@ class Narrator::Briefing
     def mission_block
       brief = @game_session.adventure&.brief ||
         "Sürpriz macera: bilinmeyen, özgün bir dünya ve görev kur; ilk sahnede oyuncuyu hikâyenin ortasına bırak."
-      "GÖREV ÇERÇEVESİ: #{brief}\nTON: #{TONE_DIRECTIVES.fetch(@game_session.tone)}"
+      "GÖREV ÇERÇEVESİ: #{brief}\nTON: #{GameSession::Tone.fetch(@game_session.tone).directive}"
     end
 
     def bible_block
@@ -271,7 +265,7 @@ class Narrator::Briefing
     def character_block(scene)
       character = scene.active_player.character
       stats = Character::STAT_KEYS.map { |key| "#{Character::STATS.fetch(key)} #{character.stats[key]}" }.join(", ")
-      [ "KARAKTER: #{player_name(scene.active_player)} — #{character.summary}. Can #{character.hp}/#{character.max_hp}. Statlar: #{stats}.",
+      [ "KARAKTER: #{scene.active_player.user.name} — #{character.summary}. Can #{character.hp}/#{character.max_hp}. Statlar: #{stats}.",
         inventory_line(character), statuses_line(character) ].compact.join("\n")
     end
 
@@ -297,10 +291,6 @@ class Narrator::Briefing
       return if used.none?
 
       "KULLANILAN EŞYA: #{used.map { |item| "#{item.name} (#{format('%+d', item.hp_effect)} can)" }.join("; ")} — canı zaten uygulandı ve envanterden düştü; anlatıda içildiği görünsün, hp'ye ve items_lost'a yeniden yazma."
-    end
-
-    def player_name(player)
-      player.user.name.to_s.gsub(/\s+/, " ").strip.truncate(40)
     end
 
     def history_block

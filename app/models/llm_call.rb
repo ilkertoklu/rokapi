@@ -3,7 +3,7 @@ class LlmCall < ApplicationRecord
 
   enum :purpose, %w[plan scene outcome].index_by(&:itself)
 
-  def self.record!(game_session:, purpose:, response:)
+  def self.record(game_session:, purpose:, response:)
     create!(
       game_session: game_session,
       purpose: purpose,

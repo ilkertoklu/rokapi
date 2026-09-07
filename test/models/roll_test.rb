@@ -31,7 +31,7 @@ class RollTest < ActiveSupport::TestCase
   private
     def roll_with(value:, target:, modifier: 0)
       choice = @scene.choices.create! label: "Dene", stat: "strength", modifier: modifier,
-        difficulty: target, difficulty_label: "orta"
+        difficulty: target
       choice.create_roll! player: players(:ilker_solo_host), value: value,
         modifier: modifier, status_modifier: 0, target: target
     end

@@ -16,13 +16,10 @@ class Roll < ApplicationRecord
 
   normalizes :effects, with: ->(effects) { EMPTY_EFFECTS.merge(effects.to_h) }
 
-  scope :pending, -> { where(resolution: nil) }
-  scope :unseen, -> { where(acknowledged_at: nil).where.not(resolution: nil) }
-
   before_create { self.success = total >= target }
 
   after_create_commit :narrate_outcome_later
-  after_update_commit -> { scene.game_session.broadcast_stage }
+  after_update_commit -> { broadcast_refresh_to scene.game_session }
 
   def total
     value + modifier + status_modifier
@@ -44,17 +41,23 @@ class Roll < ApplicationRecord
     resolution.present?
   end
 
-  def failed?
-    failed_at.present?
-  end
-
   def acknowledged?
     acknowledged_at.present?
   end
 
+  def unseen?
+    resolved? && !acknowledged?
+  end
+
+  def stalled?
+    stalled_at.present?
+  end
+
   def acknowledge
-    update! acknowledged_at: Time.current
-    scene.game_session.continue_narration_later
+    if unseen?
+      update! acknowledged_at: Time.current
+      scene.game_session.continue_narration_later
+    end
   end
 
   def narrate_outcome
@@ -66,11 +69,11 @@ class Roll < ApplicationRecord
   end
 
   def stall_narration
-    update! failed_at: Time.current
+    update! stalled_at: Time.current
   end
 
   def resume_narration
-    update! failed_at: nil
+    update! stalled_at: nil
     narrate_outcome_later
   end
 

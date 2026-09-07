@@ -8,7 +8,7 @@
 
 <% if scene.choosing? %>
   <%= render "scenes/choices", scene: scene %>
-<% elsif scene.failed? %>
+<% elsif scene.stalled? %>
   <div class="stage__footer">
     <div class="stalled">
       <p class="hint">Anlatıcı duraksadı. Hikâyeyi kaldığı yerden sürdürebilirsin.</p>

@@ -183,7 +183,6 @@ class Narrator
           stat: stat,
           modifier: character.bonus_for(stat),
           difficulty: difficulty_in(choice),
-          difficulty_label: choice["difficulty_label"].presence_in(%w[kolay orta zor]) || "orta",
           difficulty_reason: choice["difficulty_reason"]
         )
       end
@@ -203,6 +202,6 @@ class Narrator
     end
 
     def record_call(purpose, response)
-      LlmCall.record! game_session: @game_session, purpose: purpose, response: response
+      LlmCall.record game_session: @game_session, purpose: purpose, response: response
     end
 end

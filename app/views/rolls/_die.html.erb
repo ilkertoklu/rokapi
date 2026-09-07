@@ -3,7 +3,7 @@
   <div class="d20__face">
     <span class="d20__die">d20</span>
 
-    <% if roll.nil? || roll.failed? %>
+    <% if roll.nil? || roll.stalled? %>
       <span class="d20__value">?</span>
     <% elsif roll.resolved? %>
       <span class="d20__value"><%= roll.value %></span>

@@ -5,7 +5,7 @@
     <span class="location__pin"><%= render "glyph", name: "pin" %></span>
     <div>
       <h1><%= game_session.title %></h1>
-      <p><%= GameSession::TONES.fetch(game_session.tone) %> · <%= length.label %> · <%= length.estimate %></p>
+      <p><%= GameSession::Tone.fetch(game_session.tone).label %> · <%= length.label %> · <%= length.estimate %></p>
     </div>
   </div>
 </header>

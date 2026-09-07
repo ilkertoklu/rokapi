@@ -16,7 +16,7 @@ class Scene::GenerateJobTest < ActiveSupport::TestCase
       end
     end
 
-    assert game_session.current_scene.failed?
+    assert game_session.current_scene.stalled?
   end
 
   test "a rejected narrator stalls the scene without retrying" do
@@ -29,7 +29,7 @@ class Scene::GenerateJobTest < ActiveSupport::TestCase
       end
     end
 
-    assert game_session.current_scene.failed?
+    assert game_session.current_scene.stalled?
   end
 
   test "a failure the narrator never anticipated still stalls the scene" do
@@ -42,7 +42,7 @@ class Scene::GenerateJobTest < ActiveSupport::TestCase
       end
     end
 
-    assert game_session.current_scene.failed?
+    assert game_session.current_scene.stalled?
   end
 
   private

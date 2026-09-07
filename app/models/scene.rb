@@ -12,26 +12,26 @@ class Scene < ApplicationRecord
 
   scope :chronological, -> { order(:position) }
 
-  after_save_commit -> { game_session.broadcast_stage }
+  after_save_commit -> { broadcast_refresh_to game_session }
 
   def broadcast_narration(text)
     broadcast_append_to game_session, target: :scene_narration, html: ERB::Util.html_escape(text)
   end
 
-  def failed?
-    failed_at.present?
+  def stalled?
+    stalled_at.present?
   end
 
   def narrator_writing?
-    (narrating? || played?) && !failed?
+    (narrating? || played?) && !stalled?
   end
 
   def stall_narration
-    update! failed_at: Time.current
+    update! stalled_at: Time.current
   end
 
   def resume_narration
-    update! failed_at: nil
+    update! stalled_at: nil
     game_session.continue_narration_later
   end
 

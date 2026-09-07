@@ -37,10 +37,10 @@ class GameSessionTest < ActiveSupport::TestCase
     scene = game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host),
       state: :choosing, title: "Eski Han"
     choice = scene.choices.create! label: "Defteri oku", stat: "intelligence",
-      modifier: -1, difficulty: 10, difficulty_label: "kolay"
+      modifier: -1, difficulty: 10
     choice.choose
     scene.roll_dice(by: players(:ilker_solo_host))
-    LlmCall.record! game_session: game_session, purpose: :scene,
+    LlmCall.record game_session: game_session, purpose: :scene,
       response: RubyLLM::Message.new(role: :assistant, content: "x", model_id: "gpt-5-mini",
                                      input_tokens: 10, output_tokens: 10)
 

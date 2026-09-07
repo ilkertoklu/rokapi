@@ -32,10 +32,10 @@
   <fieldset class="choices">
     <legend>Ton</legend>
     <div class="segmented">
-      <% GameSession::TONES.each do |value, label| %>
+      <% GameSession::Tone.all.each do |tone| %>
         <label class="segment">
-          <%= form.radio_button :tone, value, checked: value == "balanced" %>
-          <span><%= label %></span>
+          <%= form.radio_button :tone, tone.key, checked: tone.key == "balanced" %>
+          <span><%= tone.label %></span>
         </label>
       <% end %>
     </div>

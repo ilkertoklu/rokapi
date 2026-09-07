@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_090001) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_07_090003) do
   create_table "adventures", force: :cascade do |t|
     t.text "brief", null: false
     t.datetime "created_at", null: false
@@ -37,7 +37,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_090001) do
     t.datetime "chosen_at"
     t.datetime "created_at", null: false
     t.integer "difficulty", null: false
-    t.string "difficulty_label", null: false
     t.string "difficulty_reason"
     t.string "label", null: false
     t.integer "modifier", default: 0, null: false
@@ -114,10 +113,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_090001) do
     t.integer "choice_id", null: false
     t.datetime "created_at", null: false
     t.json "effects"
-    t.datetime "failed_at"
     t.integer "modifier", null: false
     t.integer "player_id", null: false
     t.text "resolution"
+    t.datetime "stalled_at"
     t.integer "status_modifier", default: 0, null: false
     t.boolean "success", null: false
     t.integer "target", null: false
@@ -130,12 +129,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_090001) do
   create_table "scenes", force: :cascade do |t|
     t.integer "active_player_id", null: false
     t.datetime "created_at", null: false
-    t.datetime "failed_at"
     t.boolean "finale", default: false, null: false
     t.integer "game_session_id", null: false
     t.string "location"
     t.text "narration"
     t.integer "position", null: false
+    t.datetime "stalled_at"
     t.string "state", default: "narrating", null: false
     t.string "title"
     t.datetime "updated_at", null: false

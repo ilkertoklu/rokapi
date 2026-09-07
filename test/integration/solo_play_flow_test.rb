@@ -176,7 +176,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
   test "a stalled narrator can be sent back to work" do
     game_session = start_playing
     clear_enqueued_jobs
-    game_session.scenes.create! position: 1, active_player: game_session.players.sole, failed_at: Time.current
+    game_session.scenes.create! position: 1, active_player: game_session.players.sole, stalled_at: Time.current
 
     get game_session_path(game_session)
     assert_select ".stalled"
@@ -265,7 +265,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     scene = game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host),
       state: :choosing, title: "Eski Han"
     choice = scene.choices.create! label: "Defteri oku", stat: "intelligence",
-      modifier: -1, difficulty: 10, difficulty_label: "kolay"
+      modifier: -1, difficulty: 10
 
     post game_session_choice_selection_path(game_session, choice)
     assert_response :not_found

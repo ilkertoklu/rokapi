@@ -36,20 +36,17 @@ class NarratorTest < ActiveSupport::TestCase
     assert_operator call.cost_in_microdollars, :>, 0
   end
 
-  test "the stage lands on screen before narration streams into it" do
+  test "the stage refreshes before narration streams into it" do
     fake = FakeChat.new(SCENE_RESPONSE, chunks: SCENE_RESPONSE.chars.each_slice(40).map(&:join))
 
     streams = stub_llm(fake) do
       capture_turbo_stream_broadcasts(@game_session) { narrate }
     end
 
-    assert_equal "replace", streams.first["action"]
-    assert_equal "game_stage", streams.first["target"]
-    assert_equal "morph", streams.first["method"], "stage swaps restart in-flight animations"
-
+    assert_equal "refresh", streams.first["action"]
     assert_operator streams.index { |stream| stream["target"] == "scene_narration" },
       :>, 0, "narration streamed before the stage was on screen"
-    assert_equal "game_stage", streams.last["target"]
+    assert_equal "refresh", streams.last["action"], "the choices arrive with a final refresh"
   end
 
   test "the outcome is written by its own call, without touching the story" do
@@ -69,8 +66,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     streams = capture_turbo_stream_broadcasts(@game_session) { resolve roll }
 
-    assert_equal 1, streams.size, "the spinning die never stops without a stage broadcast"
-    assert_equal "game_stage", streams.first["target"]
+    assert_equal "refresh", streams.sole["action"], "the spinning die never stops without a refresh"
   end
 
   test "the next scene is not written until the player continues" do
@@ -623,7 +619,7 @@ class NarratorTest < ActiveSupport::TestCase
       scene = @game_session.scenes.create! position: @game_session.scene_budget + 10,
         active_player: players(:ilker_solo_host), state: :choosing, title: "Ara"
       choice = scene.choices.create! label: "Devam", stat: "strength", modifier: 3,
-        difficulty: 12, difficulty_label: "orta"
+        difficulty: 12
       choice.choose
       scene.roll_dice(by: players(:ilker_solo_host))
     end

@@ -3,9 +3,9 @@ module LlmStubbing
     ```json
     {"title": "Eski Han", "location": "Akçabük",
      "choices": [
-       {"label": "Tozlu defteri oku", "stat": "intelligence", "difficulty": 10, "difficulty_label": "kolay", "difficulty_reason": "Toz kalın"},
-       {"label": "Çekmeceyi zorla", "stat": "strength", "difficulty": 14, "difficulty_label": "orta", "difficulty_reason": "Kilit eski"},
-       {"label": "Ahırı sessizce dinle", "stat": "wisdom", "difficulty": 12, "difficulty_label": "orta", "difficulty_reason": "Rüzgâr uğulduyor"}
+       {"label": "Tozlu defteri oku", "stat": "intelligence", "difficulty": 10, "difficulty_reason": "Toz kalın"},
+       {"label": "Çekmeceyi zorla", "stat": "strength", "difficulty": 14, "difficulty_reason": "Kilit eski"},
+       {"label": "Ahırı sessizce dinle", "stat": "wisdom", "difficulty": 12, "difficulty_reason": "Rüzgâr uğulduyor"}
      ],
      "finale": false, "outcome": null}
     ```
