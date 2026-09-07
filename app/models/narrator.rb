@@ -52,20 +52,19 @@ class Narrator
     def next_scene
       @game_session.scenes.narrating.chronological.last ||
         @game_session.scenes.create!(position: (@game_session.scenes.maximum(:position) || 0) + 1,
-                                     active_player: @game_session.players.order(:created_at).first)
+                                     active_player: @game_session.host)
     end
 
     def ask_streaming(scene)
       reply = Reply.new
       data = nil
-      visible = 0
       chat = new_chat(instructions: @briefing.scene_instructions)
 
       response = chat.ask(@briefing.scene_prompt(scene)) do |chunk|
         reply << chunk.content.to_s
 
         if data
-          visible = relay(scene, reply.prose, visible)
+          relay scene, reply.prose
         elsif (data = structure_in(reply))
           open_scene scene, data
         end
@@ -77,12 +76,9 @@ class Narrator
       [ data, reply.prose ]
     end
 
-    def relay(scene, prose, visible)
-      return visible if prose.length <= visible
-
+    def relay(scene, prose)
       scene.update_column :narration, prose
-      scene.broadcast_narration prose[visible..]
-      prose.length
+      scene.broadcast_narration prose
     end
 
     def structure_in(reply)

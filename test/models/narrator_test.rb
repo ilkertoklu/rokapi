@@ -49,6 +49,19 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal "refresh", streams.last["action"], "the choices arrive with a final refresh"
   end
 
+  test "every narration stream carries the whole text so far" do
+    fake = FakeChat.new(SCENE_RESPONSE, chunks: SCENE_RESPONSE.chars.each_slice(40).map(&:join))
+
+    streams = stub_llm(fake) do
+      capture_turbo_stream_broadcasts(@game_session) { narrate }
+    end
+
+    narrations = streams.select { |stream| stream["target"] == "scene_narration" }
+    assert_equal [ "update" ], narrations.map { |stream| stream["action"] }.uniq,
+      "a morph refresh mid-stream would drop appended chunks; updates are idempotent"
+    assert_equal @game_session.scenes.sole.narration, narrations.last.at("template").text
+  end
+
   test "the outcome is written by its own call, without touching the story" do
     roll = play_first_scene
     assert_nil roll.resolution

@@ -31,10 +31,8 @@
   <% if roll.nil? %>
     <%= button_to "Zarı at", game_session_roll_path(game_session), class: "btn btn--primary" %>
   <% elsif roll.stalled? %>
-    <div class="stalled">
-      <p class="hint">Anlatıcı duraksadı. Zarın sonucu henüz yazılamadı.</p>
-      <%= button_to "Yeniden dene", game_session_narration_path(game_session), class: "btn btn--secondary" %>
-    </div>
+    <%= render "game_sessions/stalled", game_session: game_session,
+          hint: "Anlatıcı duraksadı. Zarın sonucu henüz yazılamadı." %>
   <% else %>
     <p class="writing">
       Anlatıcı sonucu yazıyor

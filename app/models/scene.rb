@@ -15,7 +15,7 @@ class Scene < ApplicationRecord
   after_save_commit -> { broadcast_refresh_to game_session }
 
   def broadcast_narration(text)
-    broadcast_append_to game_session, target: :scene_narration, html: ERB::Util.html_escape(text)
+    broadcast_update_to game_session, target: :scene_narration, html: ERB::Util.html_escape(text)
   end
 
   def stalled?

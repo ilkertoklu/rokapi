@@ -270,7 +270,7 @@ class Narrator::Briefing
     end
 
     def character_portrait
-      character = @game_session.players.order(:created_at).first.character
+      character = @game_session.host.character
       traits = [ Character::Race.fetch(character.race), Character::Klass.fetch(character.klass), Character::Background.fetch(character.background) ]
         .map { |trait| "#{trait.label}: #{trait.description}" }.join(" ")
       "OYUNCUNUN KARAKTERİ: #{traits}\n#{inventory_line(character)}"

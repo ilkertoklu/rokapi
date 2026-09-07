@@ -5,8 +5,6 @@ class Player < ApplicationRecord
   has_one :character, dependent: :destroy
   has_many :rolls, dependent: :delete_all
 
-  delegate :initial, to: :user
-
   def ready_up(character_attributes)
     transaction do
       create_character! character_attributes

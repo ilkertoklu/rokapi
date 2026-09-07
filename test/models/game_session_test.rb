@@ -7,6 +7,7 @@ class GameSessionTest < ActiveSupport::TestCase
     game_session = GameSession.create!(creator: users(:ilker), mode: :solo, adventure: adventures(:golun_sirri))
 
     assert_equal users(:ilker), game_session.players.sole.user
+    assert_equal game_session.players.sole, game_session.host
     assert_not game_session.started?
   end
 

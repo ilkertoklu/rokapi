@@ -28,6 +28,10 @@ class GameSession < ApplicationRecord
     players.find_by(user: user)
   end
 
+  def host
+    player_for(creator)
+  end
+
   def started?
     started_at.present?
   end

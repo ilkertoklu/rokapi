@@ -10,10 +10,8 @@
   <%= render "scenes/choices", scene: scene %>
 <% elsif scene.stalled? %>
   <div class="stage__footer">
-    <div class="stalled">
-      <p class="hint">Anlatıcı duraksadı. Hikâyeyi kaldığı yerden sürdürebilirsin.</p>
-      <%= button_to "Yeniden dene", game_session_narration_path(scene.game_session), class: "btn btn--secondary" %>
-    </div>
+    <%= render "game_sessions/stalled", game_session: scene.game_session,
+          hint: "Anlatıcı duraksadı. Hikâyeyi kaldığı yerden sürdürebilirsin." %>
   </div>
 <% elsif scene.narrator_writing? %>
   <div class="stage__footer">
@@ -23,10 +21,8 @@
     </p>
     <% if scene.played? %>
       <div class="overdue">
-        <div class="stalled">
-          <p class="hint">Anlatıcı gecikti. Hikâyeyi kaldığı yerden sürdürebilirsin.</p>
-          <%= button_to "Yeniden dene", game_session_narration_path(scene.game_session), class: "btn btn--secondary" %>
-        </div>
+        <%= render "game_sessions/stalled", game_session: scene.game_session,
+              hint: "Anlatıcı gecikti. Hikâyeyi kaldığı yerden sürdürebilirsin." %>
       </div>
     <% end %>
   </div>
