@@ -1,11 +1,13 @@
 class Item < ApplicationRecord
   class Unusable < StandardError; end
 
+  MINIMUM_USES = 1
+
   belongs_to :character
 
   enum :kind, %w[instant passive quest].index_by(&:itself)
 
-  normalizes :description, with: ->(description) { description.sub(/\A./) { |first| first.upcase(:turkic) } }
+  normalizes :description, with: ->(description) { description.presence&.sub(/\A./) { |first| first.upcase(:turkic) } }
 
   scope :carried, -> { where(uses_left: nil).or(where(uses_left: 1..)) }
   scope :usable, -> { instant.where(uses_left: 1..) }

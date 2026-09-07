@@ -9,7 +9,7 @@ class Narrator
   def narrate_outcome(roll)
     return if roll.resolved?
 
-    response = new_chat(instructions: @briefing.outcome_instructions).with_schema(OutcomeSchema).ask(@briefing.outcome_prompt(roll))
+    response = OutcomeResolver.new.ask(@briefing.outcome_prompt(roll))
     record_call :outcome, response
 
     data = response.content
@@ -18,24 +18,17 @@ class Narrator
     roll.resolve resolution: resolution_in(data), effects: effects_in(data, roll)
   end
 
-  def continue
-    return unless owed?
+  def narrate_scene(scene)
+    return unless scene.narrating?
 
-    scene = next_scene
     plan if @game_session.story_bible.blank?
-    generate_scene scene
+    data, prose = ask_streaming(scene)
+    close_scene scene, data, prose
   end
 
   private
-    def owed?
-      scene = @game_session.current_scene
-      return true if scene.nil? || scene.narrating?
-
-      scene.played? && !scene.finale? && scene.roll&.acknowledged?
-    end
-
     def plan
-      response = new_chat(instructions: @briefing.plan_instructions).with_schema(BibleSchema).ask(@briefing.plan_prompt)
+      response = Planner.new.ask(@briefing.plan_prompt)
       record_call :plan, response
 
       bible = response.content
@@ -44,23 +37,11 @@ class Narrator
       @game_session.update! story_bible: bible
     end
 
-    def generate_scene(scene)
-      data, prose = ask_streaming(scene)
-      close_scene scene, data, prose
-    end
-
-    def next_scene
-      @game_session.scenes.narrating.chronological.last ||
-        @game_session.scenes.create!(position: (@game_session.scenes.maximum(:position) || 0) + 1,
-                                     active_player: @game_session.host)
-    end
-
     def ask_streaming(scene)
       reply = Reply.new
       data = nil
-      chat = new_chat(instructions: @briefing.scene_instructions)
 
-      response = chat.ask(@briefing.scene_prompt(scene)) do |chunk|
+      response = SceneWriter.new.ask(@briefing.scene_prompt(scene)) do |chunk|
         reply << chunk.content.to_s
 
         if data
@@ -120,7 +101,15 @@ class Narrator
         raise MalformedResponse, "expected 3 choices"
       elsif choices.pluck("stat").uniq.size != 3
         raise MalformedResponse, "choices must use three distinct stats"
+      else
+        choices.each { |choice| validate_choice choice }
       end
+    end
+
+    def validate_choice(choice)
+      label_in choice
+      stat_in choice
+      difficulty_in choice
     end
 
     def resolution_in(data)
@@ -139,18 +128,19 @@ class Narrator
 
     def item_in(grant)
       kind = grant["kind"].presence_in(Item.kinds.keys) || raise(MalformedResponse, "unknown item kind #{grant["kind"].inspect}")
+      instant = kind == "instant"
 
-      { "name" => name_in(grant), "kind" => kind, "description" => grant["description"].presence,
-        "hp_effect" => (kind == "instant" ? grant["hp"].to_i : 0),
-        "uses_left" => ([ grant["uses"].to_i, 1 ].max if kind == "instant") }
+      { name: name_in(grant), kind: kind, description: grant["description"],
+        hp_effect: instant ? grant["hp"].to_i : 0,
+        uses_left: ([ grant["uses"].to_i, Item::MINIMUM_USES ].max if instant) }
     end
 
     def status_in(grant)
       turns = grant["turns"].to_i
       expires_when = grant["expires_when"].presence
 
-      { "name" => name_in(grant), "modifier" => grant["modifier"].to_i.clamp(-2, 2),
-        "turns_left" => (turns.positive? ? turns : (2 if expires_when.nil?)), "expires_when" => expires_when }
+      { name: name_in(grant), modifier: grant["modifier"].to_i.clamp(StatusEffect::MODIFIER_RANGE),
+        turns_left: turns.positive? ? turns : (StatusEffect::DEFAULT_TURNS if expires_when.nil?), expires_when: expires_when }
     end
 
     def name_in(grant)
@@ -160,7 +150,7 @@ class Narrator
     def earned_statuses(statuses, roll)
       return statuses if roll.critical?
 
-      statuses.reject { |status| status["modifier"].positive? }
+      statuses.reject { |status| status[:modifier].positive? }
     end
 
     def outcome_in(data)
@@ -174,14 +164,13 @@ class Narrator
       choices.each do |choice|
         stat = stat_in(choice)
 
-        scene.choices.create!(
-          label: choice["label"].presence || raise(MalformedResponse, "unlabeled choice"),
-          stat: stat,
-          modifier: character.bonus_for(stat),
-          difficulty: difficulty_in(choice),
-          difficulty_reason: choice["difficulty_reason"]
-        )
+        scene.choices.create! label: label_in(choice), stat: stat, modifier: character.bonus_for(stat),
+          target: difficulty_in(choice), difficulty_reason: choice["difficulty_reason"]
       end
+    end
+
+    def label_in(choice)
+      choice["label"].presence || raise(MalformedResponse, "unlabeled choice")
     end
 
     def stat_in(choice)
@@ -189,12 +178,7 @@ class Narrator
     end
 
     def difficulty_in(choice)
-      difficulty = Integer(choice["difficulty"], exception: false) || raise(MalformedResponse, "difficulty missing")
-      difficulty.clamp(5, 19)
-    end
-
-    def new_chat(instructions:)
-      RubyLLM.chat.with_instructions(instructions)
+      Integer(choice["difficulty"], exception: false) || raise(MalformedResponse, "difficulty missing")
     end
 
     def record_call(purpose, response)

@@ -10,7 +10,7 @@ class LlmCall < ApplicationRecord
       model: response.model_id,
       input_tokens: response.input_tokens.to_i,
       output_tokens: response.output_tokens.to_i,
-      cost_in_microdollars: (response.cost.total.to_f * 1_000_000).round
+      cost_in_microdollars: (response.cost.total * 1_000_000).round
     )
   end
 end

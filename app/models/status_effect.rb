@@ -1,4 +1,7 @@
 class StatusEffect < ApplicationRecord
+  MODIFIER_RANGE = -2..2
+  DEFAULT_TURNS = 2
+
   belongs_to :character
 
   def positive?
