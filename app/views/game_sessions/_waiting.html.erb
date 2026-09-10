@@ -2,12 +2,12 @@
 <div class="stage__footer">
   <% if scene.stalled? %>
     <%= render "game_sessions/stalled", game_session: scene.game_session,
-          hint: "Anlatıcı duraksadı. Hikâyeyi kaldığı yerden sürdürebilirsin." %>
+          hint: "The narrator stalled. You can pick the story up where it left off." %>
   <% else %>
     <%= render "game_sessions/writing", text: text %>
     <div class="overdue">
       <%= render "game_sessions/stalled", game_session: scene.game_session,
-            hint: "Anlatıcı gecikti. Hikâyeyi kaldığı yerden sürdürebilirsin." %>
+            hint: "The narrator is taking a while. You can pick the story up where it left off." %>
     </div>
   <% end %>
 </div>

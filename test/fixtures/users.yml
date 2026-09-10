@@ -1,15 +1,15 @@
 ilker:
   email: ilker@example.com
-  name: İlker
+  name: Ilker
   terms_accepted_at: <%= 1.week.ago %>
 
 sevval:
   email: sevval@example.com
-  name: Şevval
+  name: Sevval
   terms_accepted_at: <%= 1.week.ago %>
 
 incomplete:
-  email: yeni@example.com
+  email: new@example.com
 
 deniz:
   email: deniz@example.com

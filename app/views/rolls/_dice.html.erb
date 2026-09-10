@@ -6,14 +6,14 @@
 
   <dl class="dice__facts">
     <div>
-      <dt class="overline">Zorluk <span>· anlatıcı</span></dt>
+      <dt class="overline">Difficulty <span>· narrator</span></dt>
       <dd>
         <%= choice.difficulty.capitalize %>
-        <span class="target">Hedef <%= choice.target %></span>
+        <span class="target">Target <%= choice.target %></span>
       </dd>
     </div>
     <div>
-      <dt class="overline">Katkı</dt>
+      <dt class="overline">Bonus</dt>
       <dd>
         <%= Character::Stat.fetch(choice.stat).label %> <%= choice.stat_value %>
         <span class="arrow">→</span>
@@ -29,11 +29,11 @@
 
 <div class="stage__footer">
   <% if roll.nil? %>
-    <%= button_to "Zarı at", game_session_roll_path(game_session), class: "btn btn--primary" %>
+    <%= button_to "Roll the die", game_session_roll_path(game_session), class: "btn btn--primary" %>
   <% elsif roll.stalled? %>
     <%= render "game_sessions/stalled", game_session: game_session,
-          hint: "Anlatıcı duraksadı. Zarın sonucu henüz yazılamadı." %>
+          hint: "The narrator stalled. Your roll has not been resolved yet." %>
   <% else %>
-    <%= render "game_sessions/writing", text: "Anlatıcı sonucu yazıyor" %>
+    <%= render "game_sessions/writing", text: "The narrator is resolving the roll" %>
   <% end %>
 </div>

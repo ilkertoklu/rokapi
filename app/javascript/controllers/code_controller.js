@@ -11,6 +11,6 @@ export default class extends Controller {
   update() {
     const remaining = this.lengthValue - this.inputTarget.value.length
     this.submitTarget.disabled = remaining > 0
-    this.submitTarget.value = remaining > 0 ? `Doğrula · ${remaining} hane kaldı` : "Doğrula"
+    this.submitTarget.value = remaining > 0 ? `Verify · ${remaining} digit${remaining === 1 ? "" : "s"} left` : "Verify"
   }
 }

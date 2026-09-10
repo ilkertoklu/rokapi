@@ -1,22 +1,22 @@
-<% content_for :title, "Hoş geldin · Rokapi" %>
+<% content_for :title, "Welcome · Rokapi" %>
 
 <div class="brand brand--hero">
   <span class="ember ember--large" aria-hidden="true"></span>
 
-  <h1 class="greeting">Hoş geldin, <%= Current.user.name %></h1>
-  <p>Hesabın hazır. İlk maceraların bizden.</p>
+  <h1 class="greeting">Welcome, <%= Current.user.name %></h1>
+  <p>Your account is ready. Your first adventures are on us.</p>
 
   <div class="plan">
-    <p class="plan__name overline">Ücretsiz plan</p>
-    <p class="plan__headline">%100 kullanım</p>
+    <p class="plan__name overline">Free plan</p>
+    <p class="plan__headline">100% left</p>
     <ul>
-      <li>Her ay ≈ 1-2 kısa macera</li>
-      <li>Yalnızca senin başlattığın oturumlarda azalır</li>
-      <li>Kodla bir odaya katılmak zaten hep ücretsiz</li>
+      <li>About 1-2 short adventures a month</li>
+      <li>Only the sessions you start count against it</li>
+      <li>Joining a room with a code is always free</li>
     </ul>
   </div>
 </div>
 
 <div class="stack">
-  <%= link_to "Devam et", root_path, class: "btn btn--primary" %>
+  <%= link_to "Continue", root_path, class: "btn btn--primary" %>
 </div>

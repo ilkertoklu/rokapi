@@ -12,8 +12,8 @@ class GameSessionTest < ActiveSupport::TestCase
   end
 
   test "title falls back for surprise adventures" do
-    assert_equal "Kayıp Kervan", game_sessions(:ilker_solo).title
-    assert_equal "Sürpriz macera", GameSession.new.title
+    assert_equal "The Lost Caravan", game_sessions(:ilker_solo).title
+    assert_equal "Surprise adventure", GameSession.new.title
   end
 
   test "starts and calls the narrator once every player has a character" do
@@ -38,8 +38,8 @@ class GameSessionTest < ActiveSupport::TestCase
   test "destroying a session cascades through every play record" do
     game_session = game_sessions(:ilker_solo)
     scene = game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host),
-      state: :choosing, title: "Eski Han"
-    choice = scene.choices.create! label: "Defteri oku", stat: "intelligence",
+      state: :choosing, title: "The Old Inn"
+    choice = scene.choices.create! label: "Read the ledger", stat: "intelligence",
       modifier: -1, target: 10
     choice.choose
     scene.roll_dice(by: players(:ilker_solo_host))

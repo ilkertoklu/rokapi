@@ -50,6 +50,6 @@ class Scene < ApplicationRecord
   end
 
   def counter
-    "#{position}. durak"
+    "Stop #{position}"
   end
 end

@@ -1,15 +1,15 @@
-<% content_for :title, "Yeni macera · Rokapi" %>
+<% content_for :title, "New adventure · Rokapi" %>
 
-<%= render "back", to: root_path, title: "Yeni macera" %>
+<%= render "back", to: root_path, title: "New adventure" %>
 
-<p class="lede">Nasıl oynamak istersin?</p>
+<p class="lede">How do you want to play?</p>
 
 <div class="stack">
   <%= link_to new_game_sessions_solo_path, class: "pick" do %>
     <span class="pick__icon"><%= render "glyph", name: "person" %></span>
     <span class="pick__body">
-      <span class="pick__title">Tek kişilik</span>
-      <span class="pick__text">1 oyuncu · 15-60 dk · sana özel hikâye</span>
+      <span class="pick__title">Solo</span>
+      <span class="pick__text">1 player · 15-60 min · a story of your own</span>
     </span>
     <span class="pick__mark"></span>
   <% end %>
@@ -17,11 +17,11 @@
   <div class="pick pick--disabled">
     <span class="pick__icon"><%= render "glyph", name: "people" %></span>
     <span class="pick__body">
-      <span class="pick__title">Çok kişilik</span>
-      <span class="pick__text">2-5 oyuncu · 30-90 dk · ortak hikâye · yakında</span>
+      <span class="pick__title">Multiplayer</span>
+      <span class="pick__text">2-5 players · 30-90 min · a shared story · soon</span>
     </span>
     <span class="pick__mark"></span>
   </div>
 </div>
 
-<p class="hint">Çok kişilikte bir oda kodu paylaşır, arkadaşların kodla katılır.</p>
+<p class="hint">In multiplayer you share a room code, and your friends join with it.</p>

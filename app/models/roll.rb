@@ -1,8 +1,8 @@
 class Roll < ApplicationRecord
   DIE = 20
   GRADE_LABELS = {
-    critical: "KRİTİK BAŞARI", brilliant: "PARLAK BAŞARI", solid: "BAŞARILI", narrow: "KIL PAYI BAŞARI",
-    failure: "BAŞARISIZ", heavy: "AĞIR BAŞARISIZLIK", catastrophe: "FELAKET"
+    critical: "CRITICAL SUCCESS", brilliant: "BRILLIANT SUCCESS", solid: "SUCCESS", narrow: "NARROW SUCCESS",
+    failure: "FAILURE", heavy: "HEAVY FAILURE", catastrophe: "CATASTROPHE"
   }.freeze
   EMPTY_EFFECTS = { "hp" => 0, "items_gained" => [], "items_lost" => [], "statuses_gained" => [], "statuses_lost" => [] }.freeze
 

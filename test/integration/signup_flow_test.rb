@@ -9,12 +9,12 @@ class SignupFlowTest < ActionDispatch::IntegrationTest
     post session_path, params: { code: LoginCode.last.code }
     assert_redirected_to new_signup_profile_path
 
-    post signup_profile_path, params: { name: "Taze", terms: "1" }
+    post signup_profile_path, params: { name: "Robin", terms: "1" }
     assert_redirected_to signup_welcome_path
 
     follow_redirect!
     assert_response :success
-    assert_select "h1", text: /Hoş geldin, Taze/
+    assert_select "h1", text: /Welcome, Robin/
 
     get root_path
     assert_response :success
@@ -24,7 +24,7 @@ class SignupFlowTest < ActionDispatch::IntegrationTest
   test "profile completion requires accepting the terms" do
     sign_in_as users(:incomplete)
 
-    post signup_profile_path, params: { name: "Yeni", terms: "0" }
+    post signup_profile_path, params: { name: "Robin", terms: "0" }
     assert_redirected_to new_signup_profile_path
     assert_not users(:incomplete).reload.profile_complete?
   end
@@ -46,7 +46,7 @@ class SignupFlowTest < ActionDispatch::IntegrationTest
   test "invalid email returns to the screen it was typed on" do
     post login_codes_path, params: { email: "gecersiz" }, headers: { "HTTP_REFERER" => new_signup_url }
     assert_redirected_to new_signup_path
-    assert_equal "Geçerli bir e-posta adresi gir.", flash[:alert]
+    assert_equal "Enter a valid email address.", flash[:alert]
 
     post login_codes_path, params: { email: "gecersiz" }
     assert_redirected_to new_login_code_path

@@ -18,9 +18,9 @@ class Choice < ApplicationRecord
 
   def difficulty
     case
-    when easy? then "kolay"
-    when hard? then "zor"
-    else "orta"
+    when easy? then "easy"
+    when hard? then "hard"
+    else "medium"
     end
   end
 

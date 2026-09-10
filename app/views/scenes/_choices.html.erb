@@ -2,7 +2,7 @@
 <details class="action-panel">
   <summary class="action-panel__handle">
     <span class="grip"></span>
-    <span class="action-panel__prompt overline">Sıra sende</span>
+    <span class="action-panel__prompt overline">Your turn</span>
   </summary>
 
   <div class="action-panel__body">
@@ -15,9 +15,9 @@
 
     <button class="character-button" data-action="sheet#open">
       <%= render "glyph", name: "person" %>
-      <span>Karakterim</span>
+      <span>My character</span>
       <% if (ready = scene.active_player.character.items.usable.count).positive? %>
-        <span class="character-button__hint"><%= ready %> eşya hazır</span>
+        <span class="character-button__hint"><%= pluralize(ready, "item") %> ready</span>
       <% end %>
     </button>
   </div>

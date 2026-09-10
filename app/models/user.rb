@@ -32,6 +32,6 @@ class User < ApplicationRecord
   end
 
   def initial
-    name.to_s.first&.upcase(:turkic)
+    name.to_s.first&.upcase
   end
 end

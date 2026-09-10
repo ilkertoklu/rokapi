@@ -24,7 +24,7 @@ class LoginFlowTest < ActionDispatch::IntegrationTest
 
     post session_path, params: { code: "000000" }
     assert_redirected_to new_session_path
-    assert_match(/Kod hatalı/, flash[:alert])
+    assert_match(/That code is wrong/, flash[:alert])
   end
 
   test "code page without a pending email goes back to login" do

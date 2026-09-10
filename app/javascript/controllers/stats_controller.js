@@ -43,10 +43,14 @@ export default class extends Controller {
     )
   }
 
+  pointsLeft(remaining) {
+    return `${remaining} point${remaining === 1 ? "" : "s"} left`
+  }
+
   render() {
     const remaining = this.remaining()
-    this.remainingTarget.textContent = `· ${remaining} puan kaldı`
+    this.remainingTarget.textContent = `· ${this.pointsLeft(remaining)}`
     this.submitTarget.disabled = remaining !== 0
-    this.submitTarget.value = remaining === 0 ? "Hazırım" : `Hazırım · ${remaining} puan kaldı`
+    this.submitTarget.value = remaining === 0 ? "I'm ready" : `I'm ready · ${this.pointsLeft(remaining)}`
   }
 }

@@ -1,11 +1,11 @@
-<% content_for :title, "Tek kullanımlık kod · Rokapi" %>
+<% content_for :title, "One-time code · Rokapi" %>
 
 <div class="flow" data-controller="code" data-code-length-value="<%= LoginCode::CODE_LENGTH %>">
-  <%= render "back", to: new_login_code_path, title: "Tek kullanımlık kod" %>
+  <%= render "back", to: new_login_code_path, title: "One-time code" %>
 
   <p class="hint">
-    Tek kullanımlık 6 haneli kodu <strong><%= session[:pending_email] %></strong>
-    adresine gönderdik.
+    We sent a one-time <%= LoginCode::CODE_LENGTH %>-digit code to
+    <strong><%= session[:pending_email] %></strong>.
   </p>
 
   <%= form_with url: session_path, id: "code_form" do |form| %>
@@ -16,11 +16,11 @@
   <% end %>
 
   <div class="sticky-footer stack">
-    <%= submit_tag "Doğrula", form: "code_form", class: "btn btn--primary", data: { code_target: "submit" } %>
+    <%= submit_tag "Verify", form: "code_form", class: "btn btn--primary", data: { code_target: "submit" } %>
 
     <div data-controller="countdown">
       <%= button_to login_codes_resend_path, class: "resend", data: { countdown_target: "button" } do %>
-        Kodu tekrar gönder<span data-countdown-target="timer"></span>
+        Resend code<span data-countdown-target="timer"></span>
       <% end %>
     </div>
   </div>

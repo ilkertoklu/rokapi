@@ -2,12 +2,12 @@
 <%= render "scenes/location", scene: scene %>
 
 <div class="narration">
-  <p class="scene__speaker overline"><span class="ember <%= "ember--pulsing" if scene.narrator_writing? %>"></span> Anlatıcı</p>
+  <p class="scene__speaker overline"><span class="ember <%= "ember--pulsing" if scene.narrator_writing? %>"></span> Narrator</p>
   <div id="scene_narration" class="narration__body"><%= scene.narration %></div>
 </div>
 
 <% if scene.choosing? %>
   <%= render "scenes/choices", scene: scene %>
 <% else %>
-  <%= render "game_sessions/waiting", scene: scene, text: "Anlatıcı sahneyi yazıyor" %>
+  <%= render "game_sessions/waiting", scene: scene, text: "The narrator is writing the scene" %>
 <% end %>

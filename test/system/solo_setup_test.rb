@@ -3,29 +3,29 @@ require "application_system_test_case"
 class SoloSetupTest < ApplicationSystemTestCase
   test "logging in and spending the character's free points" do
     visit new_login_code_path
-    fill_in "E-posta", with: users(:sevval).email
-    click_on "Kod gönder"
-    assert_text "adresine gönderdik"
+    fill_in "Email", with: users(:sevval).email
+    click_on "Send code"
+    assert_text "We sent a one-time"
 
     fill_in "code", with: LoginCode.last.code
-    click_on "Doğrula"
-    assert_text "Zarları at"
+    click_on "Verify"
+    assert_text "Roll the dice"
 
-    click_on "Yeni macera kur"
-    click_on "Tek kişilik"
-    click_on "Karakterini oluştur"
+    click_on "Start a new adventure"
+    click_on "Solo"
+    click_on "Create your character"
 
-    choose "Büyücü", allow_label_click: true
+    choose "Mage", allow_label_click: true
     assert_field "character[stats][intelligence]", with: "15"
-    assert_button "Hazırım · 6 puan kaldı", disabled: true
+    assert_button "I'm ready · 6 points left", disabled: true
 
     3.times { increment "intelligence" }
     3.times { increment "wisdom" }
     assert_field "character[stats][intelligence]", with: "18"
     assert_field "character[stats][wisdom]", with: "17"
 
-    click_on "Hazırım"
-    assert_text "Anlatıcı hazırlanıyor"
+    click_on "I'm ready"
+    assert_text "The narrator is getting ready"
 
     character = users(:sevval).game_sessions.sole.player_for(users(:sevval)).character
     assert_equal "mage", character.klass

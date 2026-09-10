@@ -1,23 +1,23 @@
-uzun_kilic:
+longsword:
   character: ilker_hero
-  name: Uzun kılıç
+  name: Longsword
   kind: passive
 
-sifa_iksiri:
+healing_potion:
   character: ilker_hero
-  name: Şifa iksiri
+  name: Healing potion
   kind: instant
   hp_effect: 7
   uses_left: 1
 
-han_defteri:
+inn_ledger:
   character: ilker_hero
-  name: Han defteri
+  name: Inn ledger
   kind: quest
 
-deniz_iksiri:
+deniz_potion:
   character: deniz_hero
-  name: Şifa iksiri
+  name: Healing potion
   kind: instant
   hp_effect: 7
   uses_left: 1

@@ -4,30 +4,30 @@ ilker_solo:
   tone: balanced
   length: short
   story_bible:
-    title: Kayıp Kervan
-    premise: Akçabük kışa tuzsuz giriyor; kervan Boranlı Geçit'te kayıp.
-    personal_stake: Kervan başı Şevket bir kuşatmada bölüğe erzak taşımıştı.
+    title: The Lost Caravan
+    premise: Whitebend is going into winter without salt, and the caravan is missing at Blizzard Pass.
+    personal_stake: Sherrick, the caravan master, once hauled rations to the company under siege.
     antagonist:
       name: Nail Aral
-      want: Köprü çökmeden kervanı durdurmak.
-      method: Konakları ve yan patikaları kullanıyor.
-      first_sign: Kesik kayışlı katır.
+      want: Stop the caravan before the bridge gives way.
+      method: Uses the lodges and the side paths.
+      first_sign: A mule with a cut strap.
     ally:
       name: Elif
-      want: Ağabeyini bulmak.
-      secret: Nail babası.
-    twist: Pusu değil, uyarı.
+      want: To find her brother.
+      secret: Nail is her father.
+    twist: Not an ambush, a warning.
     beats:
-      - Meydana kesik kayışlı katır dönüyor.
-      - Dere kıyısında izler taşa kırılıyor.
-      - Karaocak Konağı'nda yaralı sürücü.
-      - Sarnıçlı Konak'ta Elif itiraf ediyor.
-      - Köprü ayağındaki yarık görülüyor.
-      - Nail ile köprü başında yüz yüze.
-      - Kervan hafifletilip geçiyor ya da köprü kopuyor.
-    finale_question: Tuz köye yetişecek mi?
-    victory: Yeterli tuz köye iniyor.
-    defeat: Köprü kopuyor.
+      - A mule with a cut strap comes back to the square.
+      - The tracks break off on stone by the creek.
+      - A wounded driver at Blackhearth Lodge.
+      - Elif confesses at Cistern Lodge.
+      - The crack in the bridge footing comes into view.
+      - Face to face with Nail at the bridgehead.
+      - The caravan crosses lightened, or the bridge goes.
+    finale_question: Will the salt reach the village?
+    victory: Enough salt comes down to the village.
+    defeat: The bridge goes.
 
 ilker_without_character:
   quest: sunken_village

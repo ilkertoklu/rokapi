@@ -7,7 +7,7 @@ class Item < ApplicationRecord
 
   enum :kind, %w[instant passive quest].index_by(&:itself)
 
-  normalizes :description, with: ->(description) { description.presence&.sub(/\A./) { |first| first.upcase(:turkic) } }
+  normalizes :description, with: ->(description) { description.presence&.sub(/\A./) { |first| first.upcase } }
 
   scope :carried, -> { where(uses_left: nil).or(where(uses_left: 1..)) }
   scope :usable, -> { instant.where(uses_left: 1..) }
@@ -29,8 +29,8 @@ class Item < ApplicationRecord
 
   def summary
     case
-    when instant? then "#{name} (anında: #{format('%+d', hp_effect)} can, #{uses_left} hak)"
-    when quest?   then "#{name} (görev eşyası)"
+    when instant? then "#{name} (instant: #{format('%+d', hp_effect)} health, #{uses_left} #{"use".pluralize(uses_left)})"
+    when quest?   then "#{name} (quest item)"
     when description.present? then "#{name} (#{description})"
     else name
     end

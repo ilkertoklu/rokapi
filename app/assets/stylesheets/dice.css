@@ -133,7 +133,7 @@
 
   .dice__facts {
     inline-size: 100%;
-    max-inline-size: 19rem;
+    max-inline-size: 20rem;
     display: flex;
     flex-direction: column;
     gap: .55rem;
@@ -154,6 +154,12 @@
       color: var(--color-ink-soft);
       font-size: .72rem;
       letter-spacing: .08em;
+
+      span {
+        font-weight: 500;
+        letter-spacing: 0;
+        text-transform: none;
+      }
     }
 
     dd {
@@ -167,6 +173,7 @@
     }
 
     .target {
+      white-space: nowrap;
       padding: .15rem .6rem;
       border-radius: var(--radius-pill);
       background: var(--color-accent-soft);

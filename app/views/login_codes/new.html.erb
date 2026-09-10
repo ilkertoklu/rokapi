@@ -1,15 +1,15 @@
-<% content_for :title, "Giriş yap · Rokapi" %>
+<% content_for :title, "Sign in · Rokapi" %>
 
 <%= form_with url: login_codes_path, class: "flow" do |form| %>
-  <%= render "back", to: welcome_path, title: "Giriş yap" %>
+  <%= render "back", to: welcome_path, title: "Sign in" %>
 
   <div>
-    <%= form.label :email, "E-posta" %>
-    <%= form.email_field :email, placeholder: "seninadresin@posta.com", required: true, autofocus: true, autocomplete: "email" %>
+    <%= form.label :email, "Email" %>
+    <%= form.email_field :email, placeholder: "you@example.com", required: true, autofocus: true, autocomplete: "email" %>
   </div>
 
   <div class="sticky-footer stack">
-    <%= form.submit "Kod gönder", class: "btn btn--primary" %>
-    <p class="hint">Hesabın yok mu? <%= link_to "Hesap oluştur", new_signup_path %></p>
+    <%= form.submit "Send code", class: "btn btn--primary" %>
+    <p class="hint">No account yet? <%= link_to "Create one", new_signup_path %></p>
   </div>
 <% end %>

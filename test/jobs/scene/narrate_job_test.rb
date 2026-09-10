@@ -5,7 +5,7 @@ class Scene::NarrateJobTest < ActiveSupport::TestCase
     game_session = game_sessions(:ilker_solo)
     scene = game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host)
 
-    stub_llm(FakeChat.new("Anlatı geldi ama yapı yok.")) do
+    stub_llm(FakeChat.new("Prose arrived but no structure.")) do
       job = Scene::NarrateJob.new(scene)
 
       2.times { job.perform_now }

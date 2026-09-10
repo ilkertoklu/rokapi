@@ -16,13 +16,13 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
 
     get game_session_path(game_session)
     assert_response :success
-    assert_select ".location h1", text: "Eski Han"
-    assert_select ".location p", text: "Akçabük · 1. durak"
+    assert_select ".location h1", text: "The Old Inn"
+    assert_select ".location p", text: "Whitebend · Stop 1"
     assert_select ".progress__dot--current", count: 1
-    assert_select ".narration__body", text: /Yağmur hanın kiremitlerini/
-    assert_select ".action-panel__prompt", text: "Sıra sende"
-    assert_select ".choice__label", text: "Çekmeceyi zorla"
-    assert_select ".character-button span", text: "Karakterim"
+    assert_select ".narration__body", text: /Rain hammers the inn's/
+    assert_select ".action-panel__prompt", text: "Your turn"
+    assert_select ".choice__label", text: "Force the drawer open"
+    assert_select ".character-button span", text: "My character"
 
     choice = game_session.current_scene.choices.find_by!(stat: "strength")
     post game_session_choice_selection_path(game_session, choice)
@@ -30,15 +30,15 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     get game_session_path(game_session)
     assert_select ".dice__prompt", text: choice.label
     assert_select ".d20__value", text: "?"
-    assert_select ".dice__facts dd", text: /Hedef #{choice.target}/
+    assert_select ".dice__facts dd", text: /Target #{choice.target}/
 
     stub_llm(FakeChat.new(OUTCOME_RESPONSE)) do
       perform_enqueued_jobs { post game_session_roll_path(game_session) }
     end
 
     get game_session_path(game_session)
-    assert_select ".outcome__verdict", text: /BAŞARI|FELAKET/
-    assert_select ".outcome__resolution", text: "Çekmece açıldı ama elini kestin."
+    assert_select ".outcome__verdict", text: /SUCCESS|FAILURE|CATASTROPHE/
+    assert_select ".outcome__resolution", text: "The drawer opens, but you cut your hand."
     assert_equal 1, game_session.scenes.count, "the story must not run ahead of the player"
 
     stub_llm(FakeChat.new(FINALE_RESPONSE)) do
@@ -49,10 +49,10 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert game_session.outcome_victory?
 
     get game_session_path(game_session)
-    assert_select ".finale__outcome", text: "Zafer"
-    assert_select ".highlights", text: /Zar atıldı/
-    assert_select "[data-controller=share][data-share-text-value*=?]", "Dönüş — Zafer"
-    assert_select "[data-share-text-value*=?]", "Kayıp Kervan"
+    assert_select ".finale__outcome", text: "Victory"
+    assert_select ".highlights", text: /Dice rolled/
+    assert_select "[data-controller=share][data-share-text-value*=?]", "The Return — Victory"
+    assert_select "[data-share-text-value*=?]", "The Lost Caravan"
     assert_equal %w[plan scene outcome scene], game_session.llm_calls.order(:id).pluck(:purpose)
     assert_operator game_session.llm_calls.sum(:cost_in_microdollars), :>, 0
   end
@@ -60,7 +60,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
   test "the scene keeps its layout when the narrator stops writing" do
     game_session = start_playing
     scene = game_session.current_scene
-    scene.update! title: "Eski Han", narration: "Yağmur."
+    scene.update! title: "The Old Inn", narration: "Rain."
 
     get game_session_path(game_session)
     assert_select ".writing", 1
@@ -73,7 +73,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
       "nothing may appear above the text when writing ends, or the reader loses their place"
     assert_select "details.action-panel:not([open])", 1,
       "the panel must arrive collapsed so the reader keeps their place"
-    assert_select ".action-panel__prompt", text: "Sıra sende"
+    assert_select ".action-panel__prompt", text: "Your turn"
   end
 
   test "the die rolls to rest on the value while the narrator writes" do
@@ -88,7 +88,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".d20__strip span:last-child", text: value.to_s,
       message: "the reel must come to rest on the value that was actually rolled"
     assert_select ".d20__value", count: 0
-    assert_select ".writing", text: /Anlatıcı sonucu yazıyor/
+    assert_select ".writing", text: /The narrator is resolving the roll/
     assert_select ".narration", count: 0
 
     stub_llm(FakeChat.new(OUTCOME_RESPONSE)) { perform_enqueued_jobs }
@@ -110,8 +110,8 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     end
 
     get game_session_path(game_session)
-    assert_select ".outcome__resolution", text: "Çekmece açıldı ama elini kestin."
-    assert_select ".outcome__effect", text: "-4 Can"
+    assert_select ".outcome__resolution", text: "The drawer opens, but you cut your hand."
+    assert_select ".outcome__effect", text: "-4 Health"
     assert_select ".action-panel", count: 0
     assert_equal 1, game_session.scenes.count
     assert_equal %w[plan scene outcome], game_session.llm_calls.order(:id).pluck(:purpose)
@@ -119,13 +119,13 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     post game_session_acknowledgement_path(game_session)
     get game_session_path(game_session)
     assert_select ".outcome", count: 0
-    assert_select ".writing", text: /Anlatıcı sahneyi yazıyor/, message: "no dead screen while the scene starts"
+    assert_select ".writing", text: /The narrator is writing the scene/, message: "no dead screen while the scene starts"
 
     stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { perform_enqueued_jobs }
 
     get game_session_path(game_session)
-    assert_select ".location p", text: /2\. durak/
-    assert_select ".action-panel__prompt", text: "Sıra sende"
+    assert_select ".location p", text: /Stop 2/
+    assert_select ".action-panel__prompt", text: "Your turn"
   end
 
   test "a stalled outcome can be sent back to the narrator" do
@@ -154,7 +154,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     game_session = start_playing
     clear_enqueued_jobs
 
-    stub_llm(FakeChat.new("Kitap yok.")) do
+    stub_llm(FakeChat.new("No bible.")) do
       job = Scene::NarrateJob.new(game_session.current_scene)
       2.times { job.perform_now }
       assert_raises(Narrator::MalformedResponse) { job.perform_now }
@@ -163,7 +163,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
 
     get game_session_path(game_session)
     assert_select ".stalled"
-    assert_select ".location h1", text: "Kayıp Kervan"
+    assert_select ".location h1", text: "The Lost Caravan"
 
     stub_llm(FakeChat.new(PLAN_RESPONSE), FakeChat.new(SCENE_RESPONSE)) do
       perform_enqueued_jobs { post game_session_narration_path(game_session) }
@@ -252,8 +252,8 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
   test "players cannot act on a foreign session" do
     game_session = game_sessions(:ilker_solo)
     scene = game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host),
-      state: :choosing, title: "Eski Han"
-    choice = scene.choices.create! label: "Defteri oku", stat: "intelligence",
+      state: :choosing, title: "The Old Inn"
+    choice = scene.choices.create! label: "Read the ledger", stat: "intelligence",
       modifier: -1, target: 10
 
     post game_session_choice_selection_path(game_session, choice)

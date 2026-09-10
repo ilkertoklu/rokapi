@@ -23,7 +23,7 @@ class GameSession < ApplicationRecord
   after_create -> { players.create!(user: creator) }
 
   def title
-    Quest[quest]&.title || story_title.presence || "Sürpriz macera"
+    Quest[quest]&.title || story_title.presence || "Surprise adventure"
   end
 
   def player_for(user)

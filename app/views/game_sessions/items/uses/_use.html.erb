@@ -2,11 +2,11 @@
 <div class="outcome outcome--restored">
   <span class="outcome__badge"><%= render "glyph", name: "flask" %></span>
 
-  <p class="outcome__verdict"><%= format("%+d", restored) %> Can</p>
+  <p class="outcome__verdict"><%= format("%+d", restored) %> Health</p>
 
   <div class="outcome__vitals">
     <div class="vitals__row">
-      <span class="vitals__label overline">Can</span>
+      <span class="vitals__label overline">Health</span>
       <span class="vitals__count">
         <%= item.character.hp - restored %> <span>→</span> <%= item.character.hp %> <span>/ <%= item.character.max_hp %></span>
       </span>
@@ -16,9 +16,9 @@
     </div>
   </div>
 
-  <p class="outcome__resolution"><%= item.name %> etkisini gösterdi.</p>
+  <p class="outcome__resolution"><%= item.name %> takes effect.</p>
 </div>
 
 <div class="stage__footer">
-  <%= link_to "Tamam", game_session_path(game_session), class: "btn btn--primary" %>
+  <%= link_to "Done", game_session_path(game_session), class: "btn btn--primary" %>
 </div>

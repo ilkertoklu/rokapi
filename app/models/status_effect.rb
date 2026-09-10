@@ -9,11 +9,11 @@ class StatusEffect < ApplicationRecord
   end
 
   def duration_label
-    turns_left ? "#{turns_left} tur" : expires_when
+    turns_left ? "#{turns_left} #{"turn".pluralize(turns_left)}" : expires_when
   end
 
   def summary
-    "#{name} (#{format('%+d', modifier)} zar, #{duration_label})"
+    "#{name} (#{format('%+d', modifier)} to rolls, #{duration_label})"
   end
 
   def tick

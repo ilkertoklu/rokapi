@@ -4,25 +4,25 @@ ActiveRecord::Base.logger = nil
 def show_scene(scene)
   character = scene.active_player.character
   session = scene.game_session
-  puts "\n=== SAHNE #{scene.position}/#{session.scene_budget} — #{scene.title} @ #{scene.location} #{"(FİNAL)" if scene.finale?} (#{scene.narration.to_s.split.size} kelime)"
+  puts "\n=== SCENE #{scene.position}/#{session.scene_budget} — #{scene.title} @ #{scene.location} #{"(FINALE)" if scene.finale?} (#{scene.narration.to_s.split.size} words)"
   puts scene.narration
-  puts "\nCAN #{character.hp}/#{character.max_hp} | EŞYA: #{character.items.carried.map(&:summary).join("; ").presence || "boş"} | STATÜ: #{character.status_effects.map(&:summary).join("; ").presence || "yok"}"
+  puts "\nHEALTH #{character.hp}/#{character.max_hp} | ITEMS: #{character.items.carried.map(&:summary).join("; ").presence || "none"} | STATUSES: #{character.status_effects.map(&:summary).join("; ").presence || "none"}"
 
   if session.finished?
-    puts "\n*** OYUN BİTTİ: #{session.outcome.upcase} *** maliyet $#{format('%.3f', session.llm_calls.sum(:cost_in_microdollars) / 1e6)}"
+    puts "\n*** GAME OVER: #{session.outcome.upcase} *** cost $#{format('%.3f', session.llm_calls.sum(:cost_in_microdollars) / 1e6)}"
   else
     scene.choices.order(:id).each_with_index do |choice, index|
-      puts "  #{index + 1}) [#{Character::Stat.fetch(choice.stat).label} #{format('%+d', choice.modifier)} | #{choice.difficulty} hedef #{choice.target}] #{choice.label} — #{choice.difficulty_reason}"
+      puts "  #{index + 1}) [#{Character::Stat.fetch(choice.stat).label} #{format('%+d', choice.modifier)} | #{choice.difficulty} target #{choice.target}] #{choice.label} — #{choice.difficulty_reason}"
     end
   end
 end
 
 def show_roll(roll)
-  status = " #{format('%+d', roll.status_modifier)} statü" unless roll.status_modifier.zero?
-  puts "\nZAR: d20=#{roll.value} #{format('%+d', roll.modifier)}#{status} = #{roll.total} vs #{roll.target} → #{roll.grade.to_s.upcase}"
-  puts "SONUÇ: #{roll.resolution}"
+  status = " #{format('%+d', roll.status_modifier)} status" unless roll.status_modifier.zero?
+  puts "\nROLL: d20=#{roll.value} #{format('%+d', roll.modifier)}#{status} = #{roll.total} vs #{roll.target} → #{roll.grade.to_s.upcase}"
+  puts "RESULT: #{roll.resolution}"
   effects = roll.effects.to_h.reject { |_, value| value.blank? || value == 0 }
-  puts "ETKİ: #{effects.inspect}" if effects.any?
+  puts "EFFECTS: #{effects.inspect}" if effects.any?
 end
 
 def timed(label)
@@ -43,31 +43,31 @@ end
 
 def start_game(quest_title, tone, length, race, klass, background)
   user = User.find_or_create_by!(email: "playtest-#{ENV.fetch('BOT', 'a')}@rokapi.test") do |new_user|
-    new_user.name = ENV.fetch("BOT_NAME", "Ege")
+    new_user.name = ENV.fetch("BOT_NAME", "Robin")
     new_user.terms_accepted_at = Time.current
   end
   Current.session = Session.new(user: user)
-  quest = quest_title == "surprise" ? nil : GameSession::Quest.all.find { |candidate| candidate.title == quest_title } || abort("görev yok: #{quest_title}")
+  quest = quest_title == "surprise" ? nil : GameSession::Quest.all.find { |candidate| candidate.title == quest_title } || abort("no such quest: #{quest_title}")
   game_session = GameSession.create!(quest: quest&.key, tone: tone, length: length, creator: user)
-  timed("plan+sahne1") { game_session.players.first.ready_up(race: race, klass: klass, background: background, stats: allocate_stats(klass)) }
+  timed("plan+scene1") { game_session.players.first.ready_up(race: race, klass: klass, background: background, stats: allocate_stats(klass)) }
   game_session.reload
   puts "SESSION #{game_session.id} — #{game_session.title} (#{RubyLLM.config.default_model})"
-  puts "KİTAP: #{JSON.pretty_generate(game_session.story_bible)}" if ENV["SHOW_BIBLE"]
+  puts "BIBLE: #{JSON.pretty_generate(game_session.story_bible)}" if ENV["SHOW_BIBLE"]
   show_scene game_session.current_scene
   game_session
 end
 
 def take(game_session, choice)
-  puts "\n>>> SEÇİM: #{choice.label}"
+  puts "\n>>> CHOICE: #{choice.label}"
   choice.choose
   play_out game_session
 end
 
 def play_out(game_session)
   scene = game_session.current_scene
-  roll = timed("çözümleme") { scene.roll_dice(by: scene.active_player) }
+  roll = timed("resolution") { scene.roll_dice(by: scene.active_player) }
   show_roll roll.reload
-  timed("sahne") { roll.acknowledge }
+  timed("scene") { roll.acknowledge }
   show_scene game_session.reload.current_scene
 end
 
@@ -76,7 +76,7 @@ def catch_up(game_session)
   if scene.rolling?
     play_out game_session
   elsif !scene.choosing?
-    timed("devam") { game_session.current_scene.narrate }
+    timed("continue") { game_session.current_scene.narrate }
     show_scene game_session.reload.current_scene
   end
 end
@@ -92,14 +92,14 @@ when "new"
 when "choose"
   game_session = load_game(ARGV[0])
   scene = game_session.current_scene
-  abort "sahne seçim beklemiyor (#{scene.state})" unless scene.choosing?
-  take game_session, scene.choices.order(:id)[ARGV[1].to_i - 1] || abort("seçenek yok")
+  abort "the scene is not waiting for a choice (#{scene.state})" unless scene.choosing?
+  take game_session, scene.choices.order(:id)[ARGV[1].to_i - 1] || abort("no such choice")
 when "drink"
   game_session = load_game(ARGV[0])
   character = game_session.players.first.character
-  item = character.items.healing.first || abort("şifa eşyası yok")
+  item = character.items.healing.first || abort("no healing item")
   item.use
-  puts "#{item.name} içildi → CAN #{character.reload.hp}/#{character.max_hp}"
+  puts "#{item.name} drunk → HEALTH #{character.reload.hp}/#{character.max_hp}"
 when "resume"
   catch_up load_game(ARGV[0])
 when "auto"
@@ -116,7 +116,7 @@ when "auto"
     character = scene.active_player.character
     if character.hp_percentage < 50 && (potion = character.items.healing.first)
       potion.use
-      puts "\n>>> #{potion.name} içildi → CAN #{character.reload.hp}/#{character.max_hp}"
+      puts "\n>>> #{potion.name} drunk → HEALTH #{character.reload.hp}/#{character.max_hp}"
     end
 
     choices = scene.choices.order(:target).to_a
@@ -129,12 +129,12 @@ when "auto"
   end
 else
   abort <<~USAGE
-    kullanım: bin/rails runner script/playtest.rb <komut>
-      new <macera|surprise> <fun|balanced|dark> <short|medium|long> <race> <klass> <background>
+    usage: bin/rails runner script/playtest.rb <command>
+      new <quest|surprise> <fun|balanced|dark> <short|medium|long> <race> <klass> <background>
       choose <session_id> <1|2|3>
       drink <session_id>
       resume <session_id>
-      auto <macera|surprise> <ton> <uzunluk> <race> <klass> <background> <mixed|bold|safe>
-      SESSION=<id> auto <mixed|bold|safe>   (yarım kalan oturumu botla bitirir)
+      auto <quest|surprise> <tone> <length> <race> <klass> <background> <mixed|bold|safe>
+      SESSION=<id> auto <mixed|bold|safe>   (a bot finishes a half-played session)
   USAGE
 end

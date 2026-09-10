@@ -2,7 +2,7 @@ require "test_helper"
 
 class ItemTest < ActiveSupport::TestCase
   setup do
-    @potion = items(:sifa_iksiri)
+    @potion = items(:healing_potion)
     @character = @potion.character
   end
 
@@ -26,7 +26,7 @@ class ItemTest < ActiveSupport::TestCase
     @potion.update! uses_left: 0
 
     assert_raises(Item::Unusable) { @potion.use }
-    assert_raises(Item::Unusable) { items(:uzun_kilic).use }
+    assert_raises(Item::Unusable) { items(:longsword).use }
   end
 
   test "a stale copy cannot double-spend the last use" do
@@ -40,10 +40,10 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal 17, @character.reload.hp
   end
 
-  test "descriptions are capitalized the Turkish way" do
-    item = @character.items.create! name: "Merhem", kind: "passive", description: "iyileştirir"
+  test "descriptions are capitalized" do
+    item = @character.items.create! name: "Salve", kind: "passive", description: "heals wounds"
 
-    assert_equal "İyileştirir", item.description
+    assert_equal "Heals wounds", item.description
   end
 
   test "spent items drop out of the carried inventory but stay on record" do
@@ -51,20 +51,20 @@ class ItemTest < ActiveSupport::TestCase
 
     assert_not_includes @character.items.carried, @potion
     assert_includes @character.items, @potion
-    assert_includes @character.items.carried, items(:uzun_kilic)
+    assert_includes @character.items.carried, items(:longsword)
   end
 
   test "healing covers only carried items that restore hp" do
     assert_includes @character.items.healing, @potion
-    assert_not_includes @character.items.healing, items(:uzun_kilic)
+    assert_not_includes @character.items.healing, items(:longsword)
 
     @potion.use
     assert_empty @character.items.healing
   end
 
   test "summary speaks the narrator's language" do
-    assert_equal "Şifa iksiri (anında: +7 can, 1 hak)", @potion.summary
-    assert_equal "Uzun kılıç", items(:uzun_kilic).summary
-    assert_equal "Han defteri (görev eşyası)", items(:han_defteri).summary
+    assert_equal "Healing potion (instant: +7 health, 1 use)", @potion.summary
+    assert_equal "Longsword", items(:longsword).summary
+    assert_equal "Inn ledger (quest item)", items(:inn_ledger).summary
   end
 end

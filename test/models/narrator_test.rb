@@ -20,8 +20,8 @@ class NarratorTest < ActiveSupport::TestCase
 
     scene = @game_session.scenes.sole
     assert scene.choosing?
-    assert_equal "Eski Han", scene.title
-    assert_includes scene.narration, "Yağmur hanın kiremitlerini"
+    assert_equal "The Old Inn", scene.title
+    assert_includes scene.narration, "Rain hammers the inn's"
     assert_not_includes scene.narration, "```"
 
     assert_equal 3, scene.choices.count
@@ -69,7 +69,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     resolve roll
 
-    assert_equal "Çekmece açıldı ama elini kestin.", roll.reload.resolution
+    assert_equal "The drawer opens, but you cut your hand.", roll.reload.resolution
     assert_equal 31 - 4, characters(:ilker_hero).reload.hp
     assert_equal 1, @game_session.scenes.count, "the outcome call must not write a scene"
     assert_equal "outcome", @game_session.llm_calls.outcome.sole.purpose
@@ -94,36 +94,36 @@ class NarratorTest < ActiveSupport::TestCase
     stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
 
     assert_equal 2, @game_session.scenes.count
-    assert_equal "Ahır", @game_session.current_scene.title
+    assert_equal "The Stable", @game_session.current_scene.title
     assert @game_session.current_scene.choosing?
   end
 
   test "outcome effects reach the inventory and the statuses" do
     character = characters(:ilker_hero)
-    character.status_effects.create! name: "Yorgun", modifier: -1, expires_when: "dinlenene dek"
+    character.status_effects.create! name: "Dragging Leg", modifier: -1, expires_when: "until it eases"
     roll = play_first_scene
 
-    fake = FakeChat.new(%({"resolution": "Sandıkta bir merhem buldun ama sırılsıklam oldun.",
+    fake = FakeChat.new(%({"resolution": "You find a salve in the chest, but you come out soaked.",
       "effects": {"hp": -2,
-        "items_gained": [{"name": "Sarı merhem", "kind": "instant", "description": "", "hp": 5, "uses": 1}],
-        "items_lost": ["Han defteri"],
-        "statuses_gained": [{"name": "Sırılsıklam", "modifier": -2, "turns": 2, "expires_when": ""}],
-        "statuses_lost": ["Yorgun"]}}))
+        "items_gained": [{"name": "Yellow salve", "kind": "instant", "description": "", "hp": 5, "uses": 1}],
+        "items_lost": ["Inn ledger"],
+        "statuses_gained": [{"name": "Soaked Through", "modifier": -2, "turns": 2, "expires_when": ""}],
+        "statuses_lost": ["Dragging Leg"]}}))
     stub_llm(fake) { roll.narrate }
 
     assert_equal 31 - 2, character.reload.hp
-    assert character.items.usable.exists?(name: "Sarı merhem")
-    assert_not character.items.exists?(name: "Han defteri")
-    assert_equal 2, character.status_effects.find_by!(name: "Sırılsıklam").turns_left
-    assert_not character.status_effects.exists?(name: "Yorgun")
-    assert_equal [ "Sarı merhem" ], roll.reload.items_gained.pluck("name")
-    assert_equal [ "Sırılsıklam" ], roll.statuses_gained.pluck("name")
+    assert character.items.usable.exists?(name: "Yellow salve")
+    assert_not character.items.exists?(name: "Inn ledger")
+    assert_equal 2, character.status_effects.find_by!(name: "Soaked Through").turns_left
+    assert_not character.status_effects.exists?(name: "Dragging Leg")
+    assert_equal [ "Yellow salve" ], roll.reload.items_gained.pluck("name")
+    assert_equal [ "Soaked Through" ], roll.statuses_gained.pluck("name")
   end
 
   test "a positive status is earned only by a natural twenty" do
     stub_llm(FakeChat.new(SCENE_RESPONSE)) { narrate }
-    boon = %({"resolution": "Kapı açıldı.", "effects": {"hp": 0,
-      "statuses_gained": [{"name": "Sağlam Tutuş", "modifier": 2, "turns": 2, "expires_when": ""}]}})
+    boon = %({"resolution": "The door opens.", "effects": {"hp": 0,
+      "statuses_gained": [{"name": "Sure Grip", "modifier": 2, "turns": 2, "expires_when": ""}]}})
 
     roll = roll_with(value: 19)
     stub_llm(FakeChat.new(boon)) { roll.narrate }
@@ -134,36 +134,36 @@ class NarratorTest < ActiveSupport::TestCase
     stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
     roll = roll_with(value: 20)
     stub_llm(FakeChat.new(boon)) { roll.narrate }
-    assert characters(:ilker_hero).status_effects.exists?(name: "Sağlam Tutuş")
+    assert characters(:ilker_hero).status_effects.exists?(name: "Sure Grip")
   end
 
   test "a resolution may replace an item it takes away" do
     roll = play_first_scene
 
-    fake = FakeChat.new(%({"resolution": "Şişen kırıldı ama enkazda yenisini buldun.",
+    fake = FakeChat.new(%({"resolution": "Your flask breaks, but you find another in the wreckage.",
       "effects": {"hp": 0,
-        "items_gained": [{"name": "Şifa iksiri", "kind": "instant", "description": "", "hp": 6, "uses": 1}],
-        "items_lost": ["Şifa iksiri"]}}))
+        "items_gained": [{"name": "Healing potion", "kind": "instant", "description": "", "hp": 6, "uses": 1}],
+        "items_lost": ["Healing potion"]}}))
     stub_llm(fake) { roll.narrate }
 
-    potions = characters(:ilker_hero).items.usable.where(name: "Şifa iksiri")
+    potions = characters(:ilker_hero).items.usable.where(name: "Healing potion")
     assert_equal 6, potions.sole.hp_effect, "the lost copy goes first so the replacement survives"
   end
 
   test "a granted item and status arrive normalized" do
     roll = play_first_scene
 
-    fake = FakeChat.new(%({"resolution": "Sandıkta bir merhem buldun ama sırılsıklam oldun.",
+    fake = FakeChat.new(%({"resolution": "You find a salve in the chest, but you come out soaked.",
       "effects": {"hp": 0,
-        "items_gained": [{"name": "Sarı merhem", "kind": "instant", "description": "", "hp": 5, "uses": 0}],
-        "statuses_gained": [{"name": "Sırılsıklam", "modifier": -5, "turns": 0, "expires_when": ""}]}}))
+        "items_gained": [{"name": "Yellow salve", "kind": "instant", "description": "", "hp": 5, "uses": 0}],
+        "statuses_gained": [{"name": "Soaked Through", "modifier": -5, "turns": 0, "expires_when": ""}]}}))
     stub_llm(fake) { roll.narrate }
 
-    ointment = characters(:ilker_hero).items.find_by!(name: "Sarı merhem")
+    ointment = characters(:ilker_hero).items.find_by!(name: "Yellow salve")
     assert_equal 1, ointment.uses_left, "uses must be at least 1 or the item arrives dead"
     assert_equal 5, ointment.hp_effect
 
-    soaked = characters(:ilker_hero).status_effects.find_by!(name: "Sırılsıklam")
+    soaked = characters(:ilker_hero).status_effects.find_by!(name: "Soaked Through")
     assert_equal(-2, soaked.modifier, "narrator modifiers are clamped to the dice range")
     assert_equal 2, soaked.turns_left, "an open-ended status would never wear off"
     assert_nil soaked.expires_when
@@ -174,8 +174,8 @@ class NarratorTest < ActiveSupport::TestCase
     roll = play_first_scene
 
     assert_no_difference -> { Item.count } do
-      stub_llm(FakeChat.new(%({"resolution": "Bir şey buldun.",
-        "effects": {"hp": 0, "items_gained": [{"name": "Eski tılsım", "kind": "relic"}]}}))) do
+      stub_llm(FakeChat.new(%({"resolution": "You find something.",
+        "effects": {"hp": 0, "items_gained": [{"name": "Old charm", "kind": "relic"}]}}))) do
         assert_raises(Narrator::MalformedResponse) { roll.narrate }
       end
     end
@@ -187,7 +187,7 @@ class NarratorTest < ActiveSupport::TestCase
     roll = play_first_scene
 
     assert_no_difference -> { Item.count } do
-      stub_llm(FakeChat.new(%({"resolution": "Bir şey buldun.",
+      stub_llm(FakeChat.new(%({"resolution": "You find something.",
         "effects": {"hp": 0, "items_gained": [{"name": "", "kind": "instant"}]}}))) do
         assert_raises(Narrator::MalformedResponse) { roll.narrate }
       end
@@ -197,36 +197,36 @@ class NarratorTest < ActiveSupport::TestCase
   end
 
   test "the narrator sees the inventory, the statuses and what was used" do
-    characters(:ilker_hero).status_effects.create! name: "Kararlı", modifier: 1, turns_left: 2
+    characters(:ilker_hero).status_effects.create! name: "Sure Grip", modifier: 1, turns_left: 2
     roll = play_first_scene
-    items(:sifa_iksiri).use
+    items(:healing_potion).use
 
     fake = FakeChat.new(OUTCOME_RESPONSE)
     stub_llm(fake) { roll.narrate }
 
-    assert_includes fake.prompt, "ENVANTER:"
-    assert_includes fake.prompt, "Uzun kılıç"
-    assert_includes fake.prompt, "Han defteri (görev eşyası)"
-    assert_not_includes fake.prompt, "Şifa iksiri (anında", "a spent item must drop out of the inventory"
-    assert_includes fake.prompt, "STATÜ ETKİLERİ: Kararlı (+1 zar, 2 tur)"
-    assert_includes fake.prompt, "KULLANILAN EŞYA: Şifa iksiri (+7 can)"
+    assert_includes fake.prompt, "INVENTORY:"
+    assert_includes fake.prompt, "Longsword"
+    assert_includes fake.prompt, "Inn ledger (quest item)"
+    assert_not_includes fake.prompt, "Healing potion (instant", "a spent item must drop out of the inventory"
+    assert_includes fake.prompt, "STATUS EFFECTS: Sure Grip (+1 to rolls, 2 turns)"
+    assert_includes fake.prompt, "ITEM USED: Healing potion (+7 health)"
   end
 
   test "a used item is settled by the outcome and not raised again by the next scene" do
     roll = play_first_scene
-    items(:sifa_iksiri).use
+    items(:healing_potion).use
     resolve roll
     roll.acknowledge
 
     scene_call = FakeChat.new(SECOND_SCENE_RESPONSE)
     stub_llm(scene_call) { narrate }
 
-    assert_not_includes scene_call.prompt, "KULLANILAN EŞYA"
+    assert_not_includes scene_call.prompt, "ITEM USED"
   end
 
   test "statuses weigh on the roll and wear off with it" do
     character = characters(:ilker_hero)
-    character.status_effects.create! name: "Sırılsıklam", modifier: -2, turns_left: 1
+    character.status_effects.create! name: "Soaked Through", modifier: -2, turns_left: 1
 
     stub_llm(FakeChat.new(SCENE_RESPONSE)) { narrate }
     scene = @game_session.current_scene
@@ -241,7 +241,7 @@ class NarratorTest < ActiveSupport::TestCase
     fake = FakeChat.new(OUTCOME_RESPONSE)
     stub_llm(fake) { roll.narrate }
 
-    assert_includes fake.prompt, "-2 (statü)"
+    assert_includes fake.prompt, "-2 (status)"
     assert_empty character.status_effects.reload, "a one-turn status must not outlive its roll"
   end
 
@@ -252,7 +252,7 @@ class NarratorTest < ActiveSupport::TestCase
     fake = FakeChat.new(OUTCOME_RESPONSE)
     stub_llm(fake) { roll.narrate }
 
-    assert_includes fake.prompt, "KRİTİK BAŞARI (doğal 20"
+    assert_includes fake.prompt, "CRITICAL SUCCESS (natural 20"
   end
 
   test "a deep miss reaches the narrator with its distance" do
@@ -262,7 +262,7 @@ class NarratorTest < ActiveSupport::TestCase
     fake = FakeChat.new(OUTCOME_RESPONSE)
     stub_llm(fake) { roll.narrate }
 
-    assert_includes fake.prompt, "AĞIR BAŞARISIZLIK (hedefin 9 puan altında)"
+    assert_includes fake.prompt, "HEAVY FAILURE (9 under the target)"
   end
 
   test "a scene reusing a stat across choices is malformed" do
@@ -276,7 +276,7 @@ class NarratorTest < ActiveSupport::TestCase
   end
 
   test "a choice without a label is malformed" do
-    unlabeled = SCENE_RESPONSE.sub('"label": "Çekmeceyi zorla", ', "")
+    unlabeled = SCENE_RESPONSE.sub('"label": "Force the drawer open", ', "")
 
     stub_llm(FakeChat.new(unlabeled)) do
       assert_raises(Narrator::MalformedResponse) { narrate }
@@ -293,8 +293,8 @@ class NarratorTest < ActiveSupport::TestCase
 
     stub_llm(plan_call, scene_call) { narrate }
 
-    assert_includes plan_call.prompt, "SAHNE SAYISI: 7"
-    assert_includes plan_call.prompt, "Savaşçı"
+    assert_includes plan_call.prompt, "SCENE COUNT: 7"
+    assert_includes plan_call.prompt, "Warrior"
     assert_equal "Nail Aral", @game_session.reload.story_bible.dig("antagonist", "name")
     assert_equal %w[plan scene], @game_session.llm_calls.order(:id).pluck(:purpose)
     assert @game_session.current_scene.choosing?
@@ -303,7 +303,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "a bible that never arrives leaves the first scene unwritten" do
     @game_session.update! story_bible: nil
 
-    stub_llm(FakeChat.new("Kitap yok.")) do
+    stub_llm(FakeChat.new("No bible.")) do
       assert_raises(Narrator::MalformedResponse) { narrate }
     end
 
@@ -318,10 +318,10 @@ class NarratorTest < ActiveSupport::TestCase
     stub_llm(scene_call) { narrate }
 
     assert_equal %w[scene], @game_session.llm_calls.pluck(:purpose)
-    assert_includes scene_call.prompt, "HİKÂYE KİTABI"
+    assert_includes scene_call.prompt, "STORY BIBLE"
     assert_includes scene_call.prompt, "Nail Aral"
-    assert_includes scene_call.prompt, "VURUŞ: Meydana kesik kayışlı katır dönüyor."
-    assert_includes scene_call.prompt, "GİRİŞ:"
+    assert_includes scene_call.prompt, "BEAT: A mule with a cut strap comes back to the square."
+    assert_includes scene_call.prompt, "OPENING:"
   end
 
   test "the whole story so far reaches the narrator unabridged" do
@@ -337,19 +337,19 @@ class NarratorTest < ActiveSupport::TestCase
     scene_call = FakeChat.new(SECOND_SCENE_RESPONSE)
     stub_llm(scene_call) { narrate }
 
-    assert_includes scene_call.prompt, "[1] Eski Han @ Akçabük"
-    assert_includes scene_call.prompt, "[4] Ahır @ Akçabük"
-    assert_includes scene_call.prompt, "Çekmece açıldı ama elini kestin."
-    assert_includes scene_call.prompt, "VURUŞ: Köprü ayağındaki yarık görülüyor."
-    assert_equal 4, scene_call.prompt.scan("→ Seçim:").size
+    assert_includes scene_call.prompt, "[1] The Old Inn @ Whitebend"
+    assert_includes scene_call.prompt, "[4] The Stable @ Whitebend"
+    assert_includes scene_call.prompt, "The drawer opens, but you cut your hand."
+    assert_includes scene_call.prompt, "BEAT: The crack in the bridge footing comes into view."
+    assert_equal 4, scene_call.prompt.scan("→ Choice:").size
   end
 
   test "the surprise adventure takes its name from the bible" do
     @game_session.update! quest: nil
-    assert_equal "Kayıp Kervan", @game_session.title
+    assert_equal "The Lost Caravan", @game_session.title
 
     @game_session.update! story_bible: nil
-    assert_equal "Sürpriz macera", @game_session.title
+    assert_equal "Surprise adventure", @game_session.title
   end
 
   test "the finale is told the tally of the dice" do
@@ -365,7 +365,7 @@ class NarratorTest < ActiveSupport::TestCase
     scene_call = FakeChat.new(FINALE_RESPONSE)
     stub_llm(scene_call) { narrate }
 
-    assert_match(/ZAR BİLANÇOSU: \d+ başarı, \d+ başarısızlık; doruk zarı AĞIR BAŞARISIZLIK/, scene_call.prompt)
+    assert_match(/ROLL TALLY: \d+ successes, \d+ failures\. The climax roll was HEAVY FAILURE/, scene_call.prompt)
     assert @game_session.reload.finished?
   end
 
@@ -375,8 +375,8 @@ class NarratorTest < ActiveSupport::TestCase
     scene_call = FakeChat.new(SECOND_SCENE_RESPONSE)
     stub_llm(scene_call) { narrate }
 
-    assert_includes scene_call.prompt, %(ÇEŞİTLİLİK: Son sahnelerin seçenekleri: "Tozlu defteri oku", "Çekmeceyi zorla", "Ahırı sessizce dinle".)
-    assert_includes scene_call.prompt, "Kolay seçenek Zekâ, zor seçenek — statındaydı"
+    assert_includes scene_call.prompt, %(VARIETY: The choices in the last scenes were: "Read the dusty ledger", "Force the drawer open", "Listen at the stable in silence".)
+    assert_includes scene_call.prompt, "The easy choice was on Intelligence and the hard choice on —"
   end
 
   test "a downed character forces the defeat finale" do
@@ -385,7 +385,7 @@ class NarratorTest < ActiveSupport::TestCase
     scene_call = FakeChat.new(FINALE_RESPONSE.sub('"outcome": "victory"', '"outcome": "defeat"'))
     stub_llm(scene_call) { narrate }
 
-    assert_includes scene_call.prompt, "KARAKTER YIĞILDI"
+    assert_includes scene_call.prompt, "THE CHARACTER HAS COLLAPSED"
     assert @game_session.reload.finished?
     assert @game_session.outcome_defeat?
   end
@@ -408,35 +408,35 @@ class NarratorTest < ActiveSupport::TestCase
     characters(:ilker_hero).update! hp: 12
     play_and_continue
     stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
-    items(:sifa_iksiri).use
+    items(:healing_potion).use
     roll = choose_and_roll(@game_session.current_scene)
 
     fake = FakeChat.new(OUTCOME_RESPONSE)
     stub_llm(fake) { roll.narrate }
 
-    assert_includes fake.prompt, "EKSİK:"
+    assert_includes fake.prompt, "MISSING:"
   end
 
   test "the healing hint rests while the character stands strong" do
     play_and_continue
     stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
-    items(:sifa_iksiri).use
+    items(:healing_potion).use
     roll = choose_and_roll(@game_session.current_scene)
 
     fake = FakeChat.new(OUTCOME_RESPONSE)
     stub_llm(fake) { roll.narrate }
 
-    assert_not_includes fake.prompt, "EKSİK:",
+    assert_not_includes fake.prompt, "MISSING:",
       "a healthy character early in the story must not spawn potions"
   end
 
   test "the healing hint pauses right after a find" do
     characters(:ilker_hero).update! hp: 5
-    items(:sifa_iksiri).use
+    items(:healing_potion).use
     roll = play_first_scene
 
-    fake = FakeChat.new(%({"resolution": "Rafta bir tılsım buldun.",
-      "effects": {"hp": 0, "items_gained": [{"name": "Eski tılsım", "kind": "quest", "description": "", "hp": 0, "uses": 0}]}}))
+    fake = FakeChat.new(%({"resolution": "You find a charm on the shelf.",
+      "effects": {"hp": 0, "items_gained": [{"name": "Old charm", "kind": "quest", "description": "", "hp": 0, "uses": 0}]}}))
     stub_llm(fake) { roll.narrate }
     roll.acknowledge
     stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
@@ -445,7 +445,7 @@ class NarratorTest < ActiveSupport::TestCase
     fake = FakeChat.new(OUTCOME_RESPONSE)
     stub_llm(fake) { next_roll.narrate }
 
-    assert_not_includes fake.prompt, "EKSİK:",
+    assert_not_includes fake.prompt, "MISSING:",
       "back-to-back finds cheapen the loot"
   end
 
@@ -457,7 +457,7 @@ class NarratorTest < ActiveSupport::TestCase
     fake = FakeChat.new(OUTCOME_RESPONSE)
     stub_llm(fake) { roll.narrate }
 
-    assert_not_includes fake.prompt, "EKSİK:"
+    assert_not_includes fake.prompt, "MISSING:"
   end
 
   test "the world adapts when one stat is spammed" do
@@ -477,7 +477,7 @@ class NarratorTest < ActiveSupport::TestCase
     scene_call = FakeChat.new(SECOND_SCENE_RESPONSE)
     stub_llm(scene_call) { narrate }
 
-    assert_match(/TEKRAR:.*Güç/, scene_call.prompt)
+    assert_match(/REPETITION:.*Strength/, scene_call.prompt)
   end
 
   test "a badly wounded character earns a breather in the scene prompt" do
@@ -487,7 +487,7 @@ class NarratorTest < ActiveSupport::TestCase
     scene_call = FakeChat.new(SECOND_SCENE_RESPONSE)
     stub_llm(scene_call) { narrate }
 
-    assert_includes scene_call.prompt, "AĞIR YARALI"
+    assert_includes scene_call.prompt, "BADLY WOUNDED"
   end
 
   test "a roll is never resolved twice" do
@@ -509,7 +509,7 @@ class NarratorTest < ActiveSupport::TestCase
   end
 
   test "a half-written scene is finished on the next attempt" do
-    stub_llm(FakeChat.new("Anlatı geldi ama yapı yok."), FakeChat.new(SCENE_RESPONSE)) do
+    stub_llm(FakeChat.new("Prose arrived but no structure."), FakeChat.new(SCENE_RESPONSE)) do
       assert_raises Narrator::MalformedResponse do
         narrate
       end
@@ -520,7 +520,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     scene = @game_session.scenes.sole
     assert scene.choosing?
-    assert_equal "Eski Han", scene.title
+    assert_equal "The Old Inn", scene.title
     assert_equal 3, scene.choices.count
   end
 
@@ -563,7 +563,7 @@ class NarratorTest < ActiveSupport::TestCase
   end
 
   test "a broken structure block is malformed" do
-    stub_llm(FakeChat.new("Anlatı geldi ama yapı yok. ```json {bozuk``` ")) do
+    stub_llm(FakeChat.new("Prose arrived but no structure. ```json {broken``` ")) do
       assert_raises Narrator::MalformedResponse do
         narrate
       end
@@ -572,10 +572,10 @@ class NarratorTest < ActiveSupport::TestCase
 
   test "the final scene is demanded when the budget is spent" do
     @game_session.update! length: "short"
-    @game_session.scenes.sole.update! state: :played, title: "Sahne 1", narration: "Olaylar."
+    @game_session.scenes.sole.update! state: :played, title: "Scene 1", narration: "Events."
     (2...@game_session.scene_budget).each do |position|
       @game_session.scenes.create! position: position, active_player: players(:ilker_solo_host),
-        state: :played, title: "Sahne #{position}", narration: "Olaylar."
+        state: :played, title: "Scene #{position}", narration: "Events."
     end
     roll = build_roll
     resolve roll
@@ -584,7 +584,7 @@ class NarratorTest < ActiveSupport::TestCase
     scene_call = FakeChat.new(FINALE_RESPONSE)
     stub_llm(scene_call) { narrate }
 
-    assert_includes scene_call.prompt, "FİNAL"
+    assert_includes scene_call.prompt, "FINALE"
     assert @game_session.reload.finished?
   end
 
@@ -632,7 +632,7 @@ class NarratorTest < ActiveSupport::TestCase
     def build_roll
       scene = @game_session.scenes.create! position: @game_session.scene_budget + 10,
         active_player: players(:ilker_solo_host), state: :choosing, title: "Ara"
-      choice = scene.choices.create! label: "Devam", stat: "strength", modifier: 3,
+      choice = scene.choices.create! label: "Press on", stat: "strength", modifier: 3,
         target: 12
       choice.choose
       scene.roll_dice(by: players(:ilker_solo_host))

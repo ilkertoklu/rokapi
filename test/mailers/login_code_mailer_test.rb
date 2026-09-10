@@ -6,7 +6,7 @@ class LoginCodeMailerTest < ActionMailer::TestCase
     email = LoginCodeMailer.with(login_code: login_code).code
 
     assert_equal [ "ilker@example.com" ], email.to
-    assert_equal "Rokapi kodun: #{login_code.code}", email.subject
+    assert_equal "Your Rokapi code: #{login_code.code}", email.subject
     assert_match login_code.code, email.text_part.body.to_s
     assert_match login_code.code, email.html_part.body.to_s
   end

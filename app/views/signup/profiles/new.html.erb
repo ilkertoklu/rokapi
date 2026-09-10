@@ -1,19 +1,19 @@
-<% content_for :title, "Kaydını tamamla · Rokapi" %>
+<% content_for :title, "Finish signing up · Rokapi" %>
 
 <%= form_with url: signup_profile_path, class: "flow" do |form| %>
-  <h1>Kaydını tamamla</h1>
+  <h1>Finish signing up</h1>
 
   <div>
-    <%= form.label :name, "Adın" %>
-    <%= form.text_field :name, placeholder: "Adın", required: true, autofocus: true, autocomplete: "given-name", maxlength: User::NAME_LENGTH %>
+    <%= form.label :name, "Your name" %>
+    <%= form.text_field :name, placeholder: "Your name", required: true, autofocus: true, autocomplete: "given-name", maxlength: User::NAME_LENGTH %>
   </div>
 
   <label class="terms">
     <%= form.check_box :terms %>
-    <span><a href="#">Kullanım Koşulları</a> ve <a href="#">Gizlilik Politikası</a>'nı kabul ediyorum.</span>
+    <span>I agree to the <a href="#">Terms of Use</a> and the <a href="#">Privacy Policy</a>.</span>
   </label>
 
   <div class="sticky-footer">
-    <%= form.submit "Başla", class: "btn btn--primary" %>
+    <%= form.submit "Get started", class: "btn btn--primary" %>
   </div>
 <% end %>

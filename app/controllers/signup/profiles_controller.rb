@@ -9,7 +9,7 @@ class Signup::ProfilesController < ApplicationController
       Current.user.complete_profile name: params.expect(:name)
       redirect_to signup_welcome_path
     else
-      redirect_to new_signup_profile_path, alert: "Devam etmek için koşulları kabul etmelisin."
+      redirect_to new_signup_profile_path, alert: "You need to accept the terms to continue."
     end
   end
 

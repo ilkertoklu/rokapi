@@ -3,6 +3,6 @@ class LoginCodeMailer < ApplicationMailer
     login_code = params[:login_code]
     @code = login_code.code
 
-    mail to: login_code.user.email, subject: "Rokapi kodun: #{@code}"
+    mail to: login_code.user.email, subject: "Your Rokapi code: #{@code}"
   end
 end

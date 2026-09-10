@@ -3,7 +3,7 @@ require "test_helper"
 class RollTest < ActiveSupport::TestCase
   setup do
     @scene = game_sessions(:ilker_solo).scenes.create! position: 1,
-      active_player: players(:ilker_solo_host), state: :choosing, title: "Sınama"
+      active_player: players(:ilker_solo_host), state: :choosing, title: "Trial"
   end
 
   test "grades scale with the die and the margin" do
@@ -30,7 +30,7 @@ class RollTest < ActiveSupport::TestCase
 
   private
     def roll_with(value:, target:, modifier: 0)
-      choice = @scene.choices.create! label: "Dene", stat: "strength", modifier: modifier,
+      choice = @scene.choices.create! label: "Try it", stat: "strength", modifier: modifier,
         target: target
       choice.create_roll! player: players(:ilker_solo_host), value: value, status_modifier: 0
     end

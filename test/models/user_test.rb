@@ -33,9 +33,9 @@ class UserTest < ActiveSupport::TestCase
     assert_not user.verify_login_code(code), "a consumed code cannot be used again"
   end
 
-  test "the initial is uppercased the Turkish way" do
-    assert_equal "İ", User.new(name: "ilker").initial
-    assert_equal "I", User.new(name: "ışık").initial
+  test "the initial is uppercased" do
+    assert_equal "I", User.new(name: "ilker").initial
+    assert_equal "R", User.new(name: "Robin").initial
   end
 
   test "profile_complete?" do
@@ -46,9 +46,9 @@ class UserTest < ActiveSupport::TestCase
   test "complete_profile names the user and accepts the terms" do
     user = users(:incomplete)
 
-    user.complete_profile(name: "Yeni")
+    user.complete_profile(name: "Robin")
 
     assert user.profile_complete?
-    assert_equal "Yeni", user.name
+    assert_equal "Robin", user.name
   end
 end

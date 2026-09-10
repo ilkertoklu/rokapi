@@ -4,7 +4,7 @@
 <div class="finale">
   <div class="finale__crest">
     <span class="ember ember--large"></span>
-    <p class="finale__outcome overline"><%= game_session.outcome_victory? ? "Zafer" : "Yenilgi" %></p>
+    <p class="finale__outcome overline"><%= game_session.outcome_victory? ? "Victory" : "Defeat" %></p>
     <h1><%= finale.title %></h1>
   </div>
 
@@ -15,21 +15,21 @@
   <div class="highlights">
     <div>
       <strong><%= duration_label(game_session.duration) %></strong>
-      <span>Süre</span>
+      <span>Duration</span>
     </div>
     <div>
       <strong><%= game_session.rolls.count %></strong>
-      <span>Zar atıldı</span>
+      <span>Dice rolled</span>
     </div>
   </div>
 </div>
 
 <div class="stage__footer">
-  <%= link_to "Yeni macera", new_game_session_path, class: "btn btn--primary" %>
+  <%= link_to "New adventure", new_game_session_path, class: "btn btn--primary" %>
   <%= tag.button class: "btn btn--secondary",
-        data: { controller: "share", action: "share#share", share_text_value: finale_share_text(game_session), share_copied_value: "Kopyalandı" } do %>
+        data: { controller: "share", action: "share#share", share_text_value: finale_share_text(game_session), share_copied_value: "Copied" } do %>
     <%= render "glyph", name: "share" %>
-    <span data-share-target="label">Özeti paylaş</span>
+    <span data-share-target="label">Share summary</span>
   <% end %>
-  <%= link_to "Ana ekrana dön", root_path, class: "btn btn--ghost" %>
+  <%= link_to "Back to home", root_path, class: "btn btn--ghost" %>
 </div>

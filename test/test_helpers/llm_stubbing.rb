@@ -1,38 +1,38 @@
 module LlmStubbing
   SCENE_RESPONSE = <<~TEXT
     ```json
-    {"title": "Eski Han", "location": "Akçabük",
+    {"title": "The Old Inn", "location": "Whitebend",
      "choices": [
-       {"label": "Tozlu defteri oku", "stat": "intelligence", "difficulty": 10, "difficulty_reason": "Toz kalın"},
-       {"label": "Çekmeceyi zorla", "stat": "strength", "difficulty": 14, "difficulty_reason": "Kilit eski"},
-       {"label": "Ahırı sessizce dinle", "stat": "wisdom", "difficulty": 12, "difficulty_reason": "Rüzgâr uğulduyor"}
+       {"label": "Read the dusty ledger", "stat": "intelligence", "difficulty": 10, "difficulty_reason": "The dust lies thick"},
+       {"label": "Force the drawer open", "stat": "strength", "difficulty": 14, "difficulty_reason": "The lock is old"},
+       {"label": "Listen at the stable in silence", "stat": "wisdom", "difficulty": 12, "difficulty_reason": "The wind is howling"}
      ],
      "finale": false, "outcome": null}
     ```
 
-    Yağmur hanın kiremitlerini dövüyor; kapı menteşelerinden gıcırdayarak sallanıyor.
+    Rain hammers the inn's roof tiles. The door swings on its hinges and creaks.
 
-    İçeride tek bir mum hâlâ yanıyor.
+    Inside, a single candle is still burning.
   TEXT
 
-  SECOND_SCENE_RESPONSE = SCENE_RESPONSE.sub('"title": "Eski Han"', '"title": "Ahır"')
-    .sub("Yağmur hanın kiremitlerini dövüyor", "Ahırın kapısı içeriden sürgülenmiş")
+  SECOND_SCENE_RESPONSE = SCENE_RESPONSE.sub('"title": "The Old Inn"', '"title": "The Stable"')
+    .sub("Rain hammers the inn's roof tiles", "The stable door is barred from the inside")
 
-  OUTCOME_RESPONSE = %({"resolution": "Çekmece açıldı ama elini kestin.", "effects": {"hp": -4}})
+  OUTCOME_RESPONSE = %({"resolution": "The drawer opens, but you cut your hand.", "effects": {"hp": -4}})
 
-  PLAN_RESPONSE = %({"title": "Boran Tuzu", "premise": "Akçabük kışa tuzsuz giriyor.", "personal_stake": "Şevket Çavuş eski bir borç.",
-    "antagonist": {"name": "Nail Aral", "want": "Köprüyü korumak.", "method": "Konakları kullanıyor.", "first_sign": "Kesik kayışlar."},
-    "ally": {"name": "Elif", "want": "Ağabeyini bulmak.", "secret": "Nail babası."},
-    "twist": "Pusu değil, uyarı.",
-    "beats": ["Katır geri dönüyor.", "İzler taşa kırılıyor.", "Yaralı sürücü.", "Elif itiraf ediyor.", "Köprü ayağı yarık.", "Nail ile yüz yüze.", "Kervan hafifletilip geçiyor."],
-    "finale_question": "Tuz köye yetişecek mi?", "victory": "Yeterli tuz iniyor.", "defeat": "Köprü kopuyor."})
+  PLAN_RESPONSE = %({"title": "Blizzard Salt", "premise": "Whitebend goes into winter without salt.", "personal_stake": "An old debt to Sergeant Sherrick.",
+    "antagonist": {"name": "Nail Aral", "want": "To protect the bridge.", "method": "He uses the lodges.", "first_sign": "Cut straps."},
+    "ally": {"name": "Elif", "want": "To find her brother.", "secret": "Nail is her father."},
+    "twist": "Not an ambush, a warning.",
+    "beats": ["The mule comes back.", "The tracks break off on stone.", "A wounded driver.", "Elif confesses.", "The bridge footing is cracked.", "Face to face with Nail.", "The caravan crosses lightened."],
+    "finale_question": "Will the salt reach the village?", "victory": "Enough salt comes down.", "defeat": "The bridge goes."})
 
   FINALE_RESPONSE = <<~TEXT
     ```json
-    {"title": "Dönüş", "location": "Akçabük", "choices": [], "finale": true, "outcome": "victory"}
+    {"title": "The Return", "location": "Whitebend", "choices": [], "finale": true, "outcome": "victory"}
     ```
 
-    Kervan çanları vadide yankılanırken Akçabük'e girdiniz.
+    The caravan bells echo down the valley as you ride into Whitebend.
   TEXT
 
   def stub_llm(*chats)

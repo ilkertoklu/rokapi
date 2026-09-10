@@ -1,5 +1,5 @@
 <%= button_to session_path, method: :delete, form_class: "profile", class: "profile__badge",
-      aria: { label: "Çıkış yap" }, data: { turbo_confirm: "Çıkış yapılsın mı?" } do %>
+      aria: { label: "Sign out" }, data: { turbo_confirm: "Sign out?" } do %>
   <%= Current.user.initial %>
 <% end %>
 
@@ -10,12 +10,12 @@
     <%= link_to game_session_path(@resumable_game_session), class: "resume" do %>
       <span class="resume__icon"><%= render "glyph", name: "bell" %></span>
       <span class="resume__body">
-        <span class="resume__title">Maceraya devam et</span>
+        <span class="resume__title">Resume adventure</span>
         <span class="resume__text"><%= resume_summary(@resumable_game_session) %></span>
       </span>
     <% end %>
   <% end %>
 
-  <%= link_to "Yeni macera kur", new_game_session_path, class: "btn btn--primary" %>
-  <button class="btn btn--secondary" disabled>Kod ile katıl</button>
+  <%= link_to "Start a new adventure", new_game_session_path, class: "btn btn--primary" %>
+  <button class="btn btn--secondary" disabled>Join with a code</button>
 </div>

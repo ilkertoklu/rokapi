@@ -9,13 +9,13 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
 
   test "setting up a solo adventure from mode pick to waiting screen" do
     get new_game_session_path
-    assert_select ".page-head h1", text: "Yeni macera"
-    assert_select ".pick__title", text: "Tek kişilik"
+    assert_select ".page-head h1", text: "New adventure"
+    assert_select ".pick__title", text: "Solo"
     assert_select "a[href=?]", new_game_sessions_solo_path
 
     get new_game_sessions_solo_path
-    assert_select ".pick__title", text: "Kayıp Kervan"
-    assert_select ".pick__title", text: "Sürpriz"
+    assert_select ".pick__title", text: "The Lost Caravan"
+    assert_select ".pick__title", text: "Surprise"
 
     post game_sessions_solo_path, params: {
       game_session: { quest: "lost_caravan", tone: "dark", length: "short" }
@@ -35,8 +35,8 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to game_session_path(game_session)
 
     follow_redirect!
-    assert_select ".location h1", text: "Kayıp Kervan"
-    assert_select ".writing", text: /Anlatıcı hazırlanıyor/
+    assert_select ".location h1", text: "The Lost Caravan"
+    assert_select ".writing", text: /The narrator is getting ready/
     assert game_session.reload.started?
     assert game_session.scenes.sole.narrating?
   end
@@ -46,7 +46,7 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
 
     game_session = users(:sevval).game_sessions.sole
     assert_nil game_session.quest
-    assert_equal "Sürpriz macera", game_session.title
+    assert_equal "Surprise adventure", game_session.title
   end
 
   test "invalid stat allocation is rejected" do
@@ -64,7 +64,7 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
     post game_sessions_solo_path, params: { game_session: { quest: "", tone: "hacked", length: "short" } }
 
     assert_redirected_to new_game_sessions_solo_path
-    assert_equal "Kurulum geçersiz. Seçimlerini kontrol et.", flash[:alert]
+    assert_equal "That setup is not valid. Check your picks.", flash[:alert]
 
     post game_sessions_solo_path, params: { game_session: { quest: "hacked", tone: "balanced", length: "short" } }
 
@@ -110,7 +110,7 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
     game_session = create_solo_session
 
     get root_path
-    assert_select ".resume__title", text: "Maceraya devam et"
+    assert_select ".resume__title", text: "Resume adventure"
     assert_select "a[href=?]", game_session_path(game_session)
   end
 

@@ -1,10 +1,10 @@
 class Narrator::Briefing
   GRADE_NOTES = {
-    critical: "doğal 20 — istisnai an",
-    brilliant: "hedef %{margin} puan farkla aşıldı",
-    narrow: "ucu ucuna",
-    heavy: "hedefin %{margin} puan altında",
-    catastrophe: "doğal 1 — olabilecek en kötüsü"
+    critical: "natural 20, an exceptional moment",
+    brilliant: "target beaten by %{margin}",
+    narrow: "by a hair",
+    heavy: "%{margin} under the target",
+    catastrophe: "natural 1, the worst that can happen"
   }.freeze
 
   def initialize(game_session)
@@ -12,13 +12,13 @@ class Narrator::Briefing
   end
 
   def plan_prompt
-    [ mission_block, character_portrait, "SAHNE SAYISI: #{@game_session.scene_budget}. Vuruş listesi tam #{@game_session.scene_budget} satır olur.",
-      "Hikâye kitabını yaz." ].join("\n\n")
+    [ mission_block, character_portrait, "SCENE COUNT: #{@game_session.scene_budget}. The beat list is exactly #{@game_session.scene_budget} lines.",
+      "Write the story bible." ].join("\n\n")
   end
 
   def outcome_prompt(roll)
     [ mission_block, bible_block, character_block(roll.scene), used_items_block(roll),
-      history_block, roll_block(roll), missing_healing_block(roll), "Bu sonucu çözümle." ].compact.join("\n\n")
+      history_block, roll_block(roll), missing_healing_block(roll), "Resolve this result." ].compact.join("\n\n")
   end
 
   def scene_prompt(scene)
@@ -29,8 +29,8 @@ class Narrator::Briefing
   private
     def mission_block
       brief = GameSession::Quest[@game_session.quest]&.brief ||
-        "Sürpriz macera: bilinmeyen, özgün bir dünya ve görev kur; ilk sahnede oyuncuyu hikâyenin ortasına bırak."
-      "GÖREV ÇERÇEVESİ: #{brief}\nTON: #{GameSession::Tone.fetch(@game_session.tone).directive}"
+        "Surprise adventure: build an unknown, original world and quest, and drop the player into the middle of the story in the first scene."
+      "QUEST FRAME: #{brief}\nTONE: #{GameSession::Tone.fetch(@game_session.tone).directive}"
     end
 
     def bible_block
@@ -39,15 +39,15 @@ class Narrator::Briefing
       antagonist = @game_session.story_antagonist.to_h
       ally = @game_session.story_ally.to_h
       <<~TEXT.strip
-        HİKÂYE KİTABI (gizli — oyuncuya söylenmez, sahnelerle yaşatılır):
-        Macera: #{@game_session.story_title}. #{@game_session.story_premise}
-        Kişisel bağ: #{@game_session.story_personal_stake}
-        Karşıt güç: #{antagonist["name"]} — istediği: #{antagonist["want"]} Yöntemi: #{antagonist["method"]} İlk izi: #{antagonist["first_sign"]}
-        Müttefik: #{ally["name"]} — istediği: #{ally["want"]} Sırrı: #{ally["secret"]}
-        Dönüş: #{@game_session.story_twist}
-        Finalin sorusu: #{@game_session.story_finale_question}
-        Zafer: #{@game_session.story_victory}
-        Yenilgi: #{@game_session.story_defeat}
+        STORY BIBLE (hidden, never told to the player, lived through the scenes):
+        Adventure: #{@game_session.story_title}. #{@game_session.story_premise}
+        Personal stake: #{@game_session.story_personal_stake}
+        Opposing force: #{antagonist["name"]} — wants: #{antagonist["want"]} Method: #{antagonist["method"]} First trace: #{antagonist["first_sign"]}
+        Ally: #{ally["name"]} — wants: #{ally["want"]} Secret: #{ally["secret"]}
+        Twist: #{@game_session.story_twist}
+        The finale's question: #{@game_session.story_finale_question}
+        Victory: #{@game_session.story_victory}
+        Defeat: #{@game_session.story_defeat}
       TEXT
     end
 
@@ -56,7 +56,7 @@ class Narrator::Briefing
       return unless stats.size == 3 && stats.uniq.size == 1
 
       label = Character::Stat.fetch(stats.first).label
-      "TEKRAR: Oyuncu üst üste üç kez #{label} kullandı. Dünya buna uyum sağlar: bu sahnede #{label} yolunu ya kapat ya da belirgin biçimde zorlaştır."
+      "REPETITION: The player has used #{label} three times in a row. The world adapts: in this scene either close the #{label} road or make it markedly harder."
     end
 
     def variety_block
@@ -65,8 +65,8 @@ class Narrator::Briefing
 
       easy = recent.select(&:easy?).map(&:stat).uniq
       hard = recent.select(&:hard?).map(&:stat).uniq
-      "ÇEŞİTLİLİK: Son sahnelerin seçenekleri: #{recent.map { |choice| %("#{choice.label}") }.join(", ")}. " \
-        "Bunların kalıbını yeniden yazma. Kolay seçenek #{stat_labels(easy)}, zor seçenek #{stat_labels(hard)} statındaydı; bu sahnede kolay ve zor seçenekleri başka statlara ver."
+      "VARIETY: The choices in the last scenes were: #{recent.map { |choice| %("#{choice.label}") }.join(", ")}. " \
+        "Do not write their pattern again. The easy choice was on #{stat_labels(easy)} and the hard choice on #{stat_labels(hard)}. In this scene put the easy and the hard choice on other stats."
     end
 
     def stat_labels(stats)
@@ -74,31 +74,31 @@ class Narrator::Briefing
     end
 
     def pacing_block(scene)
-      [ "SAHNE: #{scene.position}/#{@game_session.scene_budget}", beat_line(scene), stage_directive(scene) ].compact.join("\n")
+      [ "SCENE: #{scene.position}/#{@game_session.scene_budget}", beat_line(scene), stage_directive(scene) ].compact.join("\n")
     end
 
     def beat_line(scene)
       beat = Array(@game_session.story_beats)[scene.position - 1]
-      "VURUŞ: #{beat}" if beat.present?
+      "BEAT: #{beat}" if beat.present?
     end
 
     def stage_directive(scene)
       budget = @game_session.scene_budget
 
       if scene.active_player.character.hp.zero?
-        "KARAKTER YIĞILDI: canı tükendi. Bu sahne FİNAL ve yenilgidir: düşüşünü en fazla 2 kısa paragrafta ve 110 kelimede anlat. #{closing_rules} finale=true, outcome=\"defeat\", seçenek üretme."
+        "THE CHARACTER HAS COLLAPSED: their health is spent. This scene is the FINALE and it is a defeat. Tell their fall in at most 2 short paragraphs and 110 words. #{closing_rules} finale=true, outcome=\"defeat\", produce no choices."
       elsif scene.position >= budget
-        "Bu sahne FİNAL: hikâyeyi en fazla 2 kısa paragrafta ve 120 kelimede kapat. Final yeni bir hamle yaptırmaz ve doruk çözümlemesini yeniden anlatmaz; o sonucun ardından ne olduğunu gösterir. #{tally_line} Finalin sorusunu oyuncunun gerçekten yaptıklarıyla cevapla: zafer koşulu sağlandıysa outcome \"victory\", sağlanmadıysa \"defeat\"; ikisi de bedeliyle gelir. Doruk zarı başarısızsa temiz zafer yok: ya yenilgi ya da zafer koşulunun yalnız bir parçası, gözle görülür bir kayıpla (bir insan, bir yer, bir ilişki) gerçekleşir. #{closing_rules} finale=true, seçenek üretme."
+        "This scene is the FINALE: close the story in at most 2 short paragraphs and 120 words. The finale does not make the player act again and does not retell the climax resolution, it shows what came after that result. #{tally_line} Answer the finale's question with what the player actually did: if the victory condition was met the outcome is \"victory\", if not it is \"defeat\", and both come at a price. If the climax roll failed there is no clean victory: either defeat, or only a part of the victory condition, achieved with a visible loss (a person, a place, a relationship). #{closing_rules} finale=true, produce no choices."
       elsif scene.position == budget - 1
-        "DORUK: karşıt güçle yüz yüze gelinir ve tehlike bedenseldir; üç seçenek de bedel ister, kolay olan bile bir şeyi feda eder. Bu sahnenin seçimi finalin rengini belirler; bir sonraki sahne final."
+        "CLIMAX: the opposing force is met face to face and the danger is physical. All three choices demand a price, and even the easy one sacrifices something. The choice in this scene sets the colour of the finale, and the next scene is the finale."
       elsif scene.first?
-        "GİRİŞ: oyuncu olayın ortasına düşer; kişisel bağ bu sahnede bir cümleyle kurulur (bir ad, bir anı, bir borç), karşıt gücün ilk izi görünür, hedef nettir."
+        "OPENING: the player lands in the middle of events. The personal stake is established in one sentence in this scene (a name, a memory, a debt), the first trace of the opposing force shows, and the goal is clear."
       elsif scene.position == midpoint
-        "ORTA NOKTA: dönüş bu sahnede açığa çıkar; bundan sonrası geri dönüşsüzdür."
+        "MIDPOINT: the twist comes out in this scene, and there is no going back after it."
       elsif scene.position > midpoint
-        "TIRMANIŞ: tempo yükselir, bedeller büyür; müttefikin sırrı ve karşıt gücün yüzü yaklaşır."
+        "ESCALATION: the pace rises and the costs grow. The ally's secret and the face of the opposing force draw closer."
       else
-        "GELİŞME: yeni bir komplikasyon, bilgi ya da bedel getir; hedefe somut bir adım attır."
+        "DEVELOPMENT: bring a new complication, a piece of knowledge or a cost, and make the player take a concrete step towards the goal."
       end
     end
 
@@ -106,11 +106,11 @@ class Narrator::Briefing
       rolls = @game_session.rolls.order(:id).to_a
       return if rolls.empty?
 
-      "ZAR BİLANÇOSU: #{rolls.count(&:success?)} başarı, #{rolls.count { |roll| !roll.success? }} başarısızlık; doruk zarı #{grade_label(rolls.last)}."
+      "ROLL TALLY: #{rolls.count(&:success?)} successes, #{rolls.count { |roll| !roll.success? }} failures. The climax roll was #{grade_label(rolls.last)}."
     end
 
     def closing_rules
-      "Kapanış kurulanı öder: kişisel bağ bir cümleyle cevaplanır ve oyuncu finalde görünür (biri ona konuşur ya da bir şey ona kalır), karşıt gücün ve müttefikin akıbeti birer cümleyle görünür, açılıştaki bir imge geri döner (imge kendisi gelir, \"ilk sahnedeki\" denmez), son cümle tek vurucu imgedir. \"İleride\", \"bir gün\", \"macera sürecek\" gibi açık uçlu kapanış yazma."
+      "The closing pays off what was set up: the personal stake is answered in one sentence and the player is present in the finale (someone speaks to them, or something is left to them), the fate of the opposing force and of the ally each show in a sentence, an image from the opening returns (the image itself comes back, do not say \"the one from the first scene\"), and the last sentence is a single landed image. Do not write an open-ended closing like \"one day\", \"in time\" or \"the adventure will go on\"."
     end
 
     def midpoint
@@ -123,9 +123,9 @@ class Narrator::Briefing
       return if scene.position < 2 || character.sturdy? || character.items.healing.any?
       return if last_outcome_granted_item?(roll)
 
-      "EKSİK: Karakterin şifa eşyası yok ve oyun bunu bekliyor. Bu çözümlemede en ufak fırsat varsa " \
-        "(çanta, sandık, enkaz, ceset, ödül, dost bir el) bir şifa iksiri ver: instant, +6..+8 can, 1 hak. " \
-        "Bu izin her derece için geçerli: sıradan bir başarı da iksir bulabilir."
+      "MISSING: The character has no healing item and the game is waiting for one. If there is the slightest opening in this resolution " \
+        "(a bag, a chest, wreckage, a body, a reward, a friendly hand), give them a healing potion: instant, +6..+8 health, 1 use. " \
+        "This licence holds for every grade: an ordinary success can find a potion too."
     end
 
     def last_outcome_granted_item?(roll)
@@ -137,14 +137,14 @@ class Narrator::Briefing
       character = scene.active_player.character
       return unless character.wounded?
 
-      "AĞIR YARALI: Karakterin canı #{character.hp}/#{character.max_hp}. Dünya bunu görüyor: " \
-        "anlatı yorgunluğu yansıtsın ve seçeneklerden biri soluklanmaya, şifaya ya da temkinli bir yola açılsın."
+      "BADLY WOUNDED: The character's health is #{character.hp}/#{character.max_hp}. The world sees it: " \
+        "let the narration carry the exhaustion, and let one of the choices open onto a breather, healing, or a cautious road."
     end
 
     def character_block(scene)
       character = scene.active_player.character
       stats = Character::Stat.all.map { |stat| "#{stat.label} #{character.stats[stat.key]}" }.join(", ")
-      [ "KARAKTER: #{character.user.name} — #{character.summary}. Can #{character.hp}/#{character.max_hp}. Statlar: #{stats}.",
+      [ "CHARACTER: #{character.user.name} — #{character.summary}. Health #{character.hp}/#{character.max_hp}. Abilities: #{stats}.",
         inventory_line(character), statuses_line(character) ].compact.join("\n")
     end
 
@@ -152,31 +152,31 @@ class Narrator::Briefing
       character = @game_session.host.character
       traits = [ Character::Race.fetch(character.race), Character::Klass.fetch(character.klass), Character::Background.fetch(character.background) ]
         .map { |trait| "#{trait.label}: #{trait.description}" }.join(" ")
-      "OYUNCUNUN KARAKTERİ: #{traits}\n#{inventory_line(character)}"
+      "THE PLAYER'S CHARACTER: #{traits}\n#{inventory_line(character)}"
     end
 
     def inventory_line(character)
       items = character.items.carried
-      "ENVANTER: #{items.any? ? items.map(&:summary).join("; ") : "boş"}"
+      "INVENTORY: #{items.any? ? items.map(&:summary).join("; ") : "empty"}"
     end
 
     def statuses_line(character)
       statuses = character.status_effects
-      "STATÜ ETKİLERİ: #{statuses.map(&:summary).join("; ")}" if statuses.any?
+      "STATUS EFFECTS: #{statuses.map(&:summary).join("; ")}" if statuses.any?
     end
 
     def used_items_block(roll)
       used = roll.player.character.items.used_since(roll.scene.created_at)
       return if used.none?
 
-      "KULLANILAN EŞYA: #{used.map { |item| "#{item.name} (#{format('%+d', item.hp_effect)} can)" }.join("; ")} — canı zaten uygulandı ve envanterden düştü; anlatıda içildiği görünsün, hp'ye ve items_lost'a yeniden yazma."
+      "ITEM USED: #{used.map { |item| "#{item.name} (#{format('%+d', item.hp_effect)} health)" }.join("; ")} — the health is already applied and the item is off the inventory. Let it show in the narration that it was drunk, and do not write it to hp or items_lost again."
     end
 
     def history_block
       scenes = @game_session.scenes.played.chronological.includes(roll: :choice)
       return if scenes.none?
 
-      "HİKÂYE ŞİMDİYE DEK (sahne sahne, oyuncunun seçimi ve zar sonucuyla):\n" + scenes.map { |scene| history_entry(scene) }.join("\n\n")
+      "THE STORY SO FAR (scene by scene, with the player's choice and the roll):\n" + scenes.map { |scene| history_entry(scene) }.join("\n\n")
     end
 
     def history_entry(scene)
@@ -184,14 +184,14 @@ class Narrator::Briefing
       roll = scene.roll
       return entry if roll.nil? || !roll.resolved?
 
-      "#{entry}\n→ Seçim: \"#{roll.choice.label}\" — #{grade_label(roll)}. #{roll.resolution}"
+      "#{entry}\n→ Choice: \"#{roll.choice.label}\" — #{grade_label(roll)}. #{roll.resolution}"
     end
 
     def roll_block(roll)
-      status = " #{format('%+d', roll.status_modifier)} (statü)" unless roll.status_modifier.zero?
+      status = " #{format('%+d', roll.status_modifier)} (status)" unless roll.status_modifier.zero?
       <<~TEXT
-        ZAR SONUCU: "#{roll.choice.label}" seçildi.
-        d20=#{roll.value} #{format('%+d', roll.modifier)}#{status} = #{roll.total}, hedef #{roll.target} → #{grade_label(roll)}.
+        ROLL RESULT: "#{roll.choice.label}" was chosen.
+        d20=#{roll.value} #{format('%+d', roll.modifier)}#{status} = #{roll.total}, target #{roll.target} → #{grade_label(roll)}.
       TEXT
     end
 
@@ -202,8 +202,8 @@ class Narrator::Briefing
 
     def action_block
       roll = @game_session.rolls.order(:id).last
-      return "İlk sahneyi yaz." if roll.nil?
+      return "Write the first scene." if roll.nil?
 
-      "Son çözümleme oyuncuya gösterildi: olanları yeniden sahneleme, kaldığı yerden devamını yaz."
+      "The last resolution was shown to the player: do not stage what happened again, write what follows from where it left off."
     end
 end

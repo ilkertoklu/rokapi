@@ -1,22 +1,22 @@
-<% content_for :title, "Karakterini oluştur · Rokapi" %>
+<% content_for :title, "Create your character · Rokapi" %>
 
 <%= form_with model: @character, url: game_session_character_path(@game_session), class: "flow",
       data: { controller: "stats", stats_free_value: Character::FREE_POINTS, stats_cap_value: Character::STAT_CAP,
               stats_klass_value: @character.klass, stats_bases_value: Character::Klass.base_stats_by_key.to_json } do |form| %>
 
-  <%= render "back", to: new_game_sessions_solo_path, title: "Karakterini oluştur" %>
+  <%= render "back", to: new_game_sessions_solo_path, title: "Create your character" %>
 
-  <%= render "choice_fieldset", form: form, legend: "Irk", attribute: :race,
+  <%= render "choice_fieldset", form: form, legend: "Race", attribute: :race,
         options: Character::Race.all, selected: @character.race %>
 
-  <%= render "choice_fieldset", form: form, legend: "Sınıf", attribute: :klass,
+  <%= render "choice_fieldset", form: form, legend: "Class", attribute: :klass,
         options: Character::Klass.all, selected: @character.klass, rebase: true %>
 
-  <%= render "choice_fieldset", form: form, legend: "Arka plan", attribute: :background,
+  <%= render "choice_fieldset", form: form, legend: "Background", attribute: :background,
         options: Character::Background.all, selected: @character.background %>
 
   <fieldset class="choices">
-    <legend>Temel özellikler <span class="hint" data-stats-target="remaining"></span></legend>
+    <legend>Abilities <span class="hint" data-stats-target="remaining"></span></legend>
 
     <%= form.fields_for :stats do |stats| %>
       <% Character::Stat.all.each do |stat| %>
@@ -31,6 +31,6 @@
   </fieldset>
 
   <div class="sticky-footer">
-    <%= form.submit "Hazırım", class: "btn btn--primary", data: { stats_target: "submit" } %>
+    <%= form.submit "I'm ready", class: "btn btn--primary", data: { stats_target: "submit" } %>
   </div>
 <% end %>

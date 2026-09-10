@@ -1,10 +1,10 @@
-<% content_for :title, "Yeni macera · Rokapi" %>
+<% content_for :title, "New adventure · Rokapi" %>
 
 <%= form_with url: game_sessions_solo_path, scope: :game_session, class: "flow" do |form| %>
-  <%= render "back", to: new_game_session_path, title: "Yeni macera" %>
+  <%= render "back", to: new_game_session_path, title: "New adventure" %>
 
   <fieldset class="choices">
-    <legend>Görev</legend>
+    <legend>Quest</legend>
 
     <% GameSession::Quest.all.each do |quest| %>
       <label class="pick">
@@ -22,15 +22,15 @@
       <%= form.radio_button :quest, "", checked: false %>
       <span class="pick__icon"><%= render "glyph", name: "compass" %></span>
       <span class="pick__body">
-        <span class="pick__title">Sürpriz</span>
-        <span class="pick__text">Anlatıcı bilinmeyen bir dünya kursun.</span>
+        <span class="pick__title">Surprise</span>
+        <span class="pick__text">Let the narrator build an unknown world.</span>
       </span>
       <span class="pick__mark"></span>
     </label>
   </fieldset>
 
   <fieldset class="choices">
-    <legend>Ton</legend>
+    <legend>Tone</legend>
     <div class="segmented">
       <% GameSession::Tone.all.each do |tone| %>
         <label class="segment">
@@ -42,7 +42,7 @@
   </fieldset>
 
   <fieldset class="choices">
-    <legend>Uzunluk</legend>
+    <legend>Length</legend>
     <div class="segmented">
       <% GameSession::Length.all.each do |length| %>
         <label class="segment">
@@ -54,6 +54,6 @@
   </fieldset>
 
   <div class="sticky-footer">
-    <%= form.submit "Karakterini oluştur", class: "btn btn--primary" %>
+    <%= form.submit "Create your character", class: "btn btn--primary" %>
   </div>
 <% end %>
