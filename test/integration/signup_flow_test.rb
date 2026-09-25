@@ -29,6 +29,15 @@ class SignupFlowTest < ActionDispatch::IntegrationTest
     assert_not users(:incomplete).reload.profile_complete?
   end
 
+  test "resubmitting the profile keeps the original terms acceptance" do
+    user = users(:ilker)
+    sign_in_as user
+
+    assert_no_changes -> { user.reload.terms_accepted_at } do
+      post signup_profile_path, params: { name: "Ilker", terms: "1" }
+    end
+  end
+
   test "incomplete users are pushed to profile completion everywhere" do
     sign_in_as users(:incomplete)
 

@@ -28,7 +28,7 @@ class User < ApplicationRecord
   end
 
   def complete_profile(name:)
-    update! name: name, terms_accepted_at: Time.current
+    update! name: name, terms_accepted_at: terms_accepted_at || Time.current
   end
 
   def initial
