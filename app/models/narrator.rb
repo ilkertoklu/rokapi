@@ -12,7 +12,7 @@ class Narrator
     response = OutcomeResolver.new.ask(@briefing.outcome_prompt(roll))
     record_call :outcome, response
 
-    data = response.content
+    data = parsed(response)
     raise MalformedResponse, "structured output missing" unless data.is_a?(Hash)
 
     roll.resolve resolution: resolution_in(data), effects: effects_in(data, roll)
@@ -31,7 +31,7 @@ class Narrator
       response = Planner.new.ask(@briefing.plan_prompt)
       record_call :plan, response
 
-      bible = response.content
+      bible = parsed(response)
       raise MalformedResponse, "story bible missing" unless bible.is_a?(Hash) && bible["beats"].present?
 
       @game_session.update! story_bible: bible
@@ -60,6 +60,12 @@ class Narrator
     def relay(scene, prose)
       scene.update_column :narration, prose
       scene.broadcast_narration
+    end
+
+    def parsed(response)
+      response.parsed
+    rescue JSON::ParserError => error
+      raise MalformedResponse, error.message
     end
 
     def structure_in(reply)

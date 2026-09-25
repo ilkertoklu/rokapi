@@ -1,4 +1,4 @@
-class Narrator::BibleSchema < RubyLLM::Schema
+class Narrator::BibleSchema < Schematist::Schema
   string :title, description: "The adventure's name, 2-4 words; on a ready-made quest, the quest's name"
   string :premise, description: "The world and the quest in 2 sentences: where it is, what is at stake, why the player is here"
   string :personal_stake, description: "The personal reason tying the player's character to this quest, derived from their race, class and background, 1-2 sentences"

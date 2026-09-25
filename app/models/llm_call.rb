@@ -7,9 +7,9 @@ class LlmCall < ApplicationRecord
     create!(
       game_session: game_session,
       purpose: purpose,
-      model: response.model_id,
-      input_tokens: response.input_tokens.to_i,
-      output_tokens: response.output_tokens.to_i,
+      model: response.model,
+      input_tokens: response.tokens.input.to_i,
+      output_tokens: response.tokens.output.to_i,
       cost_in_microdollars: (response.cost.total * 1_000_000).round
     )
   end

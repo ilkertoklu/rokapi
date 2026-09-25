@@ -23,7 +23,7 @@ class Scene::NarrateJobTest < ActiveSupport::TestCase
     game_session = game_sessions(:ilker_solo)
     scene = game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host)
 
-    stub_llm(broken_chat(RubyLLM::UnauthorizedError.new(nil, "bad key"))) do
+    stub_llm(broken_chat(RubyLLM::UnauthorizedError.new("bad key"))) do
       assert_raises RubyLLM::UnauthorizedError do
         Scene::NarrateJob.new(scene).perform_now
       end

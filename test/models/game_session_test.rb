@@ -44,7 +44,7 @@ class GameSessionTest < ActiveSupport::TestCase
     choice.choose
     scene.roll_dice(by: players(:ilker_solo_host))
     LlmCall.record game_session: game_session, purpose: :scene,
-      response: RubyLLM::Message.new(role: :assistant, content: "x", model_id: "gpt-5-mini",
+      response: RubyLLM::Message.new(role: :assistant, content: "x", model: "gpt-5-mini",
                                      input_tokens: 10, output_tokens: 10)
 
     game_session.destroy

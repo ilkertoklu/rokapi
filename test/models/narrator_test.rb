@@ -32,7 +32,7 @@ class NarratorTest < ActiveSupport::TestCase
     call = @game_session.llm_calls.sole
     assert_equal "scene", call.purpose
     model = RubyLLM.models.find(call.model)
-    assert_equal (1000 * model.input_price_per_million + 500 * model.output_price_per_million).round,
+    assert_equal (1000 * model.price(:input) + 500 * model.price(:output)).round,
       call.cost_in_microdollars
     assert_operator call.cost_in_microdollars, :>, 0
   end

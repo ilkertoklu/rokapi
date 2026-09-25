@@ -1,8 +1,11 @@
 class Narrator::Voice < RubyLLM::Agent
-  instructions identity: -> { Narrator::Voice.trait(:identity) },
-    language_rules: -> { Narrator::Voice.trait(:language_rules) }
+  def self.inherited(agent)
+    super
+    agent.instructions identity: -> { Narrator::Voice.trait(:identity) },
+      language_rules: -> { Narrator::Voice.trait(:language_rules) }
+  end
 
   def self.trait(name)
-    render_prompt(name, chat: nil, inputs: {}, locals: {})
+    RubyLLM.render_prompt("narrator/voice/#{name}")
   end
 end

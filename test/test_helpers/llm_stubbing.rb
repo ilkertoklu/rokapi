@@ -48,9 +48,9 @@ end
 class FakeChat
   attr_reader :prompt
 
-  def initialize(text, model_id: "gpt-5.1", chunks: nil, input_tokens: 1000, output_tokens: 500, &after_chunk)
+  def initialize(text, model: "gpt-5.1", chunks: nil, input_tokens: 1000, output_tokens: 500, &after_chunk)
     @text = text
-    @model_id = model_id
+    @model = model
     @chunks = chunks || [ text ]
     @input_tokens = input_tokens
     @output_tokens = output_tokens
@@ -67,7 +67,6 @@ class FakeChat
   end
 
   def with_schema(*)
-    @schema = true
     self
   end
 
@@ -81,16 +80,7 @@ class FakeChat
       end
     end
 
-    message = RubyLLM::Message.new(role: :assistant, content: @text, model_id: @model_id,
-                                   input_tokens: @input_tokens, output_tokens: @output_tokens)
-    message.content = structured_content if @schema
-    message
+    RubyLLM::Message.new(role: :assistant, content: @text, model: @model,
+                         input_tokens: @input_tokens, output_tokens: @output_tokens)
   end
-
-  private
-    def structured_content
-      JSON.parse(@text)
-    rescue JSON::ParserError
-      @text
-    end
 end

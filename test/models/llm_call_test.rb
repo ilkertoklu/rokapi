@@ -2,7 +2,7 @@ require "test_helper"
 
 class LlmCallTest < ActiveSupport::TestCase
   test "a response without a price is not recorded as free" do
-    response = RubyLLM::Message.new(role: :assistant, content: "x", model_id: "no-such-model",
+    response = RubyLLM::Message.new(role: :assistant, content: "x", model: "no-such-model",
                                     input_tokens: 10, output_tokens: 10)
 
     assert_raises NoMethodError do

@@ -1,4 +1,4 @@
-class Narrator::OutcomeSchema < RubyLLM::Schema
+class Narrator::OutcomeSchema < Schematist::Schema
   string :resolution, description: "1-2 short sentences working the roll into the story"
   object :effects do
     integer :hp, description: "Effect on health; from the ranges in the rules according to the grade and the kind of danger, 0 on a plain success"
