@@ -7,46 +7,57 @@
     flex-direction: column;
     gap: .6rem;
 
-    legend {
-      color: var(--color-ink-muted);
-      font-size: .9rem;
-      font-weight: 600;
-      padding: 0;
-      margin-block-end: .4rem;
-    }
-
     input[type="radio"] {
       position: absolute;
       opacity: 0;
     }
   }
 
+  fieldset.choices legend:has(.points-left) {
+    display: flex;
+    justify-content: space-between;
+    inline-size: 100%;
+  }
+
+  .points-left {
+    color: var(--color-accent-bright);
+    font-weight: 600;
+    letter-spacing: .02em;
+    text-transform: none;
+  }
+
   .segmented {
     display: flex;
-    gap: .4rem;
+    gap: .375rem;
+    padding: 5px;
+    background: var(--color-surface-sunken);
+    border-radius: var(--radius-control);
 
     .segment {
       position: relative;
       flex: 1;
-      padding: .6rem .5rem;
-      background: var(--color-surface);
-      border: 1px solid var(--color-line);
-      border-radius: var(--radius-control);
+      padding: .875rem .25rem;
+      border-radius: 10px;
+      color: var(--color-ink-soft);
       text-align: center;
-      font-size: .92rem;
+      font-size: .8125rem;
       font-weight: 600;
       cursor: pointer;
 
       small {
         display: block;
         color: var(--color-ink-faint);
-        font-weight: 400;
+        font-size: .75rem;
       }
 
       &:has(:checked) {
-        border-color: var(--color-accent);
-        background: var(--color-accent-soft);
-        color: var(--color-accent-bright);
+        background: var(--color-surface-lifted);
+        color: var(--color-accent-pale);
+        font-weight: 700;
+
+        small {
+          color: var(--color-accent-dim);
+        }
       }
 
       &:has(:focus-visible) {
@@ -59,22 +70,25 @@
   .chips {
     display: flex;
     flex-wrap: wrap;
-    gap: .4rem;
+    gap: .5rem;
 
     .chip {
       position: relative;
-      padding: .45rem .9rem;
-      background: var(--color-surface);
-      border: 1px solid var(--color-line);
+      padding: .8125rem 1.125rem;
+      background: var(--color-surface-sunken);
+      border: 1px solid var(--color-line-soft);
       border-radius: var(--radius-pill);
-      font-size: .92rem;
+      color: var(--color-ink-soft);
+      font-size: .8125rem;
       font-weight: 600;
+      line-height: 1.3;
       cursor: pointer;
 
       &:has(:checked) {
         border-color: var(--color-accent);
         background: var(--color-accent-soft);
-        color: var(--color-accent-bright);
+        color: var(--color-accent-pale);
+        font-weight: 700;
       }
 
       &:has(:focus-visible) {
@@ -85,19 +99,34 @@
   }
 
   .choice-description {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
     margin: 0;
-    color: var(--color-ink-faint);
-    font-size: .9rem;
+    color: var(--color-ink-dim);
+    font-family: var(--font-display);
+    font-size: .875rem;
+
+    .glyph {
+      inline-size: 15px;
+      block-size: 15px;
+      flex: none;
+      color: var(--color-accent-dim);
+    }
 
     strong {
-      color: var(--color-ink-muted);
+      color: var(--color-accent-dim);
+      font-weight: 600;
     }
   }
 
   @media (any-hover: hover) {
-    .chip:hover,
-    .segment:hover {
+    .chip:hover {
       border-color: var(--color-accent);
+    }
+
+    .segment:not(:has(:checked)):hover {
+      color: var(--color-ink-muted);
     }
   }
 }

@@ -8,20 +8,23 @@
     <strong><%= session[:pending_email] %></strong>.
   </p>
 
-  <%= form_with url: session_path, id: "code_form" do |form| %>
-    <%= form.text_field :code, class: "code-input",
-          inputmode: "numeric", pattern: "[0-9]*", maxlength: LoginCode::CODE_LENGTH,
-          autocomplete: "one-time-code", required: true, autofocus: true,
-          data: { code_target: "input", action: "input->code#update" } %>
-  <% end %>
-
-  <div class="sticky-footer stack">
-    <%= submit_tag "Verify", form: "code_form", class: "btn btn--primary", data: { code_target: "submit" } %>
-
-    <div data-controller="countdown">
-      <%= button_to login_codes_resend_path, class: "resend", data: { countdown_target: "button" } do %>
-        Resend code<span data-countdown-target="timer"></span>
+  <%= form_with url: session_path, class: "code-form" do |form| %>
+    <div class="code">
+      <%= form.text_field :code, class: "code__input",
+            inputmode: "numeric", pattern: "[0-9]*", maxlength: LoginCode::CODE_LENGTH,
+            autocomplete: "one-time-code", required: true, autofocus: true,
+            data: { code_target: "input", action: "input->code#update" } %>
+      <% LoginCode::CODE_LENGTH.times do %>
+        <%= tag.span class: "code__cell", aria: { hidden: true }, data: { code_target: "cell" } %>
       <% end %>
     </div>
+
+    <%= form.submit "Verify", class: "btn btn--primary", data: { code_target: "submit" } %>
+  <% end %>
+
+  <div data-controller="countdown">
+    <%= button_to login_codes_resend_path, class: "resend", data: { countdown_target: "button" } do %>
+      Resend code<span data-countdown-target="timer"></span>
+    <% end %>
   </div>
 </div>

@@ -14,7 +14,7 @@
     </div>
     <div>
       <dt class="overline">Bonus</dt>
-      <dd>
+      <dd class="dice__bonus">
         <%= Character::Stat.fetch(choice.stat).label %> <%= choice.stat_value %>
         <span class="arrow">→</span>
         <span class="modifier"><%= format("%+d", choice.modifier) %></span>

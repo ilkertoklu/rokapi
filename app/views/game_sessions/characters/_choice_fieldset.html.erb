@@ -1,4 +1,4 @@
-<%# locals: (form:, legend:, attribute:, options:, selected:, rebase: false) -%>
+<%# locals: (form:, legend:, glyph:, attribute:, options:, selected:, rebase: false) -%>
 <fieldset class="choices" data-controller="choices">
   <legend><%= legend %></legend>
   <div class="chips">
@@ -13,7 +13,8 @@
   <% options.each do |option| %>
     <%= tag.p class: "choice-description", hidden: option.key != selected,
         data: { choices_target: "description", key: option.key } do %>
-      <strong><%= option.label %>:</strong> <%= option.description %>
+      <%= render "glyph", name: glyph %>
+      <span><strong><%= option.label %>:</strong> <%= option.description %></span>
     <% end %>
   <% end %>
 </fieldset>

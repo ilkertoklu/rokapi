@@ -59,7 +59,7 @@ class Narrator
 
     def relay(scene, prose)
       scene.update_column :narration, prose
-      scene.broadcast_narration prose
+      scene.broadcast_narration
     end
 
     def structure_in(reply)

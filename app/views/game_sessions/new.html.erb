@@ -5,7 +5,7 @@
 <p class="lede">How do you want to play?</p>
 
 <div class="stack">
-  <%= link_to new_game_sessions_solo_path, class: "pick" do %>
+  <%= link_to new_game_sessions_solo_path, class: "pick pick--large" do %>
     <span class="pick__icon"><%= render "glyph", name: "person" %></span>
     <span class="pick__body">
       <span class="pick__title">Solo</span>
@@ -14,7 +14,7 @@
     <span class="pick__mark"></span>
   <% end %>
 
-  <div class="pick pick--disabled">
+  <div class="pick pick--large pick--disabled">
     <span class="pick__icon"><%= render "glyph", name: "people" %></span>
     <span class="pick__body">
       <span class="pick__title">Multiplayer</span>

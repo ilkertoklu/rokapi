@@ -60,7 +60,7 @@
       letter-spacing: .02em;
     }
 
-    p {
+    > p {
       color: var(--color-ink-faint);
       font-family: var(--font-display);
       font-style: italic;

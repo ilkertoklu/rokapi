@@ -13,7 +13,7 @@
 
     <div class="vitals">
       <div class="vitals__row">
-        <span class="vitals__label overline">Health</span>
+        <span class="vitals__label overline"><%= render "glyph", name: "heart" %> Health</span>
         <span class="vitals__count"><%= character.hp %> <span>/ <%= character.max_hp %></span></span>
       </div>
       <div class="vitals__track">
@@ -39,7 +39,7 @@
       <p class="vitals__label overline">Inventory</p>
       <ul class="inventory">
         <% items.each do |item| %>
-          <li class="inventory__row <%= "inventory__row--quest" if item.quest? %>">
+          <li class="inventory__row inventory__row--<%= item.kind %>">
             <span class="inventory__icon"><%= render "glyph", name: item_glyph(item.kind) %></span>
             <span class="inventory__body">
               <span class="inventory__name"><%= item.name %></span>

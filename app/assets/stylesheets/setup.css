@@ -2,7 +2,7 @@
   .page-head {
     display: flex;
     align-items: center;
-    gap: .5rem;
+    gap: .75rem;
     margin-inline-start: -.8rem;
   }
 
@@ -15,11 +15,15 @@
     flex: none;
     padding: 11px;
     border-radius: 50%;
-    color: var(--color-ink-muted);
+    color: var(--color-ink-soft);
+
+    .glyph {
+      stroke-width: 2;
+    }
   }
 
   .page-head h1 {
-    font-size: 1.6rem;
+    font-size: 1.625rem;
     margin: 0;
   }
 
@@ -79,14 +83,18 @@
   }
 
   .pick {
+    --pick-icon: 38px;
+    --pick-mark: 20px;
+    --pick-dot: 4.5px;
+
     position: relative;
     display: flex;
     align-items: center;
-    gap: .85rem;
-    padding: 1rem .9rem;
+    gap: .8125rem;
+    padding: .8125rem .875rem;
     background: var(--color-surface-sunken);
     border: 1px solid var(--color-line-soft);
-    border-radius: 18px;
+    border-radius: var(--radius-card);
     color: inherit;
     text-decoration: none;
     cursor: pointer;
@@ -107,6 +115,24 @@
     }
   }
 
+  .pick--large {
+    --pick-icon: 46px;
+    --pick-mark: 22px;
+    --pick-dot: 5px;
+
+    gap: .875rem;
+    padding: 1.125rem 1rem;
+    border-radius: 18px;
+
+    .pick__icon {
+      border-radius: 13px;
+    }
+
+    .pick__title {
+      font-size: 1.125rem;
+    }
+  }
+
   .pick--disabled {
     opacity: .45;
     cursor: default;
@@ -116,11 +142,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    inline-size: 40px;
-    block-size: 40px;
+    inline-size: var(--pick-icon);
+    block-size: var(--pick-icon);
     flex: none;
-    padding: 10px;
-    border-radius: 12px;
+    padding: calc(var(--pick-icon) / 4);
+    border-radius: 11px;
     background: var(--color-surface-raised);
     color: var(--color-ink-soft);
   }
@@ -134,13 +160,13 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: .2rem;
+    gap: .15rem;
     min-inline-size: 0;
   }
 
   .pick__title {
     font-family: var(--font-display);
-    font-size: 1.05rem;
+    font-size: 1rem;
     font-weight: 600;
     color: var(--color-ink-muted);
   }
@@ -151,14 +177,14 @@
   }
 
   .pick__text {
-    font-size: .78rem;
+    font-size: .75rem;
     line-height: 1.4;
     color: var(--color-ink-soft);
   }
 
   .pick__mark {
-    inline-size: 21px;
-    block-size: 21px;
+    inline-size: var(--pick-mark);
+    block-size: var(--pick-mark);
     flex: none;
     border: 2px solid color-mix(in srgb, var(--color-ink) 16%, transparent);
     border-radius: 50%;
@@ -167,7 +193,7 @@
   .pick:has(:checked) .pick__mark {
     border-color: var(--color-accent);
     background:
-      radial-gradient(circle, var(--color-accent) 0 4.5px, transparent 4.5px);
+      radial-gradient(circle, var(--color-accent) calc(var(--pick-dot) - .75px), transparent var(--pick-dot));
   }
 
   .profile {
@@ -246,6 +272,7 @@
   }
 
   .resume__body {
+    flex: 1;
     display: flex;
     flex-direction: column;
     gap: .15rem;
@@ -261,5 +288,16 @@
   .resume__text {
     font-size: .75rem;
     color: var(--color-ink-soft);
+  }
+
+  .resume__chevron {
+    inline-size: 18px;
+    block-size: 18px;
+    flex: none;
+    color: var(--color-ink-soft);
+
+    .glyph {
+      stroke-width: 2;
+    }
   }
 }

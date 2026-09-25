@@ -1,4 +1,5 @@
 <%# locals: (game_session:, item:, restored:) -%>
+<% character = item.character %>
 <div class="outcome outcome--restored">
   <span class="outcome__badge"><%= render "glyph", name: "flask" %></span>
 
@@ -6,13 +7,14 @@
 
   <div class="outcome__vitals">
     <div class="vitals__row">
-      <span class="vitals__label overline">Health</span>
+      <span class="vitals__label overline"><%= render "glyph", name: "heart" %> Health</span>
       <span class="vitals__count">
-        <%= item.character.hp - restored %> <span>→</span> <%= item.character.hp %> <span>/ <%= item.character.max_hp %></span>
+        <%= character.hp - restored %> <span>→</span> <%= character.hp %> <span>/ <%= character.max_hp %></span>
       </span>
     </div>
     <div class="vitals__track">
-      <div class="vitals__fill vitals__fill--restored" style="inline-size: <%= item.character.hp_percentage %>%"></div>
+      <div class="vitals__fill vitals__fill--restored" style="inline-size: <%= character.hp_percentage %>%"></div>
+      <div class="vitals__mark" style="inset-inline-start: <%= character.hp_percentage(character.hp - restored) %>%"></div>
     </div>
   </div>
 

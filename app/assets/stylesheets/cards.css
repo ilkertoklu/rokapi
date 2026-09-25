@@ -24,6 +24,7 @@
     font-size: 2.25rem;
     font-weight: 600;
     line-height: 1.15;
+    letter-spacing: normal;
     margin: 0;
   }
 
@@ -44,7 +45,23 @@
       padding: 0;
       list-style: none;
       color: var(--color-ink-muted);
-      font-size: .82rem;
+      font-size: .8125rem;
+      line-height: 1.45;
+    }
+
+    li {
+      display: flex;
+      align-items: flex-start;
+      gap: .55rem;
+    }
+
+    .glyph {
+      inline-size: 15px;
+      block-size: 15px;
+      flex: none;
+      margin-block-start: 2px;
+      color: var(--color-positive);
+      stroke-width: 2.2;
     }
   }
 

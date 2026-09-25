@@ -4,16 +4,16 @@
   <h1>Finish signing up</h1>
 
   <div>
-    <%= form.label :name, "Your name" %>
+    <%= form.label :name, "Your name", class: "field-label" %>
     <%= form.text_field :name, placeholder: "Your name", required: true, autofocus: true, autocomplete: "given-name", maxlength: User::NAME_LENGTH %>
   </div>
 
-  <label class="terms">
-    <%= form.check_box :terms %>
-    <span>I agree to the <a href="#">Terms of Use</a> and the <a href="#">Privacy Policy</a>.</span>
-  </label>
+  <div class="sticky-footer stack">
+    <label class="terms">
+      <%= form.check_box :terms %>
+      <span>I agree to the <a href="#">Terms of Use</a> and the <a href="#">Privacy Policy</a>.</span>
+    </label>
 
-  <div class="sticky-footer">
     <%= form.submit "Get started", class: "btn btn--primary" %>
   </div>
 <% end %>

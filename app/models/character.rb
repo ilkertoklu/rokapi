@@ -32,8 +32,8 @@ class Character < ApplicationRecord
     (stats.fetch(stat_key) - 10) / 2
   end
 
-  def hp_percentage
-    (hp * 100.0 / max_hp).round
+  def hp_percentage(points = hp)
+    (points * 100.0 / max_hp).round
   end
 
   def adjust_hp(delta)

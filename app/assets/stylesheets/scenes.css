@@ -187,12 +187,31 @@
     box-shadow: 0 0 26px 6px color-mix(in srgb, var(--color-accent) 70%, transparent);
   }
 
-  .narration__body {
+  .narration__body,
+  .finale__closing {
     font-family: var(--font-display);
     font-size: 1.0625rem;
     line-height: 1.72;
     color: var(--color-ink-prose);
-    white-space: pre-line;
+
+    p {
+      margin: 0;
+    }
+
+    p + p {
+      margin-block-start: .875rem;
+    }
+  }
+
+  .narration__body--writing p:last-child::after {
+    content: "";
+    display: inline-block;
+    inline-size: 2px;
+    block-size: 20px;
+    margin-inline-start: 3px;
+    vertical-align: -3px;
+    background: var(--color-accent);
+    animation: dots-blink 1.1s step-end infinite;
   }
 
   .writing {
@@ -384,17 +403,13 @@
   .finale h1 {
     margin: .7rem 0 0;
     font-family: var(--font-display);
-    font-size: 2.25rem;
+    font-size: 2.375rem;
     font-weight: 600;
     line-height: 1.12;
   }
 
   .finale__closing {
     margin: 1.35rem 0 0;
-    font-family: var(--font-display);
-    font-size: 1.0625rem;
-    line-height: 1.72;
-    color: var(--color-ink-prose);
   }
 
   .finale hr {

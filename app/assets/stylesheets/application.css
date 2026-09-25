@@ -10,12 +10,13 @@
   --color-ink: #EFE7D8;
   --color-ink-prose: #E4DAC9;
   --color-ink-muted: #CFC2AD;
-  --color-ink-faint: #A1937E;
+  --color-ink-faint: #A99A80;
   --color-ink-soft: #9A8D78;
   --color-ink-dim: #8a7c66;
   --color-accent: #E08C4A;
   --color-accent-bright: #E8A468;
   --color-accent-pale: #F0CBA0;
+  --color-accent-dim: #B89274;
   --color-accent-soft: color-mix(in srgb, var(--color-accent) 16%, transparent);
   --color-on-accent: #1A130B;
   --color-positive: #8FA876;
@@ -24,12 +25,16 @@
   --color-negative-bright: #E0926F;
   --color-dot-past: #4A4234;
   --color-dot-upcoming: #322A20;
+  --color-line-strong: color-mix(in srgb, var(--color-ink) 14%, transparent);
   --color-line: color-mix(in srgb, var(--color-ink) 12%, transparent);
   --color-line-soft: color-mix(in srgb, var(--color-ink) 8%, transparent);
+
+  --focus-ring: 0 0 0 3px color-mix(in srgb, var(--color-accent) 14%, transparent);
 
   --font-display: "Spectral", serif;
   --font-ui: "Hanken Grotesk", system-ui, sans-serif;
 
+  --radius-button: 18px;
   --radius-card: 16px;
   --radius-control: 14px;
   --radius-pill: 999px;
@@ -38,5 +43,9 @@
 @layer reset {
   * {
     box-sizing: border-box;
+  }
+
+  [hidden] {
+    display: none !important;
   }
 }

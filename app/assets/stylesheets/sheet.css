@@ -3,10 +3,6 @@
     position: fixed;
     inset: 0;
     z-index: 10;
-
-    &[hidden] {
-      display: none;
-    }
   }
 
   @media (min-width: 48rem) and (min-height: 48rem) {
@@ -20,7 +16,7 @@
     inset: 0;
     padding: 0;
     border: 0;
-    background: rgba(8, 6, 4, .55);
+    background: rgba(8, 6, 4, .85);
     cursor: pointer;
   }
 
@@ -91,8 +87,22 @@
 
   .vitals__label {
     margin: 0;
-    color: var(--color-ink-soft);
-    letter-spacing: .1em;
+    color: var(--color-ink-faint);
+    letter-spacing: .125em;
+  }
+
+  .vitals__row .vitals__label {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .8125rem;
+    letter-spacing: .08em;
+
+    .glyph {
+      inline-size: 16px;
+      block-size: 16px;
+      color: var(--color-negative);
+    }
   }
 
   .vitals__count {
@@ -105,6 +115,7 @@
   }
 
   .vitals__track {
+    position: relative;
     block-size: 9px;
     border-radius: 5px;
     background: var(--color-well);
@@ -119,6 +130,13 @@
 
   .vitals__fill--restored {
     background: linear-gradient(90deg, var(--color-negative), var(--color-positive));
+  }
+
+  .vitals__mark {
+    position: absolute;
+    inset-block: 0;
+    inline-size: 2px;
+    background: color-mix(in srgb, var(--color-ink) 55%, transparent);
   }
 
   .sheet__stats {

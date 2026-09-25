@@ -6,25 +6,27 @@
 
   <%= render "back", to: new_game_sessions_solo_path, title: "Create your character" %>
 
-  <%= render "choice_fieldset", form: form, legend: "Race", attribute: :race,
+  <%= render "choice_fieldset", form: form, legend: "Race", glyph: "person", attribute: :race,
         options: Character::Race.all, selected: @character.race %>
 
-  <%= render "choice_fieldset", form: form, legend: "Class", attribute: :klass,
+  <%= render "choice_fieldset", form: form, legend: "Class", glyph: "sword", attribute: :klass,
         options: Character::Klass.all, selected: @character.klass, rebase: true %>
 
-  <%= render "choice_fieldset", form: form, legend: "Background", attribute: :background,
+  <%= render "choice_fieldset", form: form, legend: "Background", glyph: "book", attribute: :background,
         options: Character::Background.all, selected: @character.background %>
 
   <fieldset class="choices">
-    <legend>Abilities <span class="hint" data-stats-target="remaining"></span></legend>
+    <legend>Abilities <span class="points-left" data-stats-target="remaining"></span></legend>
 
     <%= form.fields_for :stats do |stats| %>
       <% Character::Stat.all.each do |stat| %>
         <div class="stat-row">
           <span class="stat-row__label"><%= stat.label %></span>
-          <%= tag.button "−", type: "button", class: "stepper", data: { action: "stats#decrement", stats_key_param: stat.key } %>
+          <%= tag.button "−", type: "button", class: "stepper", aria: { label: "Lower #{stat.label}" },
+                data: { stats_target: "decrement", action: "stats#decrement", stats_key_param: stat.key } %>
           <%= stats.number_field stat.key, value: @character.stats[stat.key], readonly: true, data: { stats_target: "value", key: stat.key } %>
-          <%= tag.button "+", type: "button", class: "stepper", data: { action: "stats#increment", stats_key_param: stat.key } %>
+          <%= tag.button "+", type: "button", class: "stepper stepper--up", aria: { label: "Raise #{stat.label}" },
+                data: { stats_target: "increment", action: "stats#increment", stats_key_param: stat.key } %>
         </div>
       <% end %>
     <% end %>

@@ -3,7 +3,9 @@
 
 <div class="narration">
   <p class="scene__speaker overline"><span class="ember <%= "ember--pulsing" if scene.narrator_writing? %>"></span> Narrator</p>
-  <div id="scene_narration" class="narration__body"><%= scene.narration %></div>
+  <%= tag.div id: "scene_narration", class: [ "narration__body", "narration__body--writing": scene.narrator_writing? ] do %>
+    <%= render "scenes/narration", scene: scene %>
+  <% end %>
 </div>
 
 <% if scene.choosing? %>

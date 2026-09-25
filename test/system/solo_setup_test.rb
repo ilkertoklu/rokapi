@@ -18,11 +18,16 @@ class SoloSetupTest < ApplicationSystemTestCase
     choose "Mage", allow_label_click: true
     assert_field "character[stats][intelligence]", with: "15"
     assert_button "I'm ready · 6 points left", disabled: true
+    assert_button "Lower", disabled: true, count: 6
 
-    3.times { increment "intelligence" }
-    3.times { increment "wisdom" }
+    3.times { click_on "Raise Intelligence" }
+    assert_button "Raise Intelligence", disabled: true
+    assert_button "Lower Intelligence", disabled: false
+
+    3.times { click_on "Raise Wisdom" }
     assert_field "character[stats][intelligence]", with: "18"
     assert_field "character[stats][wisdom]", with: "17"
+    assert_button "Raise", disabled: true, count: 6
 
     click_on "I'm ready"
     assert_text "The narrator is getting ready"
@@ -31,9 +36,4 @@ class SoloSetupTest < ApplicationSystemTestCase
     assert_equal "mage", character.klass
     assert_equal 18, character.stats["intelligence"]
   end
-
-  private
-    def increment(stat)
-      find("button[data-action='stats#increment'][data-stats-key-param='#{stat}']").click
-    end
 end

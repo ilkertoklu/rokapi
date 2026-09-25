@@ -4,7 +4,7 @@
   <%= render "back", to: welcome_path, title: "Create your account" %>
 
   <div>
-    <%= form.label :email, "Email" %>
+    <%= form.label :email, "Email", class: "field-label" %>
     <%= form.email_field :email, placeholder: "you@example.com", required: true, autofocus: true, autocomplete: "email" %>
   </div>
 

@@ -104,6 +104,10 @@
     }
   }
 
+  .inventory__row--instant .inventory__icon {
+    color: var(--color-positive-bright);
+  }
+
   .inventory__row--quest .inventory__icon,
   .inventory__badge {
     color: var(--color-accent);

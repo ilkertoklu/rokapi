@@ -9,7 +9,7 @@
     <% GameSession::Quest.all.each do |quest| %>
       <label class="pick">
         <%= form.radio_button :quest, quest.key, checked: quest == GameSession::Quest.all.first %>
-        <span class="pick__icon"><%= render "glyph", name: "bell" %></span>
+        <span class="pick__icon"><%= render "glyph", name: quest.glyph %></span>
         <span class="pick__body">
           <span class="pick__title"><%= quest.title %></span>
           <span class="pick__text"><%= quest.hook %></span>
@@ -20,7 +20,7 @@
 
     <label class="pick">
       <%= form.radio_button :quest, "", checked: false %>
-      <span class="pick__icon"><%= render "glyph", name: "compass" %></span>
+      <span class="pick__icon"><%= render "glyph", name: "sparkle" %></span>
       <span class="pick__body">
         <span class="pick__title">Surprise</span>
         <span class="pick__text">Let the narrator build an unknown world.</span>

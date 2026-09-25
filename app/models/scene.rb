@@ -16,8 +16,8 @@ class Scene < ApplicationRecord
 
   after_save_commit -> { broadcast_refresh_to game_session }
 
-  def broadcast_narration(text)
-    broadcast_update_to game_session, target: :scene_narration, html: ERB::Util.html_escape(text)
+  def broadcast_narration
+    broadcast_update_to game_session, target: :scene_narration, partial: "scenes/narration"
   end
 
   def first?
