@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   include Authentication
+  include Localization
 
   allow_browser versions: :modern
 

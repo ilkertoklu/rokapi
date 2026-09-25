@@ -1,7 +1,11 @@
 module GameSessionsHelper
   def duration_label(duration)
     minutes = (duration / 60).round
-    minutes >= 60 ? "#{minutes / 60}h #{minutes % 60}m" : "#{minutes} min"
+    if minutes >= 60
+      t("game_session.duration.hours", hours: minutes / 60, minutes: minutes % 60)
+    else
+      t("game_session.duration.minutes", minutes: minutes)
+    end
   end
 
   def progress_at(scene, position)
@@ -11,8 +15,8 @@ module GameSessionsHelper
   end
 
   def finale_share_text(game_session)
-    outcome = game_session.outcome_victory? ? "Victory" : "Defeat"
-    highlights = [ game_session.title, duration_label(game_session.duration), pluralize(game_session.rolls.count, "roll") ].join(" · ")
+    outcome = t(game_session.outcome, scope: "game_session.outcomes")
+    highlights = [ game_session.title, duration_label(game_session.duration), t("game_session.rolls", count: game_session.rolls.count) ].join(" · ")
 
     "#{game_session.current_scene.title} — #{outcome}\n#{highlights}"
   end
@@ -21,6 +25,6 @@ module GameSessionsHelper
     scene = game_session.current_scene
 
     [ scene&.title.presence || game_session.title, scene&.location,
-      game_session.updated_at.strftime("%b %-d, %H:%M") ].compact_blank.join(" · ")
+      l(game_session.updated_at, format: :resume) ].compact_blank.join(" · ")
   end
 end

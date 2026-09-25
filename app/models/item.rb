@@ -7,7 +7,7 @@ class Item < ApplicationRecord
 
   enum :kind, %w[instant passive quest].index_by(&:itself)
 
-  normalizes :description, with: ->(description) { description.presence&.sub(/\A./) { |first| first.upcase } }
+  normalizes :description, with: ->(description) { description.presence }
 
   scope :carried, -> { where(uses_left: nil).or(where(uses_left: 1..)) }
   scope :usable, -> { instant.where(uses_left: 1..) }

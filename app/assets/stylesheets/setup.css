@@ -213,7 +213,29 @@
     color: var(--color-accent-bright);
     font: inherit;
     font-weight: 700;
+    text-transform: uppercase;
     cursor: pointer;
+  }
+
+  .locales {
+    display: flex;
+    justify-content: center;
+    gap: .25rem;
+  }
+
+  .locales__option {
+    padding: .4rem .7rem;
+    background: none;
+    border: 0;
+    color: var(--color-ink-faint);
+    font: inherit;
+    font-size: .85rem;
+    cursor: pointer;
+
+    &:disabled {
+      color: var(--color-accent-bright);
+      cursor: default;
+    }
   }
 
   .dice-motif {

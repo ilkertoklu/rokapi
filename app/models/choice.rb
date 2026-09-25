@@ -24,6 +24,10 @@ class Choice < ApplicationRecord
     end
   end
 
+  def difficulty_label
+    I18n.t(difficulty, scope: "choice.difficulties")
+  end
+
   def chosen?
     chosen_at.present?
   end

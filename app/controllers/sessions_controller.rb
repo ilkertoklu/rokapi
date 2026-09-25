@@ -5,7 +5,7 @@ class SessionsController < ApplicationController
   skip_before_action :ensure_profile_complete
   before_action :ensure_pending_email, only: %i[new create]
   rate_limit to: 10, within: 15.minutes, only: :create,
-    with: -> { redirect_to new_session_path, alert: "Too many attempts. Try again in 15 minutes." }
+    with: -> { redirect_to new_session_path, alert: t(".rate_limited") }
 
   def new
   end
@@ -16,7 +16,7 @@ class SessionsController < ApplicationController
       start_new_session_for user
       redirect_to user.profile_complete? ? after_authentication_url : new_signup_profile_path
     else
-      redirect_to new_session_path, alert: "That code is wrong or has expired. Try again."
+      redirect_to new_session_path, alert: t(".wrong_code")
     end
   end
 

@@ -1,8 +1,9 @@
 import { Controller } from "@hotwired/stimulus"
+import { pluralize } from "helpers/pluralize"
 
 export default class extends Controller {
   static targets = [ "value", "increment", "decrement", "remaining", "submit" ]
-  static values = { free: Number, cap: Number, bases: Object, klass: String }
+  static values = { free: Number, cap: Number, bases: Object, klass: String, ready: String, pointsLeft: Object }
 
   connect() {
     this.render()
@@ -55,7 +56,7 @@ export default class extends Controller {
   }
 
   pointsLeft(remaining) {
-    return `${remaining} point${remaining === 1 ? "" : "s"} left`
+    return pluralize(this.pointsLeftValue, remaining)
   }
 
   render() {
@@ -67,6 +68,6 @@ export default class extends Controller {
     this.incrementTargets.forEach(button => button.disabled = !this.canRaise(button.dataset.statsKeyParam))
     this.decrementTargets.forEach(button => button.disabled = !this.canLower(button.dataset.statsKeyParam))
     this.submitTarget.disabled = remaining !== 0
-    this.submitTarget.value = remaining === 0 ? "I'm ready" : `I'm ready · ${this.pointsLeft(remaining)}`
+    this.submitTarget.value = remaining === 0 ? this.readyValue : `${this.readyValue} · ${this.pointsLeft(remaining)}`
   }
 }

@@ -4,7 +4,7 @@
 
   <p class="outcome__math">
     <%= roll.value %> <span><%= format("%+d", roll.modifier) %> <%= Character::Stat.fetch(roll.choice.stat).label.downcase %></span>
-    = <strong><%= roll.total %></strong> · target <%= roll.target %> · <%= roll.choice.difficulty.capitalize %>
+    = <strong><%= roll.total %></strong> · <%= t(".target", target: roll.target) %> · <%= roll.choice.difficulty_label %>
   </p>
 
   <p class="outcome__verdict"><%= outcome_verdict(roll) %></p>
@@ -12,25 +12,25 @@
   <p class="outcome__resolution"><%= roll.resolution %></p>
 
   <% if roll.hp_change.nonzero? %>
-    <p class="outcome__effect"><%= render "glyph", name: "heart" %> <%= format("%+d", roll.hp_change) %> Health</p>
+    <p class="outcome__effect"><%= render "glyph", name: "heart" %> <%= t(".health_change", change: format("%+d", roll.hp_change)) %></p>
   <% end %>
 
   <% roll.items_gained.each do |gain| %>
     <p class="outcome__gain">
       <span class="outcome__gain-icon"><%= render "glyph", name: item_glyph(gain["kind"]) %></span>
-      <span class="outcome__gain-label overline">Added to inventory</span>
+      <span class="outcome__gain-label overline"><%= t(".added_to_inventory") %></span>
       <span class="outcome__gain-name"><%= gain["name"] %></span>
     </p>
   <% end %>
 
   <% roll.statuses_gained.each do |status| %>
     <%= tag.p class: [ "outcome__gain", "outcome__gain--negative": status["modifier"].negative? ] do %>
-      <span class="outcome__gain-label overline">Status</span>
+      <span class="outcome__gain-label overline"><%= t(".status") %></span>
       <span class="outcome__gain-name"><%= status["name"] %></span>
     <% end %>
   <% end %>
 </div>
 
 <div class="stage__footer">
-  <%= button_to "Continue", game_session_acknowledgement_path(game_session), class: "btn btn--primary" %>
+  <%= button_to t(".continue"), game_session_acknowledgement_path(game_session), class: "btn btn--primary" %>
 </div>

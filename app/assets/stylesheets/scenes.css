@@ -147,6 +147,7 @@
     background: var(--color-accent-soft);
     color: var(--color-accent-bright);
     font-weight: 700;
+    text-transform: uppercase;
   }
 
   .narration {

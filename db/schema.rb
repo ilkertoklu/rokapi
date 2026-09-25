@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_26_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_26_150000) do
   create_table "characters", force: :cascade do |t|
     t.string "background", null: false
     t.datetime "created_at", null: false
@@ -43,6 +43,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_26_120000) do
     t.integer "creator_id", null: false
     t.datetime "ended_at"
     t.string "length", null: false
+    t.string "locale", default: "en", null: false
     t.string "outcome"
     t.string "quest"
     t.datetime "started_at"

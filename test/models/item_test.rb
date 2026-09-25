@@ -40,10 +40,10 @@ class ItemTest < ActiveSupport::TestCase
     assert_equal 17, @character.reload.hp
   end
 
-  test "descriptions are capitalized" do
-    item = @character.items.create! name: "Salve", kind: "passive", description: "heals wounds"
+  test "a blank description is stored as none" do
+    item = @character.items.create! name: "Salve", kind: "passive", description: ""
 
-    assert_equal "Heals wounds", item.description
+    assert_nil item.description
   end
 
   test "spent items drop out of the carried inventory but stay on record" do

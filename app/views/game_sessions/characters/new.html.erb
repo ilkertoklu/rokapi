@@ -1,31 +1,32 @@
-<% content_for :title, "Create your character · Rokapi" %>
+<% content_for :title, "#{t(".title")} · Rokapi" %>
 
 <%= form_with model: @character, url: game_session_character_path(@game_session), class: "flow",
       data: { controller: "stats", stats_free_value: Character::FREE_POINTS, stats_cap_value: Character::STAT_CAP,
-              stats_klass_value: @character.klass, stats_bases_value: Character::Klass.base_stats_by_key.to_json } do |form| %>
+              stats_klass_value: @character.klass, stats_bases_value: Character::Klass.base_stats_by_key.to_json,
+              stats_ready_value: t(".ready"), stats_points_left_value: t(".points_left").to_json } do |form| %>
 
-  <%= render "back", to: new_game_sessions_solo_path, title: "Create your character" %>
+  <%= render "back", to: new_game_sessions_solo_path, title: t(".title") %>
 
-  <%= render "choice_fieldset", form: form, legend: "Race", glyph: "person", attribute: :race,
+  <%= render "choice_fieldset", form: form, legend: t(".race"), glyph: "person", attribute: :race,
         options: Character::Race.all, selected: @character.race %>
 
-  <%= render "choice_fieldset", form: form, legend: "Class", glyph: "sword", attribute: :klass,
+  <%= render "choice_fieldset", form: form, legend: t(".klass"), glyph: "sword", attribute: :klass,
         options: Character::Klass.all, selected: @character.klass, rebase: true %>
 
-  <%= render "choice_fieldset", form: form, legend: "Background", glyph: "book", attribute: :background,
+  <%= render "choice_fieldset", form: form, legend: t(".background"), glyph: "book", attribute: :background,
         options: Character::Background.all, selected: @character.background %>
 
   <fieldset class="choices">
-    <legend>Abilities <span class="points-left" data-stats-target="remaining"></span></legend>
+    <legend><%= t(".abilities") %> <span class="points-left" data-stats-target="remaining"></span></legend>
 
     <%= form.fields_for :stats do |stats| %>
       <% Character::Stat.all.each do |stat| %>
         <div class="stat-row">
           <span class="stat-row__label"><%= stat.label %></span>
-          <%= tag.button "−", type: "button", class: "stepper", aria: { label: "Lower #{stat.label}" },
+          <%= tag.button "−", type: "button", class: "stepper", aria: { label: t(".lower", stat: stat.label) },
                 data: { stats_target: "decrement", action: "stats#decrement", stats_key_param: stat.key } %>
           <%= stats.number_field stat.key, value: @character.stats[stat.key], readonly: true, data: { stats_target: "value", key: stat.key } %>
-          <%= tag.button "+", type: "button", class: "stepper stepper--up", aria: { label: "Raise #{stat.label}" },
+          <%= tag.button "+", type: "button", class: "stepper stepper--up", aria: { label: t(".raise", stat: stat.label) },
                 data: { stats_target: "increment", action: "stats#increment", stats_key_param: stat.key } %>
         </div>
       <% end %>
@@ -33,6 +34,6 @@
   </fieldset>
 
   <div class="sticky-footer">
-    <%= form.submit "I'm ready", class: "btn btn--primary", data: { stats_target: "submit" } %>
+    <%= form.submit t(".ready"), class: "btn btn--primary", data: { stats_target: "submit" } %>
   </div>
 <% end %>

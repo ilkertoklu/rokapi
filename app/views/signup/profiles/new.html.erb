@@ -1,19 +1,19 @@
-<% content_for :title, "Finish signing up · Rokapi" %>
+<% content_for :title, "#{t(".title")} · Rokapi" %>
 
 <%= form_with url: signup_profile_path, class: "flow" do |form| %>
-  <h1>Finish signing up</h1>
+  <h1><%= t(".title") %></h1>
 
   <div>
-    <%= form.label :name, "Your name", class: "field-label" %>
-    <%= form.text_field :name, placeholder: "Your name", required: true, autofocus: true, autocomplete: "given-name", maxlength: User::NAME_LENGTH %>
+    <%= form.label :name, t(".name"), class: "field-label" %>
+    <%= form.text_field :name, placeholder: t(".name"), required: true, autofocus: true, autocomplete: "given-name", maxlength: User::NAME_LENGTH %>
   </div>
 
   <div class="sticky-footer stack">
     <label class="terms">
       <%= form.check_box :terms %>
-      <span>I agree to the <a href="#">Terms of Use</a> and the <a href="#">Privacy Policy</a>.</span>
+      <span><%= t(".terms_html") %></span>
     </label>
 
-    <%= form.submit "Get started", class: "btn btn--primary" %>
+    <%= form.submit t(".submit"), class: "btn btn--primary" %>
   </div>
 <% end %>

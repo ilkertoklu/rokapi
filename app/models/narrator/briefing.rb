@@ -12,23 +12,33 @@ class Narrator::Briefing
   end
 
   def plan_prompt
-    [ mission_block, character_portrait, "SCENE COUNT: #{@game_session.scene_budget}. The beat list is exactly #{@game_session.scene_budget} lines.",
-      "Write the story bible." ].join("\n\n")
+    compose do
+      [ mission_block, character_portrait, "SCENE COUNT: #{@game_session.scene_budget}. The beat list is exactly #{@game_session.scene_budget} lines.",
+        "Write the story bible." ]
+    end
   end
 
   def outcome_prompt(roll)
-    [ mission_block, bible_block, character_block(roll.scene), used_items_block(roll),
-      history_block, roll_block(roll), missing_healing_block(roll), "Resolve this result." ].compact.join("\n\n")
+    compose do
+      [ mission_block, bible_block, character_block(roll.scene), used_items_block(roll),
+        history_block, roll_block(roll), missing_healing_block(roll), "Resolve this result." ]
+    end
   end
 
   def scene_prompt(scene)
-    [ mission_block, bible_block, character_block(scene), history_block, repetition_block, variety_block,
-      wounded_block(scene), pacing_block(scene), action_block ].compact.join("\n\n")
+    compose do
+      [ mission_block, bible_block, character_block(scene), history_block, repetition_block, variety_block,
+        wounded_block(scene), pacing_block(scene), action_block ]
+    end
   end
 
   private
+    def compose
+      I18n.with_locale(:en) { yield.compact.join("\n\n") }
+    end
+
     def mission_block
-      brief = GameSession::Quest[@game_session.quest]&.brief ||
+      brief = GameSession::Quest[@game_session.quest]&.brief(locale: @game_session.locale) ||
         "Surprise adventure: build an unknown, original world and quest, and drop the player into the middle of the story in the first scene."
       "QUEST FRAME: #{brief}\nTONE: #{GameSession::Tone.fetch(@game_session.tone).directive}"
     end

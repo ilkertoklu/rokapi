@@ -11,9 +11,12 @@ class GameSession < ApplicationRecord
   enum :length, Length.keys.index_by(&:itself), default: "medium", validate: true
   enum :outcome, %w[victory defeat].index_by(&:itself), prefix: true
 
+  attribute :locale, default: -> { I18n.locale }
+
   normalizes :quest, with: ->(key) { key.presence }
 
   validates :quest, inclusion: { in: Quest.keys }, allow_nil: true
+  validates :locale, inclusion: { in: I18n.available_locales.map(&:to_s) }
 
   store_accessor :story_bible, :title, :premise, :personal_stake, :antagonist, :ally, :twist, :beats,
     :finale_question, :victory, :defeat, prefix: :story
@@ -23,7 +26,7 @@ class GameSession < ApplicationRecord
   after_create -> { players.create!(user: creator) }
 
   def title
-    Quest[quest]&.title || story_title.presence || "Surprise adventure"
+    Quest[quest]&.title || story_title.presence || I18n.t("game_session.surprise_title")
   end
 
   def player_for(user)

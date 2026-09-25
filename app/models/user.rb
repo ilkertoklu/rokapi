@@ -32,6 +32,6 @@ class User < ApplicationRecord
   end
 
   def initial
-    name.to_s.first&.upcase
+    name.to_s.first
   end
 end

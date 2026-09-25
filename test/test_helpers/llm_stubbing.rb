@@ -46,7 +46,7 @@ module LlmStubbing
 end
 
 class FakeChat
-  attr_reader :prompt
+  attr_reader :prompt, :instructions
 
   def initialize(text, model: "gpt-5.1", chunks: nil, input_tokens: 1000, output_tokens: 500, &after_chunk)
     @text = text
@@ -62,7 +62,8 @@ class FakeChat
     new(text, chunks: [ text[0...closing], text[closing..] ], &after_chunk)
   end
 
-  def with_instructions(*)
+  def with_instructions(text, **)
+    @instructions = text
     self
   end
 

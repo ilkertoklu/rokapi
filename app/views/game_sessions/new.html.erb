@@ -1,15 +1,15 @@
-<% content_for :title, "New adventure · Rokapi" %>
+<% content_for :title, "#{t(".title")} · Rokapi" %>
 
-<%= render "back", to: root_path, title: "New adventure" %>
+<%= render "back", to: root_path, title: t(".title") %>
 
-<p class="lede">How do you want to play?</p>
+<p class="lede"><%= t(".lede") %></p>
 
 <div class="stack">
   <%= link_to new_game_sessions_solo_path, class: "pick pick--large" do %>
     <span class="pick__icon"><%= render "glyph", name: "person" %></span>
     <span class="pick__body">
-      <span class="pick__title">Solo</span>
-      <span class="pick__text">1 player · 15-60 min · a story of your own</span>
+      <span class="pick__title"><%= t(".solo") %></span>
+      <span class="pick__text"><%= t(".solo_text") %></span>
     </span>
     <span class="pick__mark"></span>
   <% end %>
@@ -17,11 +17,11 @@
   <div class="pick pick--large pick--disabled">
     <span class="pick__icon"><%= render "glyph", name: "people" %></span>
     <span class="pick__body">
-      <span class="pick__title">Multiplayer</span>
-      <span class="pick__text">2-5 players · 30-90 min · a shared story · soon</span>
+      <span class="pick__title"><%= t(".multiplayer") %></span>
+      <span class="pick__text"><%= t(".multiplayer_text") %></span>
     </span>
     <span class="pick__mark"></span>
   </div>
 </div>
 
-<p class="hint">In multiplayer you share a room code, and your friends join with it.</p>
+<p class="hint"><%= t(".hint") %></p>

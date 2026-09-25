@@ -1,22 +1,22 @@
-<% content_for :title, "Welcome · Rokapi" %>
+<% content_for :title, "#{t(".title")} · Rokapi" %>
 
 <div class="brand brand--hero">
   <span class="ember ember--large" aria-hidden="true"></span>
 
-  <h1 class="greeting">Welcome, <%= Current.user.name %></h1>
-  <p>Your account is ready. Your first adventures are on us.</p>
+  <h1 class="greeting"><%= t(".greeting", name: Current.user.name) %></h1>
+  <p><%= t(".ready") %></p>
 
   <div class="plan">
-    <p class="plan__name overline">Free plan</p>
-    <p class="plan__headline">100% left</p>
+    <p class="plan__name overline"><%= t(".plan_name") %></p>
+    <p class="plan__headline"><%= t(".plan_headline") %></p>
     <ul>
-      <li><%= render "glyph", name: "check" %> About 1-2 short adventures a month</li>
-      <li><%= render "glyph", name: "check" %> Only the sessions you start count against it</li>
-      <li><%= render "glyph", name: "check" %> Joining a room with a code is always free</li>
+      <li><%= render "glyph", name: "check" %> <%= t(".perk_adventures") %></li>
+      <li><%= render "glyph", name: "check" %> <%= t(".perk_own_sessions") %></li>
+      <li><%= render "glyph", name: "check" %> <%= t(".perk_joining") %></li>
     </ul>
   </div>
 </div>
 
 <div class="stack">
-  <%= link_to "Continue", root_path, class: "btn btn--primary" %>
+  <%= link_to t(".continue"), root_path, class: "btn btn--primary" %>
 </div>

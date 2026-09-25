@@ -86,6 +86,6 @@ class Character < ApplicationRecord
     end
 
     def grant_starting_gear
-      Klass.fetch(klass).gear.each { |piece| items.create! piece }
+      Klass.fetch(klass).starting_items(locale: game_session.locale).each { |item| items.create! item }
     end
 end

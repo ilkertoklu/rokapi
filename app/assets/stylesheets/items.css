@@ -130,6 +130,10 @@
     font-size: .75rem;
     font-weight: 600;
     letter-spacing: .02em;
+
+    &::first-letter {
+      text-transform: uppercase;
+    }
   }
 
   .inventory__badge {

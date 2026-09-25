@@ -1,12 +1,10 @@
-<% content_for :title, "One-time code · Rokapi" %>
+<% content_for :title, "#{t(".title")} · Rokapi" %>
 
-<div class="flow" data-controller="code" data-code-length-value="<%= LoginCode::CODE_LENGTH %>">
-  <%= render "back", to: new_login_code_path, title: "One-time code" %>
+<div class="flow" data-controller="code" data-code-length-value="<%= LoginCode::CODE_LENGTH %>"
+    data-code-verify-value="<%= t(".verify") %>" data-code-digits-left-value="<%= t(".digits_left").to_json %>">
+  <%= render "back", to: new_login_code_path, title: t(".title") %>
 
-  <p class="hint">
-    We sent a one-time <%= LoginCode::CODE_LENGTH %>-digit code to
-    <strong><%= session[:pending_email] %></strong>.
-  </p>
+  <p class="hint"><%= t(".sent_html", length: LoginCode::CODE_LENGTH, email: session[:pending_email]) %></p>
 
   <%= form_with url: session_path, class: "code-form" do |form| %>
     <div class="code">
@@ -19,12 +17,12 @@
       <% end %>
     </div>
 
-    <%= form.submit "Verify", class: "btn btn--primary", data: { code_target: "submit" } %>
+    <%= form.submit t(".verify"), class: "btn btn--primary", data: { code_target: "submit" } %>
   <% end %>
 
   <div data-controller="countdown">
     <%= button_to login_codes_resend_path, class: "resend", data: { countdown_target: "button" } do %>
-      Resend code<span data-countdown-target="timer"></span>
+      <%= t(".resend") %><span data-countdown-target="timer"></span>
     <% end %>
   </div>
 </div>

@@ -36,4 +36,35 @@ class SoloSetupTest < ApplicationSystemTestCase
     assert_equal "mage", character.klass
     assert_equal 18, character.stats["intelligence"]
   end
+
+  test "playing in Turkish from the welcome screen on" do
+    visit welcome_path
+    click_on "Türkçe"
+    assert_link "Hesap oluştur"
+
+    click_on "Giriş yap"
+    fill_in "E-posta", with: users(:sevval).email
+    click_on "Kod gönder"
+    assert_button "Doğrula · 6 hane kaldı", disabled: true
+
+    fill_in "code", with: LoginCode.last.code
+    click_on "Doğrula"
+    assert_text "Zarları at"
+
+    click_on "Yeni macera kur"
+    click_on "Tek kişilik"
+    click_on "Karakterini oluştur"
+
+    choose "Büyücü", allow_label_click: true
+    assert_button "Hazırım · 6 puan kaldı", disabled: true
+
+    3.times { click_on "Zekâ değerini yükselt" }
+    3.times { click_on "Sezgi değerini yükselt" }
+    click_on "Hazırım"
+    assert_text "Anlatıcı hazırlanıyor"
+
+    game_session = users(:sevval).game_sessions.sole
+    assert_equal "tr", game_session.locale
+    assert_equal [ "Meşe asa", "Büyü kitabı" ], game_session.players.sole.character.items.order(:id).pluck(:name)
+  end
 end

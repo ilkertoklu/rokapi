@@ -1,5 +1,6 @@
 ActiveJob::Base.queue_adapter = :inline
 ActiveRecord::Base.logger = nil
+I18n.locale = ENV.fetch("LOCALE", I18n.default_locale)
 
 def show_scene(scene)
   character = scene.active_player.character
@@ -136,5 +137,6 @@ else
       resume <session_id>
       auto <quest|surprise> <tone> <length> <race> <klass> <background> <mixed|bold|safe>
       SESSION=<id> auto <mixed|bold|safe>   (a bot finishes a half-played session)
+      LOCALE=tr new|auto ...                 (a new session plays in Turkish)
   USAGE
 end

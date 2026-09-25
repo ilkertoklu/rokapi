@@ -33,8 +33,8 @@ class UserTest < ActiveSupport::TestCase
     assert_not user.verify_login_code(code), "a consumed code cannot be used again"
   end
 
-  test "the initial is uppercased" do
-    assert_equal "I", User.new(name: "ilker").initial
+  test "the initial leaves its casing to the page, which knows the language" do
+    assert_equal "i", User.new(name: "ilker").initial
     assert_equal "R", User.new(name: "Robin").initial
   end
 

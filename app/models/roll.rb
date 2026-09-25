@@ -1,9 +1,5 @@
 class Roll < ApplicationRecord
   DIE = 20
-  GRADE_LABELS = {
-    critical: "CRITICAL SUCCESS", brilliant: "BRILLIANT SUCCESS", solid: "SUCCESS", narrow: "NARROW SUCCESS",
-    failure: "FAILURE", heavy: "HEAVY FAILURE", catastrophe: "CATASTROPHE"
-  }.freeze
   EMPTY_EFFECTS = { "hp" => 0, "items_gained" => [], "items_lost" => [], "statuses_gained" => [], "statuses_lost" => [] }.freeze
 
   include Stallable
@@ -38,7 +34,7 @@ class Roll < ApplicationRecord
   end
 
   def grade_label
-    GRADE_LABELS.fetch(grade)
+    I18n.t(grade, scope: "roll.grades")
   end
 
   def resolved?

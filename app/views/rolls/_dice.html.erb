@@ -6,14 +6,14 @@
 
   <dl class="dice__facts">
     <div>
-      <dt class="overline">Difficulty <span>· narrator</span></dt>
+      <dt class="overline"><%= t(".difficulty") %> <span><%= t(".difficulty_source") %></span></dt>
       <dd>
-        <%= choice.difficulty.capitalize %>
-        <span class="target">Target <%= choice.target %></span>
+        <%= choice.difficulty_label %>
+        <span class="target"><%= t(".target", target: choice.target) %></span>
       </dd>
     </div>
     <div>
-      <dt class="overline">Bonus</dt>
+      <dt class="overline"><%= t(".bonus") %></dt>
       <dd class="dice__bonus">
         <%= Character::Stat.fetch(choice.stat).label %> <%= choice.stat_value %>
         <span class="arrow">→</span>
@@ -29,11 +29,11 @@
 
 <div class="stage__footer">
   <% if roll.nil? %>
-    <%= button_to "Roll the die", game_session_roll_path(game_session), class: "btn btn--primary" %>
+    <%= button_to t(".roll"), game_session_roll_path(game_session), class: "btn btn--primary" %>
   <% elsif roll.stalled? %>
     <%= render "game_sessions/stalled", game_session: game_session,
-          hint: "The narrator stalled. Your roll has not been resolved yet." %>
+          hint: t(".stalled") %>
   <% else %>
-    <%= render "game_sessions/writing", text: "The narrator is resolving the roll" %>
+    <%= render "game_sessions/writing", text: t(".resolving") %>
   <% end %>
 </div>

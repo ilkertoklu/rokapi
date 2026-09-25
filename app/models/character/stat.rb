@@ -1,12 +1,7 @@
-class Character::Stat < Data.define(:key, :label, :abbreviation)
+class Character::Stat < Data.define(:key)
   extend Catalog
 
-  ALL = [
-    new(key: "strength", label: "Strength", abbreviation: "STR"),
-    new(key: "agility", label: "Agility", abbreviation: "AGI"),
-    new(key: "constitution", label: "Constitution", abbreviation: "CON"),
-    new(key: "intelligence", label: "Intelligence", abbreviation: "INT"),
-    new(key: "wisdom", label: "Wisdom", abbreviation: "WIS"),
-    new(key: "charisma", label: "Charisma", abbreviation: "CHA")
-  ].freeze
+  translates :label, :abbreviation
+
+  ALL = %w[ strength agility constitution intelligence wisdom charisma ].map { new(key: it) }.freeze
 end

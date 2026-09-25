@@ -1,8 +1,9 @@
 import { Controller } from "@hotwired/stimulus"
+import { pluralize } from "helpers/pluralize"
 
 export default class extends Controller {
   static targets = [ "input", "cell", "submit" ]
-  static values = { length: Number }
+  static values = { length: Number, verify: String, digitsLeft: Object }
 
   connect() {
     this.update()
@@ -19,6 +20,6 @@ export default class extends Controller {
     })
 
     this.submitTarget.disabled = remaining > 0
-    this.submitTarget.value = remaining > 0 ? `Verify · ${remaining} digit${remaining === 1 ? "" : "s"} left` : "Verify"
+    this.submitTarget.value = remaining > 0 ? `${this.verifyValue} · ${pluralize(this.digitsLeftValue, remaining)}` : this.verifyValue
   }
 }

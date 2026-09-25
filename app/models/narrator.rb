@@ -9,7 +9,7 @@ class Narrator
   def narrate_outcome(roll)
     return if roll.resolved?
 
-    response = OutcomeResolver.new.ask(@briefing.outcome_prompt(roll))
+    response = voice(OutcomeResolver).ask(@briefing.outcome_prompt(roll))
     record_call :outcome, response
 
     data = parsed(response)
@@ -27,8 +27,12 @@ class Narrator
   end
 
   private
+    def voice(agent)
+      agent.new(locale: @game_session.locale)
+    end
+
     def plan
-      response = Planner.new.ask(@briefing.plan_prompt)
+      response = voice(Planner).ask(@briefing.plan_prompt)
       record_call :plan, response
 
       bible = parsed(response)
@@ -41,7 +45,7 @@ class Narrator
       reply = Reply.new
       data = nil
 
-      response = SceneWriter.new.ask(@briefing.scene_prompt(scene)) do |chunk|
+      response = voice(SceneWriter).ask(@briefing.scene_prompt(scene)) do |chunk|
         reply << chunk.content.to_s
 
         if data

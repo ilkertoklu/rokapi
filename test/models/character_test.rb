@@ -52,11 +52,23 @@ class CharacterTest < ActiveSupport::TestCase
 
     torch = character.items.find_by!(name: "Torch")
     assert torch.passive?
-    assert_equal "Lights the way", torch.description
+    assert_equal "lights the way", torch.description
 
     potion = character.items.find_by!(name: "Healing potion")
     assert potion.usable?
     assert_equal 7, potion.hp_effect
+  end
+
+  test "the starting gear speaks the language of the game, not of the page" do
+    @player.game_session.update! locale: "tr"
+
+    character = I18n.with_locale(:en) do
+      @player.create_character! race: "human", klass: "healer", background: "soldier",
+        stats: Character::Klass.fetch("healer").base_stats.merge("wisdom" => 18, "constitution" => 16)
+    end
+
+    assert_equal [ "Meşale", "Şifa iksiri" ], character.items.order(:id).pluck(:name)
+    assert_equal "çevreyi aydınlatır", character.items.find_by!(name: "Meşale").description
   end
 
   test "a regained status replaces its namesake instead of stacking" do

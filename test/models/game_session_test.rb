@@ -11,6 +11,13 @@ class GameSessionTest < ActiveSupport::TestCase
     assert_not game_session.started?
   end
 
+  test "a new session keeps the language it was started in" do
+    game_session = I18n.with_locale(:tr) { GameSession.create!(creator: users(:ilker), quest: "sunken_village") }
+
+    assert_equal "tr", game_session.locale
+    assert_not GameSession.new(creator: users(:ilker), locale: "xx").valid?
+  end
+
   test "title falls back for surprise adventures" do
     assert_equal "The Lost Caravan", game_sessions(:ilker_solo).title
     assert_equal "Surprise adventure", GameSession.new.title

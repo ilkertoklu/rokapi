@@ -50,6 +50,6 @@ class Scene < ApplicationRecord
   end
 
   def counter
-    "Stop #{position}"
+    I18n.t("scene.counter", position: position)
   end
 end

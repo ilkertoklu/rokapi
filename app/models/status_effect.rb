@@ -9,7 +9,7 @@ class StatusEffect < ApplicationRecord
   end
 
   def duration_label
-    turns_left ? "#{turns_left} #{"turn".pluralize(turns_left)}" : expires_when
+    turns_left ? I18n.t("status_effect.turns", count: turns_left) : expires_when
   end
 
   def summary

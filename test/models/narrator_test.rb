@@ -344,6 +344,31 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal 4, scene_call.prompt.scan("→ Choice:").size
   end
 
+  test "a Turkish game is written in Turkish from an English briefing" do
+    @game_session.update! locale: "tr", story_bible: nil
+    plan_call = FakeChat.new(PLAN_RESPONSE)
+    scene_call = FakeChat.new(SCENE_RESPONSE)
+
+    I18n.with_locale(:tr) { stub_llm(plan_call, scene_call) { narrate } }
+
+    assert_includes plan_call.instructions, "a narrator writing in Turkish"
+    assert_includes plan_call.instructions, "sound natural in Turkish"
+    assert_includes plan_call.prompt, "Akçabük", "the quest frame carries the Turkish place names"
+    assert_includes plan_call.prompt, "Warrior", "the briefing stays in English whatever the page speaks"
+
+    assert_includes scene_call.instructions, "Everything the player sees is written in Turkish"
+    assert_includes scene_call.prompt, "Strength 16"
+  end
+
+  test "an English game keeps the English language rules" do
+    scene_call = FakeChat.new(SCENE_RESPONSE)
+
+    stub_llm(scene_call) { narrate }
+
+    assert_includes scene_call.instructions, "a narrator writing in English"
+    assert_not_includes scene_call.instructions, "Turkish"
+  end
+
   test "the surprise adventure takes its name from the bible" do
     @game_session.update! quest: nil
     assert_equal "The Lost Caravan", @game_session.title

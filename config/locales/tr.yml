@@ -1,0 +1,387 @@
+tr:
+  language_name: Türkçe
+
+  date:
+    abbr_month_names: [~, Oca, Şub, Mar, Nis, May, Haz, Tem, Ağu, Eyl, Eki, Kas, Ara]
+
+  time:
+    formats:
+      resume: "%-d %b, %H:%M"
+
+  errors:
+    format: "%{attribute} %{message}"
+    messages:
+      blank: boş bırakılamaz
+      inclusion: kabul edilen bir değer değil
+      invalid: geçersiz
+      required: mutlaka olmalı
+
+  activerecord:
+    errors:
+      messages:
+        record_invalid: "Doğrulama başarısız oldu: %{errors}"
+
+  character:
+    race:
+      human:
+        label: İnsan
+        description: Çok yönlü ve dengeli; her sınıfa kolay uyum sağlar.
+      half_elf:
+        label: Yarı-elf
+        description: İki dünyanın çocuğu; uyumlu ve sezgili.
+      elf:
+        label: Elf
+        description: Çevik ve keskin duyulu; ormanın sessiz adımı.
+      dwarf:
+        label: Cüce
+        description: Dayanıklı ve inatçı; taş kadar sağlam.
+      halfling:
+        label: Buçukluk
+        description: Küçük, kıvrak ve şanslı; gözden kolay kaçar.
+      tiefling:
+        label: Tiefling
+        description: Gizemli ve karizmatik; içinde eski bir ateş yanar.
+    klass:
+      warrior:
+        label: Savaşçı
+        description: Ön safta dövüşür; uzun kılıç ve yuvarlak kalkanla başlar.
+      ranger:
+        label: İzci
+        description: İzi sürer, yayıyla uzaktan vurur; doğa onun evidir.
+      rogue:
+        label: Hırsız
+        description: Gölgede yürür; kilitler ve tuzaklar ona dert değil.
+      mage:
+        label: Büyücü
+        description: Eski sözlerin gücünü taşır; kırılgan ama yıkıcı.
+      healer:
+        label: Şifacı
+        description: Yoldaşlarını ayakta tutar; ışığı yanında taşır.
+      bard:
+        label: Ozan
+        description: Sözü silah gibi kullanır; moral ve kurnazlık onun işi.
+    background:
+      soldier:
+        label: Asker
+        description: Disiplin ve savaş görmüşlük.
+      criminal:
+        label: Suçlu
+        description: Sokakların kuralsız okulu.
+      scholar:
+        label: Bilgin
+        description: Kitaplar ve eski diller.
+      noble:
+        label: Soylu
+        description: Ad, itibar ve beklentiler.
+      traveler:
+        label: Gezgin
+        description: Uzak yollar, yabancı sofralar.
+      artisan:
+        label: Zanaatkâr
+        description: Usta eller, sabırlı iş.
+    stat:
+      strength:
+        label: Güç
+        abbreviation: GÜÇ
+      agility:
+        label: Çeviklik
+        abbreviation: ÇEV
+      constitution:
+        label: Dayanıklılık
+        abbreviation: DAY
+      intelligence:
+        label: Zekâ
+        abbreviation: ZEK
+      wisdom:
+        label: Sezgi
+        abbreviation: SEZ
+      charisma:
+        label: Karizma
+        abbreviation: KAR
+    gear:
+      longsword:
+        name: Uzun kılıç
+      round_shield:
+        name: Yuvarlak kalkan
+      longbow:
+        name: Uzun yay
+      quiver:
+        name: Sadak
+        description: ok dolu
+      short_dagger:
+        name: Kısa hançer
+      lockpick_set:
+        name: Maymuncuk takımı
+        description: kilitleri açar
+      oak_staff:
+        name: Meşe asa
+      spellbook:
+        name: Büyü kitabı
+        description: eski sözleri barındırır
+      torch:
+        name: Meşale
+        description: çevreyi aydınlatır
+      healing_potion:
+        name: Şifa iksiri
+      lute:
+        name: Kopuz
+        description: moral verir
+
+  game_session:
+    surprise_title: Sürpriz macera
+    duration:
+      hours: "%{hours}sa %{minutes}dk"
+      minutes: "%{minutes}dk"
+    rolls:
+      one: "%{count} zar"
+      other: "%{count} zar"
+    outcomes:
+      victory: Zafer
+      defeat: Yenilgi
+    tone:
+      fun:
+        label: Eğlenceli
+      balanced:
+        label: Dengeli
+      dark:
+        label: Karanlık
+    length:
+      short:
+        label: Kısa
+        estimate: "~15 dk"
+      medium:
+        label: Orta
+        estimate: "~30 dk"
+      long:
+        label: Uzun
+        estimate: "~60 dk"
+    quest:
+      lost_caravan:
+        title: Kayıp Kervan
+        hook: Boranda kaybolan tuz kervanının izi.
+        brief: >-
+          Akçabük köyünün kış tuzunu getiren kervan üç gündür kayıp.
+          Boran geçidi kapatmadan kervanı bulup köye ulaştırmak gerekiyor.
+          Rota Akçabük'ten Boranlı Geçit'e uzanıyor; izler, terk edilmiş konaklar ve
+          geçitteki asma köprü üzerinden ilerliyor. Kervanın kaybı bir kaza da
+          olabilir, bir pusu da.
+      sunken_village:
+        title: Gölün Sırrı
+        hook: Suyun altında kalmış eski bir köy.
+        brief: >-
+          Kuraklıkta çekilen göl, yıllar önce sular altında kalmış bir köyü
+          ortaya çıkardı. Köyün terk edilme sebebi hiçbir kayıtta yok; gölden
+          geceleri çan sesi duyduğunu söyleyenler var. Sırrı çözmek için batık
+          köye inilmesi gerekiyor.
+
+  roll:
+    grades:
+      critical: KRİTİK BAŞARI
+      brilliant: PARLAK BAŞARI
+      solid: BAŞARILI
+      narrow: KIL PAYI BAŞARI
+      failure: BAŞARISIZ
+      heavy: AĞIR BAŞARISIZLIK
+      catastrophe: FELAKET
+
+  choice:
+    difficulties:
+      easy: Kolay
+      medium: Orta
+      hard: Zor
+
+  scene:
+    counter: "%{position}. durak"
+
+  status_effect:
+    turns:
+      one: "%{count} tur"
+      other: "%{count} tur"
+
+  application:
+    back:
+      back: Geri
+    brand:
+      tagline_html: Zarları at, hikâyeni yaz.<br>Her oturum yeni bir macera.
+    locales:
+      label: Dil
+
+  characters:
+    sheet:
+      close: Kapat
+      health: Can
+      status_effects: Statü etkileri
+      roll_modifier: "%{modifier} zar"
+      inventory: Envanter
+      instant: Anında · %{effect} Can
+      quest_item: Görev eşyası
+      use: Kullan
+      abilities: Temel özellikler
+      back_home: Ana ekrana dön
+
+  game_sessions:
+    finale:
+      duration: Süre
+      dice_rolled: Zar atıldı
+      new_adventure: Yeni macera
+      copied: Kopyalandı
+      share_summary: Özeti paylaş
+      back_home: Ana ekrana dön
+    opening:
+      narrator: Anlatıcı
+      getting_ready: Anlatıcı hazırlanıyor
+    stalled:
+      try_again: Yeniden dene
+    waiting:
+      stalled: Anlatıcı duraksadı. Hikâyeyi kaldığı yerden sürdürebilirsin.
+      overdue: Anlatıcı gecikti. Hikâyeyi kaldığı yerden sürdürebilirsin.
+    new:
+      title: Yeni macera
+      lede: Nasıl oynamak istersin?
+      solo: Tek kişilik
+      solo_text: 1 oyuncu · 15-60 dk · sana özel hikâye
+      multiplayer: Çok kişilik
+      multiplayer_text: 2-5 oyuncu · 30-90 dk · ortak hikâye · yakında
+      hint: Çok kişilikte bir oda kodu paylaşır, arkadaşların kodla katılır.
+    solos:
+      new:
+        title: Yeni macera
+        quest: Görev
+        surprise: Sürpriz
+        surprise_text: Anlatıcı bilinmeyen bir dünya kursun.
+        tone: Ton
+        length: Uzunluk
+        submit: Karakterini oluştur
+      create:
+        rate_limited: Çok fazla macera kuruldu. Biraz bekle.
+        invalid: Kurulum geçersiz. Seçimlerini kontrol et.
+    characters:
+      new:
+        title: Karakterini oluştur
+        race: Irk
+        klass: Sınıf
+        background: Arka plan
+        abilities: Temel özellikler
+        lower: "%{stat} değerini düşür"
+        raise: "%{stat} değerini yükselt"
+        ready: Hazırım
+        points_left:
+          one: "%{count} puan kaldı"
+          other: "%{count} puan kaldı"
+      create:
+        invalid: Karakter geçersiz. Seçimlerini ve puan dağılımını kontrol et.
+    items:
+      uses:
+        use:
+          health_change: "%{change} Can"
+          health: Can
+          takes_effect: "%{item} etkisini gösterdi."
+          done: Tamam
+
+  home:
+    show:
+      sign_out: Çıkış yap
+      sign_out_confirm: Çıkış yapılsın mı?
+      resume: Maceraya devam et
+      start: Yeni macera kur
+      join: Kod ile katıl
+
+  login_code_mailer:
+    code:
+      subject: "Rokapi kodun: %{code}"
+      greeting: Merhaba,
+      intro: "Rokapi için tek kullanımlık giriş kodun:"
+      validity: Kod 10 dakika geçerlidir. Bu isteği sen yapmadıysan bu e-postayı yok sayabilirsin.
+
+  login_codes:
+    new:
+      title: Giriş yap
+      email: E-posta
+      email_placeholder: seninadresin@posta.com
+      submit: Kod gönder
+      no_account: Hesabın yok mu?
+      create_account: Hesap oluştur
+    create:
+      rate_limited: Çok fazla deneme yapıldı. Birkaç dakika sonra tekrar dene.
+      invalid_email: Geçerli bir e-posta adresi gir.
+    resends:
+      create:
+        rate_limited: Çok sık kod istendi. Birkaç dakika bekle.
+        sent: Yeni kod gönderildi.
+
+  rolls:
+    dice:
+      difficulty: Zorluk
+      difficulty_source: "· anlatıcı"
+      target: Hedef %{target}
+      bonus: Katkı
+      roll: Zarı at
+      stalled: Anlatıcı duraksadı. Zarın sonucu henüz yazılamadı.
+      resolving: Anlatıcı sonucu yazıyor
+    die:
+      rolling: Zar dönüyor
+    outcome:
+      target: hedef %{target}
+      health_change: "%{change} Can"
+      added_to_inventory: Envantere eklendi
+      status: Statü
+      continue: Devam et
+
+  scenes:
+    choices:
+      your_turn: Sıra sende
+      my_character: Karakterim
+      items_ready:
+        one: "%{count} eşya hazır"
+        other: "%{count} eşya hazır"
+    scene:
+      narrator: Anlatıcı
+      writing: Anlatıcı sahneyi yazıyor
+
+  sessions:
+    new:
+      title: Tek kullanımlık kod
+      sent_html: Tek kullanımlık %{length} haneli kodu <strong>%{email}</strong> adresine gönderdik.
+      verify: Doğrula
+      digits_left:
+        one: "%{count} hane kaldı"
+        other: "%{count} hane kaldı"
+      resend: Kodu tekrar gönder
+    create:
+      rate_limited: Çok fazla deneme yapıldı. 15 dakika sonra tekrar dene.
+      wrong_code: Kod hatalı ya da süresi doldu. Tekrar dene.
+
+  signup:
+    profiles:
+      new:
+        title: Kaydını tamamla
+        name: Adın
+        terms_html: <a href="#">Kullanım Koşulları</a> ve <a href="#">Gizlilik Politikası</a>'nı kabul ediyorum.
+        submit: Başla
+      create:
+        terms_required: Devam etmek için koşulları kabul etmelisin.
+    welcomes:
+      show:
+        title: Hoş geldin
+        greeting: Hoş geldin, %{name}
+        ready: Hesabın hazır. İlk maceraların bizden.
+        plan_name: Ücretsiz plan
+        plan_headline: "%100 kullanım"
+        perk_adventures: Her ay ≈ 1-2 kısa macera
+        perk_own_sessions: Yalnızca senin başlattığın oturumlarda azalır
+        perk_joining: Kodla bir odaya katılmak zaten hep ücretsiz
+        continue: Devam et
+
+  signups:
+    new:
+      title: Hesabını oluştur
+      email: E-posta
+      email_placeholder: seninadresin@posta.com
+      submit: Kod gönder
+      have_account: Hesabın var mı?
+      sign_in: Giriş yap
+
+  welcomes:
+    show:
+      create_account: Hesap oluştur
+      sign_in: Giriş yap

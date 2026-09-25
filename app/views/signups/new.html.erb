@@ -1,15 +1,15 @@
-<% content_for :title, "Create your account · Rokapi" %>
+<% content_for :title, "#{t(".title")} · Rokapi" %>
 
 <%= form_with url: login_codes_path, class: "flow" do |form| %>
-  <%= render "back", to: welcome_path, title: "Create your account" %>
+  <%= render "back", to: welcome_path, title: t(".title") %>
 
   <div>
-    <%= form.label :email, "Email", class: "field-label" %>
-    <%= form.email_field :email, placeholder: "you@example.com", required: true, autofocus: true, autocomplete: "email" %>
+    <%= form.label :email, t(".email"), class: "field-label" %>
+    <%= form.email_field :email, placeholder: t(".email_placeholder"), required: true, autofocus: true, autocomplete: "email" %>
   </div>
 
   <div class="sticky-footer stack">
-    <%= form.submit "Send code", class: "btn btn--primary" %>
-    <p class="hint">Already have an account? <%= link_to "Sign in", new_login_code_path %></p>
+    <%= form.submit t(".submit"), class: "btn btn--primary" %>
+    <p class="hint"><%= t(".have_account") %> <%= link_to t(".sign_in"), new_login_code_path %></p>
   </div>
 <% end %>
