@@ -8,9 +8,14 @@ class LlmCall < ApplicationRecord
       game_session: game_session,
       purpose: purpose,
       model: response.model,
-      input_tokens: response.tokens.input.to_i,
-      output_tokens: response.tokens.output.to_i,
-      cost_in_microdollars: (response.cost.total * 1_000_000).round
+      input_tokens: response.tokens.input,
+      output_tokens: response.tokens.output,
+      cost_in_microdollars: microdollars(response.cost.total)
     )
   end
+
+  def self.microdollars(dollars)
+    (dollars * 1_000_000).round if dollars
+  end
+  private_class_method :microdollars
 end
