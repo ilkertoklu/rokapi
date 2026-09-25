@@ -308,11 +308,12 @@ tr:
         rate_limited: Çok sık kod istendi. Birkaç dakika bekle.
         sent: Yeni kod gönderildi.
 
-  profiles:
-    show:
-      title: Profil
-      language: Dil
-      sign_out: Çıkış yap
+  my:
+    profiles:
+      show:
+        title: Profil
+        language: Dil
+        sign_out: Çıkış yap
 
   rolls:
     dice:

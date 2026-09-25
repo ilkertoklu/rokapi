@@ -291,11 +291,12 @@ en:
         rate_limited: Too many code requests. Wait a few minutes.
         sent: A new code is on its way.
 
-  profiles:
-    show:
-      title: Profile
-      language: Language
-      sign_out: Sign out
+  my:
+    profiles:
+      show:
+        title: Profile
+        language: Language
+        sign_out: Sign out
 
   rolls:
     dice:
