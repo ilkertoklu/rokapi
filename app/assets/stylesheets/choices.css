@@ -33,15 +33,20 @@
     background: var(--color-surface-sunken);
     border-radius: var(--radius-control);
 
+    form {
+      display: contents;
+    }
+
     .segment {
       position: relative;
       flex: 1;
       padding: .875rem .25rem;
+      background: none;
+      border: 0;
       border-radius: 10px;
       color: var(--color-ink-soft);
       text-align: center;
-      font-size: .8125rem;
-      font-weight: 600;
+      font: 600 .8125rem var(--font-ui);
       cursor: pointer;
 
       small {
@@ -50,7 +55,8 @@
         font-size: .75rem;
       }
 
-      &:has(:checked) {
+      &:has(:checked),
+      &[aria-current="true"] {
         background: var(--color-surface-lifted);
         color: var(--color-accent-pale);
         font-weight: 700;

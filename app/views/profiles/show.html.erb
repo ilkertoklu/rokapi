@@ -1,0 +1,23 @@
+<% content_for :title, "#{t(".title")} · Rokapi" %>
+
+<%= render "back", to: root_path, title: t(".title") %>
+
+<div class="identity">
+  <span class="identity__avatar"><%= Current.user.initial %></span>
+  <div>
+    <strong class="identity__name"><%= Current.user.name %></strong>
+    <span class="identity__email"><%= Current.user.email %></span>
+  </div>
+</div>
+
+<section>
+  <h2 class="field-label"><%= t(".language") %></h2>
+  <div class="segmented">
+    <% I18n.available_locales.each do |locale| %>
+      <%= button_to t("language_name", locale: locale), locale_path, method: :patch, params: { locale: locale },
+            class: "segment", lang: locale, aria: { current: locale == I18n.locale } %>
+    <% end %>
+  </div>
+</section>
+
+<%= button_to t(".sign_out"), session_path, method: :delete, class: "btn btn--secondary" %>

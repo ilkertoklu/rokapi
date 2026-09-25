@@ -36,6 +36,7 @@ Rails.application.routes.draw do
   end
   resource :session, only: %i[new create destroy]
   resource :locale, only: :update
+  resource :profile, only: :show
 
   get "up" => "rails/health#show", as: :rails_health_check
 end

@@ -280,8 +280,7 @@ tr:
 
   home:
     show:
-      sign_out: Çıkış yap
-      sign_out_confirm: Çıkış yapılsın mı?
+      profile: Profil
       resume: Maceraya devam et
       start: Yeni macera kur
       join: Kod ile katıl
@@ -308,6 +307,12 @@ tr:
       create:
         rate_limited: Çok sık kod istendi. Birkaç dakika bekle.
         sent: Yeni kod gönderildi.
+
+  profiles:
+    show:
+      title: Profil
+      language: Dil
+      sign_out: Çıkış yap
 
   rolls:
     dice:

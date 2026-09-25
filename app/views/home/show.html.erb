@@ -1,7 +1,6 @@
-<%= button_to session_path, method: :delete, form_class: "profile", class: "profile__badge",
-      aria: { label: t(".sign_out") }, data: { turbo_confirm: t(".sign_out_confirm") } do %>
-  <%= Current.user.initial %>
-<% end %>
+<div class="profile">
+  <%= link_to Current.user.initial, profile_path, class: "profile__badge", aria: { label: t(".profile") } %>
+</div>
 
 <%= render "brand" %>
 
@@ -20,5 +19,3 @@
   <%= link_to t(".start"), new_game_session_path, class: "btn btn--primary" %>
   <button class="btn btn--secondary" disabled><%= t(".join") %></button>
 </div>
-
-<%= render "locales" %>

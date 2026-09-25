@@ -204,6 +204,9 @@
   }
 
   .profile__badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     inline-size: 44px;
     block-size: 44px;
     padding: 0;
@@ -214,7 +217,45 @@
     font: inherit;
     font-weight: 700;
     text-transform: uppercase;
+    text-decoration: none;
     cursor: pointer;
+  }
+
+  .identity {
+    display: flex;
+    align-items: center;
+    gap: .95rem;
+    margin-block: .5rem;
+  }
+
+  .identity__avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 58px;
+    block-size: 58px;
+    flex: none;
+    background: color-mix(in srgb, var(--color-accent) 16%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+    border-radius: 50%;
+    color: var(--color-accent-bright);
+    font-size: 1.45rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .identity__name {
+    display: block;
+    font-family: var(--font-display);
+    font-size: 1.45rem;
+    font-weight: 600;
+  }
+
+  .identity__email {
+    display: block;
+    margin-block-start: .2rem;
+    color: var(--color-ink-soft);
+    font-size: .8125rem;
   }
 
   .locales {
