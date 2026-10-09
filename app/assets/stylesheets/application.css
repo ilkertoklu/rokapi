@@ -21,20 +21,25 @@
   --color-on-accent: #1A130B;
   --color-positive: #8FA876;
   --color-positive-bright: #A6C089;
+  --color-positive-dim: #7C8A6A;
   --color-negative: #CC6B4A;
   --color-negative-bright: #E0926F;
+  --color-negative-dim: #B8826E;
   --color-dot-past: #4A4234;
   --color-dot-upcoming: #322A20;
   --color-line-strong: color-mix(in srgb, var(--color-ink) 14%, transparent);
   --color-line: color-mix(in srgb, var(--color-ink) 12%, transparent);
   --color-line-soft: color-mix(in srgb, var(--color-ink) 8%, transparent);
+  --color-glass: color-mix(in srgb, white 9%, transparent);
+  --color-glass-line: color-mix(in srgb, white 16%, transparent);
 
   --focus-ring: 0 0 0 3px color-mix(in srgb, var(--color-accent) 14%, transparent);
+  --glass-shadow: inset 0 1px 0 color-mix(in srgb, white 10%, transparent);
+  --glass-blur: blur(20px) saturate(1.5);
 
   --font-display: "Spectral", serif;
   --font-ui: "Hanken Grotesk", system-ui, sans-serif;
 
-  --radius-button: 18px;
   --radius-card: 16px;
   --radius-control: 14px;
   --radius-pill: 999px;

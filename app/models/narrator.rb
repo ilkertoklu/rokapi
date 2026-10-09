@@ -80,17 +80,20 @@ class Narrator
 
     def open_scene(scene, data)
       validate scene, data
-      scene.update! title: data["title"], location: data["location"]
-    end
-
-    def close_scene(scene, data, prose)
       finale = data["finale"] == true
 
       ApplicationRecord.transaction do
-        scene.update! narration: prose, finale: finale, state: finale ? :played : :choosing
+        @game_session.update! outcome: outcome_in(data) if finale
+        scene.update! title: data["title"], location: data["location"], finale: finale
+      end
+    end
 
-        if finale
-          @game_session.finish outcome_in(data)
+    def close_scene(scene, data, prose)
+      ApplicationRecord.transaction do
+        scene.update! narration: prose, state: scene.finale? ? :played : :choosing
+
+        if scene.finale?
+          @game_session.finish
         else
           create_choices scene, Array(data["choices"])
         end

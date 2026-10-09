@@ -50,6 +50,6 @@ class Scene < ApplicationRecord
   end
 
   def counter
-    I18n.t("scene.counter", position: position)
+    I18n.t("scene.counter", position: position, total: game_session.scene_budget)
   end
 end

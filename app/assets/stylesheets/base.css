@@ -5,7 +5,6 @@
     color: var(--color-ink);
     font-family: var(--font-ui);
     line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
   }
 
   .screen {
@@ -77,6 +76,11 @@
 
     a {
       color: var(--color-accent-bright);
+    }
+
+    strong {
+      color: var(--color-ink);
+      font-weight: 600;
     }
   }
 

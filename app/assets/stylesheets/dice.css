@@ -31,19 +31,21 @@
   }
 
   .dice__prompt {
-    max-inline-size: 18rem;
-    margin: 0 0 2rem;
+    max-inline-size: 300px;
+    margin: 0 0 2.5rem;
     font-family: var(--font-display);
-    font-size: 1.0625rem;
-    line-height: 1.6;
-    color: var(--color-ink-prose);
+    font-size: 1.375rem;
+    font-weight: 500;
+    line-height: 1.45;
+    color: var(--color-ink);
+    text-wrap: balance;
   }
 
   .d20 {
     --d20-shape: polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
     position: relative;
-    inline-size: 150px;
-    block-size: 150px;
+    inline-size: 196px;
+    block-size: 196px;
     flex: none;
 
     &::before {
@@ -64,8 +66,14 @@
     }
   }
 
-  .d20--settled::before {
-    content: none;
+  .d20--settled {
+    inline-size: 150px;
+    block-size: 150px;
+    margin-block-end: .5rem;
+
+    &::before {
+      content: none;
+    }
   }
 
   .d20__face {
@@ -89,7 +97,7 @@
 
   .d20__value {
     font-family: var(--font-display);
-    font-size: 3.625rem;
+    font-size: 4.875rem;
     font-weight: 600;
     line-height: 1;
     color: var(--color-accent-bright);
@@ -101,10 +109,10 @@
   }
 
   .d20__reel {
-    --cell: 58px;
+    --cell: 72px;
     position: relative;
     display: block;
-    inline-size: 110px;
+    inline-size: 130px;
     block-size: var(--cell);
     overflow: hidden;
 
@@ -113,8 +121,8 @@
       position: absolute;
       inset: 0;
       pointer-events: none;
-      background: linear-gradient(180deg, var(--color-surface-sunken), transparent 32%,
-        transparent 68%, var(--color-surface-sunken));
+      background: linear-gradient(180deg, var(--color-surface-sunken), transparent 24%,
+        transparent 76%, var(--color-surface-sunken));
       animation: reel-clear .25s var(--roll) forwards;
     }
   }
@@ -129,7 +137,7 @@
       justify-content: center;
       block-size: var(--cell);
       font-family: var(--font-display);
-      font-size: 3.25rem;
+      font-size: 4.25rem;
       font-weight: 600;
       line-height: 1;
       color: var(--color-accent-bright);
@@ -141,8 +149,8 @@
     max-inline-size: 20rem;
     display: flex;
     flex-direction: column;
-    gap: .55rem;
-    margin: 1.6rem 0 0;
+    gap: .5625rem;
+    margin: 2.375rem 0 0;
 
     > div {
       display: flex;
@@ -157,13 +165,8 @@
 
     dt {
       color: var(--color-ink-faint);
-      letter-spacing: .08em;
-
-      span {
-        font-weight: 500;
-        letter-spacing: 0;
-        text-transform: none;
-      }
+      font-size: .8125rem;
+      font-weight: 600;
     }
 
     dd {
@@ -183,13 +186,14 @@
       background: var(--color-accent-soft);
       color: var(--color-accent);
       font-family: var(--font-ui);
-      font-size: .8rem;
+      font-size: .8125rem;
       font-weight: 700;
     }
 
     .dice__bonus {
       font-family: var(--font-ui);
       font-size: .875rem;
+      font-weight: 500;
       color: var(--color-ink-muted);
       white-space: nowrap;
     }
@@ -205,11 +209,11 @@
   }
 
   .dice__reason {
-    margin: .6rem 0 0;
+    margin: .75rem 0 0;
     font-family: var(--font-display);
     font-style: italic;
-    font-size: .82rem;
-    color: var(--color-ink-soft);
+    font-size: .875rem;
+    color: var(--color-ink-faint);
   }
 
   .outcome--success::before {
@@ -228,10 +232,23 @@
     background: var(--color-negative);
   }
 
+  .outcome--success .d20__die {
+    color: var(--color-positive-dim);
+  }
+
+  .outcome--failure .d20__die {
+    color: var(--color-negative-dim);
+  }
+
   .outcome__math {
     margin: .875rem 0 0;
     color: var(--color-ink-soft);
     font-size: .9375rem;
+    font-weight: 500;
+
+    span {
+      color: var(--color-ink-faint);
+    }
 
     strong {
       color: var(--color-ink);
@@ -266,11 +283,11 @@
   .outcome__effect {
     display: flex;
     align-items: center;
-    gap: .55rem;
-    margin: 1.1rem 0 0;
-    padding: .5rem .95rem;
+    gap: .5625rem;
+    margin: 1.125rem 0 0;
+    padding: .5rem .9375rem;
     border-radius: var(--radius-pill);
-    font-size: .82rem;
+    font-size: .8125rem;
     font-weight: 700;
 
     .glyph {
@@ -340,32 +357,27 @@
     color: var(--color-ink-prose);
   }
 
-  .outcome--restored::before {
-    background: radial-gradient(circle, color-mix(in srgb, var(--color-positive) 16%, transparent), transparent 65%);
-  }
+  .outcome--restored {
+    &::before {
+      background: radial-gradient(circle, color-mix(in srgb, var(--color-positive) 16%, transparent), transparent 65%);
+    }
 
-  .outcome--restored .outcome__verdict {
-    margin-block-start: 0;
-    font-size: 2.625rem;
-    letter-spacing: .025em;
-    color: var(--color-positive-bright);
-  }
+    .outcome__verdict {
+      margin-block-start: 0;
+      font-size: 2.625rem;
+      letter-spacing: .025em;
+      color: var(--color-positive-bright);
+    }
 
-  .outcome__badge {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    inline-size: 84px;
-    block-size: 84px;
-    margin-block-end: 1.375rem;
-    background: color-mix(in srgb, var(--color-positive) 14%, transparent);
-    border: 1px solid color-mix(in srgb, var(--color-positive) 35%, transparent);
-    border-radius: 50%;
-    color: var(--color-positive-bright);
+    .vitals__track {
+      block-size: 10px;
+    }
 
-    .glyph {
-      inline-size: 40px;
-      block-size: 40px;
+    .outcome__resolution {
+      max-inline-size: 280px;
+      margin-block-start: 1.25rem;
+      font-size: 1rem;
+      line-height: 1.6;
     }
   }
 

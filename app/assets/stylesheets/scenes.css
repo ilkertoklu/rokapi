@@ -79,18 +79,7 @@
   }
 
   .location__place {
-    display: flex;
-    align-items: center;
-    gap: .7rem;
     min-inline-size: 0;
-  }
-
-  .location__pin {
-    display: block;
-    inline-size: 20px;
-    block-size: 20px;
-    color: var(--color-accent);
-    flex: none;
   }
 
   .location h1 {
@@ -111,7 +100,7 @@
   .progress {
     display: flex;
     align-items: center;
-    gap: .3rem;
+    gap: .375rem;
     flex: none;
     margin: 0;
     padding: 0;
@@ -164,7 +153,8 @@
     gap: .5rem;
     margin: 0 0 .75rem;
     color: var(--color-ink-soft);
-    letter-spacing: .16em;
+    font-size: .8125rem;
+    font-weight: 600;
   }
 
   .ember {
@@ -184,8 +174,16 @@
     display: block;
     inline-size: 16px;
     block-size: 16px;
-    margin: 0 auto 1.1rem;
+    margin: 0 auto 1.125rem;
     box-shadow: 0 0 26px 6px color-mix(in srgb, var(--color-accent) 70%, transparent);
+  }
+
+  .ember--greeting {
+    display: block;
+    inline-size: 14px;
+    block-size: 14px;
+    margin: 0 auto 1.25rem;
+    box-shadow: 0 0 22px 4px color-mix(in srgb, var(--color-accent) 70%, transparent);
   }
 
   .narration__body,
@@ -226,8 +224,9 @@
     background: var(--color-surface-sunken);
     border: 1px solid var(--color-line-soft);
     color: var(--color-ink-soft);
-    font-size: .82rem;
+    font-size: .8125rem;
     font-weight: 600;
+    letter-spacing: .02em;
   }
 
   .writing__dots {
@@ -255,7 +254,7 @@
     flex: none;
     position: relative;
     z-index: 2;
-    padding: .5rem 1.4rem calc(.75rem + env(safe-area-inset-bottom));
+    padding: .875rem 1.375rem calc(.75rem + env(safe-area-inset-bottom));
     background: var(--color-surface-raised);
     border-radius: 30px 30px 0 0;
     border-block-start: 2px solid var(--color-accent);
@@ -283,7 +282,7 @@
   }
 
   .action-panel__handle .grip {
-    margin-block: 4px .7rem;
+    margin-block: 0 .75rem;
   }
 
   .action-panel__prompt {
@@ -341,13 +340,14 @@
   }
 
   .stat-chip {
-    padding: .18rem .4rem;
+    flex: none;
+    padding: .25rem .5rem;
     border: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
-    border-radius: 6px;
-    color: var(--color-accent);
+    border-radius: 7px;
+    color: var(--color-accent-bright);
     font-size: .75rem;
     font-weight: 700;
-    letter-spacing: .03em;
+    letter-spacing: .02em;
     white-space: nowrap;
   }
 
@@ -387,18 +387,38 @@
   }
 
   .finale {
+    position: relative;
     flex: 1;
     min-block-size: 0;
+    overflow-x: clip;
     overflow-y: auto;
-    padding: 1rem 1.75rem 0;
+    padding: 1.75rem 1.75rem 0;
     text-align: center;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset-block-start: -40px;
+      inset-inline-start: 50%;
+      translate: -50% 0;
+      inline-size: 360px;
+      block-size: 360px;
+      border-radius: 50%;
+      background: radial-gradient(circle, color-mix(in srgb, var(--color-accent) 26%, transparent), transparent 62%);
+      animation: ember-pulse 6s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    > * {
+      position: relative;
+    }
   }
 
   .finale__outcome {
     margin: 0;
     color: var(--color-accent);
     font-weight: 800;
-    letter-spacing: .3em;
+    letter-spacing: .33em;
   }
 
   .finale h1 {
@@ -433,9 +453,10 @@
     }
 
     span {
-      font-size: .72rem;
-      letter-spacing: .08em;
-      text-transform: uppercase;
+      display: block;
+      margin-block-start: .1875rem;
+      font-size: .8125rem;
+      font-weight: 600;
       color: var(--color-ink-soft);
     }
   }

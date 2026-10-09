@@ -1,11 +1,8 @@
 <%# locals: (scene:) -%>
 <header class="location">
   <div class="location__place">
-    <span class="location__pin"><%= render "glyph", name: "pin" %></span>
-    <div>
-      <h1><%= scene.title.presence || scene.game_session.title %></h1>
-      <p><%= [ scene.location, scene.counter ].compact_blank.join(" · ") %></p>
-    </div>
+    <h1><%= scene.title.presence || scene.game_session.title %></h1>
+    <p><%= [ scene.location, scene.counter ].compact_blank.join(" · ") %></p>
   </div>
 
   <ol class="progress" aria-label="<%= scene.counter %>">

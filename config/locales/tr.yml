@@ -82,22 +82,16 @@ tr:
     stat:
       strength:
         label: Güç
-        abbreviation: GÜÇ
       agility:
         label: Çeviklik
-        abbreviation: ÇEV
       constitution:
         label: Dayanıklılık
-        abbreviation: DAY
       intelligence:
         label: Zekâ
-        abbreviation: ZEK
       wisdom:
         label: Sezgi
-        abbreviation: SEZ
       charisma:
         label: Karizma
-        abbreviation: KAR
     gear:
       longsword:
         name: Uzun kılıç
@@ -191,7 +185,7 @@ tr:
       hard: Zor
 
   scene:
-    counter: "%{position}. durak"
+    counter: "durak %{position}/%{total}"
 
   status_effect:
     turns:
@@ -214,6 +208,7 @@ tr:
       roll_modifier: "%{modifier} zar"
       inventory: Envanter
       instant: Anında · %{effect} Can
+      passive: Pasif · %{description}
       quest_item: Görev eşyası
       use: Kullan
       abilities: Temel özellikler
@@ -347,7 +342,7 @@ tr:
   sessions:
     new:
       title: Tek kullanımlık kod
-      sent_html: Tek kullanımlık %{length} haneli kodu <strong>%{email}</strong> adresine gönderdik.
+      sent_html: "%{length} haneli kodu <strong>%{email}</strong> adresine gönderdik."
       verify: Doğrula
       digits_left:
         one: "%{count} hane kaldı"
@@ -373,7 +368,7 @@ tr:
         ready: Hesabın hazır. İlk maceraların bizden.
         plan_name: Ücretsiz plan
         plan_headline: "%100 kullanım"
-        perk_adventures: Her ay ≈ 1-2 kısa macera
+        perk_adventures: Her ay %100'e yenilenir
         perk_own_sessions: Yalnızca senin başlattığın oturumlarda azalır
         perk_joining: Kodla bir odaya katılmak zaten hep ücretsiz
         continue: Devam et
@@ -389,5 +384,5 @@ tr:
 
   welcomes:
     show:
-      create_account: Hesap oluştur
+      create_account: E-posta ile hesap oluştur
       sign_in: Giriş yap

@@ -6,14 +6,14 @@
 
   <dl class="dice__facts">
     <div>
-      <dt class="overline"><%= t(".difficulty") %> <span><%= t(".difficulty_source") %></span></dt>
+      <dt><%= t(".difficulty") %> <span><%= t(".difficulty_source") %></span></dt>
       <dd>
         <%= choice.difficulty_label %>
         <span class="target"><%= t(".target", target: choice.target) %></span>
       </dd>
     </div>
     <div>
-      <dt class="overline"><%= t(".bonus") %></dt>
+      <dt><%= t(".bonus") %></dt>
       <dd class="dice__bonus">
         <%= Character::Stat.fetch(choice.stat).label %> <%= choice.stat_value %>
         <span class="arrow">→</span>

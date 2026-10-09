@@ -5,7 +5,7 @@ class LocalesTest < ActiveSupport::TestCase
     Character::Race => %i[ label description ],
     Character::Klass => %i[ label description ],
     Character::Background => %i[ label description ],
-    Character::Stat => %i[ label abbreviation ],
+    Character::Stat => %i[ label ],
     GameSession::Tone => %i[ label ],
     GameSession::Length => %i[ label estimate ],
     GameSession::Quest => %i[ title hook brief ]

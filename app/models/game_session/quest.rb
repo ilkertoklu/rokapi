@@ -1,10 +1,10 @@
-class GameSession::Quest < Data.define(:key, :glyph)
+class GameSession::Quest < Data.define(:key)
   extend Catalog
 
   translates :title, :hook, :brief
 
   ALL = [
-    new(key: "lost_caravan", glyph: "bell"),
-    new(key: "sunken_village", glyph: "compass")
+    new(key: "lost_caravan"),
+    new(key: "sunken_village")
   ].freeze
 end

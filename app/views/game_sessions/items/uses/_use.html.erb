@@ -1,13 +1,11 @@
 <%# locals: (game_session:, item:, restored:) -%>
 <% character = item.character %>
 <div class="outcome outcome--restored">
-  <span class="outcome__badge"><%= render "glyph", name: "flask" %></span>
-
   <p class="outcome__verdict"><%= t(".health_change", change: format("%+d", restored)) %></p>
 
   <div class="outcome__vitals">
     <div class="vitals__row">
-      <span class="vitals__label overline"><%= render "glyph", name: "heart" %> <%= t(".health") %></span>
+      <span class="vitals__label"><%= render "glyph", name: "heart" %> <%= t(".health") %></span>
       <span class="vitals__count">
         <%= character.hp - restored %> <span>→</span> <%= character.hp %> <span>/ <%= character.max_hp %></span>
       </span>
@@ -22,5 +20,5 @@
 </div>
 
 <div class="stage__footer">
-  <%= link_to t(".done"), game_session_path(game_session), class: "btn btn--primary" %>
+  <%= link_to t(".done"), game_session_path(game_session), class: "btn btn--neutral" %>
 </div>

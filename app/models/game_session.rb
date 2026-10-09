@@ -69,8 +69,8 @@ class GameSession < ApplicationRecord
     ended_at.present?
   end
 
-  def finish(outcome)
-    update! outcome: outcome, ended_at: Time.current
+  def finish
+    update! ended_at: Time.current
   end
 
   def duration

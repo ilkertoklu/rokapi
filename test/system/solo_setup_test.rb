@@ -40,7 +40,7 @@ class SoloSetupTest < ApplicationSystemTestCase
   test "playing in Turkish from the welcome screen on" do
     visit welcome_path
     click_on "Türkçe"
-    assert_link "Hesap oluştur"
+    assert_link "E-posta ile hesap oluştur"
 
     click_on "Giriş yap"
     fill_in "E-posta", with: users(:sevval).email

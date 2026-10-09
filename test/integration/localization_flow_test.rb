@@ -5,14 +5,14 @@ class LocalizationFlowTest < ActionDispatch::IntegrationTest
     get welcome_path, headers: { "Accept-Language" => "tr-TR,tr;q=0.9,en;q=0.8" }
 
     assert_select "html[lang=tr]"
-    assert_select ".btn", text: "Hesap oluştur"
+    assert_select ".btn", text: "E-posta ile hesap oluştur"
   end
 
   test "an unsupported browser language falls back to English" do
     get welcome_path, headers: { "Accept-Language" => "de-DE,de;q=0.9" }
 
     assert_select "html[lang=en]"
-    assert_select ".btn", text: "Create account"
+    assert_select ".btn", text: "Create account with email"
   end
 
   test "the language switch outweighs the browser" do

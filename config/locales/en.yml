@@ -66,22 +66,16 @@ en:
     stat:
       strength:
         label: Strength
-        abbreviation: STR
       agility:
         label: Agility
-        abbreviation: AGI
       constitution:
         label: Constitution
-        abbreviation: CON
       intelligence:
         label: Intelligence
-        abbreviation: INT
       wisdom:
         label: Wisdom
-        abbreviation: WIS
       charisma:
         label: Charisma
-        abbreviation: CHA
     gear:
       longsword:
         name: Longsword
@@ -174,7 +168,7 @@ en:
       hard: Hard
 
   scene:
-    counter: Stop %{position}
+    counter: Stop %{position}/%{total}
 
   status_effect:
     turns:
@@ -197,6 +191,7 @@ en:
       roll_modifier: "%{modifier} roll"
       inventory: Inventory
       instant: Instant · %{effect} Health
+      passive: Passive · %{description}
       quest_item: Quest item
       use: Use
       abilities: Abilities
@@ -356,7 +351,7 @@ en:
         ready: Your account is ready. Your first adventures are on us.
         plan_name: Free plan
         plan_headline: 100% left
-        perk_adventures: About 1-2 short adventures a month
+        perk_adventures: Refills to 100% every month
         perk_own_sessions: Only the sessions you start count against it
         perk_joining: Joining a room with a code is always free
         continue: Continue
@@ -372,5 +367,5 @@ en:
 
   welcomes:
     show:
-      create_account: Create account
+      create_account: Create account with email
       sign_in: Sign in

@@ -3,13 +3,11 @@
 <%= form_with url: game_sessions_solo_path, scope: :game_session, class: "flow" do |form| %>
   <%= render "back", to: new_game_session_path, title: t(".title") %>
 
-  <fieldset class="choices">
-    <legend><%= t(".quest") %></legend>
+  <fieldset class="choices" aria-label="<%= t(".quest") %>">
 
     <% GameSession::Quest.all.each do |quest| %>
       <label class="pick">
         <%= form.radio_button :quest, quest.key, checked: quest == GameSession::Quest.all.first %>
-        <span class="pick__icon"><%= render "glyph", name: quest.glyph %></span>
         <span class="pick__body">
           <span class="pick__title"><%= quest.title %></span>
           <span class="pick__text"><%= quest.hook %></span>
@@ -20,7 +18,6 @@
 
     <label class="pick">
       <%= form.radio_button :quest, "", checked: false %>
-      <span class="pick__icon"><%= render "glyph", name: "sparkle" %></span>
       <span class="pick__body">
         <span class="pick__title"><%= t(".surprise") %></span>
         <span class="pick__text"><%= t(".surprise_text") %></span>

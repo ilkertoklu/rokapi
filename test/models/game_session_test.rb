@@ -65,7 +65,7 @@ class GameSessionTest < ActiveSupport::TestCase
   test "ongoing scope" do
     assert_includes GameSession.ongoing, game_sessions(:ilker_solo)
 
-    game_sessions(:ilker_solo).finish(:victory)
+    game_sessions(:ilker_solo).finish
     assert_not_includes GameSession.ongoing, game_sessions(:ilker_solo)
   end
 end

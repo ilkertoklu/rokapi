@@ -13,7 +13,7 @@
 
     <div class="vitals">
       <div class="vitals__row">
-        <span class="vitals__label overline"><%= render "glyph", name: "heart" %> <%= t(".health") %></span>
+        <span class="vitals__label"><%= render "glyph", name: "heart" %> <%= t(".health") %></span>
         <span class="vitals__count"><%= character.hp %> <span>/ <%= character.max_hp %></span></span>
       </div>
       <div class="vitals__track">
@@ -22,7 +22,7 @@
     </div>
 
     <% if character.status_effects.any? %>
-      <p class="vitals__label overline"><%= t(".status_effects") %></p>
+      <p class="vitals__label"><%= t(".status_effects") %></p>
       <ul class="statuses">
         <% character.status_effects.each do |status| %>
           <li>
@@ -36,7 +36,7 @@
     <% end %>
 
     <% if (items = character.items.carried).any? %>
-      <p class="vitals__label overline"><%= t(".inventory") %></p>
+      <p class="vitals__label"><%= t(".inventory") %></p>
       <ul class="inventory">
         <% items.each do |item| %>
           <li class="inventory__row inventory__row--<%= item.kind %>">
@@ -46,7 +46,7 @@
               <% if item.instant? %>
                 <span class="inventory__meta"><%= t(".instant", effect: format("%+d", item.hp_effect)) %></span>
               <% elsif item.description.present? %>
-                <span class="inventory__meta"><%= item.description %></span>
+                <span class="inventory__meta"><%= item.passive? ? t(".passive", description: item.description) : item.description %></span>
               <% end %>
             </span>
             <% if item.quest? %>
@@ -60,7 +60,7 @@
       </ul>
     <% end %>
 
-    <p class="vitals__label overline"><%= t(".abilities") %></p>
+    <p class="vitals__label"><%= t(".abilities") %></p>
     <dl class="sheet__stats">
       <% Character::Stat.all.each do |stat| %>
         <div>

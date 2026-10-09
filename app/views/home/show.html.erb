@@ -7,7 +7,6 @@
 <div class="stack">
   <% if @resumable_game_session %>
     <%= link_to game_session_path(@resumable_game_session), class: "resume" do %>
-      <span class="resume__icon"><%= render "glyph", name: "bell" %></span>
       <span class="resume__body">
         <span class="resume__title"><%= t(".resume") %></span>
         <span class="resume__text"><%= resume_summary(@resumable_game_session) %></span>

@@ -22,7 +22,7 @@
 
   <div data-controller="countdown">
     <%= button_to login_codes_resend_path, class: "resend", data: { countdown_target: "button" } do %>
-      <%= t(".resend") %><span data-countdown-target="timer"></span>
+      <%= t(".resend") %><span class="resend__timer" data-countdown-target="timer"></span>
     <% end %>
   </div>
 </div>

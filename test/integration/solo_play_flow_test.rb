@@ -17,7 +17,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     get game_session_path(game_session)
     assert_response :success
     assert_select ".location h1", text: "The Old Inn"
-    assert_select ".location p", text: "Whitebend · Stop 1"
+    assert_select ".location p", text: "Whitebend · Stop 1/7"
     assert_select ".progress__dot--current", count: 1
     assert_select ".narration__body", text: /Rain hammers the inn's/
     assert_select ".action-panel__prompt", text: "Your turn"
@@ -74,6 +74,29 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select "details.action-panel:not([open])", 1,
       "the panel must arrive collapsed so the reader keeps their place"
     assert_select ".action-panel__prompt", text: "Your turn"
+  end
+
+  test "the closing words are written on the finale screen" do
+    game_session = start_playing
+    game_session.update! outcome: :victory
+    scene = game_session.current_scene
+    scene.update! title: "The Return", narration: "The caravan bells echo.", finale: true
+
+    get game_session_path(game_session)
+    assert_select "#scene_narration.finale__closing", text: /The caravan bells echo/
+    assert_select ".finale__outcome", text: "Victory"
+    assert_select ".writing", 1
+    assert_select ".highlights", 0
+    while_writing = above_the_closing
+
+    scene.update! state: :played
+    game_session.finish
+
+    get game_session_path(game_session)
+    assert_equal while_writing, above_the_closing,
+      "nothing may appear above the closing words when writing ends, or the reader loses their place"
+    assert_select ".highlights", text: /Dice rolled/
+    assert_select "[data-controller=share]"
   end
 
   test "the die rolls to rest on the value while the narrator writes" do
@@ -268,6 +291,12 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
       Nokogiri::HTML5(response.body).at("#game_stage").element_children
         .take_while { |element| element["class"].to_s.exclude?("narration") }
         .map { |element| element["class"] }
+    end
+
+    def above_the_closing
+      Nokogiri::HTML5(response.body).css(".finale > *")
+        .take_while { |element| element["id"] != "scene_narration" }
+        .map { |element| [ element["class"], element.text.squish ] }
     end
 
     def start_playing

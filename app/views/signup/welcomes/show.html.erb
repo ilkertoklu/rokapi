@@ -1,7 +1,7 @@
 <% content_for :title, "#{t(".title")} · Rokapi" %>
 
 <div class="brand brand--hero">
-  <span class="ember ember--large" aria-hidden="true"></span>
+  <span class="ember ember--greeting" aria-hidden="true"></span>
 
   <h1 class="greeting"><%= t(".greeting", name: Current.user.name) %></h1>
   <p><%= t(".ready") %></p>
@@ -10,9 +10,9 @@
     <p class="plan__name overline"><%= t(".plan_name") %></p>
     <p class="plan__headline"><%= t(".plan_headline") %></p>
     <ul>
-      <li><%= render "glyph", name: "check" %> <%= t(".perk_adventures") %></li>
-      <li><%= render "glyph", name: "check" %> <%= t(".perk_own_sessions") %></li>
-      <li><%= render "glyph", name: "check" %> <%= t(".perk_joining") %></li>
+      <li><%= t(".perk_adventures") %></li>
+      <li><%= t(".perk_own_sessions") %></li>
+      <li><%= t(".perk_joining") %></li>
     </ul>
   </div>
 </div>

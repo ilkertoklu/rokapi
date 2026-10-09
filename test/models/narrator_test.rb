@@ -575,6 +575,21 @@ class NarratorTest < ActiveSupport::TestCase
     assert @game_session.ended_at.present?
   end
 
+  test "a finale takes the stage before its closing words stream in" do
+    play_and_continue
+    finale = @game_session.current_scene
+    staged = []
+
+    fake = FakeChat.split_at_structure(FINALE_RESPONSE) do
+      staged << [ finale.reload.finale?, @game_session.reload.outcome, @game_session.finished? ]
+    end
+    stub_llm(fake) { narrate }
+
+    assert_equal [ true, "victory", false ], staged.first,
+      "the finale screen must be up before the closing words stream in"
+    assert @game_session.reload.finished?
+  end
+
   test "a finale without a known outcome is malformed" do
     play_and_continue
 

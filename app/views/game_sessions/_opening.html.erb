@@ -3,16 +3,13 @@
 <% length = GameSession::Length.fetch(game_session.length) %>
 <header class="location">
   <div class="location__place">
-    <span class="location__pin"><%= render "glyph", name: "pin" %></span>
-    <div>
-      <h1><%= game_session.title %></h1>
-      <p><%= GameSession::Tone.fetch(game_session.tone).label %> · <%= length.label %> · <%= length.estimate %></p>
-    </div>
+    <h1><%= game_session.title %></h1>
+    <p><%= GameSession::Tone.fetch(game_session.tone).label %> · <%= length.label %> · <%= length.estimate %></p>
   </div>
 </header>
 
 <div class="narration">
-  <p class="scene__speaker overline"><span class="ember <%= "ember--pulsing" if scene.narrator_writing? %>"></span> <%= t(".narrator") %></p>
+  <p class="scene__speaker"><span class="ember <%= "ember--pulsing" if scene.narrator_writing? %>"></span> <%= t(".narrator") %></p>
 </div>
 
 <%= render "game_sessions/waiting", scene: scene, text: t(".getting_ready") %>

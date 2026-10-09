@@ -26,11 +26,16 @@
     line-height: 1.15;
     letter-spacing: normal;
     margin: 0;
+
+    & + p {
+      margin-block-start: .875rem;
+      font-size: 1.0625rem;
+    }
   }
 
   .plan {
     inline-size: 100%;
-    margin-block-start: 1.9rem;
+    margin-block-start: 1.875rem;
     padding: 1.125rem 1.125rem 1rem;
     background: var(--color-surface-sunken);
     border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
@@ -40,28 +45,13 @@
     ul {
       display: flex;
       flex-direction: column;
-      gap: .55rem;
-      margin: .9rem 0 0;
+      gap: .5625rem;
+      margin: .875rem 0 0;
       padding: 0;
       list-style: none;
       color: var(--color-ink-muted);
-      font-size: .8125rem;
+      font-size: .875rem;
       line-height: 1.45;
-    }
-
-    li {
-      display: flex;
-      align-items: flex-start;
-      gap: .55rem;
-    }
-
-    .glyph {
-      inline-size: 15px;
-      block-size: 15px;
-      flex: none;
-      margin-block-start: 2px;
-      color: var(--color-positive);
-      stroke-width: 2.2;
     }
   }
 
