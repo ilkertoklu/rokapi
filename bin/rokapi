@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+require "bundler/setup"
+require_relative "../lib/rokapi/cli"
+
+begin
+  Rokapi::CLI.start(ARGV)
+rescue Rokapi::Client::Error => error
+  abort error.message
+end

@@ -4,6 +4,9 @@ class GameSessions::RollsController < ApplicationController
   def create
     @scene.roll_dice by: @player
 
-    redirect_to_game_session
+    respond_to do |format|
+      format.html { redirect_to_game_session }
+      format.json { head :no_content }
+    end
   end
 end

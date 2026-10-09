@@ -9,9 +9,16 @@ class GameSessions::CharactersController < ApplicationController
 
   def create
     @player.ready_up(character_params)
-    redirect_to_game_session
-  rescue ActiveRecord::RecordInvalid
-    redirect_to new_game_session_character_path(@game_session), alert: t(".invalid")
+
+    respond_to do |format|
+      format.html { redirect_to_game_session }
+      format.json { head :created, location: game_session_url(@game_session) }
+    end
+  rescue ActiveRecord::RecordInvalid => invalid
+    respond_to do |format|
+      format.html { redirect_to new_game_session_character_path(@game_session), alert: t(".invalid") }
+      format.json { render json: invalid.record.errors, status: :unprocessable_entity }
+    end
   end
 
   private

@@ -4,6 +4,9 @@ class GameSessions::Choices::SelectionsController < ApplicationController
   def create
     @scene.choices.find(params[:choice_id]).choose
 
-    redirect_to_game_session
+    respond_to do |format|
+      format.html { redirect_to_game_session }
+      format.json { head :no_content }
+    end
   end
 end
