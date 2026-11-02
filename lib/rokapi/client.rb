@@ -8,7 +8,7 @@ module Rokapi
     class Error < StandardError; end
 
     ROOT = File.expand_path("../..", __dir__)
-    CODE_WAIT = 15
+    MAIL_WAIT = 15
 
     Response = Data.define(:status, :location, :content_type, :body) do
       def success? = status.between?(200, 299)
@@ -35,10 +35,9 @@ module Rokapi
       fetch_csrf_token "/login_codes/new"
 
       unless code
-        mailbox = File.join(ROOT, "tmp/mails", email)
-        FileUtils.rm_f mailbox
+        clear_mail email
         post "/login_codes", email: email
-        code = read_code(mailbox) || raise(Error, "No login code arrived in #{mailbox}. Read it from the mail and run: bin/rokapi login --code CODE")
+        code = read_mail(email, /\b\d{6}\b/) || raise(Error, "No login code arrived in #{mailbox(email)}. Read it from the mail and run: bin/rokapi login --code CODE")
       end
 
       response = post("/session", code: code)
@@ -46,6 +45,14 @@ module Rokapi
 
       post "/signup/profile", name: name, terms: "1" if response.location.to_s.include?("/signup/profile")
       fetch_csrf_token "/"
+    end
+
+    def clear_mail(address)
+      FileUtils.rm_f mailbox(address)
+    end
+
+    def confirmation_link(address)
+      read_mail address, %r{https?://\S+/email_confirmations/\S+}
     end
 
     def game_id
@@ -142,10 +149,14 @@ module Rokapi
         raise Error, "Could not find a CSRF token at #{path}."
       end
 
-      def read_code(mailbox)
-        CODE_WAIT.times do
-          code = File.exist?(mailbox) && Mail.read(mailbox).text_part&.decoded.to_s[/\b\d{6}\b/]
-          return code if code
+      def mailbox(address)
+        File.join(ROOT, "tmp/mails", address)
+      end
+
+      def read_mail(address, pattern)
+        MAIL_WAIT.times do
+          found = File.exist?(mailbox(address)) && Mail.read(mailbox(address)).text_part&.decoded.to_s[pattern]
+          return found if found
 
           sleep 1
         end

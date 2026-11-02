@@ -1,0 +1,27 @@
+<% content_for :title, "#{t(".title")} · Rokapi" %>
+
+<div class="sent">
+  <span class="sent__icon"><%= render "glyph", name: "mail" %></span>
+  <h1><%= t(".title") %></h1>
+  <p class="sent__text"><%= t(".sent_html", email: Current.user.unconfirmed_email) %></p>
+</div>
+
+<dl class="addresses">
+  <div>
+    <dt><%= t(".new_address") %></dt>
+    <dd class="addresses__pending"><%= t(".awaiting") %></dd>
+  </div>
+  <div>
+    <dt><%= Current.user.email %></dt>
+    <dd><%= t(".valid_until_confirmed") %></dd>
+  </div>
+</dl>
+
+<p class="note">
+  <%= render "glyph", name: "info" %>
+  <span><%= t(".validity") %></span>
+</p>
+
+<div class="sticky-footer">
+  <%= link_to t(".done"), my_settings_path, class: "btn btn--primary" %>
+</div>

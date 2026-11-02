@@ -15,11 +15,16 @@ tr:
       inclusion: kabul edilen bir değer değil
       invalid: geçersiz
       required: mutlaka olmalı
+      taken: zaten kullanılıyor
 
   activerecord:
     errors:
       messages:
         record_invalid: "Doğrulama başarısız oldu: %{errors}"
+    attributes:
+      user:
+        name: İsim
+        unconfirmed_email: E-posta
 
   character:
     race:
@@ -214,6 +219,20 @@ tr:
       abilities: Temel özellikler
       back_home: Ana ekrana dön
 
+  email_confirmation_mailer:
+    confirmation:
+      subject: Yeni Rokapi e-postanı onayla
+      greeting: Merhaba,
+      intro: "Bu adresi Rokapi e-postan yapmak için bağlantıyı aç:"
+      confirm: E-postamı onayla
+      validity: Bağlantı 24 saat geçerlidir. O zamana kadar eski adresinle giriş yapmaya devam edersin. Bu isteği sen yapmadıysan bu e-postayı yok sayabilirsin.
+
+  email_confirmations:
+    show:
+      confirmed: E-postan artık %{email}.
+      expired: Bu onay bağlantısının süresi doldu. Yeni bir bağlantı için e-postanı Ayarlar'da yeniden kaydet.
+      taken: Bu e-posta başka bir hesapta kullanılıyor.
+
   game_sessions:
     finale:
       duration: Süre
@@ -304,11 +323,34 @@ tr:
         sent: Yeni kod gönderildi.
 
   my:
+    email_changes:
+      show:
+        title: Bağlantı gönderildi
+        sent_html: Değişikliklerin kaydedildi. E-postan için <strong>%{email}</strong> adresine bir doğrulama bağlantısı gönderdik.
+        new_address: Yeni adres
+        awaiting: Onay bekliyor
+        valid_until_confirmed: Onaya kadar geçerli
+        validity: Bağlantı 24 saat geçerlidir. Gelmezse spam klasörünü kontrol et.
+        done: Tamam
     profiles:
       show:
         title: Profil
+        settings: Ayarlar
+        settings_text: İsim ve e-posta
         language: Dil
         sign_out: Çıkış yap
+    settings:
+      show:
+        title: Ayarlar
+        account: Hesap bilgileri
+        name: İsim
+        email: E-posta
+        hint: E-posta değişince yeni adrese doğrulama bağlantısı göndeririz.
+        pending_html: Onay bekliyor. <strong>%{email}</strong> o zamana kadar geçerli.
+        submit: Kaydet
+      update:
+        saved: Kaydedildi.
+        rate_limited: Çok fazla değişiklik. Birkaç dakika sonra tekrar dene.
 
   rolls:
     dice:

@@ -5,6 +5,12 @@ en:
     formats:
       resume: "%b %-d, %H:%M"
 
+  activerecord:
+    attributes:
+      user:
+        name: Name
+        unconfirmed_email: Email
+
   character:
     race:
       human:
@@ -197,6 +203,20 @@ en:
       abilities: Abilities
       back_home: Back to home
 
+  email_confirmation_mailer:
+    confirmation:
+      subject: Confirm your new Rokapi email
+      greeting: Hi,
+      intro: "Open this link to make this address your Rokapi email:"
+      confirm: Confirm my email
+      validity: The link is valid for 24 hours. Until then you keep signing in with your old address. If you did not ask for this, you can ignore this email.
+
+  email_confirmations:
+    show:
+      confirmed: Your email is now %{email}.
+      expired: That confirmation link has expired. Save your new email in Settings again to get a fresh one.
+      taken: That email is already in use by another account.
+
   game_sessions:
     finale:
       duration: Duration
@@ -287,11 +307,34 @@ en:
         sent: A new code is on its way.
 
   my:
+    email_changes:
+      show:
+        title: Link sent
+        sent_html: Your changes are saved. We sent a confirmation link to <strong>%{email}</strong>.
+        new_address: New address
+        awaiting: Awaiting confirmation
+        valid_until_confirmed: Valid until then
+        validity: The link is valid for 24 hours. If it does not arrive, check your spam folder.
+        done: Done
     profiles:
       show:
         title: Profile
+        settings: Settings
+        settings_text: Name and email
         language: Language
         sign_out: Sign out
+    settings:
+      show:
+        title: Settings
+        account: Account details
+        name: Name
+        email: Email
+        hint: When your email changes, we send a confirmation link to the new address.
+        pending_html: Awaiting confirmation. <strong>%{email}</strong> stays valid until then.
+        submit: Save
+      update:
+        saved: Saved.
+        rate_limited: Too many changes. Try again in a few minutes.
 
   rolls:
     dice:

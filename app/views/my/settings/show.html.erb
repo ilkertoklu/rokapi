@@ -1,0 +1,36 @@
+<% content_for :title, "#{t(".title")} · Rokapi" %>
+
+<%= render "back", to: my_profile_path, title: t(".title") %>
+
+<%= form_with model: Current.user, url: my_settings_path, method: :patch, class: "settings" do |form| %>
+  <h2 class="overline settings__heading"><%= t(".account") %></h2>
+
+  <% if Current.user.errors.any? %>
+    <p class="flash flash--alert"><%= Current.user.errors.full_messages.to_sentence %></p>
+  <% end %>
+
+  <div class="stack">
+    <label class="field">
+      <span class="field__label"><%= t(".name") %></span>
+      <%= form.text_field :name, required: true, autocomplete: "given-name", maxlength: User::NAME_LENGTH %>
+    </label>
+
+    <label class="field">
+      <span class="field__label"><%= t(".email") %></span>
+      <%= form.email_field :email, value: Current.user.unconfirmed_email || Current.user.email, required: true, autocomplete: "email" %>
+    </label>
+  </div>
+
+  <p class="note">
+    <%= render "glyph", name: "info" %>
+    <span>
+      <% if Current.user.email_change_pending? %>
+        <%= t(".pending_html", email: Current.user.email) %>
+      <% else %>
+        <%= t(".hint") %>
+      <% end %>
+    </span>
+  </p>
+
+  <%= form.submit t(".submit"), class: "btn btn--primary" %>
+<% end %>

@@ -10,6 +10,15 @@
   </div>
 </div>
 
+<%= link_to my_settings_path, class: "menu-row" do %>
+  <span class="menu-row__icon"><%= render "glyph", name: "sliders" %></span>
+  <span class="menu-row__body">
+    <span class="menu-row__title"><%= t(".settings") %></span>
+    <span class="menu-row__text"><%= t(".settings_text") %></span>
+  </span>
+  <span class="menu-row__chevron"><%= render "glyph", name: "forward" %></span>
+<% end %>
+
 <section>
   <h2 class="field-label"><%= t(".language") %></h2>
   <div class="segmented">

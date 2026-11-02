@@ -130,6 +130,42 @@ module Rokapi
       settle
     end
 
+    desc "settings", "Show the account, or change its name and email"
+    option :name, desc: "New profile name"
+    option :email, desc: "New email; it waits for the link mailed to it"
+    def settings
+      account = fetch("/my/settings.json")
+
+      if options[:name] || options[:email]
+        client.clear_mail options[:email] if options[:email]
+        account = act(:patch, "/my/settings.json",
+          user: { name: options[:name] || account["name"], email: options[:email] || account["unconfirmed_email"] || account["email"] }).json
+      end
+
+      say "NAME: #{account["name"]}"
+      say "EMAIL: #{account["email"]}"
+
+      if account["unconfirmed_email"]
+        say "PENDING: #{account["unconfirmed_email"]} (#{account["email"]} keeps working until it is confirmed)"
+        next_step "confirm_email"
+      end
+    end
+
+    desc "confirm_email", "Open the link mailed to the pending email, reading it from tmp/mails in development"
+    option :link, desc: "Confirmation link, when it cannot be read from tmp/mails"
+    def confirm_email
+      pending = fetch("/my/settings.json")["unconfirmed_email"] || raise(Thor::Error, "No email change is pending. Run: bin/rokapi settings --email NEW")
+      link = options[:link] || client.confirmation_link(pending) ||
+        raise(Thor::Error, "No confirmation link arrived for #{pending}. Read it from the mail and run: bin/rokapi confirm_email --link URL")
+
+      client.get URI(link).request_uri
+      account = fetch("/my/settings.json")
+      raise Thor::Error, "The link was not accepted; it may have expired. Run: bin/rokapi settings --email #{pending}" if account["unconfirmed_email"]
+
+      say "EMAIL: #{account["email"]}"
+      say "Play on with --as #{account["email"]}; the old address now opens a new account."
+    end
+
     private
       def client
         @client ||= Client.new(url: options[:url], email: options[:as])

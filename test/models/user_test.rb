@@ -51,4 +51,63 @@ class UserTest < ActiveSupport::TestCase
     assert user.profile_complete?
     assert_equal "Robin", user.name
   end
+
+  test "update_settings saves the name and holds a new email until it is confirmed" do
+    user = users(:ilker)
+
+    assert_enqueued_emails 1 do
+      user.update_settings name: "Ilker T", email: " New@Ilker.test "
+    end
+
+    assert_equal "Ilker T", user.reload.name
+    assert_equal "ilker@example.com", user.email
+    assert_equal "new@ilker.test", user.unconfirmed_email
+    assert user.email_change_pending?
+  end
+
+  test "saving the pending email again sends no second link" do
+    user = users(:ilker)
+    user.update_settings name: "Ilker", email: "new@ilker.test"
+
+    assert_no_enqueued_emails do
+      user.update_settings name: "Ilker T", email: "new@ilker.test"
+    end
+  end
+
+  test "going back to the current email cancels the change" do
+    user = users(:ilker)
+    user.update_settings name: "Ilker", email: "new@ilker.test"
+
+    assert_no_enqueued_emails do
+      user.update_settings name: "Ilker", email: "ilker@example.com"
+    end
+    assert_not user.reload.email_change_pending?
+  end
+
+  test "confirm_email swaps in the new address" do
+    user = users(:ilker)
+    user.update_settings name: "Ilker", email: "new@ilker.test"
+
+    user.confirm_email
+    assert_equal "new@ilker.test", user.reload.email
+    assert_nil user.unconfirmed_email
+  end
+
+  test "the confirmation token lasts 24 hours" do
+    user = users(:ilker)
+    user.update_settings name: "Ilker", email: "new@ilker.test"
+    token = user.generate_token_for(:email_confirmation)
+
+    travel 23.hours
+    assert_equal user, User.find_by_token_for(:email_confirmation, token)
+
+    travel 2.hours
+    assert_nil User.find_by_token_for(:email_confirmation, token)
+  end
+
+  test "an email someone else holds cannot be requested" do
+    assert_raises(ActiveRecord::RecordInvalid) do
+      users(:ilker).update_settings name: "Ilker", email: users(:deniz).email
+    end
+  end
 end

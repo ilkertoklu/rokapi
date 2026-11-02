@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_02_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_02_130000) do
   create_table "characters", force: :cascade do |t|
     t.string "background", null: false
     t.datetime "created_at", null: false
@@ -39,19 +39,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_120000) do
   end
 
   create_table "game_sessions", force: :cascade do |t|
-    t.string "code"
     t.datetime "created_at", null: false
     t.integer "creator_id", null: false
     t.datetime "ended_at"
     t.string "length", null: false
     t.string "locale", default: "en", null: false
-    t.integer "max_players", default: 1, null: false
     t.string "outcome"
     t.string "quest"
     t.datetime "started_at"
     t.json "story_bible"
     t.string "tone", null: false
     t.datetime "updated_at", null: false
+    t.string "code"
+    t.integer "max_players", default: 1, null: false
     t.index ["code"], name: "index_game_sessions_on_code", unique: true, where: "started_at IS NULL"
     t.index ["creator_id"], name: "index_game_sessions_on_creator_id"
   end
@@ -160,6 +160,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_120000) do
     t.string "name"
     t.datetime "terms_accepted_at"
     t.datetime "updated_at", null: false
+    t.string "unconfirmed_email"
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 

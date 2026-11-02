@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  include EmailChangeable
+
   NAME_LENGTH = 40
 
   has_many :sessions, dependent: :delete_all
