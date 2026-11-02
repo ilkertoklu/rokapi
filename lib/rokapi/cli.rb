@@ -175,6 +175,7 @@ module Rokapi
     option :order, enum: %w[random ab ba both], default: "random", desc: "The order the stories are shown in"
     def judge(a, b)
       require_relative "../../config/environment"
+      require_relative "judgement"
       games = [ a, b ].map { |id| finished_game(id) }
       raise Thor::Error, "A game cannot be judged against itself." if games.uniq.size == 1
 

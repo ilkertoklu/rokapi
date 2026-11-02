@@ -1,4 +1,5 @@
 require "test_helper"
+require "rokapi/judgement"
 
 class JudgementTest < ActiveSupport::TestCase
   VERDICT = %({"better": "second", "confidence": "high", "reason": "The stable pays off the ledger.", "improvement": "Let the drawer matter later."})
@@ -11,19 +12,19 @@ class JudgementTest < ActiveSupport::TestCase
   test "the verdict names the game the judge preferred, whichever way round it was shown" do
     judge = FakeChat.new(VERDICT)
 
-    verdict = stub_llm(judge) { Judgement.new(@inn, @stable).verdict }
+    verdict = stub_llm(judge) { Rokapi::Judgement.new(@inn, @stable).verdict }
     assert_equal [ @inn.id, @stable.id, @stable.id, @inn.id ], verdict.values_at("first", "second", "winner", "loser")
     assert_equal "high", verdict["confidence"]
     assert_equal "The stable pays off the ledger.", verdict["reason"]
     assert_equal "Let the drawer matter later.", verdict["improvement"]
 
-    swapped = stub_llm(judge) { Judgement.new(@stable, @inn).verdict }
+    swapped = stub_llm(judge) { Rokapi::Judgement.new(@stable, @inn).verdict }
     assert_equal [ @stable.id, @inn.id, @inn.id ], swapped.values_at("first", "second", "winner")
   end
 
   test "the judge reads both stories in the order shown and never which game is which" do
     judge = FakeChat.new(VERDICT)
-    stub_llm(judge) { Judgement.new(@stable, @inn).verdict }
+    stub_llm(judge) { Rokapi::Judgement.new(@stable, @inn).verdict }
 
     assert_operator judge.prompt.index("The stable door is barred"), :<, judge.prompt.index("Rain hammers the inn's")
     [ @inn, @stable ].each { |game| assert_not_includes judge.prompt, game.id.to_s }
@@ -32,7 +33,7 @@ class JudgementTest < ActiveSupport::TestCase
 
   test "choices, rolls and outcomes are part of the story" do
     judge = FakeChat.new(VERDICT)
-    stub_llm(judge) { Judgement.new(@inn, @stable).verdict }
+    stub_llm(judge) { Rokapi::Judgement.new(@inn, @stable).verdict }
 
     assert_includes judge.prompt, "- Read the dusty ledger (Intelligence, target 10)"
     assert_includes judge.prompt, "Chosen: Force the drawer open. Rolled 15 +3 = 18 against 14: success."
@@ -42,14 +43,14 @@ class JudgementTest < ActiveSupport::TestCase
   end
 
   test "the development judge runs on the narrator's command" do
-    verdict = stub_understudy(VERDICT) { Judgement.new(@inn, @stable).verdict }
+    verdict = stub_understudy(VERDICT) { Rokapi::Judgement.new(@inn, @stable).verdict }
 
     assert_equal @stable.id, verdict["winner"]
   end
 
   test "a verdict without a pick is refused" do
-    assert_raises Judgement::MalformedVerdict do
-      stub_llm(FakeChat.new(%({"reason": "Both are fine."}))) { Judgement.new(@inn, @stable).verdict }
+    assert_raises Rokapi::Judgement::MalformedVerdict do
+      stub_llm(FakeChat.new(%({"reason": "Both are fine."}))) { Rokapi::Judgement.new(@inn, @stable).verdict }
     end
   end
 
