@@ -5,8 +5,7 @@ class Narrator::Voice < RubyLLM::Agent
 
   def self.inherited(agent)
     super
-    agent.instructions identity: -> { Narrator::Voice.trait(:identity, locale) },
-      language_rules: -> { Narrator::Voice.trait("language_rules/#{locale}", locale) },
+    agent.instructions brief: -> { Narrator::Voice.trait(:brief, locale) },
       language: -> { Narrator::Voice.language(locale) }
   end
 

@@ -129,7 +129,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     post game_session_choice_selection_path(game_session, choice)
 
     stub_llm(FakeChat.new(OUTCOME_RESPONSE)) do
-      perform_enqueued_jobs { post game_session_roll_path(game_session) }
+      with_die(2) { perform_enqueued_jobs { post game_session_roll_path(game_session) } }
     end
 
     get game_session_path(game_session)

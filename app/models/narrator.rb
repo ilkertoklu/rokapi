@@ -1,6 +1,24 @@
 class Narrator
   class MalformedResponse < StandardError; end
 
+  REWRITES = 2
+  SCENE_WORDS = 90
+  FINALE_WORDS = 120
+  RESOLUTION_WORDS = 40
+  LOCATION_WORDS = 5
+  LABEL_WORDS = 9
+  REASON_WORDS = 10
+  DIFFICULTY = 8..19
+  STATUS_TURNS = 1..3
+  STATUS_LIMIT = 2
+  HEALTH_FLOOR = { narrow: -3, failure: -6, heavy: -9, catastrophe: -12 }.freeze
+
+  # The scene header in scenes.css on the comp's 390px phone: one line of 18px Spectral SemiBold beside one dot per scene.
+  HEADER_WIDTH = 390 - 2 * 22.4 - 12
+  PROGRESS_DOT_PITCH = 7 + 6
+  CURRENT_DOT_WIDTH = 9
+  TITLE_GLYPH_WIDTH = 8.2
+
   def initialize(game_session)
     @game_session = game_session
     @briefing = Briefing.new(game_session)
@@ -9,20 +27,15 @@ class Narrator
   def narrate_outcome(roll)
     return if roll.resolved?
 
-    response = voice(OutcomeResolver).ask(@briefing.outcome_prompt(roll))
-    record_call :outcome, response
-
-    data = parsed(response)
-    raise MalformedResponse, "structured output missing" unless data.is_a?(Hash)
-
-    roll.resolve resolution: resolution_in(data), effects: effects_in(data, roll)
+    resolution, effects = rewriting(@briefing.outcome_prompt(roll)) { |prompt| ask_outcome(roll, prompt) }
+    roll.resolve resolution: resolution, effects: effects
   end
 
   def narrate_scene(scene)
     return unless scene.narrating?
 
     plan if @game_session.story_bible.blank?
-    data, prose = ask_streaming(scene)
+    data, prose = rewriting(@briefing.scene_prompt(scene)) { |prompt| ask_streaming(scene, prompt) }
     close_scene scene, data, prose
   end
 
@@ -36,21 +49,49 @@ class Narrator
       Understudy.new(command) if command
     end
 
+    def rewriting(prompt)
+      attempt = prompt
+
+      REWRITES.times do
+        return yield(attempt)
+      rescue MalformedResponse => rejection
+        Rails.logger.info "Narrator rewrite: #{rejection.message}"
+        attempt = "#{prompt}\n\nYOUR LAST REPLY WAS REJECTED: #{rejection.message}. Write the whole reply again."
+      end
+
+      yield attempt
+    end
+
     def plan
-      response = voice(Planner).ask(@briefing.plan_prompt)
+      bible = rewriting(@briefing.plan_prompt) { |prompt| ask_plan(prompt) }
+      @game_session.update! story_bible: bible
+    end
+
+    def ask_plan(prompt)
+      response = voice(Planner).ask(prompt)
       record_call :plan, response
 
       bible = parsed(response)
       raise MalformedResponse, "story bible missing" unless bible.is_a?(Hash) && bible["beats"].present?
 
-      @game_session.update! story_bible: bible
+      bible
     end
 
-    def ask_streaming(scene)
+    def ask_outcome(roll, prompt)
+      response = voice(OutcomeResolver).ask(prompt)
+      record_call :outcome, response
+
+      data = parsed(response)
+      raise MalformedResponse, "structured output missing" unless data.is_a?(Hash)
+
+      [ resolution_in(data), effects_in(data, roll) ]
+    end
+
+    def ask_streaming(scene, prompt)
       reply = Reply.new
       data = nil
 
-      response = voice(SceneWriter).ask(@briefing.scene_prompt(scene)) do |chunk|
+      response = voice(SceneWriter).ask(prompt) do |chunk|
         reply << chunk.content.to_s
 
         if data
@@ -63,7 +104,7 @@ class Narrator
       record_call :scene, response
       raise MalformedResponse, "structure block missing" if data.nil?
 
-      [ data, reply.prose ]
+      [ data, prose_in(scene, reply.prose) ]
     end
 
     def relay(scene, prose)
@@ -107,6 +148,8 @@ class Narrator
 
     def validate(scene, data)
       raise MalformedResponse, "title missing" if data["title"].blank?
+      within_header data["title"]
+      within_words "the location", data["location"], LOCATION_WORDS
 
       choices = Array(data["choices"])
 
@@ -115,6 +158,8 @@ class Narrator
         raise MalformedResponse, "a downed character must meet defeat" unless defeat
       elsif data["finale"] == true
         outcome_in data
+      elsif scene.position >= @game_session.scene_budget
+        raise MalformedResponse, "scene #{scene.position} is the last one, so it must be the finale"
       elsif choices.size != 3
         raise MalformedResponse, "expected 3 choices"
       elsif choices.pluck("stat").uniq.size != 3
@@ -125,23 +170,59 @@ class Narrator
     end
 
     def validate_choice(choice)
-      label_in choice
+      within_words "the choice label", label_in(choice), LABEL_WORDS
+      within_words "the difficulty reason", choice["difficulty_reason"], REASON_WORDS
       stat_in choice
       difficulty_in choice
     end
 
+    def prose_in(scene, prose)
+      raise MalformedResponse, "the narration is missing" if prose.blank?
+
+      within_words "the narration", prose, scene.finale? ? FINALE_WORDS : SCENE_WORDS
+    end
+
+    def within_words(part, text, limit)
+      count = text.to_s.split.size
+      raise MalformedResponse, "#{part} runs #{count} words, at most #{limit} fit the screen: #{text.to_s.squish.inspect}" if count > limit
+
+      text
+    end
+
+    def within_header(title)
+      return if title.length <= title_limit
+
+      raise MalformedResponse, "the title #{title.inspect} runs #{title.length} characters, at most #{title_limit} fit beside the progress dots"
+    end
+
+    def title_limit
+      progress = PROGRESS_DOT_PITCH * (@game_session.scene_budget - 1) + CURRENT_DOT_WIDTH
+      ((HEADER_WIDTH - progress) / TITLE_GLYPH_WIDTH).floor
+    end
+
     def resolution_in(data)
-      data["resolution"].presence || raise(MalformedResponse, "resolution missing")
+      resolution = data["resolution"].presence || raise(MalformedResponse, "resolution missing")
+      within_words "the resolution", resolution, RESOLUTION_WORDS
     end
 
     def effects_in(data, roll)
       effects = data["effects"].to_h
+      statuses_lost = Array(effects["statuses_lost"])
+      statuses_gained = earned_statuses(Array(effects["statuses_gained"]).map { |grant| status_in(grant) }, roll)
+      within_status_limit roll.player.character, statuses_gained, statuses_lost
 
-      { "hp" => effects["hp"].to_i,
+      { "hp" => effects["hp"].to_i.clamp(HEALTH_FLOOR.fetch(roll.grade, 0), 0),
         "items_gained" => Array(effects["items_gained"]).map { |grant| item_in(grant) },
         "items_lost" => Array(effects["items_lost"]),
-        "statuses_gained" => earned_statuses(Array(effects["statuses_gained"]).map { |grant| status_in(grant) }, roll),
-        "statuses_lost" => Array(effects["statuses_lost"]) }
+        "statuses_gained" => statuses_gained,
+        "statuses_lost" => statuses_lost }
+    end
+
+    def within_status_limit(character, gained, lost)
+      kept = character.status_effects.map(&:name) - lost - gained.pluck(:name)
+      return if gained.none? || kept.size + gained.size <= STATUS_LIMIT
+
+      raise MalformedResponse, "the character would carry #{kept.size + gained.size} statuses, at most #{STATUS_LIMIT}"
     end
 
     def item_in(grant)
@@ -158,7 +239,7 @@ class Narrator
       expires_when = grant["expires_when"].presence
 
       { name: name_in(grant), modifier: grant["modifier"].to_i.clamp(StatusEffect::MODIFIER_RANGE),
-        turns_left: turns.positive? ? turns : (StatusEffect::DEFAULT_TURNS if expires_when.nil?), expires_when: expires_when }
+        turns_left: turns.positive? ? turns.clamp(STATUS_TURNS) : (StatusEffect::DEFAULT_TURNS if expires_when.nil?), expires_when: expires_when }
     end
 
     def name_in(grant)
@@ -196,7 +277,10 @@ class Narrator
     end
 
     def difficulty_in(choice)
-      Integer(choice["difficulty"], exception: false) || raise(MalformedResponse, "difficulty missing")
+      difficulty = Integer(choice["difficulty"], exception: false) || raise(MalformedResponse, "difficulty missing")
+      raise MalformedResponse, "difficulty #{difficulty} is outside #{DIFFICULTY.min}-#{DIFFICULTY.max}" unless DIFFICULTY.cover?(difficulty)
+
+      difficulty
     end
 
     def record_call(purpose, response)

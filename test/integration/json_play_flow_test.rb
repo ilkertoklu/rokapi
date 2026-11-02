@@ -52,7 +52,7 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
     assert_equal "rolling", response.parsed_body["scenes"].last["state"]
 
     stub_llm(FakeChat.new(OUTCOME_RESPONSE)) do
-      perform_enqueued_jobs { post game_session_roll_path(game_session), as: :json }
+      with_die(2) { perform_enqueued_jobs { post game_session_roll_path(game_session), as: :json } }
     end
     assert_response :no_content
 

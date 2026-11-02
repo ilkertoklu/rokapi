@@ -1,10 +1,10 @@
 class Narrator::Briefing
   GRADE_NOTES = {
-    critical: "natural 20, an exceptional moment",
+    critical: "natural 20",
     brilliant: "target beaten by %{margin}",
     narrow: "by a hair",
     heavy: "%{margin} under the target",
-    catastrophe: "natural 1, the worst that can happen"
+    catastrophe: "natural 1"
   }.freeze
 
   def initialize(game_session)
@@ -21,14 +21,13 @@ class Narrator::Briefing
   def outcome_prompt(roll)
     compose do
       [ mission_block, bible_block, character_block(roll.scene), party_block(roll.scene), used_items_block(roll),
-        history_block, roll_block(roll), missing_healing_block(roll), turn_directive(roll.scene), "Resolve this result." ]
+        history_block, roll_block(roll), "Resolve this roll." ]
     end
   end
 
   def scene_prompt(scene)
     compose do
-      [ mission_block, bible_block, character_block(scene), party_block(scene), history_block, repetition_block, variety_block,
-        wounded_block(scene), pacing_block(scene), action_block, turn_directive(scene) ]
+      [ mission_block, bible_block, character_block(scene), party_block(scene), history_block, pacing_block(scene), action_block ]
     end
   end
 
@@ -39,7 +38,7 @@ class Narrator::Briefing
 
     def mission_block
       brief = GameSession::Quest[@game_session.quest]&.brief(locale: @game_session.locale) ||
-        "Surprise adventure: build an unknown, original world and quest, and drop the player into the middle of the story in the first scene."
+        "Surprise adventure: the world and the quest are yours to invent."
       "QUEST FRAME: #{brief}\nTONE: #{GameSession::Tone.fetch(@game_session.tone).directive}"
     end
 
@@ -61,28 +60,6 @@ class Narrator::Briefing
       TEXT
     end
 
-    def repetition_block
-      stats = @game_session.rolls.order(id: :desc).limit(3).pluck("choices.stat")
-      return unless stats.size == 3 && stats.uniq.size == 1
-
-      label = Character::Stat.fetch(stats.first).label
-      "REPETITION: The player has used #{label} three times in a row. The world adapts: in this scene either close the #{label} road or make it markedly harder."
-    end
-
-    def variety_block
-      recent = @game_session.scenes.played.chronological.last(2).flat_map(&:choices)
-      return if recent.empty?
-
-      easy = recent.select(&:easy?).map(&:stat).uniq
-      hard = recent.select(&:hard?).map(&:stat).uniq
-      "VARIETY: The choices in the last scenes were: #{recent.map { |choice| %("#{choice.label}") }.join(", ")}. " \
-        "Do not write their pattern again. The easy choice was on #{stat_labels(easy)} and the hard choice on #{stat_labels(hard)}. In this scene put the easy and the hard choice on other stats."
-    end
-
-    def stat_labels(stats)
-      stats.map { |stat| Character::Stat.fetch(stat).label }.join("/").presence || "—"
-    end
-
     def pacing_block(scene)
       [ "SCENE: #{scene.position}/#{@game_session.scene_budget}", beat_line(scene), stage_directive(scene) ].compact.join("\n")
     end
@@ -96,59 +73,12 @@ class Narrator::Briefing
       budget = @game_session.scene_budget
 
       if scene.active_player.character.hp.zero?
-        "THE CHARACTER HAS COLLAPSED: their health is spent. This scene is the FINALE and it is a defeat. Tell their fall in at most 2 short paragraphs and 110 words. #{closing_rules} finale=true, outcome=\"defeat\", produce no choices."
+        "THE CHARACTER HAS COLLAPSED: their health is spent, so this scene is the FINALE and its outcome is \"defeat\"."
       elsif scene.position >= budget
-        "This scene is the FINALE: close the story in at most 2 short paragraphs and 120 words. The finale does not make the player act again and does not retell the climax resolution, it shows what came after that result. #{tally_line} Answer the finale's question with what the player actually did: if the victory condition was met the outcome is \"victory\", if not it is \"defeat\", and both come at a price. If the climax roll failed there is no clean victory: either defeat, or only a part of the victory condition, achieved with a visible loss (a person, a place, a relationship). #{closing_rules} finale=true, produce no choices."
+        "This scene is the FINALE: it closes the story with \"victory\" or \"defeat\"."
       elsif scene.position == budget - 1
-        "CLIMAX: the opposing force is met face to face and the danger is physical. All three choices demand a price, and even the easy one sacrifices something. The choice in this scene sets the colour of the finale, and the next scene is the finale."
-      elsif scene.first?
-        "OPENING: the player lands in the middle of events. The personal stake is established in one sentence in this scene (a name, a memory, a debt), the first trace of the opposing force shows, and the goal is clear."
-      elsif scene.position == midpoint
-        "MIDPOINT: the twist comes out in this scene, and there is no going back after it."
-      elsif scene.position > midpoint
-        "ESCALATION: the pace rises and the costs grow. The ally's secret and the face of the opposing force draw closer."
-      else
-        "DEVELOPMENT: bring a new complication, a piece of knowledge or a cost, and make the player take a concrete step towards the goal."
+        "The next scene is the finale."
       end
-    end
-
-    def tally_line
-      rolls = @game_session.rolls.order(:id).to_a
-      return if rolls.empty?
-
-      "ROLL TALLY: #{rolls.count(&:success?)} successes, #{rolls.count { |roll| !roll.success? }} failures. The climax roll was #{grade_label(rolls.last)}."
-    end
-
-    def closing_rules
-      "The closing pays off what was set up: the personal stake is answered in one sentence and the player is present in the finale (someone speaks to them, or something is left to them), the fate of the opposing force and of the ally each show in a sentence, an image from the opening returns (the image itself comes back, do not say \"the one from the first scene\"), and the last sentence is a single landed image. Do not write an open-ended closing like \"one day\", \"in time\" or \"the adventure will go on\"."
-    end
-
-    def midpoint
-      (@game_session.scene_budget / 2.0).ceil
-    end
-
-    def missing_healing_block(roll)
-      scene = roll.scene
-      character = scene.active_player.character
-      return if scene.position < 2 || character.sturdy? || character.items.healing.any?
-      return if last_outcome_granted_item?(roll)
-
-      "MISSING: The character has no healing item and the game is waiting for one. If there is the slightest opening in this resolution " \
-        "(a bag, a chest, wreckage, a body, a reward, a friendly hand), give them a healing potion: instant, +6..+8 health, 1 use. " \
-        "This licence holds for every grade: an ordinary success can find a potion too."
-    end
-
-    def last_outcome_granted_item?(roll)
-      previous = @game_session.rolls.where.not(id: roll.id).order(:id).last
-      previous.present? && previous.items_gained.any?
-    end
-
-    def wounded_block(scene)
-      character = scene.active_player.character
-      return unless character.wounded?
-
-      "BADLY WOUNDED: The character's health is #{character.hp}/#{character.max_hp}. The world sees it: " \
-        "let the narration carry the exhaustion, and let one of the choices open onto a breather, healing, or a cautious road."
     end
 
     def character_block(scene)
@@ -178,15 +108,9 @@ class Narrator::Briefing
 
       name = scene.active_player.name
       members = party.map { |player| "#{player.name} (#{player.character.summary}, health #{player.character.hp}/#{player.character.max_hp})" }
-      finale = " The finale gives every member of the party a moment." if scene.position >= @game_session.scene_budget
 
       "THE PARTY travels together and takes turns: #{members.join("; ")}.\n" \
-        "THIS TURN: #{name}. Wherever these instructions say \"the player\" or \"the character\", read #{name}. " \
-        "\"You\" is #{name}: address #{name} by name, and name the others in the third person. Only #{name} acts and decides; the others are present and may be seen or speak a line.#{finale}"
-    end
-
-    def turn_directive(scene)
-      "This is #{scene.active_player.name}'s turn: your first sentence speaks to #{scene.active_player.name} by name." if @game_session.multiplayer?
+        "THIS TURN: #{name}. Only #{name} chooses and rolls."
     end
 
     def party
@@ -207,7 +131,7 @@ class Narrator::Briefing
       used = roll.player.character.items.used_since(roll.scene.created_at)
       return if used.none?
 
-      "ITEM USED: #{used.map { |item| "#{item.name} (#{format('%+d', item.hp_effect)} health)" }.join("; ")} — the health is already applied and the item is off the inventory. Let it show in the narration that it was drunk, and do not write it to hp or items_lost again."
+      "ITEM USED: #{used.map { |item| "#{item.name} (#{format('%+d', item.hp_effect)} health)" }.join("; ")} — its health is already applied and it is off the inventory, so it belongs in neither hp nor items_lost."
     end
 
     def history_block
@@ -240,9 +164,6 @@ class Narrator::Briefing
     end
 
     def action_block
-      roll = @game_session.rolls.order(:id).last
-      return "Write the first scene." if roll.nil?
-
-      "The last resolution was shown to the player: do not stage what happened again, write what follows from where it left off."
+      @game_session.rolls.exists? ? "Write the next scene." : "Write the first scene."
     end
 end

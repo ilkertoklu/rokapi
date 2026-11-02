@@ -334,7 +334,6 @@ class NarratorTest < ActiveSupport::TestCase
     assert_includes scene_call.prompt, "STORY BIBLE"
     assert_includes scene_call.prompt, "Nail Aral"
     assert_includes scene_call.prompt, "BEAT: A mule with a cut strap comes back to the square."
-    assert_includes scene_call.prompt, "OPENING:"
   end
 
   test "the whole story so far reaches the narrator unabridged" do
@@ -373,13 +372,12 @@ class NarratorTest < ActiveSupport::TestCase
     assert_includes scene_call.prompt, "Strength 16"
   end
 
-  test "an English game keeps the English language rules" do
+  test "an English game is written in English" do
     scene_call = FakeChat.new(SCENE_RESPONSE)
 
     stub_llm(scene_call) { narrate }
 
-    assert_includes scene_call.instructions, "a narrator writing in English"
-    assert_not_includes scene_call.instructions, "Turkish"
+    assert_includes scene_call.instructions, "Everything the player sees is written in English"
   end
 
   test "the surprise adventure takes its name from the bible" do
@@ -388,33 +386,6 @@ class NarratorTest < ActiveSupport::TestCase
 
     @game_session.update! story_bible: nil
     assert_equal "Surprise adventure", @game_session.title
-  end
-
-  test "the finale is told the tally of the dice" do
-    play_and_continue
-
-    stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
-    roll = roll_with(value: 2)
-    resolve roll
-    roll.acknowledge
-    @game_session.update! length: "short"
-    @game_session.current_scene.update! position: @game_session.scene_budget
-
-    scene_call = FakeChat.new(FINALE_RESPONSE)
-    stub_llm(scene_call) { narrate }
-
-    assert_match(/ROLL TALLY: \d+ successes, \d+ failures\. The climax roll was HEAVY FAILURE/, scene_call.prompt)
-    assert @game_session.reload.finished?
-  end
-
-  test "the easy and hard stats of recent scenes are steered away from" do
-    play_and_continue
-
-    scene_call = FakeChat.new(SECOND_SCENE_RESPONSE)
-    stub_llm(scene_call) { narrate }
-
-    assert_includes scene_call.prompt, %(VARIETY: The choices in the last scenes were: "Read the dusty ledger", "Force the drawer open", "Listen at the stable in silence".)
-    assert_includes scene_call.prompt, "The easy choice was on Intelligence and the hard choice on —"
   end
 
   test "a downed character forces the defeat finale" do
@@ -442,92 +413,6 @@ class NarratorTest < ActiveSupport::TestCase
     assert_not @game_session.reload.finished?
   end
 
-  test "the missing healing item is flagged once the need is real" do
-    characters(:ilker_hero).update! hp: 12
-    play_and_continue
-    stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
-    items(:healing_potion).use
-    roll = choose_and_roll(@game_session.current_scene)
-
-    fake = FakeChat.new(OUTCOME_RESPONSE)
-    stub_llm(fake) { roll.narrate }
-
-    assert_includes fake.prompt, "MISSING:"
-  end
-
-  test "the healing hint rests while the character stands strong" do
-    play_and_continue
-    stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
-    items(:healing_potion).use
-    roll = choose_and_roll(@game_session.current_scene)
-
-    fake = FakeChat.new(OUTCOME_RESPONSE)
-    stub_llm(fake) { roll.narrate }
-
-    assert_not_includes fake.prompt, "MISSING:",
-      "a healthy character early in the story must not spawn potions"
-  end
-
-  test "the healing hint pauses right after a find" do
-    characters(:ilker_hero).update! hp: 5
-    items(:healing_potion).use
-    roll = play_first_scene
-
-    fake = FakeChat.new(%({"resolution": "You find a charm on the shelf.",
-      "effects": {"hp": 0, "items_gained": [{"name": "Old charm", "kind": "quest", "description": "", "hp": 0, "uses": 0}]}}))
-    stub_llm(fake) { roll.narrate }
-    roll.acknowledge
-    stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
-    next_roll = choose_and_roll(@game_session.current_scene)
-
-    fake = FakeChat.new(OUTCOME_RESPONSE)
-    stub_llm(fake) { next_roll.narrate }
-
-    assert_not_includes fake.prompt, "MISSING:",
-      "back-to-back finds cheapen the loot"
-  end
-
-  test "no healing hint while a potion is still carried" do
-    play_and_continue
-    stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
-    roll = choose_and_roll(@game_session.current_scene)
-
-    fake = FakeChat.new(OUTCOME_RESPONSE)
-    stub_llm(fake) { roll.narrate }
-
-    assert_not_includes fake.prompt, "MISSING:"
-  end
-
-  test "the world adapts when one stat is spammed" do
-    stub_llm(FakeChat.new(SCENE_RESPONSE)) { narrate }
-
-    2.times do
-      roll = roll_strength(@game_session.current_scene)
-      resolve roll
-      roll.acknowledge
-      stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
-    end
-
-    roll = roll_strength(@game_session.current_scene)
-    resolve roll
-    roll.acknowledge
-
-    scene_call = FakeChat.new(SECOND_SCENE_RESPONSE)
-    stub_llm(scene_call) { narrate }
-
-    assert_match(/REPETITION:.*Strength/, scene_call.prompt)
-  end
-
-  test "a badly wounded character earns a breather in the scene prompt" do
-    characters(:ilker_hero).update! hp: 9
-    play_and_continue
-
-    scene_call = FakeChat.new(SECOND_SCENE_RESPONSE)
-    stub_llm(scene_call) { narrate }
-
-    assert_includes scene_call.prompt, "BADLY WOUNDED"
-  end
-
   test "a roll is never resolved twice" do
     roll = play_first_scene
 
@@ -547,7 +432,9 @@ class NarratorTest < ActiveSupport::TestCase
   end
 
   test "a half-written scene is finished on the next attempt" do
-    stub_llm(FakeChat.new("Prose arrived but no structure."), FakeChat.new(SCENE_RESPONSE)) do
+    broken = Array.new(Narrator::REWRITES + 1) { FakeChat.new("Prose arrived but no structure.") }
+
+    stub_llm(broken, FakeChat.new(SCENE_RESPONSE)) do
       assert_raises Narrator::MalformedResponse do
         narrate
       end
@@ -641,6 +528,102 @@ class NarratorTest < ActiveSupport::TestCase
     assert @game_session.reload.finished?
   end
 
+  test "a reply that breaks a rule is rewritten with the reason" do
+    out_of_range = SCENE_RESPONSE.sub('"difficulty": 14', '"difficulty": 25')
+    broken = FakeChat.new(out_of_range)
+    rewrite = FakeChat.new(SCENE_RESPONSE)
+
+    stub_llm(broken, rewrite) { narrate }
+
+    assert @game_session.scenes.sole.choosing?
+    assert_not_includes broken.prompt, "REJECTED"
+    assert_includes rewrite.prompt, "YOUR LAST REPLY WAS REJECTED: difficulty 25 is outside 8-19."
+  end
+
+  test "a scene that does not fit the screen is rewritten until the narrator gives up" do
+    long = "word " * 20
+    { "the narration" => SCENE_RESPONSE + "\n#{"Snow falls. " * 50}",
+      "the choice label" => SCENE_RESPONSE.sub('"label": "Force the drawer open"', %("label": "#{long}")),
+      "the difficulty reason" => SCENE_RESPONSE.sub('"The lock is old"', %("#{long}")) }.each do |part, reply|
+      fake = FakeChat.new(reply)
+
+      stub_llm(fake) do
+        error = assert_raises(Narrator::MalformedResponse) { narrate }
+        assert_match(/\A#{part} runs \d+ words, at most \d+ fit the screen: "/, error.message)
+      end
+
+      assert_includes fake.prompt, "REJECTED: #{part} runs"
+      assert @game_session.scenes.sole.narrating?
+    end
+  end
+
+  test "a title must fit beside the progress dots on one line" do
+    @game_session.update! length: "long"
+
+    stub_llm(FakeChat.new(SCENE_RESPONSE.sub('"title": "The Old Inn"', '"title": "The Old Coaching Inn"'))) do
+      error = assert_raises(Narrator::MalformedResponse) { narrate }
+      assert_equal 'the title "The Old Coaching Inn" runs 20 characters, at most 12 fit beside the progress dots', error.message
+    end
+
+    @game_session.update! length: "short"
+    stub_llm(FakeChat.new(SCENE_RESPONSE.sub('"title": "The Old Inn"', '"title": "The Old Coaching Inn"'))) { narrate }
+    assert_equal "The Old Coaching Inn", @game_session.scenes.sole.title
+  end
+
+  test "the last scene must be the finale" do
+    @game_session.current_scene.update! position: @game_session.scene_budget
+
+    stub_llm(FakeChat.new(SCENE_RESPONSE)) do
+      error = assert_raises(Narrator::MalformedResponse) { narrate }
+      assert_equal "scene 7 is the last one, so it must be the finale", error.message
+    end
+
+    assert_not @game_session.reload.finished?
+  end
+
+  test "health follows the grade of the roll" do
+    stub_llm(FakeChat.new(SCENE_RESPONSE)) { narrate }
+    roll = roll_with(value: 20)
+    stub_llm(FakeChat.new(%({"resolution": "You fly through.", "effects": {"hp": -4}}))) { roll.narrate }
+    assert_equal 0, roll.reload.hp_change, "a success does not hurt"
+
+    roll.acknowledge
+    stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { narrate }
+    roll = roll_with(value: 2)
+    stub_llm(FakeChat.new(%({"resolution": "You fall hard.", "effects": {"hp": -30}}))) { roll.narrate }
+    assert_equal(-9, roll.reload.hp_change, "a heavy failure costs at most 9")
+    assert_equal 31 - 9, characters(:ilker_hero).reload.hp
+  end
+
+  test "a resolution that does not fit the screen is rewritten" do
+    roll = play_first_scene
+    long = FakeChat.new(%({"resolution": "#{"The drawer sticks. " * 20}", "effects": {"hp": 0}}))
+
+    stub_llm(long, FakeChat.new(OUTCOME_RESPONSE)) { roll.narrate }
+
+    assert_equal "The drawer opens, but you cut your hand.", roll.reload.resolution
+    assert_equal 2, @game_session.llm_calls.outcome.count
+  end
+
+  test "a character carries no more statuses than the limit" do
+    character = characters(:ilker_hero)
+    character.status_effects.create! name: "Bruised Ribs", modifier: -1, turns_left: 3
+    character.status_effects.create! name: "Soaked Through", modifier: -1, turns_left: 3
+    roll = play_first_scene
+
+    stub_llm(FakeChat.new(%({"resolution": "You get burned.", "effects": {"hp": -2,
+      "statuses_gained": [{"name": "Burned Palms", "modifier": -1, "turns": 9, "expires_when": ""}]}}))) do
+      error = assert_raises(Narrator::MalformedResponse) { roll.narrate }
+      assert_equal "the character would carry 3 statuses, at most 2", error.message
+    end
+
+    stub_llm(FakeChat.new(%({"resolution": "You get burned.", "effects": {"hp": -2,
+      "statuses_gained": [{"name": "Burned Palms", "modifier": -1, "turns": 9, "expires_when": ""}],
+      "statuses_lost": ["Soaked Through"]}}))) { roll.narrate }
+
+    assert_equal 3, character.status_effects.find_by!(name: "Burned Palms").turns_left, "a status lasts 3 turns at most"
+  end
+
   test "the understudy writes a scene at no cost" do
     stub_understudy(SCENE_RESPONSE) { narrate }
 
@@ -674,7 +657,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     def play_first_scene
       stub_llm(FakeChat.new(SCENE_RESPONSE)) { narrate }
-      choose_and_roll @game_session.current_scene
+      with_die(2) { choose_and_roll @game_session.current_scene }
     end
 
     def play_and_continue

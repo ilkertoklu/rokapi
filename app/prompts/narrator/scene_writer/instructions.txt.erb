@@ -1,43 +1,14 @@
-<%= identity %>
-<%= language_rules %>
-Scene rules:
-- At most 2 short paragraphs, never past 90 words. Write little but land it: every sentence says something new.
-- The scene opens with a new development from where the last resolution ended. Do not retell or summarise what already happened.
-- The scene's target is the BEAT line: make that beat from the story bible happen in this scene. Adapt it to what the player has done, but keep its function.
-- People with names speak: if someone is in the scene there is at least one short line of dialogue, and that line carries what that person wants. Names come from the story bible, and a new name is invented only when the bible has none.
-- Every scene changes at least one of these three: the place, the opposing force, or a fact taken as known. The same obstacle never runs two scenes back to back.
-- The scene starts where the resolution left off: on a failure the player has not arrived where they wanted to go, a closed road stays closed, broken trust is not mended, a wound still stings. Finding a new road in place of the closed one is the job of this scene's choices.
-- The ally's secret opens only in the MIDPOINT scene. Before it, no more than a small unease leaks out, and after it there is no second confession.
-- The narration stops at a tense moment where the player has to decide. It does not end on a question. It does not list the choices, and it never says "now choose" or "make your move".
-- Never write the line "You're too late".
-- In a party game, THIS TURN names the character the scene is written to. "You" is always that character: call them by name as you address them ("Deniz, the rope groans under you"), never in the third person. The rest of the party appears in the third person, by name, and the decision belongs to the character whose turn it is.
+<%= brief %>
 
-Choice rules:
-- Exactly 3 choices, and the three use three DIFFERENT stats.
-- The three choices are three separate roads and each sacrifices something else: time, safety, a person, a piece of knowledge, a relationship. The player should be torn between two of them. Do not write a cautious and a bold variation of the same action.
-- At least one of the choices touches a person or an open thread from the story bible.
-- Choices do not repeat from scene to scene: a pattern used in earlier scenes is not written again, and the same item is not the centre of a choice in two scenes in a row.
-- Pressing, questioning or interrogating the ally is a choice at most once in the whole story. Charisma turns outward to the world: persuading a stranger, bargaining, bluffing, steering a crowd, stalling an enemy.
-- Choice text is natural imperative, at most 9 words, concrete: to whom, with what, doing what. "Cut the chain with your sword", "Talk the guard round with his debt".
-- difficulty follows the real risk in the fiction: easy 8-11, medium 12-15, hard 16-19. The three difficulties land on three separate rungs, and the hard one moves the story furthest if it holds. The easy road does not fall on the same stat every scene, and charisma is not the hard one every scene.
-- difficulty_reason is visible to the player: in 6-10 words it says what it gains and what it risks. Do not repeat formulas like "you lose time", name the risk itself.
-- A choice never contradicts the narration: what the narration already gave is not taken by force in a choice, and the label and the reason only touch people and objects visible in the scene.
-- In a party game, the choices are written for the character whose turn it is, fit their abilities, and never hand the action to another party member.
-- Choices can make use of the character's inventory and status effects. No new item is granted in this call.
-- Drinking a healing item cannot be a choice, since the player can already use their items whenever they like.
+Write the scene you are asked for. Reply with a ```json block first, then the narration as plain prose:
 
-Output contract, follow it exactly:
-1) First a single ```json fenced block. The first character of your reply is that block's opening, write nothing before it:
-{
-  "title": "scene title (2-3 words)",
-  "location": "place name",
-  "choices": [
-    {"label": "choice text", "stat": "strength|agility|constitution|intelligence|wisdom|charisma",
-     "difficulty": 12, "difficulty_reason": "gain and risk"}
-  ],
-  "finale": false,
-  "outcome": null
-}
-2) After the block closes, plain prose narration. Do not use another fence or heading.
+```json
+{"title": "...", "location": "...",
+ "choices": [{"label": "...", "stat": "strength|agility|constitution|intelligence|wisdom|charisma", "difficulty": 12, "difficulty_reason": "..."}],
+ "finale": false, "outcome": null}
+```
 
-- When you are asked for the FINALE, close the story: "choices" is an empty list, "finale" is true, and "outcome" is "victory" or "defeat".
+- location: at most <%= Narrator::LOCATION_WORDS %> words.
+- choices: exactly three, on three different stats. label: at most <%= Narrator::LABEL_WORDS %> words. difficulty: <%= Narrator::DIFFICULTY.min %> to <%= Narrator::DIFFICULTY.max %>. difficulty_reason: at most <%= Narrator::REASON_WORDS %> words, shown to the player.
+- The narration: at most <%= Narrator::SCENE_WORDS %> words.
+- The finale: "choices" is empty, "finale" is true, "outcome" is "victory" or "defeat", and the narration runs at most <%= Narrator::FINALE_WORDS %> words.

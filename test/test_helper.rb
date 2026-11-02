@@ -6,7 +6,7 @@ Dir[Rails.root.join("test/test_helpers/**/*.rb")].each { require it }
 
 module ActiveSupport
   class TestCase
-    include LlmStubbing, Subscribing
+    include LlmStubbing, LoadedDice, Subscribing
 
     parallelize(workers: :number_of_processors)
 
