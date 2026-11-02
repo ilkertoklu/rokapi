@@ -1,0 +1,15 @@
+<dialog class="connection" aria-labelledby="connection_title" data-controller="connection" data-action="cancel->connection#stayOpen">
+  <span class="connection__icon"><%= render "glyph", name: "wifi_off" %></span>
+  <h2 id="connection_title"><%= t(".title") %></h2>
+  <p class="connection__status">
+    <%= t(".reconnecting") %>
+    <span class="writing__dots" aria-hidden="true"><span></span><span></span><span></span></span>
+  </p>
+  <p class="connection__text"><%= t(".paused") %></p>
+  <p class="connection__saved"><%= render "glyph", name: "check" %><%= t(".saved") %></p>
+
+  <div class="connection__actions">
+    <button type="button" class="btn btn--primary" data-action="connection#retry"><%= t(".retry") %></button>
+    <%= link_to t(".home"), root_path, class: "btn btn--neutral", data: { turbo: false } %>
+  </div>
+</dialog>

@@ -218,6 +218,13 @@ en:
       taken: That email is already in use by another account.
 
   game_sessions:
+    connection:
+      title: Connection lost
+      reconnecting: Reconnecting
+      paused: The game is paused. Once you are back, you carry on from the scene you were in.
+      saved: Your progress is saved
+      retry: Try again now
+      home: Main menu
     finale:
       duration: Duration
       dice_rolled: Dice rolled

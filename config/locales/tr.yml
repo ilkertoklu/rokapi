@@ -234,6 +234,13 @@ tr:
       taken: Bu e-posta başka bir hesapta kullanılıyor.
 
   game_sessions:
+    connection:
+      title: Bağlantı koptu
+      reconnecting: Yeniden bağlanılıyor
+      paused: Oyun duraklatıldı. Bağlanınca kaldığın sahneden devam edersin.
+      saved: İlerlemen kayıtlı
+      retry: Şimdi yeniden dene
+      home: Ana menü
     finale:
       duration: Süre
       dice_rolled: Zar atıldı

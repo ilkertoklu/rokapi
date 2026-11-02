@@ -1,6 +1,7 @@
 <% content_for :title, "#{@game_session.title} · Rokapi" %>
 
-<%= turbo_stream_from @game_session %>
+<%= turbo_stream_from @game_session, id: dom_id(@game_session, :stream), data: { turbo_permanent: true } %>
+<%= render "game_sessions/connection" %>
 
 <div class="game" data-controller="sheet">
   <%= render "game_sessions/stage", game_session: @game_session %>
