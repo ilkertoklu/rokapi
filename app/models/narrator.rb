@@ -35,7 +35,7 @@ class Narrator
   def narrate_outcome(roll)
     return if roll.resolved?
 
-    conversation.with_schema OutcomeSchema
+    @schema = OutcomeSchema
     resolution, effects = rewriting(@cues.outcome(roll)) { |prompt| ask_outcome(roll, prompt) }
     roll.resolve resolution: resolution, effects: effects
   end
@@ -43,7 +43,7 @@ class Narrator
   def narrate_scene(scene)
     return unless scene.narrating?
 
-    conversation.with_schema nil
+    @schema = nil
     data, prose = rewriting(@cues.scene(scene)) { |prompt| ask_streaming(scene, prompt) }
     close_scene scene, data, prose
   end
@@ -65,20 +65,37 @@ class Narrator
       end
     end
 
-    def rewriting(prompt)
-      attempt = prompt
+    def rewriting(cue)
+      rejection = nil
 
       REWRITES.times do
-        return yield(attempt)
-      rescue MalformedResponse => rejection
-        Rails.logger.info "Narrator rewrite: #{rejection.message}"
-        attempt = "Your reply was rejected: #{rejection.message}. Write the whole reply again."
+        return yield(cue_with(cue, rejection)).tap { settle cue if rejection }
+      rescue MalformedResponse => error
+        Rails.logger.info "Narrator rewrite: #{error.message}"
+        forget_last_exchange
+        rejection = error
       end
 
-      yield attempt
+      yield(cue_with(cue, rejection)).tap { settle cue }
+    end
+
+    def cue_with(cue, rejection)
+      rejection ? "#{cue}\n\nYour last reply was rejected: #{rejection.message}. Write the whole reply again." : cue
+    end
+
+    def forget_last_exchange
+      conversation.messages.reload.last(2).each(&:destroy)
+      @conversation = nil
+    end
+
+    def settle(cue)
+      conversation.messages.reload.where(role: "user").last.update! content: cue
+      @conversation = nil
     end
 
     def ask(prompt, &)
+      conversation.with_schema @schema
+
       if conversation.messages.last&.role == "user"
         conversation.complete(&)
       else

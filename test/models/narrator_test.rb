@@ -541,8 +541,21 @@ class NarratorTest < ActiveSupport::TestCase
 
     assert @game_session.scenes.sole.choosing?
     assert_equal "Scene 1 of 7. Write the first scene.", broken.prompt
-    assert_equal "Your reply was rejected: difficulty 25 is outside 8-19. Write the whole reply again.", rewrite.prompt
-    assert_equal %i[user assistant user], rewrite.conversation.map(&:role)
+    assert_includes rewrite.prompt, "Scene 1 of 7. Write the first scene."
+    assert_includes rewrite.prompt, "Your last reply was rejected: difficulty 25 is outside 8-19."
+    assert_equal %i[user], rewrite.conversation.map(&:role), "the rejected reply is not in the conversation the rewrite sees"
+  end
+
+  test "a rejected reply leaves no trace in the conversation" do
+    broken = FakeReply.new(SCENE_RESPONSE.sub(%q("difficulty": 14), %q("difficulty": 25)))
+
+    stub_llm(broken, FakeReply.new(SCENE_RESPONSE)) { narrate }
+
+    messages = @game_session.conversation.messages.reload
+    assert_equal %w[system user assistant], messages.pluck(:role)
+    assert_equal "Scene 1 of 7. Write the first scene.", messages.second.content
+    assert_includes messages.last.content, %q("difficulty": 14)
+    assert_equal 2, @game_session.conversation.ruby_llm_usages.count, "both calls are still paid for"
   end
 
   test "a scene that does not fit the screen is rewritten until the narrator gives up" do

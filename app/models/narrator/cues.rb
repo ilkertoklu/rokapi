@@ -54,7 +54,6 @@ class Narrator::Cues
       used = roll.player.character.items.used_since(roll.scene.created_at)
       return if used.none?
 
-      "Before rolling, #{roll.player.name} used #{used.map { |item| "#{item.name} (#{format('%+d', item.hp_effect)} health)" }.join(" and ")}; " \
-        "that health is already applied and the item is gone, so it belongs in neither hp nor items_lost."
+      "Before rolling, #{roll.player.name} used #{used.map { |item| "#{item.name} (#{format('%+d', item.hp_effect)} health)" }.join(" and ")}, already applied."
     end
 end
