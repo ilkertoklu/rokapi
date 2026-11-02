@@ -19,7 +19,7 @@ class Scene < ApplicationRecord
   def stream(prose)
     return if narration == prose
 
-    update_column :narration, prose
+    self.narration = prose
     broadcast_narration
   end
 

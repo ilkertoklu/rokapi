@@ -47,17 +47,24 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal "refresh", streams.last["action"], "the title and the choices arrive with a final refresh"
   end
 
-  test "every narration stream carries the whole text so far" do
-    fake = FakeReply.new(SCENE_RESPONSE, chunks: SCENE_RESPONSE.chars.each_slice(40).map(&:join))
+  test "every narration stream carries the whole text so far and the scene is written once the reply is complete" do
+    scene = @game_session.current_scene
+    written = []
+    fake = FakeReply.new(SCENE_RESPONSE, chunks: SCENE_RESPONSE.chars.each_slice(40).map(&:join)) { written << scene.reload.narration }
 
     streams = stub_llm(fake) do
       capture_turbo_stream_broadcasts(@game_session) { narrate }
     end
 
-    narrations = streams.select { |stream| stream["target"] == "scene_narration" }
-    assert_equal [ "update" ], narrations.map { |stream| stream["action"] }.uniq,
+    assert_equal [ nil ], written.uniq, "the narration is not written while it streams"
+    assert_equal SCENE_RESPONSE.split("```").first.strip, scene.reload.narration
+
+    narrations = streams.select { |stream| stream["target"] == "scene_narration" }.map { |stream| [ stream["action"], stream.at("template").text ] }
+    assert_operator narrations.size, :>, 1
+    assert_equal [ "update" ], narrations.map(&:first).uniq,
       "a morph refresh mid-stream would drop appended chunks; updates are idempotent"
-    assert_equal @game_session.scenes.sole.narration, narrations.last.at("template").text
+    narrations.map(&:last).each_cons(2) { |earlier, later| assert later.start_with?(earlier.strip), "#{later.inspect} drops #{earlier.inspect}" }
+    assert_equal scene.narration, narrations.last.last
   end
 
   test "the outcome is written by its own call, without touching the story" do
@@ -454,11 +461,14 @@ class NarratorTest < ActiveSupport::TestCase
     staged = []
 
     fake = FakeReply.split_before_structure(FINALE_RESPONSE) do
-      staged << [ finale.reload.narration, finale.finale?, @game_session.reload.outcome ]
+      staged << [ finale.reload.finale?, @game_session.reload.outcome ]
     end
-    stub_llm(fake) { narrate }
+    streams = stub_llm(fake) do
+      capture_turbo_stream_broadcasts(@game_session) { narrate }
+    end
 
-    assert_equal [ "The caravan bells echo down the valley as you ride into Whitebend.", false, nil ], staged.first
+    assert_equal [ false, nil ], staged.first
+    assert_equal "The caravan bells echo down the valley as you ride into Whitebend.", streams.first.at("template").text
     assert finale.reload.finale?
     assert @game_session.reload.outcome_victory?
   end
