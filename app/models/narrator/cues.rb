@@ -1,5 +1,4 @@
 class Narrator::Cues
-  LANGUAGES = { "en" => "English", "tr" => "Turkish" }.freeze
   GRADE_NOTES = {
     critical: "natural 20",
     brilliant: "target beaten by %{margin}",
@@ -8,17 +7,8 @@ class Narrator::Cues
     catastrophe: "natural 1"
   }.freeze
 
-  def initialize(game_session, title_limit:)
+  def initialize(game_session)
     @game_session = game_session
-    @title_limit = title_limit
-  end
-
-  def brief
-    in_english do
-      RubyLLM.render_prompt "narrator/brief",
-        language: LANGUAGES.fetch(@game_session.locale), quest: quest, tone: GameSession::Tone.fetch(@game_session.tone).directive,
-        scenes: budget, party: @game_session.party.map { |player| portrait(player) }, surprise: surprise?, title_limit: @title_limit
-    end
   end
 
   def scene(scene)
@@ -53,25 +43,6 @@ class Narrator::Cues
 
     def budget
       @game_session.scene_budget
-    end
-
-    def surprise?
-      @game_session.quest.nil?
-    end
-
-    def quest
-      GameSession::Quest[@game_session.quest]&.brief(locale: @game_session.locale) ||
-        "A surprise adventure: the world and the quest are yours to invent, away from dragons, lost princesses and chosen ones."
-    end
-
-    def portrait(player)
-      character = player.character
-      traits = [ Character::Race.fetch(character.race), Character::Klass.fetch(character.klass), Character::Background.fetch(character.background) ]
-      stats = Character::Stat.all.map { |stat| "#{stat.label} #{character.stats[stat.key]}" }.join(", ")
-      items = character.items.carried.map(&:summary).join("; ").presence || "nothing"
-
-      "#{player.name}: #{traits.map { |trait| "#{trait.label} (#{trait.description})" }.join(", ")}. " \
-        "Health #{character.max_hp}. #{stats}. Carries #{items}."
     end
 
     def grade(roll)

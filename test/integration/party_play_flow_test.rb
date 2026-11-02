@@ -66,7 +66,7 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
       perform_enqueued_jobs { post game_session_acknowledgement_path(@room), as: :json }
     end
     assert_equal "Scene 2 of 7. Deniz's turn. Write the next scene.", second_scene.prompt
-    assert_includes second_scene.messages[-3].content, 'Ilker chose "Force the drawer open"'
+    assert_includes second_scene.conversation[-3].content, 'Ilker chose "Force the drawer open"'
 
     get game_session_path(@room), as: :json
     game = response.parsed_body

@@ -16,7 +16,6 @@ class GameSession < ApplicationRecord
   has_many :choices, through: :scenes
   has_many :rolls, through: :choices
   has_many :players, dependent: :destroy
-  has_many :llm_calls, dependent: :delete_all
   has_one :chat, dependent: :destroy
 
   enum :tone, Tone.keys.index_by(&:itself), default: "balanced", validate: true

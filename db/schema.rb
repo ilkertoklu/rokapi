@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_02_184335) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_02_184336) do
   create_table "characters", force: :cascade do |t|
     t.string "background", null: false
     t.datetime "created_at", null: false
@@ -79,18 +79,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_184335) do
     t.datetime "used_at"
     t.integer "uses_left"
     t.index ["character_id"], name: "index_items_on_character_id"
-  end
-
-  create_table "llm_calls", force: :cascade do |t|
-    t.integer "cost_in_microdollars"
-    t.datetime "created_at", null: false
-    t.integer "game_session_id", null: false
-    t.integer "input_tokens"
-    t.string "model", null: false
-    t.integer "output_tokens"
-    t.string "purpose", null: false
-    t.datetime "updated_at", null: false
-    t.index ["game_session_id"], name: "index_llm_calls_on_game_session_id"
   end
 
   create_table "login_codes", force: :cascade do |t|
@@ -385,7 +373,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_184335) do
   add_foreign_key "game_sessions", "game_sessions", column: "rematch_of_id", on_delete: :nullify
   add_foreign_key "game_sessions", "users", column: "creator_id"
   add_foreign_key "items", "characters"
-  add_foreign_key "llm_calls", "game_sessions"
   add_foreign_key "login_codes", "users"
   add_foreign_key "messages", "chats"
   add_foreign_key "pay_charges", "pay_customers", column: "customer_id"

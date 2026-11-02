@@ -29,12 +29,11 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal 3, scene.choices.find_by(stat: "strength").modifier
     assert_equal 1, scene.choices.find_by(stat: "wisdom").modifier
 
-    call = @game_session.llm_calls.sole
-    assert_equal "scene", call.purpose
-    model = RubyLLM.models.find(call.model)
-    assert_equal (1000 * model.price(:input) + 500 * model.price(:output)).round,
-      call.cost_in_microdollars
-    assert_operator call.cost_in_microdollars, :>, 0
+    usage = @game_session.chat.ruby_llm_usages.sole
+    model = RubyLLM.models.find(usage.model)
+    assert_equal [ 1000, 500 ], [ usage.input_tokens, usage.output_tokens ]
+    assert_in_delta (1000 * model.price(:input) + 500 * model.price(:output)) / 1_000_000, @game_session.chat.cost.total
+    assert_operator @game_session.chat.cost.total, :>, 0
   end
 
   test "a scene written without its fence still gets its choices" do
@@ -85,7 +84,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal "The drawer opens, but you cut your hand.", roll.reload.resolution
     assert_equal 31 - 4, characters(:ilker_hero).reload.hp
     assert_equal 1, @game_session.scenes.count, "the outcome call must not write a scene"
-    assert_equal "outcome", @game_session.llm_calls.outcome.sole.purpose
+    assert_equal 2, @game_session.chat.ruby_llm_usages.count
   end
 
   test "resolving a roll puts the outcome on screen" do
@@ -216,8 +215,7 @@ class NarratorTest < ActiveSupport::TestCase
     fake = FakeReply.new(OUTCOME_RESPONSE)
     stub_llm(fake) { roll.narrate }
 
-    assert_includes fake.instructions, "Longsword"
-    assert_includes fake.instructions, "Inn ledger (quest item)"
+    assert_includes fake.instructions, "Sets out with Longsword; Round shield."
     assert_includes fake.prompt, "used Healing potion (+7 health)"
     assert_includes fake.prompt, "Ilker has 31/31 health. Resolve it."
   end
@@ -300,7 +298,7 @@ class NarratorTest < ActiveSupport::TestCase
     first = FakeReply.new(SCENE_RESPONSE)
     stub_llm(first) { narrate }
 
-    assert_equal [ :system, :user ], first.messages.map(&:role)
+    assert_equal [ :user ], first.conversation.map(&:role)
     assert_includes first.instructions, "Length: 7 scenes"
     assert_includes first.instructions, "Quest: The caravan carrying Whitebend's winter salt"
     assert_includes first.instructions, "Warrior"
@@ -315,9 +313,9 @@ class NarratorTest < ActiveSupport::TestCase
 
     assert_equal 1, Chat.where(game_session: @game_session).count
     assert_equal first.instructions, second.instructions, "the brief never changes, so the cache holds"
-    assert_equal %i[system user assistant user assistant user], second.messages.map(&:role)
-    assert_includes second.messages[2].content, "Rain hammers the inn's roof tiles"
-    assert_equal "The drawer opens, but you cut your hand.", JSON.parse(second.messages[4].content)["resolution"]
+    assert_equal %i[user assistant user assistant user], second.conversation.map(&:role)
+    assert_includes second.conversation[1].content, "Rain hammers the inn's roof tiles"
+    assert_equal "The drawer opens, but you cut your hand.", JSON.parse(second.conversation[3].content)["resolution"]
   end
 
   test "the story so far is the conversation itself" do
@@ -333,7 +331,7 @@ class NarratorTest < ActiveSupport::TestCase
     scene_call = FakeReply.new(SECOND_SCENE_RESPONSE)
     stub_llm(scene_call) { narrate }
 
-    assert_equal 1 + 2 * 8 + 1, scene_call.messages.size
+    assert_equal 2 * 8 + 1, scene_call.conversation.size
     assert_equal "Scene 5 of 7. Write the next scene.", scene_call.prompt
     assert_equal 1, scene_call.messages.count { |message| message.role == :system }
   end
@@ -347,7 +345,7 @@ class NarratorTest < ActiveSupport::TestCase
     stub_llm(retry_call) { narrate }
 
     assert @game_session.current_scene.choosing?
-    assert_equal %i[system user], retry_call.messages.map(&:role), "the turn is not asked twice"
+    assert_equal %i[user], retry_call.conversation.map(&:role), "the turn is not asked twice"
   end
 
   test "a Turkish game is written in Turkish from an English briefing" do
@@ -428,7 +426,7 @@ class NarratorTest < ActiveSupport::TestCase
     resolve roll
 
     assert_equal 31 - 4, characters(:ilker_hero).reload.hp
-    assert_equal 1, @game_session.llm_calls.outcome.count
+    assert_equal 2, @game_session.chat.ruby_llm_usages.count, "one scene and one outcome"
   end
 
   test "nothing is owed while the player is choosing" do
@@ -546,7 +544,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert @game_session.scenes.sole.choosing?
     assert_equal "Scene 1 of 7. Write the first scene.", broken.prompt
     assert_equal "Your reply was rejected: difficulty 25 is outside 8-19. Write the whole reply again.", rewrite.prompt
-    assert_equal %i[system user assistant user], rewrite.messages.map(&:role)
+    assert_equal %i[user assistant user], rewrite.conversation.map(&:role)
   end
 
   test "a scene that does not fit the screen is rewritten until the narrator gives up" do
@@ -611,7 +609,7 @@ class NarratorTest < ActiveSupport::TestCase
     stub_llm(long, FakeReply.new(OUTCOME_RESPONSE)) { roll.narrate }
 
     assert_equal "The drawer opens, but you cut your hand.", roll.reload.resolution
-    assert_equal 2, @game_session.llm_calls.outcome.count
+    assert_equal 1 + 2, @game_session.chat.ruby_llm_usages.count, "the scene, the rejected outcome and its rewrite"
   end
 
   test "a character carries no more statuses than the limit" do
@@ -642,8 +640,9 @@ class NarratorTest < ActiveSupport::TestCase
     assert scene.narration.start_with?("Rain hammers")
     assert_equal 3, scene.choices.count
 
-    call = @game_session.llm_calls.sole
-    assert_equal [ "understudy", 0 ], [ call.model, call.cost_in_microdollars ]
+    usage = @game_session.chat.ruby_llm_usages.sole
+    assert_equal [ "understudy", "understudy" ], [ usage.provider, usage.model ]
+    assert_equal 0, @game_session.chat.cost.total
   end
 
   test "the understudy resolves a roll at no cost" do
@@ -653,7 +652,8 @@ class NarratorTest < ActiveSupport::TestCase
     stub_understudy(OUTCOME_RESPONSE) { roll.narrate }
 
     assert_equal "The drawer opens, but you cut your hand.", roll.reload.resolution
-    assert_equal 0, @game_session.llm_calls.outcome.sole.cost_in_microdollars
+    assert_equal 2, @game_session.chat.ruby_llm_usages.count
+    assert_equal 0, @game_session.chat.cost.total
   end
 
   private

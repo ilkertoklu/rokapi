@@ -22,7 +22,12 @@ class Narrator
 
   def initialize(game_session)
     @game_session = game_session
-    @cues = Cues.new(game_session, title_limit: title_limit)
+    @cues = Cues.new(game_session)
+  end
+
+  def self.title_limit(scenes)
+    progress = PROGRESS_DOT_PITCH * (scenes - 1) + CURRENT_DOT_WIDTH
+    ((HEADER_WIDTH - progress) / TITLE_GLYPH_WIDTH).floor
   end
 
   def narrate_outcome(roll)
@@ -43,11 +48,11 @@ class Narrator
 
   private
     def chat
-      @chat ||= (@game_session.reload_chat || open_chat).with_caching
-    end
-
-    def open_chat
-      @game_session.create_chat!(**voice).with_instructions(@cues.brief)
+      @chat ||= if (chat = @game_session.reload_chat)
+        Voice.find(chat.id)
+      else
+        Voice.create!(game_session: @game_session, **voice)
+      end
     end
 
     def voice
@@ -81,7 +86,6 @@ class Narrator
 
     def ask_outcome(roll, prompt)
       response = ask(prompt)
-      record_call :outcome, response
 
       data = parsed(response)
       raise MalformedResponse, "structured output missing" unless data.is_a?(Hash)
@@ -93,7 +97,7 @@ class Narrator
       reply = Reply.new
       data = rejection = nil
 
-      response = ask(prompt) do |chunk|
+      ask(prompt) do |chunk|
         next if rejection
 
         reply << chunk.content.to_s
@@ -107,7 +111,6 @@ class Narrator
         rejection = error
       end
 
-      record_call :scene, response
       raise rejection if rejection
       raise MalformedResponse, "structure block missing" if data.nil?
 
@@ -213,8 +216,7 @@ class Narrator
     end
 
     def title_limit
-      progress = PROGRESS_DOT_PITCH * (@game_session.scene_budget - 1) + CURRENT_DOT_WIDTH
-      ((HEADER_WIDTH - progress) / TITLE_GLYPH_WIDTH).floor
+      self.class.title_limit(@game_session.scene_budget)
     end
 
     def resolution_in(data)
@@ -298,9 +300,5 @@ class Narrator
       raise MalformedResponse, "difficulty #{difficulty} is outside #{DIFFICULTY.min}-#{DIFFICULTY.max}" unless DIFFICULTY.cover?(difficulty)
 
       difficulty
-    end
-
-    def record_call(purpose, response)
-      LlmCall.record game_session: @game_session, purpose: purpose, response: response
     end
 end

@@ -468,7 +468,7 @@ module Rokapi
       def say_footer(game)
         return unless game["finished"]
 
-        say "\n*** GAME OVER: #{game["outcome"].to_s.upcase} *** cost $#{format("%.3f", game["cost_in_microdollars"] / 1e6)}"
+        say "\n*** GAME OVER: #{game["outcome"].to_s.upcase} *** cost #{game["cost"] ? format("$%.3f", game["cost"]) : "unknown"}"
         say "PARTY: #{game["party"].map { |player| "#{player["name"]}#{" (fallen)" unless player["alive"]}" }.join(", ")}" if game["multiplayer"]
       end
 

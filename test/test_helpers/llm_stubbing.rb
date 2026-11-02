@@ -79,6 +79,10 @@ class FakeReply
     @messages.last.content
   end
 
+  def conversation
+    @messages.reject { |message| message.role == :system }
+  end
+
   def instructions
     @messages.select { |message| message.role == :system }.map(&:content).join("\n\n")
   end

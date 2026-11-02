@@ -73,7 +73,7 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
     assert game["finished"]
     assert_equal "victory", game["outcome"]
     assert game["scenes"].last["finale"]
-    assert_operator game["cost_in_microdollars"], :>, 0
+    assert_operator game["cost"], :>, 0
   end
 
   test "a move out of turn is a conflict" do

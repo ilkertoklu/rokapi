@@ -16,7 +16,7 @@ json.players @game_session.players.in_join_order.includes(:user, :character) do 
   json.ready member.ready?
   json.summary member.character&.summary
 end
-json.cost_in_microdollars @game_session.llm_calls.sum(:cost_in_microdollars)
+json.cost @game_session.chat&.cost&.total&.to_f
 
 if @character
   json.character { json.partial! "characters/character", character: @character }
