@@ -641,6 +641,28 @@ class NarratorTest < ActiveSupport::TestCase
     assert @game_session.reload.finished?
   end
 
+  test "the understudy writes a scene at no cost" do
+    stub_understudy(SCENE_RESPONSE) { narrate }
+
+    scene = @game_session.scenes.sole
+    assert scene.choosing?
+    assert_equal "The Old Inn", scene.title
+    assert scene.narration.start_with?("Rain hammers")
+    assert_equal 3, scene.choices.count
+
+    call = @game_session.llm_calls.sole
+    assert_equal [ "understudy", 0 ], [ call.model, call.cost_in_microdollars ]
+  end
+
+  test "the understudy resolves a roll at no cost" do
+    roll = play_first_scene
+
+    stub_understudy(OUTCOME_RESPONSE) { roll.narrate }
+
+    assert_equal "The drawer opens, but you cut your hand.", roll.reload.resolution
+    assert_equal 0, @game_session.llm_calls.outcome.sole.cost_in_microdollars
+  end
+
   private
     def narrate
       Narrator.new(@game_session).narrate_scene(@game_session.current_scene)

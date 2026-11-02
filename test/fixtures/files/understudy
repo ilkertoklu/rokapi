@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+$stdin.read
+reply = File.read(ARGV.first)
+middle = reply.bytesize / 2
+
+$stdout.write reply.byteslice(0, middle)
+$stdout.flush
+sleep 0.1
+$stdout.write reply.byteslice(middle..)

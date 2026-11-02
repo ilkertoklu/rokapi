@@ -28,7 +28,12 @@ class Narrator
 
   private
     def voice(agent)
-      agent.new(locale: @game_session.locale)
+      agent.new(chat: understudy, locale: @game_session.locale)
+    end
+
+    def understudy
+      command = Rails.configuration.x.narrator_command.presence
+      Understudy.new(command) if command
     end
 
     def plan

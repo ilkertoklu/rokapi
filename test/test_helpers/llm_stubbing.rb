@@ -43,6 +43,22 @@ module LlmStubbing
   ensure
     RubyLLM.singleton_class.define_method(:chat, original)
   end
+
+  def stub_understudy(reply)
+    Tempfile.create("reply") do |file|
+      file.write reply
+      file.close
+
+      Rails.configuration.x.narrator_command = understudy_command(file.path)
+      yield
+    ensure
+      Rails.configuration.x.narrator_command = nil
+    end
+  end
+
+  def understudy_command(reply_path)
+    Shellwords.join [ Rails.root.join("test/fixtures/files/understudy").to_s, reply_path ]
+  end
 end
 
 class FakeChat

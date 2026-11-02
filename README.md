@@ -36,6 +36,10 @@ Every call is logged with its cost. A finished game knows exactly what it cost t
 - `bin/rokapi` plays the game against a running server, one UI step per command (`bin/rokapi help`).
 - The iOS and Android apps live in `native/` (`native/README.md`).
 
+### Narrating without an API key
+
+In development, `NARRATOR_COMMAND` hands every narrator call to a command of your own instead of the API: `NARRATOR_COMMAND=~/bin/narrate bin/dev`. The command is run through the shell once per call and gets one JSON object on stdin: `system` (the instructions), `prompt` (the briefing) and `schema` (a JSON Schema, or `null`). It writes the reply to stdout and exits 0. When `schema` is set, the reply is a single JSON object matching it, with no fences or prose around it; otherwise it is the scene exactly as the model would write it. Whatever the command writes before it exits streams into the scene as it arrives. These calls are logged as model `understudy` at zero cost. Without the variable, and in every other environment, the narrator calls the API.
+
 
 ## Tests
 
