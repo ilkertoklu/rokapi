@@ -10,9 +10,6 @@ module Rokapi
 
     ROOT = File.expand_path("../..", __dir__)
     MAIL_WAIT = 15
-    LOGIN_CODE_LIMIT = 5
-    LOGIN_CODE_WINDOW = 3 * 60
-    LOGIN_CODE_LOG = File.join(ROOT, "tmp/rokapi/login_codes.json")
 
     Response = Data.define(:status, :location, :content_type, :body) do
       def success? = status.between?(200, 299)
@@ -55,10 +52,6 @@ module Rokapi
       FileUtils.rm_f mailbox(address)
     end
 
-    def confirmation_link(address)
-      read_mail address, %r{https?://\S+/email_confirmations/\S+}
-    end
-
     def game_id
       @state["game"]
     end
@@ -78,10 +71,6 @@ module Rokapi
 
     def patch(path, params = {})
       request Net::HTTP::Patch, path, params
-    end
-
-    def delete(path, params = {})
-      request Net::HTTP::Delete, path, params
     end
 
     private
@@ -159,34 +148,10 @@ module Rokapi
 
       def request_login_code
         response = post("/login_codes", email: email)
-        log_login_code_request
+        return if response.location.to_s.end_with?("/session/new")
 
-        unless response.location.to_s.end_with?("/session/new")
-          alert = get(URI(response.location.to_s).path).body[/class="flash flash--alert">([^<]+)</, 1]&.then { CGI.unescapeHTML(it) }
-          raise Error, [ "No login code was sent: #{alert || "the server refused."}", login_code_wait ].compact.join(" ")
-        end
-      end
-
-      def log_login_code_request
-        requests = login_code_requests << Time.now.to_f
-        FileUtils.mkdir_p File.dirname(LOGIN_CODE_LOG)
-        File.write LOGIN_CODE_LOG, JSON.generate(requests.last(50))
-      end
-
-      def login_code_requests
-        File.exist?(LOGIN_CODE_LOG) ? JSON.parse(File.read(LOGIN_CODE_LOG)) : []
-      end
-
-      def login_code_wait
-        window_start = nil
-        count = 0
-        login_code_requests.each do |requested_at|
-          window_start, count = requested_at, 0 if window_start.nil? || requested_at >= window_start + LOGIN_CODE_WINDOW
-          count += 1
-        end
-
-        seconds = (window_start + LOGIN_CODE_WINDOW - Time.now.to_f).ceil
-        "Every --as identity shares the limit of #{LOGIN_CODE_LIMIT} codes per #{LOGIN_CODE_WINDOW / 60} minutes; try again in #{seconds}s." if count > LOGIN_CODE_LIMIT && seconds.positive?
+        alert = get(URI(response.location.to_s).path).body[/class="flash flash--alert">([^<]+)</, 1]&.then { CGI.unescapeHTML(it) }
+        raise Error, "No login code was sent: #{alert || "the server refused."}"
       end
 
       def mailbox(address)

@@ -1,5 +1,4 @@
 require "thor"
-require "time"
 require_relative "client"
 
 module Rokapi
@@ -168,76 +167,6 @@ module Rokapi
     def resume
       act :post, "#{game_path}/narration.json"
       settle
-    end
-
-    desc "plan", "Show the plan, the usage left and when it refills"
-    def plan
-      subscription = fetch("/subscription.json")
-      return puts(JSON.pretty_generate(subscription)) if options[:json]
-
-      say "PLAN: #{subscription["plan_name"]} (#{subscription["status"]})"
-      say "USAGE: #{subscription["usage_left_percentage"]}% left, refills #{Time.parse(subscription["usage_refills_at"]).strftime("%Y-%m-%d %H:%M")}"
-      say "MANAGE: #{subscription["manage_url"]}" if subscription["manage_url"]
-      next_step "subscribe standard|premium|max" if subscription["status"] == "free"
-    end
-
-    desc "subscribe PLAN", "Buy a plan through PurchaseKit's demo mode, as the app's store sheet would"
-    def subscribe(key)
-      paywall = fetch("/subscriptions/paywall.json")
-      offer = paywall["plans"].find { |candidate| candidate["key"] == key } ||
-        raise(Thor::Error, "No plan #{key}. Plans: #{paywall["plans"].map { |candidate| candidate["key"] }.join(", ")}")
-
-      intent = act(:post, "/purchasekit/purchases.json",
-        product_id: offer["product_id"], customer_id: paywall["customer_id"], success_path: paywall["success_path"]).json
-      completion = authenticated { client.post("/purchasekit/purchase/completions/#{intent["uuid"]}") }
-      raise Thor::Error, "The server is not in PurchaseKit demo mode; subscriptions are bought in the app." unless completion.redirect?
-
-      deadline = Time.now + options[:wait]
-      sleep POLL_INTERVAL until fetch("/subscription.json")["plan"] == key || Time.now > deadline
-      plan
-    end
-
-    desc "settings", "Show the account, or change its name and email"
-    option :name, desc: "New profile name"
-    option :email, desc: "New email; it waits for the link mailed to it"
-    def settings
-      account = fetch("/my/settings.json")
-
-      if options[:name] || options[:email]
-        client.clear_mail options[:email] if options[:email]
-        account = act(:patch, "/my/settings.json",
-          user: { name: options[:name] || account["name"], email: options[:email] || account["unconfirmed_email"] || account["email"] }).json
-      end
-
-      say "NAME: #{account["name"]}"
-      say "EMAIL: #{account["email"]}"
-
-      if account["unconfirmed_email"]
-        say "PENDING: #{account["unconfirmed_email"]} (#{account["email"]} keeps working until it is confirmed)"
-        next_step "confirm_email"
-      end
-    end
-
-    desc "confirm_email", "Open the link mailed to the pending email, reading it from tmp/mails in development"
-    option :link, desc: "Confirmation link, when it cannot be read from tmp/mails"
-    def confirm_email
-      pending = fetch("/my/settings.json")["unconfirmed_email"] || raise(Thor::Error, "No email change is pending. Run: bin/rokapi settings --email NEW")
-      link = options[:link] || client.confirmation_link(pending) ||
-        raise(Thor::Error, "No confirmation link arrived for #{pending}. Read it from the mail and run: bin/rokapi confirm_email --link URL")
-
-      client.get URI(link).request_uri
-      account = fetch("/my/settings.json")
-      raise Thor::Error, "The link was not accepted; it may have expired. Run: bin/rokapi settings --email #{pending}" if account["unconfirmed_email"]
-
-      say "EMAIL: #{account["email"]}"
-      say "Play on with --as #{account["email"]}; the old address now opens a new account."
-    end
-
-    desc "delete_account", "Delete the account with every game it created"
-    option :confirm, required: true, desc: "The confirmation word: DELETE, or SİL when playing in Turkish"
-    def delete_account
-      act :delete, "/my/account.json", confirmation: options[:confirm]
-      say "Deleted #{options[:as]}. Logging in with it again starts a new account."
     end
 
     private
