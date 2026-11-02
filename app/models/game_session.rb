@@ -8,6 +8,9 @@ class GameSession < ApplicationRecord
   JOINABLE_FOR = 24.hours
 
   belongs_to :creator, class_name: "User", default: -> { Current.user }
+  belongs_to :rematch_of, class_name: "GameSession", optional: true
+
+  has_one :rematch, class_name: "GameSession", foreign_key: :rematch_of_id, inverse_of: :rematch_of
 
   has_many :scenes, dependent: :destroy
   has_many :choices, through: :scenes
@@ -36,6 +39,7 @@ class GameSession < ApplicationRecord
 
   before_create :assign_code, if: -> { max_players > 1 }
   after_create -> { players.create!(user: creator) }
+  after_create_commit -> { rematch_of.broadcast_refresh }, if: :rematch_of
 
   def self.open_for_join(code)
     rooms.unstarted.where(created_at: JOINABLE_FOR.ago..).find_by(code: code) || raise(NotFound)
@@ -96,6 +100,18 @@ class GameSession < ApplicationRecord
 
   def advance
     scenes.create!(position: scenes.maximum(:position).to_i + 1, active_player: next_active_player).narrate_later
+  end
+
+  def start_rematch(by:)
+    with_lock do
+      rematch || create_rematch!(creator: by, quest: quest, tone: tone, length: length, locale: locale, max_players: max_players).tap do |room|
+        party.each { |player| room.players.create!(user: player.user) unless player.user == by }
+      end
+    end
+  end
+
+  def survivors
+    party.select { |player| player.character&.hp&.positive? }
   end
 
   def scene_budget

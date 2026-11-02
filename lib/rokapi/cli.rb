@@ -103,6 +103,15 @@ module Rokapi
       settle
     end
 
+    desc "rematch", "After a party game, take everyone into a fresh lobby with the same settings"
+    def rematch
+      response = act(:post, "#{game_path}/rematch.json")
+      client.game_id = response.location[%r{/game_sessions/(\d+)}, 1].to_i
+
+      say "Game #{client.game_id} is the new lobby."
+      present fetch("/game_sessions/#{client.game_id}.json")
+    end
+
     desc "show", "Show where the game stands and what to do next; in a party game, wait for your turn"
     def show
       game = self.game
@@ -392,7 +401,7 @@ module Rokapi
         case
         when game["finished"]
           say_footer game
-          next_step "new"
+          next_step game["multiplayer"] ? "rematch" : "new"
         when spectating?(game)
           say "\n#{scene["active_player"]}’s turn. You are watching."
           next_step "show (waits for your turn)"
@@ -479,6 +488,7 @@ module Rokapi
         return unless game["finished"]
 
         say "\n*** GAME OVER: #{game["outcome"].to_s.upcase} *** cost $#{format("%.3f", game["cost_in_microdollars"] / 1e6)}"
+        say "PARTY: #{game["party"].map { |player| "#{player["name"]}#{" (fallen)" unless player["alive"]}" }.join(", ")}" if game["multiplayer"]
       end
 
       def usable_hint(game)

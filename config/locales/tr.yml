@@ -147,6 +147,7 @@ tr:
 
   game_session:
     surprise_title: Sürpriz macera
+    party: "Ekip: %{names}"
     duration:
       hours: "%{hours}sa %{minutes}dk"
       minutes: "%{minutes}dk"
@@ -263,6 +264,7 @@ tr:
     finale:
       duration: Süre
       dice_rolled: Zar atıldı
+      alive: Hayatta
       new_adventure: Yeni macera
       copied: Kopyalandı
       share_summary: Özeti paylaş

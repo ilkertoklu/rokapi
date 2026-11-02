@@ -19,6 +19,7 @@ Rails.application.routes.draw do
     scope module: :game_sessions do
       resource :character, only: %i[new create]
       resource :start, only: :create
+      resource :rematch, only: :create
       resource :roll, only: :create
       resource :acknowledgement, only: :create
       resource :narration, only: :create

@@ -1,5 +1,6 @@
 <%# locals: (game_session:) -%>
 <% finale = game_session.current_scene %>
+<% survivors = game_session.survivors if game_session.multiplayer? %>
 
 <div class="finale">
   <div class="finale__crest">
@@ -24,13 +25,34 @@
         <strong><%= game_session.rolls.count %></strong>
         <span><%= t(".dice_rolled") %></span>
       </div>
+      <% if game_session.multiplayer? %>
+        <div>
+          <strong><%= survivors.size %></strong>
+          <span><%= t(".alive") %></span>
+        </div>
+      <% end %>
     </div>
+
+    <% if game_session.multiplayer? %>
+      <ul class="roster">
+        <% game_session.party.each_with_index do |player, seat| %>
+          <%= tag.li class: [ "roster__member", "roster__member--fallen": !survivors.include?(player) ] do %>
+            <%= player_avatar player, seat: seat %>
+            <span><%= player.name %></span>
+          <% end %>
+        <% end %>
+      </ul>
+    <% end %>
   <% end %>
 </div>
 
 <% if game_session.finished? %>
   <div class="stage__footer">
-    <%= link_to t(".new_adventure"), new_game_session_path, class: "btn btn--primary" %>
+    <% if game_session.multiplayer? %>
+      <%= button_to t(".new_adventure"), game_session_rematch_path(game_session), class: "btn btn--primary" %>
+    <% else %>
+      <%= link_to t(".new_adventure"), new_game_session_path, class: "btn btn--primary" %>
+    <% end %>
     <%= tag.button class: "btn btn--secondary",
           data: { controller: "share", action: "share#share", share_text_value: finale_share_text(game_session), share_copied_value: t(".copied") } do %>
       <%= render "glyph", name: "share" %>

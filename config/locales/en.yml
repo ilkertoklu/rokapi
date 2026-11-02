@@ -127,6 +127,7 @@ en:
 
   game_session:
     surprise_title: Surprise adventure
+    party: "Party: %{names}"
     duration:
       hours: "%{hours}h %{minutes}m"
       minutes: "%{minutes} min"
@@ -242,6 +243,7 @@ en:
     finale:
       duration: Duration
       dice_rolled: Dice rolled
+      alive: Alive
       new_adventure: New adventure
       copied: Copied
       share_summary: Share summary

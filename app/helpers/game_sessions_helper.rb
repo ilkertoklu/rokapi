@@ -18,7 +18,9 @@ module GameSessionsHelper
     outcome = t(game_session.outcome, scope: "game_session.outcomes")
     highlights = [ game_session.title, duration_label(game_session.duration), t("game_session.rolls", count: game_session.rolls.count) ].join(" · ")
 
-    "#{game_session.current_scene.title} — #{outcome}\n#{highlights}"
+    party = t("game_session.party", names: game_session.party.map(&:name).join(", ")) if game_session.multiplayer?
+
+    [ "#{game_session.current_scene.title} — #{outcome}", highlights, party ].compact.join("\n")
   end
 
   def resume_summary(game_session)

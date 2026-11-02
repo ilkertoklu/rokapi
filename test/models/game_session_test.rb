@@ -195,7 +195,48 @@ class GameSessionTest < ActiveSupport::TestCase
     assert_equal [ players(:ilker_without_character_host) ], game_session.scenes.map(&:active_player).uniq
   end
 
+  test "a rematch opens a fresh lobby with the same party and settings" do
+    room = finished_room
+    sevval = room.players.create!(user: users(:sevval))
+
+    rematch = room.start_rematch(by: users(:deniz))
+
+    assert_not rematch.started?
+    assert rematch.lobby?
+    assert_not_equal room.code, rematch.code
+    assert_equal room.slice(:quest, :tone, :length, :locale, :max_players), rematch.slice(:quest, :tone, :length, :locale, :max_players)
+    assert_equal users(:deniz), rematch.host.user
+    assert_equal [ users(:deniz), users(:ilker), users(:sevval) ], rematch.party.map(&:user)
+    assert rematch.players.none?(&:ready?)
+    assert_equal sevval.user, rematch.player_for(users(:sevval)).user
+  end
+
+  test "everyone who asks for a rematch lands in the same lobby" do
+    room = finished_room
+
+    first = room.start_rematch(by: users(:deniz))
+
+    assert_no_difference -> { GameSession.count } do
+      assert_equal first, room.reload.start_rematch(by: users(:ilker))
+    end
+    assert_equal users(:deniz), first.host.user
+  end
+
+  test "survivors are the players whose characters still stand" do
+    room = finished_room
+    players(:deniz_room_guest).character.update! hp: 0
+
+    assert_equal [ players(:ilker_room_host) ], room.survivors
+  end
+
   private
+    def finished_room
+      game_sessions(:ilker_room).tap do |room|
+        room.players.each { it.ready_up(character_attributes) }
+        room.update! started_at: 1.hour.ago, ended_at: Time.current
+      end
+    end
+
     def create_room
       GameSession.create!(creator: users(:deniz), quest: "sunken_village", max_players: GameSession::PARTY_SIZE)
     end

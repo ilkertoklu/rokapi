@@ -1,0 +1,29 @@
+@layer components {
+  .roster {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .875rem;
+    margin: 1.375rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .roster__member {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .3125rem;
+    font-size: .75rem;
+    color: var(--color-ink-faint);
+
+    .avatar {
+      inline-size: 40px;
+      block-size: 40px;
+    }
+  }
+
+  .roster__member--fallen {
+    opacity: .4;
+  }
+}
