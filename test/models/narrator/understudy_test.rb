@@ -13,6 +13,11 @@ class Narrator::UnderstudyTest < ActiveSupport::TestCase
     assert_not request["schema"].key?("$schema"), "the schema is sent as the API gets it, without metadata"
   end
 
+  test "a chat meant for another model tells the command which" do
+    assert_equal "claude-opus-5-5", JSON.parse(Narrator::Understudy.new("cat").with_model("claude-opus-5-5").ask("Judge.").content)["model"]
+    assert_nil JSON.parse(Narrator::Understudy.new("cat").ask("Write the scene.").content)["model"]
+  end
+
   test "a reply without a schema is asked for without one" do
     request = JSON.parse(Narrator::Understudy.new("cat").ask("Write the scene.").content)
 

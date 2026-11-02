@@ -14,6 +14,11 @@ class Narrator::Understudy
     self
   end
 
+  def with_model(model, **)
+    @model = model
+    self
+  end
+
   def with_schema(schema)
     @schema = (schema.is_a?(Class) ? schema.new : schema).to_json_schema.except("$schema", "title")
     self
@@ -39,7 +44,7 @@ class Narrator::Understudy
 
   private
     def request(prompt)
-      { system: @instructions, prompt: prompt, schema: @schema }.to_json
+      { model: @model, system: @instructions, prompt: prompt, schema: @schema }.to_json
     end
 
     def each_chunk(io)
