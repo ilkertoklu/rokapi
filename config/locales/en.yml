@@ -1,6 +1,10 @@
 en:
   language_name: English
 
+  date:
+    formats:
+      renewal: "%B %-d"
+
   time:
     formats:
       resume: "%b %-d, %H:%M"
@@ -18,12 +22,15 @@ en:
     standard:
       name: Standard
       adventures: About 8 adventures a month
+      perk: About 6× the free plan
     premium:
       name: Premium
       adventures: 20+ adventures a month
+      perk: 3× Standard
     max:
       name: Max
       adventures: 50+ adventures a month
+      perk: About 2.5× Premium, for long campaigns and busy hosts
 
   character:
     race:
@@ -397,6 +404,7 @@ en:
           stories: All your stories and adventures
           hosted_games: Multiplayer games you host, for every player in them
           profile: Your profile and account details
+        subscription_warning: Your subscription doesn't end with your account; cancel it in the App Store or Google Play first to stop the payments.
         type_to_confirm: Type “%{word}” to confirm
         submit: Delete my account for good
         cancel: Cancel
@@ -415,6 +423,8 @@ en:
     profiles:
       show:
         title: Profile
+        subscription: My subscription
+        subscription_text: Plan and usage left
         settings: Settings
         settings_text: Name and email
         language: Language
@@ -445,6 +455,7 @@ en:
       title: Monthly usage spent
       heading: Your monthly usage is spent
       reassurance_html: Nothing was cut short,<br>your stories are safely kept.
+      upgrade: Upgrade your plan
       close: Close for now
       refills: "· refills on %{date}"
       exhausted: Your monthly usage is spent. It is back to 100% on %{date}; joining a room with a code stays free.
@@ -528,6 +539,48 @@ en:
       submit: Send code
       have_account: Already have an account?
       sign_in: Sign in
+
+  subscriptions:
+    show:
+      title: My subscription
+      renews: "Monthly · %{date}"
+      ends: "Ends %{date}"
+      active: Active
+      ending: Ending
+      change: Change plan
+      cancel: Cancel subscription
+      cancel_note: If you cancel, you move to the free plan at the end of the period; your stories stay.
+      ending_note: Your subscription ends %{date}; then you move to the free plan and your stories stay.
+      upgrade: Upgrade your plan
+      restore: Restore purchases
+    paywalls:
+      show:
+        title: Choose your plan
+        current: Current
+        popular: Most popular
+        per_month: /mo
+        usage_note: Usage only drops in sessions you start; never when you join with a code.
+        subscribe: Subscribe
+        processing: Processing…
+        cancel_anytime: Cancel anytime
+        in_app_only: Subscriptions are bought in the Rokapi app for iOS and Android.
+    welcomes:
+      show:
+        title: Payment successful
+        heading: "You're on %{plan}"
+        lede: Your payment went through. Your usage is full right away; start a new adventure now.
+        plan: Plan
+        renews: Next payment
+        receipt: Receipt
+        receipt_sent: Sent to your email
+        play: Start an adventure
+        view_subscription: View my subscription
+        confirming: Confirming your purchase
+        confirming_lede: This page refreshes itself once the store confirms.
+    restorations:
+      create:
+        restored: Your subscription is active on this account.
+        nothing_to_restore: No active subscription was found on this account.
 
   welcomes:
     show:

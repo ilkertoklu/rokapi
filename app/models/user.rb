@@ -1,5 +1,5 @@
 class User < ApplicationRecord
-  include EmailChangeable, Allowance
+  include EmailChangeable, Subscriber, Allowance
 
   NAME_LENGTH = 40
 

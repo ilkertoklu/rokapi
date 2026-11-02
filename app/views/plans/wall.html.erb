@@ -10,6 +10,7 @@
 </div>
 
 <div class="stack">
+  <%= link_to t(".upgrade"), subscriptions_paywall_path, class: "btn btn--primary" %>
   <%= link_to root_path, class: "btn btn--secondary" do %>
     <%= t(".close") %> <span class="btn__aside"><%= t(".refills", date: refill_date(Current.user)) %></span>
   <% end %>

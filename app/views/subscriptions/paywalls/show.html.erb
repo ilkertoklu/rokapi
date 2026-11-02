@@ -1,0 +1,43 @@
+<% content_for :title, "#{t(".title")} · Rokapi" %>
+
+<%= render "back", to: subscription_path, title: t(".title") %>
+
+<% if hotwire_native_app? %>
+  <%= turbo_stream_from @customer %>
+
+  <%= purchasekit_paywall customer_id: @customer.id, success_path: subscriptions_welcome_path, class: "paywall" do |paywall| %>
+    <% Plan.paid.each do |plan| %>
+      <%= paywall.plan_option product: plan.store_product, selected: plan.popular? && plan != Current.user.monthly_plan, input_class: "plan-option__input", class: "plan-option" do %>
+        <%= render "subscriptions/paywalls/plan", plan: plan, price: paywall.price { "…" } %>
+      <% end %>
+    <% end %>
+
+    <p class="note">
+      <%= render "glyph", name: "info" %>
+      <span><%= t(".usage_note") %></span>
+    </p>
+
+    <div class="sticky-footer">
+      <%= paywall.submit t(".subscribe"), class: "btn btn--primary", data: { processing_text: t(".processing") } %>
+      <p class="hint"><%= t(".cancel_anytime") %></p>
+    </div>
+  <% end %>
+<% else %>
+  <div class="paywall">
+    <% Plan.paid.each do |plan| %>
+      <div class="plan-option">
+        <%= render "subscriptions/paywalls/plan", plan: plan %>
+      </div>
+    <% end %>
+
+    <p class="note">
+      <%= render "glyph", name: "info" %>
+      <span><%= t(".usage_note") %></span>
+    </p>
+
+    <p class="note note--emphasis">
+      <%= render "glyph", name: "info" %>
+      <span><%= t(".in_app_only") %></span>
+    </p>
+  </div>
+<% end %>

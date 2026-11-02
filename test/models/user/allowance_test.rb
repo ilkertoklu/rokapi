@@ -9,8 +9,12 @@ class User::AllowanceTest < ActiveSupport::TestCase
     assert_not user.out_of_usage?
   end
 
-  test "plans come from the catalog" do
-    assert_not User.new(email: "gold@example.com", plan: "gold").valid?
+  test "the plan comes from the store product the user subscribed to" do
+    user = users(:sevval)
+    subscribe user, "premium"
+
+    assert_equal Plan.fetch("premium"), user.monthly_plan
+    assert_raises(KeyError) { Plan.for_store_product("app.rokapi.gold.monthly") }
   end
 
   test "each scene played spends the allowance until the wall" do
@@ -42,7 +46,7 @@ class User::AllowanceTest < ActiveSupport::TestCase
 
   test "a bigger plan stretches the same play" do
     user = users(:sevval)
-    user.update! plan: "standard"
+    subscribe user, "standard"
 
     play_scenes GameSession.create!(creator: user, quest: "lost_caravan"), 10
 
@@ -73,6 +77,38 @@ class User::AllowanceTest < ActiveSupport::TestCase
     travel_to Time.zone.local(2026, 2, 20) do
       assert_equal 90, user.usage_left_percentage
     end
+  end
+
+  test "a subscription fills the usage at once and refills on renewal" do
+    user = travel_to(Time.zone.local(2026, 1, 10)) { User.create!(email: "abone@example.com") }
+
+    travel_to(Time.zone.local(2026, 2, 2)) { play_scenes GameSession.create!(creator: user, quest: "lost_caravan"), 10 }
+
+    travel_to Time.zone.local(2026, 2, 3, 9) do
+      assert user.out_of_usage?
+
+      subscribe user, "premium", period: Time.current...1.month.from_now
+      assert_equal 100, user.usage_left_percentage
+      assert_equal Time.zone.local(2026, 3, 3, 9), user.usage_refills_at
+    end
+  end
+
+  test "a cancelled subscription keeps its plan until the period ends" do
+    user = users(:sevval)
+    subscribe user, "max", status: "canceled", period: 10.days.ago...20.days.from_now
+
+    assert_equal Plan.fetch("max"), user.monthly_plan
+
+    travel 21.days do
+      assert_equal Plan.free, user.monthly_plan
+    end
+  end
+
+  test "an expired subscription is the free plan" do
+    user = users(:sevval)
+    subscribe user, "standard", status: "expired"
+
+    assert_equal Plan.free, user.monthly_plan
   end
 
   private

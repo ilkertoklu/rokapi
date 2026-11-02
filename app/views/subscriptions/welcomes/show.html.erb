@@ -1,0 +1,44 @@
+<% content_for :title, "#{t(".title")} · Rokapi" %>
+
+<% if @subscription %>
+  <% plan = Current.user.monthly_plan %>
+  <div class="brand brand--hero">
+    <span class="seal" aria-hidden="true"><%= render "glyph", name: "check" %></span>
+
+    <h1 class="greeting"><%= t(".heading", plan: plan.name) %></h1>
+    <p><%= t(".lede") %></p>
+  </div>
+
+  <dl class="receipt">
+    <div>
+      <dt><%= t(".plan") %></dt>
+      <dd class="receipt__plan"><%= plan.name %></dd>
+    </div>
+    <div>
+      <dt><%= t(".renews") %></dt>
+      <dd><%= subscription_renewal(@subscription) %></dd>
+    </div>
+    <div>
+      <dt><%= t(".receipt") %></dt>
+      <dd class="receipt__accent"><%= t(".receipt_sent") %></dd>
+    </div>
+  </dl>
+
+  <div class="stack">
+    <%= link_to t(".play"), root_path, class: "btn btn--primary" %>
+    <%= link_to t(".view_subscription"), subscription_path, class: "btn btn--secondary" %>
+  </div>
+<% else %>
+  <%= turbo_stream_from @customer %>
+
+  <div class="brand brand--hero">
+    <span class="ember ember--greeting" aria-hidden="true"></span>
+
+    <h1 class="greeting"><%= t(".confirming") %></h1>
+    <p><%= t(".confirming_lede") %></p>
+  </div>
+
+  <div class="stack">
+    <%= link_to t(".view_subscription"), subscription_path, class: "btn btn--secondary" %>
+  </div>
+<% end %>

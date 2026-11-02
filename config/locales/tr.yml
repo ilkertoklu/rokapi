@@ -3,6 +3,9 @@ tr:
 
   date:
     abbr_month_names: [~, Oca, Şub, Mar, Nis, May, Haz, Tem, Ağu, Eyl, Eki, Kas, Ara]
+    month_names: [~, Ocak, Şubat, Mart, Nisan, Mayıs, Haziran, Temmuz, Ağustos, Eylül, Ekim, Kasım, Aralık]
+    formats:
+      renewal: "%-d %B"
 
   number:
     percentage:
@@ -38,12 +41,15 @@ tr:
     standard:
       name: Standart
       adventures: Her ay ≈ 8 macera
+      perk: Ücretsiz planın ~6 katı kullanım
     premium:
       name: Premium
       adventures: Her ay ≈ 20+ macera
+      perk: Standart'ın 3 katı kullanım
     max:
       name: Max
       adventures: Her ay ≈ 50+ macera
+      perk: Premium'un ~2.5 katı; uzun kampanyalar ve yoğun host'lar için
 
   character:
     race:
@@ -418,6 +424,7 @@ tr:
           stories: Tüm hikâyelerin ve maceraların
           hosted_games: Kurduğun çok oyunculu oyunlar, içindeki tüm oyuncularla
           profile: Profil ve hesap bilgilerin
+        subscription_warning: Aboneliğin hesabınla birlikte bitmez; ödemeyi durdurmak için önce App Store ya da Google Play'den iptal et.
         type_to_confirm: Onaylamak için “%{word}” yaz
         submit: Hesabımı kalıcı olarak sil
         cancel: Vazgeç
@@ -436,6 +443,8 @@ tr:
     profiles:
       show:
         title: Profil
+        subscription: Aboneliğim
+        subscription_text: Plan yönetimi, kalan kullanım
         settings: Ayarlar
         settings_text: İsim ve e-posta
         language: Dil
@@ -466,6 +475,7 @@ tr:
       title: Kullanım bitti
       heading: Aylık kullanımın bitti
       reassurance_html: Hiçbir şey yarıda kalmadı,<br>hikâyen güvenle kaydedildi.
+      upgrade: Planını yükselt
       close: Şimdilik kapat
       refills: "· %{date} yenilenir"
       exhausted: Aylık kullanımın bitti. %{date} %100'e döner; kodla bir odaya katılmak yine ücretsiz.
@@ -549,6 +559,48 @@ tr:
       submit: Kod gönder
       have_account: Hesabın var mı?
       sign_in: Giriş yap
+
+  subscriptions:
+    show:
+      title: Aboneliğim
+      renews: "Aylık · %{date}"
+      ends: "%{date} tarihinde sona erer"
+      active: Aktif
+      ending: Sona eriyor
+      change: Planı değiştir
+      cancel: Aboneliği iptal et
+      cancel_note: İptal edersen dönem sonunda ücretsiz plana geçersin; hikâyelerin kalır.
+      ending_note: Aboneliğin %{date} tarihinde sona erer; sonra ücretsiz plana geçersin, hikâyelerin kalır.
+      upgrade: Planını yükselt
+      restore: Satın alımları geri yükle
+    paywalls:
+      show:
+        title: Planını seç
+        current: Mevcut
+        popular: En popüler
+        per_month: /ay
+        usage_note: Kullanım yalnızca senin başlattığın oturumlarda düşer; kodla katıldığında asla.
+        subscribe: Abone ol
+        processing: İşleniyor…
+        cancel_anytime: İstediğin an iptal edebilirsin
+        in_app_only: Abonelikler Rokapi'nin iOS ve Android uygulamasından alınır.
+    welcomes:
+      show:
+        title: Ödeme başarılı
+        heading: "%{plan}'a geçtin"
+        lede: Ödemen alındı. Kullanımın hemen dolu; yeni bir maceraya şimdi başlayabilirsin.
+        plan: Plan
+        renews: Sonraki ödeme
+        receipt: Makbuz
+        receipt_sent: E-postana gönderildi
+        play: Maceraya başla
+        view_subscription: Aboneliğimi görüntüle
+        confirming: Satın alman onaylanıyor
+        confirming_lede: Mağaza onayı gelince bu sayfa kendiliğinden yenilenir.
+    restorations:
+      create:
+        restored: Aboneliğin bu hesapta etkin.
+        nothing_to_restore: Bu hesapta etkin bir abonelik bulunamadı.
 
   welcomes:
     show:

@@ -14,6 +14,13 @@
   <% end %>
 </ul>
 
+<% if Current.user.subscribed? %>
+  <p class="note">
+    <%= render "glyph", name: "info" %>
+    <span><%= t(".subscription_warning") %></span>
+  </p>
+<% end %>
+
 <%= form_with url: my_account_path, method: :delete, class: "flow",
       data: { controller: "confirmation", confirmation_word_value: t("my.accounts.confirmation_word") } do |form| %>
   <div>

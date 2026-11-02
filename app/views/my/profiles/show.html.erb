@@ -10,6 +10,15 @@
   </div>
 </div>
 
+<%= link_to subscription_path, class: "menu-row menu-row--featured" do %>
+  <span class="menu-row__icon"><%= render "glyph", name: "flame" %></span>
+  <span class="menu-row__body">
+    <span class="menu-row__title"><%= t(".subscription") %></span>
+    <span class="menu-row__text"><%= t(".subscription_text") %></span>
+  </span>
+  <span class="menu-row__chevron"><%= render "glyph", name: "forward" %></span>
+<% end %>
+
 <%= link_to my_settings_path, class: "menu-row" do %>
   <span class="menu-row__icon"><%= render "glyph", name: "sliders" %></span>
   <span class="menu-row__body">

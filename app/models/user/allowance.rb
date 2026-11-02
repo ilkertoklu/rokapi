@@ -1,12 +1,8 @@
 module User::Allowance
   extend ActiveSupport::Concern
 
-  included do
-    validates :plan, inclusion: { in: Plan.keys }
-  end
-
   def monthly_plan
-    Plan.fetch(plan)
+    subscription ? Plan.for_store_product(subscription.processor_plan) : Plan.free
   end
 
   def scenes_played_this_month
@@ -28,6 +24,14 @@ module User::Allowance
 
   private
     def usage_period
+      if subscription&.current_period_start && subscription.current_period_end
+        subscription.current_period_start...subscription.current_period_end
+      else
+        signup_anniversary_period
+      end
+    end
+
+    def signup_anniversary_period
       months = (Time.current.year - created_at.year) * 12 + Time.current.month - created_at.month
       months -= 1 if created_at + months.months > Time.current
 

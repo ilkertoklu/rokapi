@@ -1,0 +1,16 @@
+<%# locals: (plan:, price: nil) -%>
+<span class="plan-option__head">
+  <span class="plan-option__mark" aria-hidden="true"></span>
+  <span class="plan-option__name"><%= plan.name %></span>
+  <% if plan == Current.user.monthly_plan %>
+    <span class="plan-option__badge"><%= t("subscriptions.paywalls.show.current") %></span>
+  <% end %>
+  <% if price %>
+    <span class="plan-option__price"><%= price %><span><%= t("subscriptions.paywalls.show.per_month") %></span></span>
+  <% end %>
+</span>
+<span class="plan-option__adventures"><%= plan.adventures %></span>
+<span class="plan-option__perk"><%= render "glyph", name: "check" %> <%= plan.perk %></span>
+<% if plan.popular? %>
+  <span class="plan-option__flag"><%= t("subscriptions.paywalls.show.popular") %></span>
+<% end %>

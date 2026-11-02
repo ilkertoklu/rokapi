@@ -49,6 +49,15 @@ Rails.application.routes.draw do
     resource :account, only: %i[show destroy]
   end
 
+  resource :subscription, only: :show
+  namespace :subscriptions do
+    resource :paywall, only: :show
+    resource :welcome, only: :show
+    resource :restoration, only: :create
+  end
+
+  mount PurchaseKit::Engine, at: "/purchasekit"
+
   namespace :hotwire_native do
     resource :path_configuration, only: :show
   end

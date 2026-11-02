@@ -1,0 +1,13 @@
+shared:
+  standard:
+    purchasekit: standard
+    apple: app.rokapi.standard.monthly
+    google: standard_monthly
+  premium:
+    purchasekit: premium
+    apple: app.rokapi.premium.monthly
+    google: premium_monthly
+  max:
+    purchasekit: max
+    apple: app.rokapi.max.monthly
+    google: max_monthly

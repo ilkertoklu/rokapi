@@ -66,3 +66,7 @@ group :test do
 end
 
 gem "ruby_llm", "~> 2.0"
+
+# In-app subscriptions through the App Store and Google Play [https://purchasekit.com]
+gem "pay", "~> 12.3"
+gem "purchasekit", "~> 0.9"
