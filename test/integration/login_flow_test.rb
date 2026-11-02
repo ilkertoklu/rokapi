@@ -27,6 +27,32 @@ class LoginFlowTest < ActionDispatch::IntegrationTest
     assert_match(/That code is wrong/, flash[:alert])
   end
 
+  test "friends on one network all get their codes" do
+    counting_rate_limits do
+      6.times do |friend|
+        post login_codes_path, params: { email: "friend#{friend}@example.com" }
+        assert_redirected_to new_session_path
+      end
+    end
+
+    assert_equal 6, LoginCode.joins(:user).where("users.email LIKE 'friend%'").count
+  end
+
+  test "one address gets five codes within three minutes" do
+    counting_rate_limits do
+      5.times do
+        post login_codes_path, params: { email: " Ilker@Example.com " }
+        assert_redirected_to new_session_path
+      end
+
+      assert_no_difference -> { LoginCode.count } do
+        post login_codes_path, params: { email: users(:ilker).email }
+      end
+      assert_redirected_to new_login_code_path
+      assert_match(/Too many attempts/, flash[:alert])
+    end
+  end
+
   test "code page without a pending email goes back to login" do
     get new_session_path
     assert_redirected_to new_login_code_path
@@ -71,4 +97,14 @@ class LoginFlowTest < ActionDispatch::IntegrationTest
     get new_login_code_path
     assert_redirected_to root_url
   end
+
+  private
+    def counting_rate_limits
+      store = ApplicationController.cache_store
+      counter = ActiveSupport::Cache::MemoryStore.new
+      store.define_singleton_method(:increment) { |*args, **options| counter.increment(*args, **options) }
+      yield
+    ensure
+      store.singleton_class.remove_method(:increment)
+    end
 end
