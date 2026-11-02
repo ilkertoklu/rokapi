@@ -307,6 +307,22 @@ en:
         sent: A new code is on its way.
 
   my:
+    accounts:
+      confirmation_word: DELETE
+      show:
+        title: Delete account
+        irreversible: This cannot be undone
+        intro: "These are deleted for good along with your account:"
+        losses:
+          stories: All your stories and adventures
+          hosted_games: Multiplayer games you host, for every player in them
+          profile: Your profile and account details
+        type_to_confirm: Type “%{word}” to confirm
+        submit: Delete my account for good
+        cancel: Cancel
+      destroy:
+        deleted: Your account is deleted.
+        unconfirmed: Type “%{word}” to delete your account.
     email_changes:
       show:
         title: Link sent
@@ -332,6 +348,8 @@ en:
         hint: When your email changes, we send a confirmation link to the new address.
         pending_html: Awaiting confirmation. <strong>%{email}</strong> stays valid until then.
         submit: Save
+        delete_account: Delete my account
+        delete_account_text: Deleted for good along with your stories
       update:
         saved: Saved.
         rate_limited: Too many changes. Try again in a few minutes.

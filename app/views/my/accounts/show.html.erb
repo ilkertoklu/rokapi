@@ -1,0 +1,29 @@
+<% content_for :title, "#{t(".title")} · Rokapi" %>
+
+<%= render "back", to: my_settings_path, title: t(".title") %>
+
+<div class="warning">
+  <span class="warning__icon"><%= render "glyph", name: "warning" %></span>
+  <h2><%= t(".irreversible") %></h2>
+  <p><%= t(".intro") %></p>
+</div>
+
+<ul class="losses">
+  <% %w[ stories hosted_games profile ].each do |loss| %>
+    <li><%= render "glyph", name: "cross" %><%= t(".losses.#{loss}") %></li>
+  <% end %>
+</ul>
+
+<%= form_with url: my_account_path, method: :delete, class: "flow",
+      data: { controller: "confirmation", confirmation_word_value: t("my.accounts.confirmation_word") } do |form| %>
+  <div>
+    <%= form.label :confirmation, t(".type_to_confirm", word: t("my.accounts.confirmation_word")), class: "overline field-label" %>
+    <%= form.text_field :confirmation, class: "confirmation", autocomplete: "off", autocapitalize: "characters", spellcheck: false,
+          placeholder: t("my.accounts.confirmation_word"), data: { confirmation_target: "input", action: "confirmation#update" } %>
+  </div>
+
+  <div class="sticky-footer stack">
+    <%= form.submit t(".submit"), class: "btn btn--danger", data: { confirmation_target: "submit" } %>
+    <%= link_to t(".cancel"), my_settings_path, class: "btn btn--neutral btn--small" %>
+  </div>
+<% end %>

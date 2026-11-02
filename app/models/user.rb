@@ -5,6 +5,7 @@ class User < ApplicationRecord
 
   has_many :sessions, dependent: :delete_all
   has_many :login_codes, dependent: :delete_all
+  has_many :created_game_sessions, class_name: "GameSession", foreign_key: :creator_id, inverse_of: :creator, dependent: :destroy
   has_many :players, dependent: :destroy
   has_many :game_sessions, through: :players
 

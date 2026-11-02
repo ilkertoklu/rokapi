@@ -76,6 +76,10 @@ module Rokapi
       request Net::HTTP::Patch, path, params
     end
 
+    def delete(path, params = {})
+      request Net::HTTP::Delete, path, params
+    end
+
     private
       def cookies
         @state["cookies"] ||= {}

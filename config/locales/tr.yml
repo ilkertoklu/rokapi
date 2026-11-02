@@ -323,6 +323,22 @@ tr:
         sent: Yeni kod gönderildi.
 
   my:
+    accounts:
+      confirmation_word: SİL
+      show:
+        title: Hesabı sil
+        irreversible: Bu işlem geri alınamaz
+        intro: "Hesabınla birlikte şunlar kalıcı olarak silinir:"
+        losses:
+          stories: Tüm hikâyelerin ve maceraların
+          hosted_games: Kurduğun çok oyunculu oyunlar, içindeki tüm oyuncularla
+          profile: Profil ve hesap bilgilerin
+        type_to_confirm: Onaylamak için “%{word}” yaz
+        submit: Hesabımı kalıcı olarak sil
+        cancel: Vazgeç
+      destroy:
+        deleted: Hesabın silindi.
+        unconfirmed: Hesabını silmek için “%{word}” yaz.
     email_changes:
       show:
         title: Bağlantı gönderildi
@@ -348,6 +364,8 @@ tr:
         hint: E-posta değişince yeni adrese doğrulama bağlantısı göndeririz.
         pending_html: Onay bekliyor. <strong>%{email}</strong> o zamana kadar geçerli.
         submit: Kaydet
+        delete_account: Hesabımı sil
+        delete_account_text: Hikâyelerinle birlikte kalıcı olarak silinir
       update:
         saved: Kaydedildi.
         rate_limited: Çok fazla değişiklik. Birkaç dakika sonra tekrar dene.

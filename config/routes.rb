@@ -42,6 +42,7 @@ Rails.application.routes.draw do
     resource :profile, only: :show
     resource :settings, only: %i[show update]
     resource :email_change, only: :show
+    resource :account, only: %i[show destroy]
   end
 
   get "up" => "rails/health#show", as: :rails_health_check

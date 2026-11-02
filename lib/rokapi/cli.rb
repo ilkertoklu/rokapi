@@ -166,6 +166,13 @@ module Rokapi
       say "Play on with --as #{account["email"]}; the old address now opens a new account."
     end
 
+    desc "delete_account", "Delete the account with every game it created"
+    option :confirm, required: true, desc: "The confirmation word: DELETE, or SİL when playing in Turkish"
+    def delete_account
+      act :delete, "/my/account.json", confirmation: options[:confirm]
+      say "Deleted #{options[:as]}. Logging in with it again starts a new account."
+    end
+
     private
       def client
         @client ||= Client.new(url: options[:url], email: options[:as])
