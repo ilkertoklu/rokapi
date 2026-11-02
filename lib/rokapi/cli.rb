@@ -345,12 +345,13 @@ module Rokapi
 
         unless streamed.key?(scene["position"])
           say_scene_heading game, scene
-          streamed[scene["position"]] = 0
+          streamed[scene["position"]] = ""
         end
 
-        print narration[streamed[scene["position"]]..]
+        shown = streamed[scene["position"]]
+        print narration.start_with?(shown) ? narration.delete_prefix(shown) : "\n\n(rewritten)\n#{narration}"
         $stdout.flush
-        streamed[scene["position"]] = narration.length
+        streamed[scene["position"]] = narration
       end
 
       def present(game, streamed: {}, narration: true)
