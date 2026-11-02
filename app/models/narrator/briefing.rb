@@ -154,7 +154,7 @@ class Narrator::Briefing
     def character_block(scene)
       character = scene.active_player.character
       stats = Character::Stat.all.map { |stat| "#{stat.label} #{character.stats[stat.key]}" }.join(", ")
-      [ "CHARACTER: #{character.user.name} — #{character.summary}. Health #{character.hp}/#{character.max_hp}. Abilities: #{stats}.",
+      [ "CHARACTER: #{character.name} — #{character.summary}. Health #{character.hp}/#{character.max_hp}. Abilities: #{stats}.",
         inventory_line(character), statuses_line(character) ].compact.join("\n")
     end
 

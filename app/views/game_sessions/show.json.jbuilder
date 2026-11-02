@@ -10,7 +10,7 @@ json.host @player == @game_session.host
 json.everyone_ready @game_session.everyone_ready?
 
 json.players @game_session.players.in_join_order.includes(:user, :character) do |member|
-  json.name member.user.name
+  json.name member.name
   json.host member == @game_session.host
   json.you member == @player
   json.ready member.ready?

@@ -7,8 +7,10 @@ class User < ApplicationRecord
   has_many :login_codes, dependent: :delete_all
   has_many :created_game_sessions, class_name: "GameSession", foreign_key: :creator_id, inverse_of: :creator, dependent: :destroy
   has_many :created_scenes, through: :created_game_sessions, source: :scenes
-  has_many :players, dependent: :destroy
+  has_many :players
   has_many :game_sessions, through: :players
+
+  before_destroy -> { players.reload.each(&:depart) }
 
   normalizes :email, with: ->(email) { email.strip.downcase.presence }
   normalizes :name, with: ->(name) { name.squish.truncate(NAME_LENGTH, omission: "") }

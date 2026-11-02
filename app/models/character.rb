@@ -7,7 +7,7 @@ class Character < ApplicationRecord
   has_many :items, dependent: :delete_all
   has_many :status_effects, dependent: :delete_all
 
-  delegate :game_session, :user, to: :player
+  delegate :game_session, :user, :name, :initial, to: :player
 
   attribute :race, default: "human"
   attribute :klass, default: "warrior"

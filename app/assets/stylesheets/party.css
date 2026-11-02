@@ -11,6 +11,12 @@
     font-size: .9375rem;
   }
 
+  .avatar.avatar--departed {
+    background: transparent;
+    border: 1px dashed var(--color-line-strong);
+    color: var(--color-ink-dim);
+  }
+
   .avatar--active {
     box-shadow: 0 0 0 2px var(--seat), 0 0 0 6px color-mix(in srgb, var(--seat) 13%, transparent);
   }

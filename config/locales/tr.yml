@@ -193,6 +193,9 @@ tr:
           geceleri çan sesi duyduğunu söyleyenler var. Sırrı çözmek için batık
           köye inilmesi gerekiyor.
 
+  player:
+    departed: Ayrılan oyuncu
+
   roll:
     grades:
       critical: KRİTİK BAŞARI

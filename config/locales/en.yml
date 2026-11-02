@@ -172,6 +172,9 @@ en:
           No record says why the village was abandoned, and some claim they hear a bell out on the
           water at night. Solving it means going down into the drowned village.
 
+  player:
+    departed: Departed player
+
   roll:
     grades:
       critical: CRITICAL SUCCESS

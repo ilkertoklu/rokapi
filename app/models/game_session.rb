@@ -105,7 +105,7 @@ class GameSession < ApplicationRecord
   def start_rematch(by:)
     with_lock do
       rematch || create_rematch!(creator: by, quest: quest, tone: tone, length: length, locale: locale, max_players: max_players).tap do |room|
-        party.each { |player| room.players.create!(user: player.user) unless player.user == by }
+        party.reject(&:departed?).each { |player| room.players.create!(user: player.user) unless player.user == by }
       end
     end
   end
@@ -172,11 +172,11 @@ class GameSession < ApplicationRecord
 
       if previous.nil?
         host
-      elsif finale_next?(previous)
+      elsif finale_next?(previous) && !previous.departed?
         previous
       else
         party = players.in_join_order.to_a
-        party[(party.index(previous) + 1) % party.size]
+        party.rotate(party.index(previous) + 1).find { |player| !player.departed? }
       end
     end
 

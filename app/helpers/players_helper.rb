@@ -3,7 +3,7 @@ module PlayersHelper
   PALATAL_L_ENDING = /[aâ]l\z/
 
   def player_avatar(player, *modifiers, seat: player.seat)
-    tag.span player.initial, title: player.name, class: [ "avatar", "avatar--seat-#{seat}", *modifiers ]
+    tag.span player.initial, title: player.name, class: [ "avatar", "avatar--seat-#{seat}", { "avatar--departed": player.departed? }, *modifiers ]
   end
 
   def genitive(name)

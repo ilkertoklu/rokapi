@@ -1,15 +1,29 @@
 class Player < ApplicationRecord
   belongs_to :game_session
-  belongs_to :user
+  belongs_to :user, optional: true
 
   has_one :character, dependent: :destroy
   has_many :rolls, dependent: :delete_all
 
   scope :in_join_order, -> { order(:created_at, :id) }
 
-  delegate :name, :initial, to: :user
-
   after_create_commit -> { broadcast_refresh_to game_session }
+
+  def name
+    user&.name || I18n.t("player.departed")
+  end
+
+  def initial
+    user&.initial || "·"
+  end
+
+  def departed?
+    user.nil?
+  end
+
+  def depart
+    game_session.started? ? update!(user: nil) : destroy!
+  end
 
   def ready?
     character.present?
