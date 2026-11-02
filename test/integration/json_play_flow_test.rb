@@ -63,7 +63,7 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
     assert_equal "The drawer opens, but you cut your hand.", roll["resolution"]
     assert_equal(-4, roll["effects"]["hp"])
 
-    stub_understudy(FINALE_RESPONSE) do
+    stub_understudy(FINALE_RESPONSE.sub(%q("outcome": "victory"), %q("outcome": "defeat"))) do
       perform_enqueued_jobs { post game_session_acknowledgement_path(game_session), as: :json }
     end
     assert_response :no_content
@@ -71,7 +71,7 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
     get game_session_path(game_session), as: :json
     game = response.parsed_body
     assert game["finished"]
-    assert_equal "victory", game["outcome"]
+    assert_equal "defeat", game["outcome"], "the lost roll decided the ending"
     assert game["scenes"].last["finale"]
     assert_equal 0.0, game["cost"]
   end

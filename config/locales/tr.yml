@@ -185,19 +185,22 @@ tr:
         title: Kayıp Kervan
         hook: Boranda kaybolan tuz kervanının izi.
         brief: >-
-          Akçabük köyünün kış tuzunu getiren kervan üç gündür kayıp.
-          Boran geçidi kapatmadan kervanı bulup köye ulaştırmak gerekiyor.
-          Rota Akçabük'ten Boranlı Geçit'e uzanıyor; izler, terk edilmiş konaklar ve
-          geçitteki asma köprü üzerinden ilerliyor. Kervanın kaybı bir kaza da
-          olabilir, bir pusu da.
+          Akçabük köyünün kış tuzunu getiren kervan üç gündür kayıp ve boran bir haftaya kalmadan
+          geçidi kapatacak. Rota Akçabük'ten Boranlı Geçit'e uzanıyor: izler, terk edilmiş konaklar,
+          asma köprü. Aslında olan şu: kervanbaşı Orhan tuzu dağ obasına sattı ve bunu gizlemek için
+          sahte bir pusu kurdu; karşı çıkan sürücüler konağın mahzeninde tutuluyor, obanın avcıları
+          hâlâ geçidi gözlüyor. Kahramanı yola çıkaran köy büyüğü bildiğinden azını söylüyor. Tuz
+          gelmezse Akçabük aç kalır; para gelmezse oba.
       sunken_village:
         title: Gölün Sırrı
         hook: Suyun altında kalmış eski bir köy.
         brief: >-
-          Kuraklıkta çekilen göl, yıllar önce sular altında kalmış bir köyü
-          ortaya çıkardı. Köyün terk edilme sebebi hiçbir kayıtta yok; gölden
-          geceleri çan sesi duyduğunu söyleyenler var. Sırrı çözmek için batık
-          köye inilmesi gerekiyor.
+          Kuraklıkta çekilen göl, yıllar önce sular altında kalan köyü ortaya çıkardı; geceleri
+          gölden çan sesi duyduğunu söyleyenler var. Aslında olan şu: köy kazayla batmadı; değirmenci
+          Selim, köy açlık çekerken ambarı çürümeye bıraktığının kanıtını gömmek için bendi açtı ve
+          bugün hâlâ hayatta, kıyıda yaşlı ve saygın, balıkçının oğullarına para verip insanları
+          harabelerden uzak tutuyor. Çanı, son sağ kalanın torunu çalıyor; adların yüksek sesle
+          okunmasını istiyor. Her şeyi kanıtlayan defter su basmış değirmende.
 
   player:
     departed: Ayrılan oyuncu

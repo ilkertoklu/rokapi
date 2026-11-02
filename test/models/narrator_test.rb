@@ -37,27 +37,27 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal "refresh", streams.last["action"], "the title and the choices arrive with a final refresh"
   end
 
-test "every narration stream carries the whole text so far and the scene is written once the reply is complete" do
-  scene = @game_session.current_scene
-  writes = []
-  subscriber = ActiveSupport::Notifications.subscribe("sql.active_record") { |event| writes << event.payload[:sql] if event.payload[:sql].start_with?('UPDATE "scenes"') }
+  test "every narration stream carries the whole text so far and the scene is written once the reply is complete" do
+    scene = @game_session.current_scene
+    writes = []
+    subscriber = ActiveSupport::Notifications.subscribe("sql.active_record") { |event| writes << event.payload[:sql] if event.payload[:sql].start_with?('UPDATE "scenes"') }
 
-  streams = capture_turbo_stream_broadcasts(@game_session) do
-    stub_understudy(SCENE_RESPONSE) { narrate }
-  ensure
-    ActiveSupport::Notifications.unsubscribe subscriber
+    streams = capture_turbo_stream_broadcasts(@game_session) do
+      stub_understudy(SCENE_RESPONSE) { narrate }
+    ensure
+      ActiveSupport::Notifications.unsubscribe subscriber
+      end
+
+      assert_equal 1, writes.size, "the narration is written once, when the reply is complete"
+      assert_equal SCENE_RESPONSE.split("```").first.strip, scene.reload.narration
+
+      narrations = streams.select { |stream| stream["target"] == "scene_narration" }.map { |stream| [ stream["action"], stream.at("template").text ] }
+      assert_operator narrations.size, :>, 1
+      assert_equal [ "update" ], narrations.map(&:first).uniq,
+        "a morph refresh mid-stream would drop appended chunks; updates are idempotent"
+      narrations.map(&:last).each_cons(2) { |earlier, later| assert later.start_with?(earlier.strip), "#{later.inspect} drops #{earlier.inspect}" }
+      assert_equal scene.narration, narrations.last.last
     end
-
-    assert_equal 1, writes.size, "the narration is written once, when the reply is complete"
-    assert_equal SCENE_RESPONSE.split("```").first.strip, scene.reload.narration
-
-    narrations = streams.select { |stream| stream["target"] == "scene_narration" }.map { |stream| [ stream["action"], stream.at("template").text ] }
-    assert_operator narrations.size, :>, 1
-    assert_equal [ "update" ], narrations.map(&:first).uniq,
-      "a morph refresh mid-stream would drop appended chunks; updates are idempotent"
-    narrations.map(&:last).each_cons(2) { |earlier, later| assert later.start_with?(earlier.strip), "#{later.inspect} drops #{earlier.inspect}" }
-    assert_equal scene.narration, narrations.last.last
-  end
 
   test "the outcome is written by its own call, without touching the story" do
     roll = play_first_scene
@@ -119,7 +119,7 @@ test "every narration stream carries the whole text so far and the scene is writ
 
     request = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
 
-    assert request["prompt"].end_with?("\n\nScene 2 of 7, Ilker's turn.\n")
+    assert request["prompt"].end_with?("\n\nScene 2 of 7, Ilker's turn. Raise the stakes: pay for what came before, and let the one who stands in the way act.\n")
   end
 
   test "statuses weigh on the roll and wear off with it" do
@@ -169,7 +169,7 @@ test "every narration stream carries the whole text so far and the scene is writ
     assert_includes first["system"], "Length: 7 scenes"
     assert_includes first["system"], "Quest: The caravan carrying Whitebend's winter salt"
     assert_includes first["system"], "Warrior"
-    assert_equal "Scene 1 of 7, Ilker's turn. This is the first scene.\n", first["prompt"], "the first turn has no story before it"
+    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion and decide the secret.\n", first["prompt"], "the first turn has no story before it"
 
     roll = with_die(2) { choose_and_roll @game_session.current_scene }
     stub_understudy(OUTCOME_RESPONSE) { roll.narrate }
@@ -196,7 +196,7 @@ test "every narration stream carries the whole text so far and the scene is writ
     request = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
 
     assert_equal 2 * 8, request["prompt"].scan(/^<(user|assistant)>$/).size
-    assert request["prompt"].end_with?("\n\nScene 5 of 7, Ilker's turn.\n")
+    assert request["prompt"].end_with?("\n\nScene 5 of 7, Ilker's turn. Raise the stakes: pay for what came before, and let the one who stands in the way act.\n")
   end
 
   test "a turn the provider never answered is answered on the next attempt" do
@@ -207,42 +207,34 @@ test "every narration stream carries the whole text so far and the scene is writ
     retry_call = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
     assert @game_session.current_scene.choosing?
-    assert_equal "Scene 1 of 7, Ilker's turn. This is the first scene.\n", retry_call["prompt"], "the turn is not asked twice"
+    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion and decide the secret.\n", retry_call["prompt"], "the turn is not asked twice"
     assert_equal %w[system user assistant], @game_session.conversation.messages.pluck(:role)
   end
 
-test "the brief of an English game" do
-  request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
+  test "the brief of an English game" do
+    request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
-  assert_equal <<~BRIEF, request["system"][/\A.*(?=EACH TURN)/m]
-    You narrate Rokapi, a tabletop adventure played on a phone with a d20. Everything the players see is written in English, for ages 12 and up.
+    assert_includes request["system"], "Everything the players see is written in English"
+    assert_equal <<~GAME, request["system"][/THIS GAME\n.*?\n(?=\n)/m]
+      THIS GAME
+      Quest: The caravan carrying Whitebend's winter salt has been missing for three days, and the blizzard will close the pass within the week. The route runs from Whitebend to Blizzard Pass: the tracks, the abandoned lodges, the rope bridge. What really happened: the caravan master, Orhan, sold the salt to the mountain clan and staged an ambush to hide it; the drivers who refused are held in the lodge cellar, and the clan's hunters still watch the pass. The village elder who sent the hero knows more than she says. Whitebend starves without the salt; the clan starves without the money.
+      Tone: Balanced. Wonder and threat in equal measure; the world is strange, the stakes are plain.
+      Length: 7 scenes; the last one is the finale.
+      The character:
+      - Ilker: Human (Versatile and balanced, at home in any class.), Warrior (Fights at the front, starts with a longsword and a round shield.), Soldier (Discipline, and the sight of war.). Health 31. Strength 16, Agility 11, Constitution 15, Intelligence 8, Wisdom 12, Charisma 14. Sets out with Longsword; Round shield.
+    GAME
+  end
 
-    THIS GAME
-    Quest: The caravan carrying Whitebend's winter salt has been missing for three days. It has to be found and brought to the village before the blizzard closes the pass. The route runs from Whitebend to Blizzard Pass, on past the tracks, the abandoned lodges and the rope bridge at the pass. The caravan's loss could be an accident, or it could be an ambush.
-    Tone: Balanced
-    Length: 7 scenes; the last one is the finale.
-    The character:
-    - Ilker: Human (Versatile and balanced, at home in any class.), Warrior (Fights at the front, starts with a longsword and a round shield.), Soldier (Discipline, and the sight of war.). Health 31. Strength 16, Agility 11, Constitution 15, Intelligence 8, Wisdom 12, Charisma 14. Sets out with Longsword; Round shield.
+  test "the brief of a Turkish game, read in the default locale like the narration job" do
+    @game_session.update! locale: "tr"
+    request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
-  BRIEF
-end
-
-test "the brief of a Turkish game, read in the default locale like the narration job" do
-  @game_session.update! locale: "tr"
-  request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
-
-  assert_equal <<~BRIEF, request["system"][/\A.*(?=EACH TURN)/m]
-    You narrate Rokapi, a tabletop adventure played on a phone with a d20. Everything the players see is written in Turkish, for ages 12 and up.
-
-    THIS GAME
-    Quest: Akçabük köyünün kış tuzunu getiren kervan üç gündür kayıp. Boran geçidi kapatmadan kervanı bulup köye ulaştırmak gerekiyor. Rota Akçabük'ten Boranlı Geçit'e uzanıyor; izler, terk edilmiş konaklar ve geçitteki asma köprü üzerinden ilerliyor. Kervanın kaybı bir kaza da olabilir, bir pusu da.
-    Tone: Balanced
-    Length: 7 scenes; the last one is the finale.
-    The character:
-    - Ilker: Human (Versatile and balanced, at home in any class.), Warrior (Fights at the front, starts with a longsword and a round shield.), Soldier (Discipline, and the sight of war.). Health 31. Strength 16, Agility 11, Constitution 15, Intelligence 8, Wisdom 12, Charisma 14. Sets out with Uzun kılıç; Yuvarlak kalkan.
-
-  BRIEF
-  assert_equal "Scene 1 of 7, Ilker's turn. This is the first scene.\n", request["prompt"]
+    assert_includes request["system"], "Everything the players see is written in Turkish"
+    assert_includes request["system"], "Quest: Akçabük köyünün kış tuzunu getiren kervan üç gündür kayıp", "the quest frame carries the Turkish place names"
+    assert_includes request["system"], "Warrior (Fights at the front", "the brief stays in English whatever the page speaks"
+    assert_includes request["system"], "Sets out with Uzun kılıç; Yuvarlak kalkan."
+    assert_includes request["system"], "Geçidin ağzında rüzgâr bıçak gibi", "the voice sample speaks the game's language"
+    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion and decide the secret.\n", request["prompt"]
   end
 
   test "the surprise adventure takes its name from the first scene" do
@@ -273,7 +265,7 @@ test "the brief of a Turkish game, read in the default locale like the narration
 
     request = stub_understudy(FINALE_RESPONSE.sub('"outcome": "victory"', '"outcome": "defeat"')) { narrate }.sole
 
-    assert_equal "Scene 1 of 7, Ilker's turn. Ilker has collapsed, their health spent: this scene is the finale, in defeat.\n", request["prompt"]
+    assert_equal "Scene 1 of 7, Ilker's turn. Ilker has collapsed, their health spent. This scene is the finale and the story ends in defeat: pay off what was planted, then close.\n", request["prompt"]
     assert @game_session.reload.finished?
     assert @game_session.outcome_defeat?
   end
@@ -340,7 +332,7 @@ test "the brief of a Turkish game, read in the default locale like the narration
   end
 
   test "a finale closes the game" do
-    play_and_continue
+    play_and_continue die: 20
 
     stub_understudy(FINALE_RESPONSE) { narrate }
 
@@ -353,16 +345,18 @@ test "the brief of a Turkish game, read in the default locale like the narration
     assert @game_session.ended_at.present?
   end
 
-  test "a finale without a known outcome is malformed" do
+  test "the finale ends as the dice decided" do
     play_and_continue
 
-    stub_understudy(*rewrites_of(FINALE_RESPONSE.sub('"outcome": "victory"', '"outcome": "belirsiz"'))) do
-      assert_raises Narrator::MalformedResponse do
-        narrate
-      end
+    stub_understudy(*rewrites_of(FINALE_RESPONSE)) do
+      error = assert_raises(Narrator::MalformedResponse) { narrate }
+      assert_equal "scene 2 is the finale and the story ends in defeat", error.message
     end
-
     assert_not @game_session.reload.finished?
+
+    stub_understudy(FINALE_RESPONSE.sub('"outcome": "victory"', '"outcome": "defeat"')) { narrate }
+
+    assert @game_session.reload.outcome_defeat?
   end
 
   test "the final scene is demanded when the budget is spent" do
@@ -378,7 +372,7 @@ test "the brief of a Turkish game, read in the default locale like the narration
 
     request = stub_understudy(FINALE_RESPONSE) { narrate }.sole
 
-    assert_match(/This scene is the finale.\n\z/, request["prompt"])
+    assert_match(/This scene is the finale and the story ends in victory: pay off the secret and what was planted, then close.\n\z/, request["prompt"])
     assert @game_session.reload.finished?
   end
 
@@ -388,8 +382,8 @@ test "the brief of a Turkish game, read in the default locale like the narration
     broken, rewrite = stub_understudy(out_of_range, SCENE_RESPONSE) { narrate }
 
     assert @game_session.scenes.sole.choosing?
-    assert_equal "Scene 1 of 7, Ilker's turn. This is the first scene.\n", broken["prompt"]
-    assert_equal "Scene 1 of 7, Ilker's turn. This is the first scene.\n\nYour last reply was rejected: difficulty 25 is outside 8-19. Write the whole reply again.", rewrite["prompt"],
+    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion and decide the secret.\n", broken["prompt"]
+    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion and decide the secret.\n\nYour last reply was rejected: difficulty 25 is outside 8-19. Write the whole reply again.", rewrite["prompt"],
       "the rejected reply is not in the conversation the rewrite sees"
 
     messages = @game_session.conversation.messages.reload
@@ -431,15 +425,15 @@ test "the brief of a Turkish game, read in the default locale like the narration
   end
 
   test "the finale's closing words stream in before the game is closed" do
-    play_and_continue
+    play_and_continue die: 20
 
-streams = capture_turbo_stream_broadcasts(@game_session) do
-  stub_understudy(FINALE_RESPONSE) { narrate }
-end
+    streams = capture_turbo_stream_broadcasts(@game_session) do
+      stub_understudy(FINALE_RESPONSE) { narrate }
+    end
 
-assert_equal "The caravan bells echo down the valley as you ride into Whitebend.", streams.first.at("template").text
-assert_equal "refresh", streams.last["action"]
-assert @game_session.current_scene.finale?
+    assert_equal "The caravan bells echo down the valley as you ride into Whitebend.", streams.first.at("template").text
+    assert_equal "refresh", streams.last["action"]
+    assert @game_session.current_scene.finale?
     assert @game_session.reload.outcome_victory?
   end
 
@@ -477,7 +471,7 @@ assert @game_session.current_scene.finale?
 
     stub_understudy(*rewrites_of(SCENE_RESPONSE)) do
       error = assert_raises(Narrator::MalformedResponse) { narrate }
-      assert_equal "scene 7 is the last one, so it must be the finale", error.message
+      assert_equal "scene 7 is the finale and the story ends in victory", error.message
     end
 
     assert_not @game_session.reload.finished?
@@ -516,13 +510,13 @@ assert @game_session.current_scene.finale?
       Array.new(1 + Narrator::REWRITES, reply)
     end
 
-    def play_first_scene
+    def play_first_scene(die: 2)
       stub_understudy(SCENE_RESPONSE) { narrate }
-      with_die(2) { choose_and_roll @game_session.current_scene }
+      with_die(die) { choose_and_roll @game_session.current_scene }
     end
 
-    def play_and_continue
-      roll = play_first_scene
+    def play_and_continue(die: 2)
+      roll = play_first_scene(die: die)
       resolve roll
       roll.acknowledge
       roll
@@ -540,6 +534,6 @@ assert @game_session.current_scene.finale?
       choice = scene.choices.create! label: "Press on", stat: "strength", modifier: 3,
         target: 12
       choice.choose
-      scene.roll_dice(by: players(:ilker_solo_host))
+      with_die(20) { scene.roll_dice(by: players(:ilker_solo_host)) }
     end
 end

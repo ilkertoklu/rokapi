@@ -166,18 +166,24 @@ en:
         title: The Lost Caravan
         hook: The trail of a salt caravan lost in a blizzard.
         brief: >-
-          The caravan carrying Whitebend's winter salt has been missing for three days.
-          It has to be found and brought to the village before the blizzard closes the pass.
-          The route runs from Whitebend to Blizzard Pass, on past the tracks, the abandoned
-          lodges and the rope bridge at the pass. The caravan's loss could be an accident,
-          or it could be an ambush.
+          The caravan carrying Whitebend's winter salt has been missing for three days, and the
+          blizzard will close the pass within the week. The route runs from Whitebend to Blizzard
+          Pass: the tracks, the abandoned lodges, the rope bridge. What really happened: the caravan
+          master, Orhan, sold the salt to the mountain clan and staged an ambush to hide it; the
+          drivers who refused are held in the lodge cellar, and the clan's hunters still watch the
+          pass. The village elder who sent the hero knows more than she says. Whitebend starves
+          without the salt; the clan starves without the money.
       sunken_village:
         title: The Lake's Secret
         hook: An old village left under the water.
         brief: >-
-          The lake has drawn back in the drought and uncovered a village that went under years ago.
-          No record says why the village was abandoned, and some claim they hear a bell out on the
-          water at night. Solving it means going down into the drowned village.
+          The lake has drawn back in the drought and uncovered the village that went under years
+          ago, and some claim they hear its bell at night. What really happened: the village did not
+          drown by accident; the miller, Selim, opened the dam to bury proof that he had let the
+          granary rot while the village starved, and he is still alive, old and respected on the
+          shore, paying the fisherman's sons to keep people out of the ruins. The bell is rung by
+          the last survivor's grandchild, who wants the names read aloud. The ledger that proves it
+          lies in the flooded mill.
 
   player:
     departed: Departed player

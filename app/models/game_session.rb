@@ -119,6 +119,10 @@ class GameSession < ApplicationRecord
     Length.fetch(length).title_length
   end
 
+  def verdict
+    rolls.where(success: true).count >= rolls.where(success: false).count ? "victory" : "defeat"
+  end
+
   def current_scene
     scenes.chronological.last
   end

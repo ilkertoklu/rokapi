@@ -3,7 +3,7 @@ class Narrator < RubyLLM::Agent
 
   REWRITES = 2
   FENCE = "```"
-  WORDS = { scene: 90, finale: 120, resolution: 40, location: 5, adventure: 4, label: 9, reason: 10 }.freeze
+  WORDS = { scene: 90, finale: 120, resolution: 40, location: 5, adventure: 4, secret: 60, label: 9, reason: 10 }.freeze
 
   def self.table_name_prefix = "narrator_"
 
@@ -88,17 +88,18 @@ class Narrator < RubyLLM::Agent
       raise MalformedResponse, "the title #{title.inspect} runs #{title.length} characters, at most #{game_session.title_length} fit beside the progress dots" if title.length > game_session.title_length
       fit "the location", data["location"], :location
 
+      if scene.first? && !finale
+        raise MalformedResponse, "the first scene must carry the secret" if data["secret"].blank?
+        fit "the secret", data["secret"], :secret
+      end
+
       if names_the_adventure?(scene)
         raise MalformedResponse, "the first scene must name the adventure" if data["adventure"].blank?
         fit "the adventure", data["adventure"], :adventure
       end
 
-      if scene.active_player.character.hp.zero?
-        raise MalformedResponse, "a downed character must meet defeat" unless finale && data["outcome"] == "defeat"
-      elsif finale
-        raise MalformedResponse, "unknown outcome #{data["outcome"].inspect}" unless GameSession.outcomes.key?(data["outcome"])
-      elsif scene.last?
-        raise MalformedResponse, "scene #{scene.position} is the last one, so it must be the finale"
+      if finale || scene.active_player.character.hp.zero? || scene.last?
+        raise MalformedResponse, "scene #{scene.position} is the finale and the story ends in #{outcome_of(scene)}" unless finale && data["outcome"] == outcome_of(scene)
       else
         stats = choices.map { |choice| choice["stat"] }
         raise MalformedResponse, "expected 3 choices on 3 distinct stats" unless stats.size == 3 && stats.uniq.size == 3 && (stats - Character::Stat.keys).empty?
@@ -143,6 +144,10 @@ class Narrator < RubyLLM::Agent
           end
         end
       end
+    end
+
+    def outcome_of(scene)
+      scene.active_player.character.hp.zero? ? "defeat" : game_session.verdict
     end
 
     def names_the_adventure?(scene)

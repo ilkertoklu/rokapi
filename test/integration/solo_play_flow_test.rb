@@ -33,11 +33,11 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".dice__facts dd", text: /Target #{choice.target}/
 
     stub_understudy(OUTCOME_RESPONSE) do
-      perform_enqueued_jobs { post game_session_roll_path(game_session) }
+      with_die(20) { perform_enqueued_jobs { post game_session_roll_path(game_session) } }
     end
 
     get game_session_path(game_session)
-    assert_select ".outcome__verdict", text: /SUCCESS|FAILURE|CATASTROPHE/
+    assert_select ".outcome__verdict", text: /SUCCESS/
     assert_select ".outcome__resolution", text: "The drawer opens, but you cut your hand."
     assert_equal 1, game_session.scenes.count, "the story must not run ahead of the player"
 
