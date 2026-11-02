@@ -37,6 +37,13 @@ class Character < ApplicationRecord
     Klass.fetch(klass).starting_items(locale: game_session.locale).map { |item| Item.new(item) }
   end
 
+  def sheet
+    carried = items.carried.map(&:summary)
+    effects = status_effects.map(&:summary)
+
+    "#{hp}/#{max_hp} health; carries #{carried.any? ? carried.join(", ") : "nothing"}; #{effects.any? ? "statuses: #{effects.join(", ")}" : "no statuses"}"
+  end
+
   def bonus_for(stat_key)
     (stats.fetch(stat_key) - 10) / 2
   end

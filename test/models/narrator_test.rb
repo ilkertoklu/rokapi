@@ -106,7 +106,7 @@ class NarratorTest < ActiveSupport::TestCase
 
       Ilker chose "#{roll.choice.label}": die 2, modifier #{format("%+d", roll.modifier)}, statuses +0, total #{roll.total} against #{roll.target}. #{roll.grade_label}, margin #{format("%+d", roll.margin)}.
       Used since the scene began, already applied: Healing potion (+7 health).
-      Ilker has 31/31 health.
+      Ilker now: 31/31 health; carries Longsword, Inn ledger (quest item); no statuses.
     CUE
     assert_equal "object", request.dig("schema", "type"), "the outcome is asked in its structure"
   end
@@ -119,7 +119,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
 
-    assert request["prompt"].end_with?("\n\nScene 2 of 7, Ilker's turn. Raise the stakes: pay for what came before, and let the one who stands in the way act.\n")
+    assert request["prompt"].include?("\n\nScene 2 of 7, Ilker's turn. Raise the stakes: pay for what came before, and let the one who stands in the way act.\nIlker: ")
   end
 
   test "statuses weigh on the roll and wear off with it" do
@@ -169,7 +169,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert_includes first["system"], "Length: 7 scenes"
     assert_includes first["system"], "Quest: The caravan carrying Whitebend's winter salt"
     assert_includes first["system"], "Warrior"
-    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion and decide the secret.\n", first["prompt"], "the first turn has no story before it"
+    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion and decide the secret.\n#{sheet}", first["prompt"], "the first turn has no story before it"
 
     roll = with_die(2) { choose_and_roll @game_session.current_scene }
     stub_understudy(OUTCOME_RESPONSE) { roll.narrate }
@@ -196,7 +196,7 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
 
     assert_equal 2 * 8, request["prompt"].scan(/^<(user|assistant)>$/).size
-    assert request["prompt"].end_with?("\n\nScene 5 of 7, Ilker's turn. Raise the stakes: pay for what came before, and let the one who stands in the way act.\n")
+    assert request["prompt"].include?("\n\nScene 5 of 7, Ilker's turn. Raise the stakes: pay for what came before, and let the one who stands in the way act.\nIlker: ")
   end
 
   test "a turn the provider never answered is answered on the next attempt" do
@@ -207,7 +207,7 @@ class NarratorTest < ActiveSupport::TestCase
     retry_call = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
     assert @game_session.current_scene.choosing?
-    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion and decide the secret.\n", retry_call["prompt"], "the turn is not asked twice"
+    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion and decide the secret.\n#{sheet}", retry_call["prompt"], "the turn is not asked twice"
     assert_equal %w[system user assistant], @game_session.conversation.messages.pluck(:role)
   end
 
@@ -234,7 +234,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert_includes request["system"], "Warrior (Fights at the front", "the brief stays in English whatever the page speaks"
     assert_includes request["system"], "Sets out with Uzun kılıç; Yuvarlak kalkan."
     assert_includes request["system"], "Geçidin ağzında rüzgâr bıçak gibi", "the voice sample speaks the game's language"
-    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion and decide the secret.\n", request["prompt"]
+    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion and decide the secret.\n#{sheet}", request["prompt"]
   end
 
   test "the surprise adventure takes its name from the first scene" do
@@ -265,7 +265,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(FINALE_RESPONSE.sub('"outcome": "victory"', '"outcome": "defeat"')) { narrate }.sole
 
-    assert_equal "Scene 1 of 7, Ilker's turn. Ilker has collapsed, their health spent. This scene is the finale and the story ends in defeat: pay off what was planted, then close.\n", request["prompt"]
+    assert_equal "Scene 1 of 7, Ilker's turn. Ilker has collapsed, their health spent. This scene is the finale and the story ends in defeat: pay off what was planted, then close.\n#{sheet(hp: 0)}", request["prompt"]
     assert @game_session.reload.finished?
     assert @game_session.outcome_defeat?
   end
@@ -372,7 +372,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(FINALE_RESPONSE) { narrate }.sole
 
-    assert_match(/This scene is the finale and the story ends in victory: pay off the secret and what was planted, then close.\n\z/, request["prompt"])
+    assert_match(/This scene is the finale and the story ends in victory: pay off the secret and what was planted, then close.\nIlker: .*\n\z/, request["prompt"])
     assert @game_session.reload.finished?
   end
 
@@ -382,8 +382,8 @@ class NarratorTest < ActiveSupport::TestCase
     broken, rewrite = stub_understudy(out_of_range, SCENE_RESPONSE) { narrate }
 
     assert @game_session.scenes.sole.choosing?
-    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion and decide the secret.\n", broken["prompt"]
-    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion and decide the secret.\n\nYour last reply was rejected: difficulty 25 is outside 8-19. Write the whole reply again.", rewrite["prompt"],
+    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion and decide the secret.\n#{sheet}", broken["prompt"]
+    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion and decide the secret.\n#{sheet}\nYour last reply was rejected: difficulty 25 is outside 8-19. Write the whole reply again.", rewrite["prompt"],
       "the rejected reply is not in the conversation the rewrite sees"
 
     messages = @game_session.conversation.messages.reload
@@ -498,6 +498,10 @@ class NarratorTest < ActiveSupport::TestCase
   end
 
   private
+    def sheet(hp: 31)
+      "Ilker: #{hp}/31 health; carries Longsword, Healing potion (instant: +7 health, 1 use), Inn ledger (quest item); no statuses.\n"
+    end
+
     def narrate
       Narrator.for(@game_session).narrate_scene(@game_session.current_scene)
     end
