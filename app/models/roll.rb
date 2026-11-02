@@ -77,7 +77,7 @@ class Roll < ApplicationRecord
 
   def resolve(resolution:, effects:)
     transaction do
-      update! resolution: resolution, effects: effects
+      update! resolution: resolution, effects: bounded(effects.to_h)
       apply_effects
     end
   end
@@ -98,6 +98,34 @@ class Roll < ApplicationRecord
       when margin <= -5 then :heavy
       else :failure
       end
+    end
+
+    def bounded(effects)
+      statuses_lost = Array(effects["statuses_lost"])
+      statuses_gained = Array(effects["statuses_gained"]).map { |grant| status_from(grant) }.select { |status| critical? || !status["modifier"].positive? }
+      kept = player.character.status_effects.map(&:name) - statuses_lost - statuses_gained.pluck("name")
+
+      { "hp" => effects["hp"].to_i.clamp(HEALTH_FLOOR.fetch(grade, 0), 0),
+        "items_gained" => Array(effects["items_gained"]).map { |grant| item_from(grant) },
+        "items_lost" => Array(effects["items_lost"]),
+        "statuses_gained" => statuses_gained.first([ StatusEffect::LIMIT - kept.size, 0 ].max),
+        "statuses_lost" => statuses_lost }
+    end
+
+    def item_from(grant)
+      instant = grant["kind"] == "instant"
+
+      { "name" => grant["name"], "kind" => grant["kind"], "description" => grant["description"],
+        "hp_effect" => instant ? grant["hp"].to_i : 0,
+        "uses_left" => ([ grant["uses"].to_i, Item::MINIMUM_USES ].max if instant) }
+    end
+
+    def status_from(grant)
+      turns = grant["turns"].to_i
+      expires_when = grant["expires_when"].presence
+
+      { "name" => grant["name"], "modifier" => grant["modifier"].to_i.clamp(StatusEffect::MODIFIER_RANGE), "expires_when" => expires_when,
+        "turns_left" => turns.positive? ? turns.clamp(StatusEffect::TURNS) : (StatusEffect::DEFAULT_TURNS if expires_when.nil?) }
     end
 
     def apply_effects

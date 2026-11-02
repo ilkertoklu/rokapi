@@ -178,9 +178,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     clear_enqueued_jobs
 
     stub_llm(FakeReply.new("No structure.")) do
-      job = Scene::NarrateJob.new(game_session.current_scene)
-      2.times { job.perform_now }
-      assert_raises(Narrator::MalformedResponse) { job.perform_now }
+      assert_raises(Narrator::MalformedResponse) { Scene::NarrateJob.new(game_session.current_scene).perform_now }
     end
     clear_enqueued_jobs
 

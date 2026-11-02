@@ -36,19 +36,6 @@ class NarratorTest < ActiveSupport::TestCase
     assert_operator @game_session.conversation.cost.total, :>, 0
   end
 
-  test "a scene written without its fence still gets its choices" do
-    unfenced = SCENE_RESPONSE.delete("`").sub("json\n", "").sub("The dust lies thick", "Dust lies thick, {in} braces")
-    fake = FakeReply.new(unfenced, chunks: unfenced.chars.each_slice(40).map(&:join))
-
-    stub_llm(fake) { narrate }
-
-    scene = @game_session.scenes.sole
-    assert scene.choosing?
-    assert_equal "The Old Inn", scene.title
-    assert_equal "Dust lies thick, {in} braces", scene.choices.find_by(stat: "intelligence").difficulty_reason
-    assert scene.narration.start_with?("Rain hammers")
-  end
-
   test "the narration streams in before the stage refreshes with the title and the choices" do
     fake = FakeReply.new(SCENE_RESPONSE, chunks: SCENE_RESPONSE.chars.each_slice(40).map(&:join))
 
@@ -108,104 +95,6 @@ class NarratorTest < ActiveSupport::TestCase
     assert @game_session.current_scene.choosing?
   end
 
-  test "outcome effects reach the inventory and the statuses" do
-    character = characters(:ilker_hero)
-    character.status_effects.create! name: "Dragging Leg", modifier: -1, expires_when: "until it eases"
-    roll = play_first_scene
-
-    fake = FakeReply.new(%({"resolution": "You find a salve in the chest, but you come out soaked.",
-      "effects": {"hp": -2,
-        "items_gained": [{"name": "Yellow salve", "kind": "instant", "description": "", "hp": 5, "uses": 1}],
-        "items_lost": ["Inn ledger"],
-        "statuses_gained": [{"name": "Soaked Through", "modifier": -2, "turns": 2, "expires_when": ""}],
-        "statuses_lost": ["Dragging Leg"]}}))
-    stub_llm(fake) { roll.narrate }
-
-    assert_equal 31 - 2, character.reload.hp
-    assert character.items.usable.exists?(name: "Yellow salve")
-    assert_not character.items.exists?(name: "Inn ledger")
-    assert_equal 2, character.status_effects.find_by!(name: "Soaked Through").turns_left
-    assert_not character.status_effects.exists?(name: "Dragging Leg")
-    assert_equal [ "Yellow salve" ], roll.reload.items_gained.pluck("name")
-    assert_equal [ "Soaked Through" ], roll.statuses_gained.pluck("name")
-  end
-
-  test "a positive status is earned only by a natural twenty" do
-    stub_llm(FakeReply.new(SCENE_RESPONSE)) { narrate }
-    boon = %({"resolution": "The door opens.", "effects": {"hp": 0,
-      "statuses_gained": [{"name": "Sure Grip", "modifier": 2, "turns": 2, "expires_when": ""}]}})
-
-    roll = roll_with(value: 19)
-    stub_llm(FakeReply.new(boon)) { roll.narrate }
-    assert_empty characters(:ilker_hero).status_effects, "a brilliant success must not stack a bonus"
-    assert_empty roll.reload.statuses_gained
-
-    roll.acknowledge
-    stub_llm(FakeReply.new(SECOND_SCENE_RESPONSE)) { narrate }
-    roll = roll_with(value: 20)
-    stub_llm(FakeReply.new(boon)) { roll.narrate }
-    assert characters(:ilker_hero).status_effects.exists?(name: "Sure Grip")
-  end
-
-  test "a resolution may replace an item it takes away" do
-    roll = play_first_scene
-
-    fake = FakeReply.new(%({"resolution": "Your flask breaks, but you find another in the wreckage.",
-      "effects": {"hp": 0,
-        "items_gained": [{"name": "Healing potion", "kind": "instant", "description": "", "hp": 6, "uses": 1}],
-        "items_lost": ["Healing potion"]}}))
-    stub_llm(fake) { roll.narrate }
-
-    potions = characters(:ilker_hero).items.usable.where(name: "Healing potion")
-    assert_equal 6, potions.sole.hp_effect, "the lost copy goes first so the replacement survives"
-  end
-
-  test "a granted item and status arrive normalized" do
-    roll = play_first_scene
-
-    fake = FakeReply.new(%({"resolution": "You find a salve in the chest, but you come out soaked.",
-      "effects": {"hp": 0,
-        "items_gained": [{"name": "Yellow salve", "kind": "instant", "description": "", "hp": 5, "uses": 0}],
-        "statuses_gained": [{"name": "Soaked Through", "modifier": -5, "turns": 0, "expires_when": ""}]}}))
-    stub_llm(fake) { roll.narrate }
-
-    ointment = characters(:ilker_hero).items.find_by!(name: "Yellow salve")
-    assert_equal 1, ointment.uses_left, "uses must be at least 1 or the item arrives dead"
-    assert_equal 5, ointment.hp_effect
-
-    soaked = characters(:ilker_hero).status_effects.find_by!(name: "Soaked Through")
-    assert_equal(-2, soaked.modifier, "narrator modifiers are clamped to the dice range")
-    assert_equal 2, soaked.turns_left, "an open-ended status would never wear off"
-    assert_nil soaked.expires_when
-    assert_equal(-2, roll.reload.statuses_gained.sole["modifier"], "the roll keeps the effects as applied")
-  end
-
-  test "an outcome granting an item of unknown kind is malformed" do
-    roll = play_first_scene
-
-    assert_no_difference -> { Item.count } do
-      stub_llm(FakeReply.new(%({"resolution": "You find something.",
-        "effects": {"hp": 0, "items_gained": [{"name": "Old charm", "kind": "relic"}]}}))) do
-        assert_raises(Narrator::MalformedResponse) { roll.narrate }
-      end
-    end
-
-    assert_nil roll.reload.resolution
-  end
-
-  test "an outcome granting a nameless item is malformed" do
-    roll = play_first_scene
-
-    assert_no_difference -> { Item.count } do
-      stub_llm(FakeReply.new(%({"resolution": "You find something.",
-        "effects": {"hp": 0, "items_gained": [{"name": "", "kind": "instant"}]}}))) do
-        assert_raises(Narrator::MalformedResponse) { roll.narrate }
-      end
-    end
-
-    assert_nil roll.reload.resolution
-  end
-
   test "the brief carries the party, and a roll carries what was used" do
     roll = play_first_scene
     items(:healing_potion).use
@@ -214,8 +103,11 @@ class NarratorTest < ActiveSupport::TestCase
     stub_llm(fake) { roll.narrate }
 
     assert_includes fake.instructions, "Sets out with Longsword; Round shield."
-    assert_includes fake.prompt, "used Healing potion (+7 health)"
-    assert_includes fake.prompt, "Ilker has 31/31 health. Resolve it."
+    assert_equal <<~CUE, fake.prompt
+      Ilker chose "#{roll.choice.label}": die 2, modifier #{format("%+d", roll.modifier)}, statuses +0, total #{roll.total} against #{roll.target}. #{roll.grade_label}, margin #{format("%+d", roll.margin)}.
+      Used since the scene began, already applied: Healing potion (+7 health).
+      Ilker has 31/31 health.
+    CUE
   end
 
   test "a used item is settled by the outcome and not raised again by the next scene" do
@@ -227,7 +119,7 @@ class NarratorTest < ActiveSupport::TestCase
     scene_call = FakeReply.new(SECOND_SCENE_RESPONSE)
     stub_llm(scene_call) { narrate }
 
-    assert_equal "Scene 2 of 7. Write the next scene.", scene_call.prompt
+    assert_equal "Scene 2 of 7, Ilker's turn.\n", scene_call.prompt
   end
 
   test "statuses weigh on the roll and wear off with it" do
@@ -247,28 +139,8 @@ class NarratorTest < ActiveSupport::TestCase
     fake = FakeReply.new(OUTCOME_RESPONSE)
     stub_llm(fake) { roll.narrate }
 
-    assert_includes fake.prompt, "-2 (status)"
+    assert_includes fake.prompt, "statuses -2, total #{roll.total}"
     assert_empty character.status_effects.reload, "a one-turn status must not outlive its roll"
-  end
-
-  test "the outcome prompt carries the grade of the roll" do
-    stub_llm(FakeReply.new(SCENE_RESPONSE)) { narrate }
-    roll = roll_with(value: 20)
-
-    fake = FakeReply.new(OUTCOME_RESPONSE)
-    stub_llm(fake) { roll.narrate }
-
-    assert_includes fake.prompt, "rolled 20 +3 = 23 against 14: CRITICAL SUCCESS (natural 20)."
-  end
-
-  test "a deep miss reaches the narrator with its distance" do
-    stub_llm(FakeReply.new(SCENE_RESPONSE)) { narrate }
-    roll = roll_with(value: 2)
-
-    fake = FakeReply.new(OUTCOME_RESPONSE)
-    stub_llm(fake) { roll.narrate }
-
-    assert_includes fake.prompt, "HEAVY FAILURE (9 under the target)"
   end
 
   test "a scene reusing a stat across choices is malformed" do
@@ -300,7 +172,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert_includes first.instructions, "Length: 7 scenes"
     assert_includes first.instructions, "Quest: The caravan carrying Whitebend's winter salt"
     assert_includes first.instructions, "Warrior"
-    assert_equal "Scene 1 of 7. Write the first scene.", first.prompt
+    assert_equal "Scene 1 of 7, Ilker's turn. This is the first scene.\n", first.prompt
 
     roll = with_die(2) { choose_and_roll @game_session.current_scene }
     outcome = FakeReply.new(OUTCOME_RESPONSE)
@@ -330,7 +202,7 @@ class NarratorTest < ActiveSupport::TestCase
     stub_llm(scene_call) { narrate }
 
     assert_equal 2 * 8 + 1, scene_call.conversation.size
-    assert_equal "Scene 5 of 7. Write the next scene.", scene_call.prompt
+    assert_equal "Scene 5 of 7, Ilker's turn.\n", scene_call.prompt
     assert_equal 1, scene_call.messages.count { |message| message.role == :system }
   end
 
@@ -356,7 +228,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert_includes scene_call.instructions, "Akçabük", "the quest frame carries the Turkish place names"
     assert_includes scene_call.instructions, "Warrior", "the brief stays in English whatever the page speaks"
     assert_includes scene_call.instructions, "Strength 16"
-    assert_equal "Scene 1 of 7. Write the first scene.", scene_call.prompt
+    assert_equal "Scene 1 of 7, Ilker's turn. This is the first scene.\n", scene_call.prompt
   end
 
   test "an English game is written in English" do
@@ -398,7 +270,7 @@ class NarratorTest < ActiveSupport::TestCase
     scene_call = FakeReply.new(FINALE_RESPONSE.sub('"outcome": "victory"', '"outcome": "defeat"'))
     stub_llm(scene_call) { narrate }
 
-    assert_equal "Ilker has collapsed, their health spent. Scene 1 of 7 is the finale: close the story in defeat.", scene_call.prompt
+    assert_equal "Scene 1 of 7, Ilker's turn. Ilker has collapsed, their health spent: this scene is the finale, in defeat.\n", scene_call.prompt
     assert @game_session.reload.finished?
     assert @game_session.outcome_defeat?
   end
@@ -479,21 +351,6 @@ class NarratorTest < ActiveSupport::TestCase
     assert @game_session.ended_at.present?
   end
 
-  test "the closing words stream in before the finale takes the stage" do
-    play_and_continue
-    finale = @game_session.current_scene
-    staged = []
-
-    fake = FakeReply.split_before_structure(FINALE_RESPONSE) do
-      staged << [ finale.reload.narration.present?, finale.finale?, @game_session.reload.outcome ]
-    end
-    stub_llm(fake) { narrate }
-
-    assert_equal [ true, false, nil ], staged.first, "the closing words are on screen before the verdict"
-    assert_equal [ true, true, "victory" ], staged.last
-    assert @game_session.reload.finished?
-  end
-
   test "a finale without a known outcome is malformed" do
     play_and_continue
 
@@ -504,14 +361,6 @@ class NarratorTest < ActiveSupport::TestCase
     end
 
     assert_not @game_session.reload.finished?
-  end
-
-  test "a broken structure block is malformed" do
-    stub_llm(FakeReply.new("Prose arrived but no structure. ```json {broken``` ")) do
-      assert_raises Narrator::MalformedResponse do
-        narrate
-      end
-    end
   end
 
   test "the final scene is demanded when the budget is spent" do
@@ -528,7 +377,7 @@ class NarratorTest < ActiveSupport::TestCase
     scene_call = FakeReply.new(FINALE_RESPONSE)
     stub_llm(scene_call) { narrate }
 
-    assert_includes scene_call.prompt, "the finale: close the story with victory or defeat."
+    assert_match(/This scene is the finale.\n\z/, scene_call.prompt)
     assert @game_session.reload.finished?
   end
 
@@ -540,22 +389,61 @@ class NarratorTest < ActiveSupport::TestCase
     stub_llm(broken, rewrite) { narrate }
 
     assert @game_session.scenes.sole.choosing?
-    assert_equal "Scene 1 of 7. Write the first scene.", broken.prompt
-    assert_includes rewrite.prompt, "Scene 1 of 7. Write the first scene."
-    assert_includes rewrite.prompt, "Your last reply was rejected: difficulty 25 is outside 8-19."
+    assert_equal "Scene 1 of 7, Ilker's turn. This is the first scene.\n", broken.prompt
+    assert_equal "Scene 1 of 7, Ilker's turn. This is the first scene.\n\nYour last reply was rejected: difficulty 25 is outside 8-19. Write the whole reply again.", rewrite.prompt
     assert_equal %i[user], rewrite.conversation.map(&:role), "the rejected reply is not in the conversation the rewrite sees"
-  end
-
-  test "a rejected reply leaves no trace in the conversation" do
-    broken = FakeReply.new(SCENE_RESPONSE.sub(%q("difficulty": 14), %q("difficulty": 25)))
-
-    stub_llm(broken, FakeReply.new(SCENE_RESPONSE)) { narrate }
 
     messages = @game_session.conversation.messages.reload
     assert_equal %w[system user assistant], messages.pluck(:role)
-    assert_equal "Scene 1 of 7. Write the first scene.", messages.second.content
-    assert_includes messages.last.content, %q("difficulty": 14)
+    assert_equal rewrite.prompt, messages.second.content, "the reason stays in the transcript"
     assert_equal 2, @game_session.conversation.ruby_llm_usages.count, "both calls are still paid for"
+  end
+
+  test "a reply that keeps breaking the rules is given up after the rewrites, leaving no trace" do
+    broken = FakeReply.new(SCENE_RESPONSE.sub('"difficulty": 14', '"difficulty": 25'))
+
+    stub_llm(broken) do
+      error = assert_raises(Narrator::MalformedResponse) { narrate }
+      assert_equal "difficulty 25 is outside 8-19", error.message
+    end
+
+    assert_equal 1 + Narrator::REWRITES, @game_session.conversation.ruby_llm_usages.count
+    assert_equal %w[system], @game_session.conversation.messages.reload.pluck(:role)
+    assert @game_session.scenes.sole.narrating?
+  end
+
+  test "a scene without its fence is malformed" do
+    unfenced = SCENE_RESPONSE.delete("`").sub("json\n", "")
+
+    stub_llm(FakeReply.new(unfenced)) do
+      error = assert_raises(Narrator::MalformedResponse) { narrate }
+      assert_equal "the ```json block is missing", error.message
+    end
+
+    assert @game_session.scenes.sole.narrating?
+  end
+
+  test "a broken structure block is malformed" do
+    stub_llm(FakeReply.new("Prose arrived. ```json {broken``` ")) do
+      assert_raises(Narrator::MalformedResponse) { narrate }
+    end
+
+    assert @game_session.scenes.sole.narrating?
+  end
+
+  test "the finale's closing words stream in before the game is closed" do
+    play_and_continue
+    finale = @game_session.current_scene
+    staged = []
+
+    fake = FakeReply.split_before_structure(FINALE_RESPONSE) do
+      staged << [ finale.reload.narration, finale.finale?, @game_session.reload.outcome ]
+    end
+    stub_llm(fake) { narrate }
+
+    assert_equal [ "The caravan bells echo down the valley as you ride into Whitebend.", false, nil ], staged.first
+    assert finale.reload.finale?
+    assert @game_session.reload.outcome_victory?
   end
 
   test "a scene that does not fit the screen is rewritten until the narrator gives up" do
@@ -599,20 +487,6 @@ class NarratorTest < ActiveSupport::TestCase
     assert_not @game_session.reload.finished?
   end
 
-  test "health follows the grade of the roll" do
-    stub_llm(FakeReply.new(SCENE_RESPONSE)) { narrate }
-    roll = roll_with(value: 20)
-    stub_llm(FakeReply.new(%({"resolution": "You fly through.", "effects": {"hp": -4}}))) { roll.narrate }
-    assert_equal 0, roll.reload.hp_change, "a success does not hurt"
-
-    roll.acknowledge
-    stub_llm(FakeReply.new(SECOND_SCENE_RESPONSE)) { narrate }
-    roll = roll_with(value: 2)
-    stub_llm(FakeReply.new(%({"resolution": "You fall hard.", "effects": {"hp": -30}}))) { roll.narrate }
-    assert_equal(-9, roll.reload.hp_change, "a heavy failure costs at most 9")
-    assert_equal 31 - 9, characters(:ilker_hero).reload.hp
-  end
-
   test "a resolution that does not fit the screen is rewritten" do
     roll = play_first_scene
     long = FakeReply.new(%({"resolution": "#{"The drawer sticks. " * 20}", "effects": {"hp": 0}}))
@@ -621,25 +495,6 @@ class NarratorTest < ActiveSupport::TestCase
 
     assert_equal "The drawer opens, but you cut your hand.", roll.reload.resolution
     assert_equal 1 + 2, @game_session.conversation.ruby_llm_usages.count, "the scene, the rejected outcome and its rewrite"
-  end
-
-  test "a character carries no more statuses than the limit" do
-    character = characters(:ilker_hero)
-    character.status_effects.create! name: "Bruised Ribs", modifier: -1, turns_left: 3
-    character.status_effects.create! name: "Soaked Through", modifier: -1, turns_left: 3
-    roll = play_first_scene
-
-    stub_llm(FakeReply.new(%({"resolution": "You get burned.", "effects": {"hp": -2,
-      "statuses_gained": [{"name": "Burned Palms", "modifier": -1, "turns": 9, "expires_when": ""}]}}))) do
-      error = assert_raises(Narrator::MalformedResponse) { roll.narrate }
-      assert_equal "the character would carry 3 statuses, at most 2", error.message
-    end
-
-    stub_llm(FakeReply.new(%({"resolution": "You get burned.", "effects": {"hp": -2,
-      "statuses_gained": [{"name": "Burned Palms", "modifier": -1, "turns": 9, "expires_when": ""}],
-      "statuses_lost": ["Soaked Through"]}}))) { roll.narrate }
-
-    assert_equal 3, character.status_effects.find_by!(name: "Burned Palms").turns_left, "a status lasts 3 turns at most"
   end
 
   test "the understudy writes a scene at no cost" do

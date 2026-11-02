@@ -35,6 +35,10 @@ class Scene < ApplicationRecord
     position == 1
   end
 
+  def last?
+    position >= game_session.scene_budget
+  end
+
   def opening?
     first? && title.nil?
   end

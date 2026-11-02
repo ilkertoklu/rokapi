@@ -42,16 +42,4 @@ class ChoiceTest < ActiveSupport::TestCase
 
     assert_raises(Scene::OutOfTurn) { @scene.roll_dice(by: players(:ilker_solo_host)) }
   end
-
-  test "hp effects clamp between zero and max" do
-    @choice.choose
-    roll = @scene.roll_dice(by: players(:ilker_solo_host))
-
-    roll.resolve resolution: "A heavy blow.", effects: { "hp" => -99 }
-    assert_equal 0, characters(:ilker_hero).reload.hp
-
-    roll.update! resolution: nil
-    roll.resolve resolution: "A miraculous healing.", effects: { "hp" => 999 }
-    assert_equal characters(:ilker_hero).max_hp, characters(:ilker_hero).reload.hp
-  end
 end

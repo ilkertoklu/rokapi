@@ -13,7 +13,7 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
 
     assert_includes first_scene.instructions, "The party, taking turns:\n- Ilker: "
     assert_includes first_scene.instructions, "\n- Deniz: "
-    assert_equal "Scene 1 of 7. Ilker's turn. Write the first scene.", first_scene.prompt
+    assert_equal "Scene 1 of 7, Ilker's turn. This is the first scene.\n", first_scene.prompt
 
     sign_in_as users(:ilker)
     get game_session_path(@room), as: :json
@@ -65,7 +65,7 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
     stub_llm(second_scene) do
       perform_enqueued_jobs { post game_session_acknowledgement_path(@room), as: :json }
     end
-    assert_equal "Scene 2 of 7. Deniz's turn. Write the next scene.", second_scene.prompt
+    assert_equal "Scene 2 of 7, Deniz's turn.\n", second_scene.prompt
     assert_includes second_scene.conversation[-3].content, 'Ilker chose "Force the drawer open"'
 
     get game_session_path(@room), as: :json

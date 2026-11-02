@@ -115,6 +115,10 @@ class GameSession < ApplicationRecord
     Length.fetch(length).scenes
   end
 
+  def title_length
+    Length.fetch(length).title_length
+  end
+
   def current_scene
     scenes.chronological.last
   end
