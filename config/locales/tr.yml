@@ -4,6 +4,11 @@ tr:
   date:
     abbr_month_names: [~, Oca, Şub, Mar, Nis, May, Haz, Tem, Ağu, Eyl, Eki, Kas, Ara]
 
+  number:
+    percentage:
+      format:
+        format: "%%n"
+
   time:
     formats:
       resume: "%-d %b, %H:%M"
@@ -25,6 +30,20 @@ tr:
       user:
         name: İsim
         unconfirmed_email: E-posta
+
+  plan:
+    free:
+      name: Ücretsiz
+      adventures: Her ay ≈ 1-2 kısa macera
+    standard:
+      name: Standart
+      adventures: Her ay ≈ 8 macera
+    premium:
+      name: Premium
+      adventures: Her ay ≈ 20+ macera
+    max:
+      name: Max
+      adventures: Her ay ≈ 50+ macera
 
   character:
     race:
@@ -377,6 +396,21 @@ tr:
         saved: Kaydedildi.
         rate_limited: Çok fazla değişiklik. Birkaç dakika sonra tekrar dene.
 
+  plans:
+    refill_date: "%{day} %{month}"
+    refill_months: [~, Ocak'ta, Şubat'ta, Mart'ta, Nisan'da, Mayıs'ta, Haziran'da, Temmuz'da, Ağustos'ta, Eylül'de, Ekim'de, Kasım'da, Aralık'ta]
+    usage:
+      label: Aylık kullanımın
+      left: kaldı
+      refills: "%{date} %100'e döner"
+    wall:
+      title: Kullanım bitti
+      heading: Aylık kullanımın bitti
+      reassurance_html: Hiçbir şey yarıda kalmadı,<br>hikâyen güvenle kaydedildi.
+      close: Şimdilik kapat
+      refills: "· %{date} yenilenir"
+      exhausted: Aylık kullanımın bitti. %{date} %100'e döner; kodla bir odaya katılmak yine ücretsiz.
+
   rolls:
     dice:
       difficulty: Zorluk
@@ -433,9 +467,8 @@ tr:
         title: Hoş geldin
         greeting: Hoş geldin, %{name}
         ready: Hesabın hazır. İlk maceraların bizden.
-        plan_name: Ücretsiz plan
-        plan_headline: "%100 kullanım"
-        perk_adventures: Her ay %100'e yenilenir
+        plan_name: "%{plan} plan"
+        plan_headline: "%{percentage} kullanım"
         perk_own_sessions: Yalnızca senin başlattığın oturumlarda azalır
         perk_joining: Kodla bir odaya katılmak zaten hep ücretsiz
         continue: Devam et

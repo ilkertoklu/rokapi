@@ -1,0 +1,13 @@
+<div class="usage">
+  <div class="usage__row">
+    <span class="overline usage__label"><%= t("plans.usage.label") %></span>
+    <span class="usage__left"><%= number_to_percentage user.usage_left_percentage, precision: 0 %> <span><%= t("plans.usage.left") %></span></span>
+  </div>
+  <div class="usage__track">
+    <div class="usage__fill" style="inline-size: <%= user.usage_left_percentage %>%"></div>
+  </div>
+  <div class="usage__row usage__footer">
+    <span><%= user.monthly_plan.name %></span>
+    <span><%= t("plans.usage.refills", date: refill_date(user)) %></span>
+  </div>
+</div>

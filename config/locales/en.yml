@@ -11,6 +11,20 @@ en:
         name: Name
         unconfirmed_email: Email
 
+  plan:
+    free:
+      name: Free
+      adventures: About 1–2 short adventures a month
+    standard:
+      name: Standard
+      adventures: About 8 adventures a month
+    premium:
+      name: Premium
+      adventures: 20+ adventures a month
+    max:
+      name: Max
+      adventures: 50+ adventures a month
+
   character:
     race:
       human:
@@ -361,6 +375,21 @@ en:
         saved: Saved.
         rate_limited: Too many changes. Try again in a few minutes.
 
+  plans:
+    refill_date: "%{month} %{day}"
+    refill_months: [~, Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec]
+    usage:
+      label: Your monthly usage
+      left: left
+      refills: Back to 100% on %{date}
+    wall:
+      title: Monthly usage spent
+      heading: Your monthly usage is spent
+      reassurance_html: Nothing was cut short,<br>your stories are safely kept.
+      close: Close for now
+      refills: "· refills on %{date}"
+      exhausted: Your monthly usage is spent. It is back to 100% on %{date}; joining a room with a code stays free.
+
   rolls:
     dice:
       difficulty: Difficulty
@@ -417,9 +446,8 @@ en:
         title: Welcome
         greeting: Welcome, %{name}
         ready: Your account is ready. Your first adventures are on us.
-        plan_name: Free plan
-        plan_headline: 100% left
-        perk_adventures: Refills to 100% every month
+        plan_name: "%{plan} plan"
+        plan_headline: "%{percentage} left"
         perk_own_sessions: Only the sessions you start count against it
         perk_joining: Joining a room with a code is always free
         continue: Continue

@@ -7,10 +7,10 @@
   <p><%= t(".ready") %></p>
 
   <div class="plan">
-    <p class="plan__name overline"><%= t(".plan_name") %></p>
-    <p class="plan__headline"><%= t(".plan_headline") %></p>
+    <p class="plan__name overline"><%= t(".plan_name", plan: Current.user.monthly_plan.name) %></p>
+    <p class="plan__headline"><%= t(".plan_headline", percentage: number_to_percentage(Current.user.usage_left_percentage, precision: 0)) %></p>
     <ul>
-      <li><%= t(".perk_adventures") %></li>
+      <li><%= Current.user.monthly_plan.adventures %></li>
       <li><%= t(".perk_own_sessions") %></li>
       <li><%= t(".perk_joining") %></li>
     </ul>

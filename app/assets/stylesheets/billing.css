@@ -1,0 +1,74 @@
+@layer components {
+  .brand--spent {
+    &.brand--hero::before {
+      background: radial-gradient(circle, color-mix(in srgb, var(--color-accent) 12%, transparent), transparent 65%);
+      animation: none;
+    }
+
+    .ember {
+      inline-size: 12px;
+      block-size: 12px;
+      background: var(--color-ink-dim);
+      box-shadow: 0 0 16px 3px color-mix(in srgb, var(--color-ink-dim) 50%, transparent);
+      animation: ember-pulse 3s ease-in-out infinite;
+    }
+  }
+
+  .usage {
+    inline-size: 100%;
+    margin-block-start: 1.75rem;
+    padding: 1rem;
+    background: var(--color-surface-sunken);
+    border: 1px solid var(--color-line-soft);
+    border-radius: 20px;
+    text-align: start;
+  }
+
+  .usage__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: .75rem;
+  }
+
+  .usage__label {
+    color: var(--color-ink-faint);
+  }
+
+  .usage__left {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-ink);
+
+    span {
+      font-size: .8125rem;
+      color: var(--color-ink-faint);
+    }
+  }
+
+  .usage__track {
+    block-size: 10px;
+    margin-block-start: .75rem;
+    border-radius: 5px;
+    background: var(--color-well);
+    overflow: hidden;
+  }
+
+  .usage__fill {
+    block-size: 100%;
+    border-radius: 5px;
+    background: var(--color-accent);
+  }
+
+  .usage__footer {
+    margin-block-start: .625rem;
+    color: var(--color-ink-soft);
+    font-size: .75rem;
+  }
+
+  .btn__aside {
+    font-weight: 500;
+    opacity: .75;
+  }
+}

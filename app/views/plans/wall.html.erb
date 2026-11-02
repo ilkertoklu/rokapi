@@ -1,0 +1,16 @@
+<% content_for :title, "#{t(".title")} · Rokapi" %>
+
+<div class="brand brand--hero brand--spent">
+  <span class="ember ember--greeting" aria-hidden="true"></span>
+
+  <h1 class="greeting"><%= t(".heading") %></h1>
+  <p><%= t(".reassurance_html") %></p>
+
+  <%= render "plans/usage", user: Current.user %>
+</div>
+
+<div class="stack">
+  <%= link_to root_path, class: "btn btn--secondary" do %>
+    <%= t(".close") %> <span class="btn__aside"><%= t(".refills", date: refill_date(Current.user)) %></span>
+  <% end %>
+</div>

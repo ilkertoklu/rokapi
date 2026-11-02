@@ -223,6 +223,7 @@ module Rokapi
 
       def failure(response)
         case response.status
+        when 402 then response.json["error"]
         when 403 then "It is not your turn."
         when 404 then "Not found. Check the game id or item."
         when 409 then "That does not fit where the game stands. Run: bin/rokapi show"
