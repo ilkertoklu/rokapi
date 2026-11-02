@@ -1,7 +1,8 @@
 require "test_helper"
+require "turbo/broadcastable/test_helper"
 
 class GameSessionTest < ActiveSupport::TestCase
-  include ActiveJob::TestHelper
+  include ActiveJob::TestHelper, Turbo::Broadcastable::TestHelper
 
   test "creating a session enrolls the creator" do
     game_session = GameSession.create!(creator: users(:ilker), quest: "sunken_village")
@@ -68,4 +69,139 @@ class GameSessionTest < ActiveSupport::TestCase
     game_sessions(:ilker_solo).finish
     assert_not_includes GameSession.ongoing, game_sessions(:ilker_solo)
   end
+
+  test "a room gets a four digit code and solo gets none" do
+    room = GameSession.create!(creator: users(:ilker), quest: "sunken_village", max_players: GameSession::PARTY_SIZE)
+
+    assert_match(/\A\d{4}\z/, room.code)
+    assert room.multiplayer?
+    assert_not game_sessions(:ilker_solo).multiplayer?
+    assert_not GameSession.new(creator: users(:ilker), max_players: 3).valid?
+  end
+
+  test "a room code stays unique until its room starts" do
+    taken = game_sessions(:ilker_room).code
+    room = create_room
+
+    assert_not_equal taken, room.code
+    assert_raises(ActiveRecord::RecordNotUnique) { room.update! code: taken }
+
+    game_sessions(:ilker_room).update! started_at: Time.current
+    assert room.update!(code: taken)
+  end
+
+  test "open for join finds a room by code" do
+    assert_equal game_sessions(:ilker_room), GameSession.open_for_join("4821")
+  end
+
+  test "open for join refuses unknown codes, solo sessions, started and stale rooms" do
+    assert_raises(GameSession::NotFound) { GameSession.open_for_join("0000") }
+    assert_raises(GameSession::NotFound) { GameSession.open_for_join(nil) }
+
+    game_sessions(:ilker_room).update! created_at: 25.hours.ago
+    assert_raises(GameSession::NotFound) { GameSession.open_for_join("4821") }
+
+    game_sessions(:ilker_room).update! created_at: Time.current, started_at: Time.current
+    assert_raises(GameSession::NotFound) { GameSession.open_for_join("4821") }
+  end
+
+  test "joining a room adds the player once and refreshes the lobby" do
+    room = game_sessions(:ilker_room)
+
+    player = nil
+    assert_turbo_stream_broadcasts(room) { player = room.join(users(:sevval)) }
+
+    assert_equal users(:sevval), player.user
+    assert_equal player, room.join(users(:sevval))
+    assert_equal 3, room.players.count
+  end
+
+  test "joining a full room is refused" do
+    room = game_sessions(:ilker_room)
+    room.join(users(:sevval))
+    2.times { |index| room.join(User.create!(email: "guest#{index}@example.com")) }
+
+    assert room.full?
+    assert_raises(GameSession::Full) { room.join(User.create!(email: "late@example.com")) }
+  end
+
+  test "joining after the start is refused" do
+    room = game_sessions(:ilker_room)
+    room.update! started_at: Time.current
+
+    assert_raises(GameSession::NotFound) { room.join(users(:sevval)) }
+    assert_equal players(:deniz_room_guest), room.join(users(:deniz))
+  end
+
+  test "a room waits for its host even when everyone is ready" do
+    room = game_sessions(:ilker_room)
+
+    assert_no_enqueued_jobs only: Scene::NarrateJob do
+      players(:ilker_room_host).ready_up(character_attributes)
+      assert_turbo_stream_broadcasts(room) { players(:deniz_room_guest).ready_up(character_attributes) }
+    end
+    assert players(:deniz_room_guest).ready?
+    assert room.everyone_ready?
+    assert_not room.reload.started?
+  end
+
+  test "only the host starts a room, and only once everyone is ready" do
+    room = game_sessions(:ilker_room)
+    players(:ilker_room_host).ready_up(character_attributes)
+
+    assert_not room.everyone_ready?
+    assert_raises(GameSession::NotReady) { room.start(by: players(:ilker_room_host)) }
+
+    players(:deniz_room_guest).ready_up(character_attributes)
+    assert_raises(GameSession::NotReady) { room.start(by: players(:deniz_room_guest)) }
+    assert_not room.reload.started?
+
+    assert_enqueued_with job: Scene::NarrateJob do
+      room.start(by: players(:ilker_room_host))
+    end
+    assert room.reload.started?
+    assert_equal players(:ilker_room_host), room.scenes.sole.active_player
+  end
+
+  test "turns rotate through the party in join order and the finale keeps the last player" do
+    room = game_sessions(:ilker_room)
+    sevval = room.join(users(:sevval))
+    room.players.each { it.ready_up(character_attributes) }
+
+    room.start(by: players(:ilker_room_host))
+    (room.scene_budget - 1).times { room.advance }
+
+    host, deniz = players(:ilker_room_host), players(:deniz_room_guest)
+    assert_equal [ host, deniz, sevval, host, deniz, sevval, sevval ], room.scenes.chronological.map(&:active_player)
+  end
+
+  test "the finale comes early for a collapsed player and keeps them" do
+    room = game_sessions(:ilker_room)
+    room.players.each { it.ready_up(character_attributes) }
+    room.start(by: players(:ilker_room_host))
+
+    players(:ilker_room_host).character.update! hp: 0
+    room.advance
+
+    assert_equal players(:ilker_room_host), room.current_scene.active_player
+  end
+
+  test "solo play stays with the host every scene" do
+    game_session = game_sessions(:ilker_without_character)
+    players(:ilker_without_character_host).ready_up(character_attributes)
+    3.times { game_session.advance }
+
+    assert game_session.reload.started?
+    assert_equal [ players(:ilker_without_character_host) ], game_session.scenes.map(&:active_player).uniq
+  end
+
+  private
+    def create_room
+      GameSession.create!(creator: users(:deniz), quest: "sunken_village", max_players: GameSession::PARTY_SIZE)
+    end
+
+    def character_attributes
+      { race: "human", klass: "warrior", background: "soldier",
+        stats: Character::Klass.fetch("warrior").base_stats.merge("strength" => 16, "constitution" => 15, "charisma" => 14) }
+    end
 end

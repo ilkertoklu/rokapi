@@ -23,6 +23,7 @@ class Character < ApplicationRecord
 
   before_validation :derive_hp, on: :create
   after_create :grant_starting_gear
+  after_create_commit -> { broadcast_refresh_to game_session }
 
   def summary
     [ Race.fetch(race).label, Klass.fetch(klass).label, Background.fetch(background).label ].join(" · ")

@@ -41,3 +41,11 @@ deniz_solo:
   tone: balanced
   length: short
   started_at: <%= 1.hour.ago %>
+
+ilker_room:
+  quest: lost_caravan
+  creator: ilker
+  tone: balanced
+  length: short
+  code: "4821"
+  max_players: 5
