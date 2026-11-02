@@ -54,4 +54,15 @@ class Scene::NarrateJobTest < ActiveJob::TestCase
 
     assert game_session.current_scene.stalled?
   end
+
+  test "the narrator speaks the default locale whatever the page that woke it" do
+    game_session = game_sessions(:ilker_solo)
+    scene = game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host)
+    scene_call = FakeReply.new(SCENE_RESPONSE)
+
+    I18n.with_locale(:tr) { scene.narrate_later }
+    stub_llm(scene_call) { perform_enqueued_jobs }
+
+    assert_includes scene_call.instructions, "Tone: Balanced"
+  end
 end
