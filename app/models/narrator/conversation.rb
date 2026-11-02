@@ -7,8 +7,4 @@ class Narrator::Conversation < ApplicationRecord
     messages.reload.last(2).each(&:destroy)
     reload
   end
-
-  def settle(cue)
-    messages.reload.where(role: "user").last.update! content: cue
-  end
 end
