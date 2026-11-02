@@ -1,0 +1,35 @@
+<% content_for :title, "#{t(".title")} · Rokapi" %>
+
+<%= tag.div class: [ "flow", ("code-entry--rejected" if @rejection) ], data: { controller: "code", code_length_value: GameSession::CODE_LENGTH, code_verify_value: t(".submit"),
+      code_digits_left_value: t(".digits_left").to_json, code_rejected_value: (@code if @rejection) } do %>
+  <%= render "back", to: root_path, title: t(".title") %>
+
+  <% if @rejection %>
+    <div class="rejection" role="alert">
+      <%= render "glyph", name: "warning" %>
+      <div>
+        <strong><%= t(".#{@rejection}.title", **@rejection_details) %></strong>
+        <p><%= t(".#{@rejection}.text") %></p>
+      </div>
+    </div>
+  <% end %>
+
+  <p class="hint join__hint"><%= t(".hint", length: GameSession::CODE_LENGTH) %></p>
+
+  <%= form_with url: game_sessions_join_path, class: "code-form" do |form| %>
+    <div class="code">
+      <%= form.text_field :code, value: @code, class: "code__input", aria: { label: t(".code") },
+            inputmode: "numeric", pattern: "[0-9]*", maxlength: GameSession::CODE_LENGTH,
+            autocomplete: "off", required: true, autofocus: @rejection.nil?,
+            data: { code_target: "input", action: "input->code#update" } %>
+      <% GameSession::CODE_LENGTH.times do |index| %>
+        <%= tag.span @code.to_s[index], class: "code__cell", aria: { hidden: true }, data: { code_target: "cell" } %>
+      <% end %>
+    </div>
+
+    <%= form.submit t(".submit"), class: "btn btn--primary", data: { code_target: "submit" } %>
+    <% if @rejection %>
+      <button type="button" class="btn btn--primary code-form__change" data-action="code#clear"><%= t(".change") %></button>
+    <% end %>
+  <% end %>
+<% end %>

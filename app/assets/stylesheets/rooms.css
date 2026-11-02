@@ -1,0 +1,58 @@
+@layer components {
+  .rejection {
+    display: none;
+    align-items: center;
+    gap: .8125rem;
+    padding: .8125rem .9375rem;
+    background: color-mix(in srgb, var(--color-negative) 8%, var(--color-surface-raised));
+    border: 1px solid color-mix(in srgb, var(--color-negative) 40%, transparent);
+    border-radius: 15px;
+    box-shadow: 0 18px 44px -10px rgba(0, 0, 0, .75), 0 4px 14px rgba(0, 0, 0, .4);
+
+    > .glyph {
+      inline-size: 30px;
+      block-size: 30px;
+      flex: none;
+      color: var(--color-negative-bright);
+    }
+
+    strong {
+      font-size: .875rem;
+      font-weight: 700;
+    }
+
+    p {
+      margin: .125rem 0 0;
+      color: var(--color-ink-faint);
+      font-size: .8125rem;
+      line-height: 1.45;
+    }
+  }
+
+  .join__hint {
+    text-align: center;
+  }
+
+  .code-form__change {
+    display: none;
+  }
+
+  .code-entry--rejected {
+    .rejection {
+      display: flex;
+    }
+
+    .code__cell {
+      background: color-mix(in srgb, var(--color-negative) 9%, var(--color-bg));
+      border-color: color-mix(in srgb, var(--color-negative) 50%, transparent);
+    }
+
+    [data-code-target="submit"] {
+      display: none;
+    }
+
+    .code-form__change {
+      display: block;
+    }
+  }
+}

@@ -4,6 +4,7 @@ class GameSession < ApplicationRecord
   class NotReady < StandardError; end
 
   PARTY_SIZE = 5
+  CODE_LENGTH = 4
   JOINABLE_FOR = 24.hours
 
   belongs_to :creator, class_name: "User", default: -> { Current.user }
@@ -125,7 +126,7 @@ class GameSession < ApplicationRecord
   private
     def assign_code
       self.code = loop do
-        candidate = format("%04d", SecureRandom.random_number(10_000))
+        candidate = SecureRandom.random_number(10**CODE_LENGTH).to_s.rjust(CODE_LENGTH, "0")
         break candidate unless GameSession.unstarted.exists?(code: candidate)
       end
     end

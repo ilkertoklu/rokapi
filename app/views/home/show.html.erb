@@ -16,5 +16,5 @@
   <% end %>
 
   <%= link_to t(".start"), new_game_session_path, class: "btn btn--primary" %>
-  <button class="btn btn--secondary" disabled><%= t(".join") %></button>
+  <%= link_to t(".join"), new_game_sessions_join_path, class: "btn btn--secondary" %>
 </div>

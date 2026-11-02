@@ -51,6 +51,28 @@ module Rokapi
       heroes
     end
 
+    desc "multi", "Open a multiplayer room and print its code"
+    option :quest, default: "lost_caravan", desc: "Quest key or surprise"
+    option :tone, default: "balanced"
+    option :length, default: "medium"
+    def multi
+      room = act(:post, "/game_sessions/multi.json",
+        game_session: { quest: options[:quest] == "surprise" ? "" : options[:quest], tone: options[:tone], length: options[:length] }).json
+      client.game_id = room["id"]
+
+      say "Room #{room["code"]} open as game #{room["id"]}. Friends join with: bin/rokapi join #{room["code"]} --as FRIEND"
+      heroes
+    end
+
+    desc "join CODE", "Join a friend's room by its 4-digit code"
+    def join(code)
+      response = act(:post, "/game_sessions/join.json", code: code)
+      client.game_id = response.location[%r{/game_sessions/(\d+)}, 1].to_i
+
+      say "Joined room #{code} as game #{client.game_id}."
+      heroes
+    end
+
     desc "heroes", "List races, classes and backgrounds for the character"
     def heroes
       catalog = character_catalog

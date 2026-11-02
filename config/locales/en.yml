@@ -260,20 +260,50 @@ en:
       solo: Solo
       solo_text: 1 player · 15-60 min · a story of your own
       multiplayer: Multiplayer
-      multiplayer_text: 2-5 players · 30-90 min · a shared story · soon
+      multiplayer_text: 2-5 players · 30-90 min · a shared story
       hint: In multiplayer you share a room code, and your friends join with it.
+    setup:
+      quest: Quest
+      surprise: Surprise
+      surprise_text: Let the narrator build an unknown world.
+      tone: Tone
+      length: Length
     solos:
       new:
         title: New adventure
-        quest: Quest
-        surprise: Surprise
-        surprise_text: Let the narrator build an unknown world.
-        tone: Tone
-        length: Length
         submit: Create your character
       create:
         rate_limited: Too many adventures started. Wait a little.
         invalid: That setup is not valid. Check your picks.
+    multis:
+      new:
+        title: New adventure
+        submit: Create room
+        estimates:
+          short: "~30 min"
+          medium: "~60 min"
+          long: "~90 min"
+      create:
+        rate_limited: Too many rooms created. Wait a little.
+        invalid: The setup is not valid. Check your choices.
+    joins:
+      new:
+        title: Join a room
+        hint: Enter the %{length}-digit room code your friend shared.
+        code: Room code
+        submit: Join
+        digits_left:
+          one: "%{count} digit left"
+          other: "%{count} digits left"
+        change: Change the code
+        not_found:
+          title: Room not found
+          text: There is no open room with this code. Check the code and try again.
+        full:
+          title: Room full · %{max}/%{max}
+          text: This room has no seats left. Ask the host to open a new room.
+      create:
+        rate_limited: Too many tries. Wait a few minutes.
     characters:
       new:
         title: Create your character

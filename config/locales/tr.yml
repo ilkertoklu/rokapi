@@ -281,20 +281,50 @@ tr:
       solo: Tek kişilik
       solo_text: 1 oyuncu · 15-60 dk · sana özel hikâye
       multiplayer: Çok kişilik
-      multiplayer_text: 2-5 oyuncu · 30-90 dk · ortak hikâye · yakında
+      multiplayer_text: 2-5 oyuncu · 30-90 dk · ortak hikâye
       hint: Çok kişilikte bir oda kodu paylaşır, arkadaşların kodla katılır.
+    setup:
+      quest: Görev
+      surprise: Sürpriz
+      surprise_text: Anlatıcı bilinmeyen bir dünya kursun.
+      tone: Ton
+      length: Uzunluk
     solos:
       new:
         title: Yeni macera
-        quest: Görev
-        surprise: Sürpriz
-        surprise_text: Anlatıcı bilinmeyen bir dünya kursun.
-        tone: Ton
-        length: Uzunluk
         submit: Karakterini oluştur
       create:
         rate_limited: Çok fazla macera kuruldu. Biraz bekle.
         invalid: Kurulum geçersiz. Seçimlerini kontrol et.
+    multis:
+      new:
+        title: Yeni macera
+        submit: Oda oluştur
+        estimates:
+          short: "~30 dk"
+          medium: "~60 dk"
+          long: "~90 dk"
+      create:
+        rate_limited: Çok fazla oda kuruldu. Biraz bekle.
+        invalid: Kurulum geçersiz. Seçimlerini kontrol et.
+    joins:
+      new:
+        title: Odaya katıl
+        hint: Arkadaşının paylaştığı %{length} haneli oda kodunu gir.
+        code: Oda kodu
+        submit: Katıl
+        digits_left:
+          one: "%{count} hane kaldı"
+          other: "%{count} hane kaldı"
+        change: Kodu değiştir
+        not_found:
+          title: Oda bulunamadı
+          text: Bu kodla açık bir oda yok. Kodu kontrol edip tekrar dene.
+        full:
+          title: Oda dolu · %{max}/%{max}
+          text: Bu odada yer kalmadı. Ev sahibinden yeni oda açmasını iste.
+      create:
+        rate_limited: Çok fazla deneme. Birkaç dakika bekle.
     characters:
       new:
         title: Karakterini oluştur

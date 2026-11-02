@@ -1,0 +1,4 @@
+<% content_for :title, "#{t(".title")} · Rokapi" %>
+
+<%= render "game_sessions/setup", url: game_sessions_multi_path, back: new_game_session_path, title: t(".title"), submit: t(".submit"),
+      estimates: t(".estimates").stringify_keys %>

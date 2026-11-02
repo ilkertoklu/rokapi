@@ -5,19 +5,19 @@
 <p class="lede"><%= t(".lede") %></p>
 
 <div class="stack">
+  <%= link_to new_game_sessions_multi_path, class: "pick pick--large" do %>
+    <span class="pick__body">
+      <span class="pick__title"><%= t(".multiplayer") %></span>
+      <span class="pick__text"><%= t(".multiplayer_text") %></span>
+    </span>
+  <% end %>
+
   <%= link_to new_game_sessions_solo_path, class: "pick pick--large" do %>
     <span class="pick__body">
       <span class="pick__title"><%= t(".solo") %></span>
       <span class="pick__text"><%= t(".solo_text") %></span>
     </span>
   <% end %>
-
-  <div class="pick pick--large pick--disabled">
-    <span class="pick__body">
-      <span class="pick__title"><%= t(".multiplayer") %></span>
-      <span class="pick__text"><%= t(".multiplayer_text") %></span>
-    </span>
-  </div>
 </div>
 
 <p class="hint"><%= t(".hint") %></p>

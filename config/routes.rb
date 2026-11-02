@@ -11,6 +11,8 @@ Rails.application.routes.draw do
 
   namespace :game_sessions do
     resource :solo, only: %i[new create]
+    resource :multi, only: %i[new create]
+    resource :join, only: %i[new create]
   end
 
   resources :game_sessions, only: %i[new show] do
