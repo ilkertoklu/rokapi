@@ -1,11 +1,11 @@
 class Choice < ApplicationRecord
-  TARGET_RANGE = 5..19
+  DIFFICULTY = 8..19
 
   belongs_to :scene
 
   has_one :roll, dependent: :delete
 
-  normalizes :target, with: ->(target) { target.clamp(TARGET_RANGE) }
+  normalizes :target, with: ->(target) { target.clamp(DIFFICULTY) }
 
   scope :chosen, -> { where.not(chosen_at: nil) }
 

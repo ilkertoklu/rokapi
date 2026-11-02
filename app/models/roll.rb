@@ -1,5 +1,6 @@
 class Roll < ApplicationRecord
   DIE = 20
+  HEALTH_FLOOR = { narrow: -3, failure: -6, heavy: -9, catastrophe: -12 }.freeze
   EMPTY_EFFECTS = { "hp" => 0, "items_gained" => [], "items_lost" => [], "statuses_gained" => [], "statuses_lost" => [] }.freeze
 
   include Stallable

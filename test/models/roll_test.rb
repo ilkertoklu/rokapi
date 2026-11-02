@@ -22,7 +22,7 @@ class RollTest < ActiveSupport::TestCase
   end
 
   test "a natural one that still clears the target is no catastrophe" do
-    roll = roll_with(value: 1, target: 5, modifier: 6)
+    roll = roll_with(value: 1, target: 8, modifier: 10)
 
     assert roll.success?
     assert_equal :solid, roll.grade

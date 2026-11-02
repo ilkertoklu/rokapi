@@ -30,7 +30,7 @@ class Narrator::Brief
   end
 
   def title_limit
-    Narrator.title_limit(scenes)
+    Narrator::Screen.title_limit(scenes)
   end
 
   private

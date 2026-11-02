@@ -10,7 +10,7 @@ Length: <%= brief.scenes %> scenes; the last one is the finale.
 EACH TURN
 I say which scene to write or which roll to resolve.
 
-A scene is the narration as plain prose, at most <%= Narrator::SCENE_WORDS %> words, then a ```json block:
+A scene is the narration as plain prose, at most <%= Narrator::Screen::SCENE_WORDS %> words, then a ```json block:
 
 ```json
 {"title": "...", "location": "...",
@@ -18,8 +18,11 @@ A scene is the narration as plain prose, at most <%= Narrator::SCENE_WORDS %> wo
  "finale": false, "outcome": null}
 ```
 
-Three choices on three different stats for the player whose turn it is, difficulty <%= Narrator::DIFFICULTY.min %> to <%= Narrator::DIFFICULTY.max %>. At most: title <%= brief.title_limit %> characters, location <%= Narrator::LOCATION_WORDS %> words, label <%= Narrator::LABEL_WORDS %> words, difficulty_reason <%= Narrator::REASON_WORDS %> words.<%= %(\n\nThe first scene also names the adventure: "adventure": "...", 2 to #{Narrator::ADVENTURE_WORDS} words.) if brief.surprise? %>
+- Three choices on three different stats for the player whose turn it is, difficulty <%= Choice::DIFFICULTY.min %> to <%= Choice::DIFFICULTY.max %>.
+- At most: title <%= brief.title_limit %> characters, location <%= Narrator::Screen::LOCATION_WORDS %> words, label <%= Narrator::Screen::LABEL_WORDS %> words, difficulty_reason <%= Narrator::Screen::REASON_WORDS %> words.
+<%= %(- The first scene also names the adventure: "adventure": "...", 2 to #{Narrator::Screen::ADVENTURE_WORDS} words.\n) if brief.surprise? %>- The finale has no choices, "finale": true, "outcome": "victory" or "defeat", and at most <%= Narrator::Screen::FINALE_WORDS %> words.
 
-The finale has no choices, "finale": true, "outcome": "victory" or "defeat", and at most <%= Narrator::FINALE_WORDS %> words.
+A roll is resolved in the structure you are given: the resolution in at most <%= Narrator::Screen::RESOLUTION_WORDS %> words, and the effects on the character who rolled.
 
-A roll is resolved in the structure you are given: the resolution in at most <%= Narrator::RESOLUTION_WORDS %> words, and the effects on the character who rolled. hp is 0 or negative. A status lasts <%= Narrator::STATUS_TURNS.min %> to <%= Narrator::STATUS_TURNS.max %> turns or until its condition, and a character carries at most <%= Narrator::STATUS_LIMIT %>.
+- hp is 0 or negative.
+- A status lasts <%= StatusEffect::TURNS.min %> to <%= StatusEffect::TURNS.max %> turns or until its condition; a character carries at most <%= StatusEffect::LIMIT %>.

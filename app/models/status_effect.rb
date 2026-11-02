@@ -1,6 +1,8 @@
 class StatusEffect < ApplicationRecord
   MODIFIER_RANGE = -2..2
+  TURNS = 1..3
   DEFAULT_TURNS = 2
+  LIMIT = 2
 
   belongs_to :character
 

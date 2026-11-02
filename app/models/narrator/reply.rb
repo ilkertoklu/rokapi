@@ -13,6 +13,8 @@ class Narrator::Reply
   def structure
     closing = structure_end
     closing && JSON.parse(@buffer[structure_start..closing])
+  rescue JSON::ParserError => error
+    raise Narrator::MalformedResponse, error.message
   end
 
   def prose

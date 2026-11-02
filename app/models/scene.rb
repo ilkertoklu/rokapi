@@ -16,6 +16,13 @@ class Scene < ApplicationRecord
 
   after_save_commit -> { broadcast_refresh_to game_session }
 
+  def stream(prose)
+    return if narration == prose
+
+    update_column :narration, prose
+    broadcast_narration
+  end
+
   def broadcast_narration
     broadcast_update_to game_session, target: :scene_narration, partial: "scenes/narration"
   end
