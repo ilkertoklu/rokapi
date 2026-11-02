@@ -40,7 +40,6 @@ Every call is logged with its cost. A finished game knows exactly what it cost t
 
 In development, `NARRATOR_COMMAND` hands every narrator call to a command of your own instead of the API: `NARRATOR_COMMAND=~/bin/narrate bin/dev`. The command is run through the shell once per call and gets one JSON object on stdin: `model` (the model the call is meant for, or `null` for the narrator's own), `system` (the instructions), `prompt` (the briefing) and `schema` (a JSON Schema, or `null`). It writes the reply to stdout and exits 0. When `schema` is set, the reply is a single JSON object matching it, with no fences or prose around it; otherwise it is the scene exactly as the model would write it. Whatever the command writes before it exits streams into the scene as it arrives. These calls are logged as model `understudy` at zero cost. Without the variable, and in every other environment, the narrator calls the API.
 
-`bin/rokapi judge A B` hands two finished games from this checkout's database to an editor judge on Claude Opus 5.5, through the same command in development, and says which was the better story to have played, how sure it is, why, and the one change that would most improve the other. The judge never sees which game is which; the order is random unless `--order ab|ba` fixes it, `--order both` judges the pair once each way, and `--json` prints the verdicts for scripts.
 
 
 ## Tests

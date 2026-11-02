@@ -170,26 +170,6 @@ module Rokapi
       settle
     end
 
-    desc "judge A B", "Have the editor judge which of two finished games was the better story, shown blind"
-    long_desc "Reads both games from this checkout's database, not from the server. The judge sees the two stories without their ids, in random order unless --order says otherwise; ab and ba fix the order, both judges the pair once each way to check the judge against itself."
-    option :order, enum: %w[random ab ba both], default: "random", desc: "The order the stories are shown in"
-    def judge(a, b)
-      require_relative "../../config/environment"
-      require_relative "judgement"
-      games = [ a, b ].map { |id| finished_game(id) }
-      raise Thor::Error, "A game cannot be judged against itself." if games.uniq.size == 1
-
-      verdicts = judging_orders(games).map do |first, second|
-        say "Judging game #{first.id} shown first, game #{second.id} second…" unless options[:json]
-        Judgement.new(first, second).verdict.tap { say_verdict it unless options[:json] }
-      end
-
-      winner = verdicts.pluck("winner").uniq.one? ? verdicts.first["winner"] : nil
-      return puts(JSON.pretty_generate("games" => games.map(&:id), "verdicts" => verdicts, "winner" => winner)) if options[:json]
-
-      say(winner ? "\nAGREED: game #{winner} both times." : "\nSPLIT: the verdict changed with the order.") if verdicts.many?
-    end
-
     desc "plan", "Show the plan, the usage left and when it refills"
     def plan
       subscription = fetch("/subscription.json")
@@ -342,28 +322,6 @@ module Rokapi
         return "Rejected: #{response.body}" unless response.json?
 
         response.json.map { |field, messages| messages.is_a?(Array) ? "#{field} #{messages.join(", ")}" : messages }.join("; ")
-      end
-
-      def finished_game(id)
-        game = GameSession.find_by(id: id) || raise(Thor::Error, "No game #{id} in this checkout's database.")
-        raise Thor::Error, "Game #{id} is not finished." unless game.finished?
-
-        game
-      end
-
-      def judging_orders(games)
-        case options[:order]
-        when "ab" then [ games ]
-        when "ba" then [ games.reverse ]
-        when "both" then [ games, games.reverse ]
-        else [ games.shuffle ]
-        end
-      end
-
-      def say_verdict(verdict)
-        say "WINNER: game #{verdict["winner"]} (#{verdict["confidence"]} confidence)"
-        say "WHY: #{verdict["reason"]}"
-        say "TO IMPROVE GAME #{verdict["loser"]}: #{verdict["improvement"]}"
       end
 
       def allocate(base, catalog)
