@@ -3,6 +3,7 @@ module ActiveTurn
   include GameSessionScoped
 
   included do
+    before_action :refuse_move, if: -> { @game_session.finished? }
     before_action :ensure_active_turn
     rescue_from Scene::OutOfTurn, ActiveRecord::RecordNotUnique, with: :refuse_move
   end
