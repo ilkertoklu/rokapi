@@ -263,14 +263,37 @@ module Rokapi
       def failure(response)
         case response.status
         when 402 then response.json["error"]
-        when 403 then "It is not your turn."
-        when 404 then "Not found. Check the game id or item."
-        when 409 then "That does not fit where the game stands. Run: bin/rokapi show"
-        when 422 then "Rejected: #{response.body}"
+        when 403, 404, 409 then refusal_in_game(response.status)
+        when 422 then explanation(response)
         when 429 then "Rate limited. Wait a few minutes."
         when 300..399 then "Redirected to #{response.location}."
         else "The server answered #{response.status}."
         end
+      end
+
+      def refusal_in_game(status)
+        if game_over?
+          "The game is over. Run: bin/rokapi story"
+        elsif status == 403
+          "It is not your turn."
+        elsif status == 404
+          "Not found. Check the game id or item."
+        else
+          "That does not fit where the game stands. Run: bin/rokapi show"
+        end
+      end
+
+      def game_over?
+        response = client.get("#{game_path}.json")
+        response.success? && response.json["finished"]
+      rescue Thor::Error
+        false
+      end
+
+      def explanation(response)
+        return "Rejected: #{response.body}" unless response.json?
+
+        response.json.map { |field, messages| messages.is_a?(Array) ? "#{field} #{messages.join(", ")}" : messages }.join("; ")
       end
 
       def allocate(base, catalog)
