@@ -490,9 +490,18 @@ tr:
       items_ready:
         one: "%{count} eşya hazır"
         other: "%{count} eşya hazır"
+    feed:
+      added_to_inventory: Envantere eklendi
+      found_by: "%{item} · %{name} buldu"
+    party:
+      turn_of: "%{name} sırası"
     scene:
       narrator: Anlatıcı
       writing: Anlatıcı sahneyi yazıyor
+    watch:
+      deciding: "%{name} karar veriyor"
+      rolling: "%{name} zar atıyor…"
+      reading: "%{name} sonucu okuyor"
 
   sessions:
     new:

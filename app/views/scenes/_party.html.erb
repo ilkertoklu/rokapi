@@ -1,0 +1,13 @@
+<%# locals: (scene:, viewer:) -%>
+<% party = scene.game_session.party.to_a %>
+<% active = scene.active_player %>
+<div class="party">
+  <%= player_avatar active, "avatar--active", seat: party.index(active) %>
+  <span class="party__turn"><%= scene.turn_of?(viewer) ? active.name : t(".turn_of", name: genitive(active.name)) %></span>
+
+  <ol class="party__others">
+    <% party.rotate(party.index(active) + 1).excluding(active).each do |player| %>
+      <li><%= player_avatar player, "avatar--small", { "avatar--you": player == viewer }, seat: party.index(player) %></li>
+    <% end %>
+  </ol>
+</div>

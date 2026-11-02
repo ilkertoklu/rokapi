@@ -7,7 +7,7 @@
   <%= render "game_sessions/lobby", game_session: @game_session, player: @player %>
 <% else %>
   <div class="game" data-controller="sheet">
-    <%= render "game_sessions/stage", game_session: @game_session %>
+    <%= render "game_sessions/stage", game_session: @game_session, player: @player %>
 
     <%= render "characters/sheet", character: @character %>
   </div>

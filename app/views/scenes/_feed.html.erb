@@ -1,0 +1,25 @@
+<%# locals: (scene:) -%>
+<% if (choice = scene.chosen_choice) %>
+  <% actor = scene.active_player %>
+  <% roll = scene.roll %>
+  <div class="feed">
+    <p class="feed__action">
+      <%= player_avatar actor, "avatar--tiny" %>
+      <span><%= choice.label %></span>
+    </p>
+
+    <% if roll&.resolved? %>
+      <p class="feed__resolution"><%= roll.resolution %></p>
+
+      <% roll.items_gained.each do |gain| %>
+        <div class="feed__gain">
+          <span class="feed__gain-icon"><%= render "glyph", name: item_glyph(gain["kind"]) %></span>
+          <div>
+            <span class="overline"><%= t(".added_to_inventory") %></span>
+            <p><%= t(".found_by", item: gain["name"], name: actor.name) %></p>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

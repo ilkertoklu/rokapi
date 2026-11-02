@@ -103,9 +103,10 @@ module Rokapi
       settle
     end
 
-    desc "show", "Show where the game stands and what to do next"
+    desc "show", "Show where the game stands and what to do next; in a party game, wait for your turn"
     def show
-      present game
+      game = self.game
+      spectating?(game) && !options[:json] ? watch : present(game)
     end
 
     desc "story", "Show every scene so far"
@@ -115,6 +116,7 @@ module Rokapi
 
       game["scenes"].each do |scene|
         say_scene game, scene
+        say "(#{scene["active_player"]}’s turn)" if game["multiplayer"]
         say_choice scene
         say_roll scene["roll"] if scene["roll"]&.fetch("resolved")
       end
@@ -294,12 +296,55 @@ module Rokapi
         end
       end
 
+      def watch
+        streamed = {}
+        reported = []
+        deadline = Time.now + options[:wait]
+
+        loop do
+          game = self.game
+          stream game, streamed
+          report game, reported
+          return present(game, streamed: streamed) unless spectating?(game) || busy?(game)
+          raise Thor::Error, "Still not your turn after #{options[:wait]}s. Run: bin/rokapi show" if Time.now > deadline
+
+          sleep POLL_INTERVAL
+        end
+      end
+
+      def report(game, reported)
+        scene = current_scene(game) or return
+        return if scene["state"] == "narrating" || !spectating?(game)
+
+        actor = scene["active_player"]
+        choice = scene["choices"].find { |candidate| candidate["chosen"] }
+        roll = scene["roll"]
+        events = [ "#{actor}’s turn" ]
+        events << "#{actor} chose: #{choice["label"]} [#{choice["stat"]} #{format("%+d", choice["modifier"])}, target #{choice["target"]}]" if choice
+        if roll&.fetch("resolved")
+          events << "#{actor} rolled d20=#{roll["value"]} → #{roll["total"]} vs #{roll["target"]}, #{roll["grade"].upcase}: #{roll["resolution"]}"
+          roll["effects"]["items_gained"].each { |item| events << "Added to inventory: #{item["name"]} · found by #{actor}" }
+        end
+
+        events.each do |event|
+          key = "#{scene["position"]}: #{event}"
+          next if reported.include?(key)
+
+          say "\n>>> #{event}"
+          reported << key
+        end
+      end
+
+      def spectating?(game)
+        game["multiplayer"] && game["started"] && !game["finished"] && !game["your_turn"]
+      end
+
       def busy?(game)
         scene = current_scene(game)
         roll = scene&.fetch("roll")
 
         return false if game["finished"] || game["lobby"]
-        return true if scene.nil?
+        return !game["multiplayer"] if scene.nil?
 
         (scene["state"] == "narrating" && !scene["stalled"]) || (roll && !roll["resolved"] && !roll["stalled"])
       end
@@ -325,7 +370,10 @@ module Rokapi
         return say_lobby(game) if game["lobby"]
 
         scene = current_scene(game)
-        if scene.nil?
+        if scene.nil? && game["character"]
+          say "Your character is ready. The game starts when the host starts it."
+          return next_step("show")
+        elsif scene.nil?
           say "The game has no character yet."
           return next_step("heroes")
         end
@@ -338,12 +386,16 @@ module Rokapi
           say_scene_heading game, scene
         end
         say_status game
+        say_party game, scene if game["multiplayer"]
 
         roll = scene["roll"]
         case
         when game["finished"]
           say_footer game
           next_step "new"
+        when spectating?(game)
+          say "\n#{scene["active_player"]}’s turn. You are watching."
+          next_step "show (waits for your turn)"
         when scene["stalled"] || roll&.fetch("stalled")
           say "\nThe narrator stalled."
           next_step "resume"
@@ -402,6 +454,11 @@ module Rokapi
         statuses = character["statuses"].map { |status| status["summary"] }
 
         say "\nHP #{character["hp"]}/#{character["max_hp"]} | ITEMS: #{items.join("; ").then { it.empty? ? "none" : it }} | STATUSES: #{statuses.join("; ").then { it.empty? ? "none" : it }}"
+      end
+
+      def say_party(game, scene)
+        party = game["party"].map { |player| "#{player["name"]}#{" (you)" if player["you"]}#{" ◀ turn" if player["name"] == scene["active_player"]} — #{player["summary"]}" }
+        say "PARTY: #{party.join(" | ")}"
       end
 
       def say_choice(scene)

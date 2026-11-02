@@ -469,9 +469,18 @@ en:
       items_ready:
         one: "%{count} item ready"
         other: "%{count} items ready"
+    feed:
+      added_to_inventory: Added to inventory
+      found_by: "%{item} · found by %{name}"
+    party:
+      turn_of: "%{name} turn"
     scene:
       narrator: Narrator
       writing: The narrator is writing the scene
+    watch:
+      deciding: "%{name} is deciding"
+      rolling: "%{name} is rolling…"
+      reading: "%{name} is reading the outcome"
 
   sessions:
     new:

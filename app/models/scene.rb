@@ -20,6 +20,10 @@ class Scene < ApplicationRecord
     broadcast_update_to game_session, target: :scene_narration, partial: "scenes/narration"
   end
 
+  def turn_of?(player)
+    active_player == player
+  end
+
   def first?
     position == 1
   end

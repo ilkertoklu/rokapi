@@ -1,15 +1,32 @@
-<%# locals: (scene:) -%>
+<%# locals: (scene:, viewer:) -%>
+<% party = scene.game_session.multiplayer? %>
 <%= render "scenes/location", scene: scene %>
+
+<% if party && !scene.narrating? %>
+  <%= render "scenes/party", scene: scene, viewer: viewer %>
+<% end %>
 
 <div class="narration">
   <p class="scene__speaker"><span class="ember <%= "ember--pulsing" if scene.narrator_writing? %>"></span> <%= t(".narrator") %></p>
   <%= tag.div id: "scene_narration", class: [ "narration__body", "narration__body--writing": scene.narrator_writing? ] do %>
     <%= render "scenes/narration", scene: scene %>
   <% end %>
+
+  <% if party %>
+    <%= render "scenes/feed", scene: scene %>
+  <% end %>
 </div>
 
-<% if scene.choosing? %>
-  <%= render "scenes/choices", scene: scene %>
+<% if scene.turn_of?(viewer) %>
+  <% if scene.choosing? %>
+    <%= render "scenes/choices", scene: scene %>
+  <% else %>
+    <%= render "game_sessions/waiting", scene: scene, text: t(".writing") %>
+  <% end %>
+<% elsif scene.narrating? %>
+  <div class="stage__footer">
+    <%= render "game_sessions/writing", text: t(".writing") %>
+  </div>
 <% else %>
-  <%= render "game_sessions/waiting", scene: scene, text: t(".writing") %>
+  <%= render "scenes/watch", scene: scene %>
 <% end %>

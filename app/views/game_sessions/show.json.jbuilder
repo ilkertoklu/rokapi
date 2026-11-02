@@ -2,6 +2,7 @@ json.(@game_session, :id, :title, :quest, :tone, :length, :locale, :scene_budget
 json.started @game_session.started?
 json.finished @game_session.finished?
 json.your_turn @game_session.current_scene&.active_player == @player
+json.multiplayer @game_session.multiplayer?
 json.(@game_session, :code, :max_players)
 json.lobby @game_session.lobby?
 json.host @player == @game_session.host
@@ -23,3 +24,9 @@ else
 end
 
 json.scenes @game_session.scenes.chronological, partial: "scenes/scene", as: :scene
+
+json.party @game_session.party do |player|
+  json.name player.name
+  json.summary player.character&.summary
+  json.you player == @player
+end

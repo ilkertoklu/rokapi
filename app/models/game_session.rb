@@ -53,6 +53,10 @@ class GameSession < ApplicationRecord
     player_for(creator)
   end
 
+  def party
+    players.in_join_order.includes(:user, :character)
+  end
+
   def multiplayer?
     code.present?
   end

@@ -1,5 +1,6 @@
 json.(scene, :position, :title, :location, :state, :finale, :narration)
 json.stalled scene.stalled?
+json.active_player scene.active_player.name
 
 json.choices scene.choices.order(:id) do |choice|
   json.(choice, :id, :label, :stat, :modifier, :target, :difficulty, :difficulty_reason)

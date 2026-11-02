@@ -7,10 +7,16 @@ class Player < ApplicationRecord
 
   scope :in_join_order, -> { order(:created_at, :id) }
 
+  delegate :name, :initial, to: :user
+
   after_create_commit -> { broadcast_refresh_to game_session }
 
   def ready?
     character.present?
+  end
+
+  def seat
+    game_session.players.in_join_order.ids.index(id)
   end
 
   def ready_up(character_attributes)
