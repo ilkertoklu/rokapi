@@ -37,6 +37,19 @@ class NarratorTest < ActiveSupport::TestCase
     assert_operator call.cost_in_microdollars, :>, 0
   end
 
+  test "a scene written without its fence still gets its choices" do
+    unfenced = SCENE_RESPONSE.delete("`").sub("json\n", "").sub("The dust lies thick", "Dust lies thick, {in} braces")
+    fake = FakeChat.new(unfenced, chunks: unfenced.chars.each_slice(40).map(&:join))
+
+    stub_llm(fake) { narrate }
+
+    scene = @game_session.scenes.sole
+    assert scene.choosing?
+    assert_equal "The Old Inn", scene.title
+    assert_equal "Dust lies thick, {in} braces", scene.choices.find_by(stat: "intelligence").difficulty_reason
+    assert scene.narration.start_with?("Rain hammers")
+  end
+
   test "the stage refreshes before narration streams into it" do
     fake = FakeChat.new(SCENE_RESPONSE, chunks: SCENE_RESPONSE.chars.each_slice(40).map(&:join))
 
