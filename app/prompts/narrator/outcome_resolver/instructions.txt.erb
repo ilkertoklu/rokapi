@@ -1,6 +1,0 @@
-<%= brief %>
-
-Resolve the roll you are given: the resolution says what happened, in at most <%= Narrator::RESOLUTION_WORDS %> words, and the effects say what it did to the character whose turn it is. Do not write the next scene.
-
-- hp is never positive, and no lower than <%= Narrator::HEALTH_FLOOR.map { |grade, floor| "#{floor} on #{I18n.t(grade, scope: "roll.grades", locale: :en)}" }.join(", ") %>; on any other success it is 0.
-- A status modifies later rolls by -2 to +2 and lasts <%= Narrator::STATUS_TURNS.min %> to <%= Narrator::STATUS_TURNS.max %> turns or until its condition. A character carries at most <%= Narrator::STATUS_LIMIT %>. A positive one holds only on a CRITICAL SUCCESS.

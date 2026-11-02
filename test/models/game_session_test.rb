@@ -54,6 +54,7 @@ class GameSessionTest < ActiveSupport::TestCase
     LlmCall.record game_session: game_session, purpose: :scene,
       response: RubyLLM::Message.new(role: :assistant, content: "x", model: "gpt-5-mini",
                                      input_tokens: 10, output_tokens: 10)
+    stub_llm(FakeReply.new(SCENE_RESPONSE)) { game_session.create_chat!.ask("Scene 1 of 7. Write the first scene.") }
 
     game_session.destroy
 
@@ -61,6 +62,8 @@ class GameSessionTest < ActiveSupport::TestCase
     assert_empty Roll.where(choice_id: choice.id)
     assert_empty LlmCall.where(game_session_id: game_session.id)
     assert_empty Player.where(game_session_id: game_session.id)
+    assert_empty Chat.where(game_session_id: game_session.id)
+    assert_empty Message.all
   end
 
   test "ongoing scope" do

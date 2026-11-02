@@ -10,7 +10,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
   test "playing a solo adventure from setup to victory" do
     game_session = nil
 
-    stub_llm(FakeChat.new(PLAN_RESPONSE), FakeChat.new(SCENE_RESPONSE)) do
+    stub_llm(FakeReply.new(SCENE_RESPONSE)) do
       perform_enqueued_jobs { game_session = start_playing }
     end
 
@@ -32,7 +32,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".d20__value", text: "?"
     assert_select ".dice__facts dd", text: /Target #{choice.target}/
 
-    stub_llm(FakeChat.new(OUTCOME_RESPONSE)) do
+    stub_llm(FakeReply.new(OUTCOME_RESPONSE)) do
       perform_enqueued_jobs { post game_session_roll_path(game_session) }
     end
 
@@ -41,7 +41,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".outcome__resolution", text: "The drawer opens, but you cut your hand."
     assert_equal 1, game_session.scenes.count, "the story must not run ahead of the player"
 
-    stub_llm(FakeChat.new(FINALE_RESPONSE)) do
+    stub_llm(FakeReply.new(FINALE_RESPONSE)) do
       perform_enqueued_jobs { post game_session_acknowledgement_path(game_session) }
     end
 
@@ -53,7 +53,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".highlights", text: /Dice rolled/
     assert_select "[data-controller=share][data-share-text-value*=?]", "The Return — Victory"
     assert_select "[data-share-text-value*=?]", "The Lost Caravan"
-    assert_equal %w[plan scene outcome scene], game_session.llm_calls.order(:id).pluck(:purpose)
+    assert_equal %w[scene outcome scene], game_session.llm_calls.order(:id).pluck(:purpose)
     assert_operator game_session.llm_calls.sum(:cost_in_microdollars), :>, 0
   end
 
@@ -114,7 +114,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".writing", text: /The narrator is resolving the roll/
     assert_select ".narration", count: 0
 
-    stub_llm(FakeChat.new(OUTCOME_RESPONSE)) { perform_enqueued_jobs }
+    stub_llm(FakeReply.new(OUTCOME_RESPONSE)) { perform_enqueued_jobs }
 
     get game_session_path(game_session)
     assert_select ".d20__strip", count: 0, message: "the outcome shows the rested die, it does not re-roll"
@@ -128,7 +128,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     choice = game_session.current_scene.choices.find_by!(stat: "strength")
     post game_session_choice_selection_path(game_session, choice)
 
-    stub_llm(FakeChat.new(OUTCOME_RESPONSE)) do
+    stub_llm(FakeReply.new(OUTCOME_RESPONSE)) do
       with_die(2) { perform_enqueued_jobs { post game_session_roll_path(game_session) } }
     end
 
@@ -137,14 +137,14 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".outcome__effect", text: "-4 Health"
     assert_select ".action-panel", count: 0
     assert_equal 1, game_session.scenes.count
-    assert_equal %w[plan scene outcome], game_session.llm_calls.order(:id).pluck(:purpose)
+    assert_equal %w[scene outcome], game_session.llm_calls.order(:id).pluck(:purpose)
 
     post game_session_acknowledgement_path(game_session)
     get game_session_path(game_session)
     assert_select ".outcome", count: 0
     assert_select ".writing", text: /The narrator is writing the scene/, message: "no dead screen while the scene starts"
 
-    stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { perform_enqueued_jobs }
+    stub_llm(FakeReply.new(SECOND_SCENE_RESPONSE)) { perform_enqueued_jobs }
 
     get game_session_path(game_session)
     assert_select ".location p", text: /Stop 2/
@@ -164,7 +164,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".stalled"
     assert_select ".d20__strip", count: 0
 
-    stub_llm(FakeChat.new(OUTCOME_RESPONSE)) do
+    stub_llm(FakeReply.new(OUTCOME_RESPONSE)) do
       perform_enqueued_jobs { post game_session_narration_path(game_session) }
     end
 
@@ -173,11 +173,11 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".outcome__verdict"
   end
 
-  test "a story bible that never arrives can be sent back to the narrator" do
+  test "a first scene that never arrives can be sent back to the narrator" do
     game_session = start_playing
     clear_enqueued_jobs
 
-    stub_llm(FakeChat.new("No bible.")) do
+    stub_llm(FakeReply.new("No structure.")) do
       job = Scene::NarrateJob.new(game_session.current_scene)
       2.times { job.perform_now }
       assert_raises(Narrator::MalformedResponse) { job.perform_now }
@@ -188,7 +188,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".stalled"
     assert_select ".location h1", text: "The Lost Caravan"
 
-    stub_llm(FakeChat.new(PLAN_RESPONSE), FakeChat.new(SCENE_RESPONSE)) do
+    stub_llm(FakeReply.new(SCENE_RESPONSE)) do
       perform_enqueued_jobs { post game_session_narration_path(game_session) }
     end
 
@@ -204,7 +204,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     get game_session_path(game_session)
     assert_select ".stalled"
 
-    stub_llm(FakeChat.new(PLAN_RESPONSE), FakeChat.new(SCENE_RESPONSE)) do
+    stub_llm(FakeReply.new(SCENE_RESPONSE)) do
       perform_enqueued_jobs do
         post game_session_narration_path(game_session)
       end
@@ -218,7 +218,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     game_session = play_to_choices
     choice = game_session.current_scene.choices.find_by!(stat: "strength")
     post game_session_choice_selection_path(game_session, choice)
-    stub_llm(FakeChat.new(OUTCOME_RESPONSE)) do
+    stub_llm(FakeReply.new(OUTCOME_RESPONSE)) do
       perform_enqueued_jobs { post game_session_roll_path(game_session) }
     end
     post game_session_acknowledgement_path(game_session)
@@ -227,7 +227,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     get game_session_path(game_session)
     assert_select ".overdue form[action=?]", game_session_narration_path(game_session)
 
-    stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) do
+    stub_llm(FakeReply.new(SECOND_SCENE_RESPONSE)) do
       perform_enqueued_jobs { post game_session_narration_path(game_session) }
     end
 
@@ -239,14 +239,14 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     game_session = play_to_choices
     choice = game_session.current_scene.choices.find_by!(stat: "strength")
     post game_session_choice_selection_path(game_session, choice)
-    stub_llm(FakeChat.new(OUTCOME_RESPONSE)) do
+    stub_llm(FakeReply.new(OUTCOME_RESPONSE)) do
       perform_enqueued_jobs { post game_session_roll_path(game_session) }
     end
     post game_session_acknowledgement_path(game_session)
     post game_session_narration_path(game_session)
     assert_enqueued_jobs 2, only: Scene::NarrateJob
 
-    stub_llm(FakeChat.new(SECOND_SCENE_RESPONSE)) { perform_enqueued_jobs }
+    stub_llm(FakeReply.new(SECOND_SCENE_RESPONSE)) { perform_enqueued_jobs }
 
     assert_equal 2, game_session.scenes.count
     assert_equal 3, game_session.current_scene.choices.count
@@ -315,7 +315,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
 
     def play_to_choices
       start_playing.tap do |game_session|
-        stub_llm(FakeChat.new(PLAN_RESPONSE), FakeChat.new(SCENE_RESPONSE)) { perform_enqueued_jobs }
+        stub_llm(FakeReply.new(SCENE_RESPONSE)) { perform_enqueued_jobs }
         assert game_session.current_scene.choosing?
       end
     end

@@ -2,3 +2,7 @@ RubyLLM.configure do |config|
   config.openai_api_key = Rails.application.credentials.dig(:openai, :api_key)
   config.default_model = "gpt-5-nano"
 end
+
+Rails.application.config.to_prepare do
+  RubyLLM::Provider.register :understudy, Narrator::Understudy
+end

@@ -5,7 +5,7 @@ class Scene::NarrateJobTest < ActiveSupport::TestCase
     game_session = game_sessions(:ilker_solo)
     scene = game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host)
 
-    stub_llm(FakeChat.new("Prose arrived but no structure.")) do
+    stub_llm(FakeReply.new("Prose arrived but no structure.")) do
       job = Scene::NarrateJob.new(scene)
 
       2.times { job.perform_now }
@@ -23,7 +23,7 @@ class Scene::NarrateJobTest < ActiveSupport::TestCase
     game_session = game_sessions(:ilker_solo)
     scene = game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host)
 
-    stub_llm(broken_chat(RubyLLM::UnauthorizedError.new("bad key"))) do
+    stub_llm(FakeReply.failing(RubyLLM::UnauthorizedError.new("bad key"))) do
       assert_raises RubyLLM::UnauthorizedError do
         Scene::NarrateJob.new(scene).perform_now
       end
@@ -36,7 +36,7 @@ class Scene::NarrateJobTest < ActiveSupport::TestCase
     game_session = game_sessions(:ilker_solo)
     scene = game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host)
 
-    stub_llm(broken_chat(Faraday::TimeoutError.new)) do
+    stub_llm(FakeReply.failing(Faraday::TimeoutError.new)) do
       assert_raises Faraday::TimeoutError do
         Scene::NarrateJob.new(scene).perform_now
       end
@@ -44,13 +44,4 @@ class Scene::NarrateJobTest < ActiveSupport::TestCase
 
     assert game_session.current_scene.stalled?
   end
-
-  private
-    def broken_chat(error)
-      Object.new.tap do |chat|
-        chat.define_singleton_method(:with_instructions) { |*| chat }
-        chat.define_singleton_method(:with_schema) { |*| chat }
-        chat.define_singleton_method(:ask) { |*| raise error }
-      end
-    end
 end

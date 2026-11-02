@@ -6,6 +6,7 @@ class Narrator
   FINALE_WORDS = 120
   RESOLUTION_WORDS = 40
   LOCATION_WORDS = 5
+  ADVENTURE_WORDS = 4
   LABEL_WORDS = 9
   REASON_WORDS = 10
   DIFFICULTY = 8..19
@@ -21,32 +22,40 @@ class Narrator
 
   def initialize(game_session)
     @game_session = game_session
-    @briefing = Briefing.new(game_session)
+    @cues = Cues.new(game_session, title_limit: title_limit)
   end
 
   def narrate_outcome(roll)
     return if roll.resolved?
 
-    resolution, effects = rewriting(@briefing.outcome_prompt(roll)) { |prompt| ask_outcome(roll, prompt) }
+    chat.with_schema OutcomeSchema
+    resolution, effects = rewriting(@cues.outcome(roll)) { |prompt| ask_outcome(roll, prompt) }
     roll.resolve resolution: resolution, effects: effects
   end
 
   def narrate_scene(scene)
     return unless scene.narrating?
 
-    plan if @game_session.story_bible.blank?
-    data, prose = rewriting(@briefing.scene_prompt(scene)) { |prompt| ask_streaming(scene, prompt) }
+    chat.with_schema nil
+    data, prose = rewriting(@cues.scene(scene)) { |prompt| ask_streaming(scene, prompt) }
     close_scene scene, data, prose
   end
 
   private
-    def voice(agent)
-      agent.new(chat: understudy, locale: @game_session.locale)
+    def chat
+      @chat ||= (@game_session.reload_chat || open_chat).with_caching
     end
 
-    def understudy
-      command = Rails.configuration.x.narrator_command.presence
-      Understudy.new(command) if command
+    def open_chat
+      @game_session.create_chat!(**voice).with_instructions(@cues.brief)
+    end
+
+    def voice
+      if Rails.configuration.x.narrator_command.present?
+        { model: Understudy::MODEL, provider: :understudy, assume_model_exists: true }
+      else
+        {}
+      end
     end
 
     def rewriting(prompt)
@@ -56,29 +65,22 @@ class Narrator
         return yield(attempt)
       rescue MalformedResponse => rejection
         Rails.logger.info "Narrator rewrite: #{rejection.message}"
-        attempt = "#{prompt}\n\nYOUR LAST REPLY WAS REJECTED: #{rejection.message}. Write the whole reply again."
+        attempt = "Your reply was rejected: #{rejection.message}. Write the whole reply again."
       end
 
       yield attempt
     end
 
-    def plan
-      bible = rewriting(@briefing.plan_prompt) { |prompt| ask_plan(prompt) }
-      @game_session.update! story_bible: bible
-    end
-
-    def ask_plan(prompt)
-      response = voice(Planner).ask(prompt)
-      record_call :plan, response
-
-      bible = parsed(response)
-      raise MalformedResponse, "story bible missing" unless bible.is_a?(Hash) && bible["beats"].present?
-
-      bible
+    def ask(prompt, &)
+      if chat.messages.last&.role == "user"
+        chat.complete(&)
+      else
+        chat.ask(prompt, &)
+      end
     end
 
     def ask_outcome(roll, prompt)
-      response = voice(OutcomeResolver).ask(prompt)
+      response = ask(prompt)
       record_call :outcome, response
 
       data = parsed(response)
@@ -89,9 +91,11 @@ class Narrator
 
     def ask_streaming(scene, prompt)
       reply = Reply.new
-      data = nil
+      data = rejection = nil
 
-      response = voice(SceneWriter).ask(prompt) do |chunk|
+      response = ask(prompt) do |chunk|
+        next if rejection
+
         reply << chunk.content.to_s
 
         if data
@@ -99,9 +103,12 @@ class Narrator
         elsif (data = structure_in(reply))
           open_scene scene, data
         end
+      rescue MalformedResponse => error
+        rejection = error
       end
 
       record_call :scene, response
+      raise rejection if rejection
       raise MalformedResponse, "structure block missing" if data.nil?
 
       [ data, prose_in(scene, reply.prose) ]
@@ -129,6 +136,7 @@ class Narrator
       finale = data["finale"] == true
 
       ApplicationRecord.transaction do
+        @game_session.update! title: data["adventure"] if names_the_adventure?(scene)
         @game_session.update! outcome: outcome_in(data) if finale
         scene.update! title: data["title"], location: data["location"], finale: finale
       end
@@ -150,6 +158,7 @@ class Narrator
       raise MalformedResponse, "title missing" if data["title"].blank?
       within_header data["title"]
       within_words "the location", data["location"], LOCATION_WORDS
+      within_words "the adventure", adventure_in(data), ADVENTURE_WORDS if names_the_adventure?(scene)
 
       choices = Array(data["choices"])
 
@@ -167,6 +176,14 @@ class Narrator
       else
         choices.each { |choice| validate_choice choice }
       end
+    end
+
+    def names_the_adventure?(scene)
+      scene.first? && @game_session.quest.nil?
+    end
+
+    def adventure_in(data)
+      data["adventure"].presence || raise(MalformedResponse, "the first scene must name the adventure")
     end
 
     def validate_choice(choice)

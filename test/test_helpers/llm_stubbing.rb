@@ -20,13 +20,6 @@ module LlmStubbing
 
   OUTCOME_RESPONSE = %({"resolution": "The drawer opens, but you cut your hand.", "effects": {"hp": -4}})
 
-  PLAN_RESPONSE = %({"title": "Blizzard Salt", "premise": "Whitebend goes into winter without salt.", "personal_stake": "An old debt to Sergeant Sherrick.",
-    "antagonist": {"name": "Nail Aral", "want": "To protect the bridge.", "method": "He uses the lodges.", "first_sign": "Cut straps."},
-    "ally": {"name": "Elif", "want": "To find her brother.", "secret": "Nail is her father."},
-    "twist": "Not an ambush, a warning.",
-    "beats": ["The mule comes back.", "The tracks break off on stone.", "A wounded driver.", "Elif confesses.", "The bridge footing is cracked.", "Face to face with Nail.", "The caravan crosses lightened."],
-    "finale_question": "Will the salt reach the village?", "victory": "Enough salt comes down.", "defeat": "The bridge goes."})
-
   FINALE_RESPONSE = <<~TEXT
     ```json
     {"title": "The Return", "location": "Whitebend", "choices": [], "finale": true, "outcome": "victory"}
@@ -35,13 +28,13 @@ module LlmStubbing
     The caravan bells echo down the valley as you ride into Whitebend.
   TEXT
 
-  def stub_llm(*chats)
-    queue = chats.flatten
-    original = RubyLLM.method(:chat)
-    RubyLLM.singleton_class.define_method(:chat) { |*, **| queue.size > 1 ? queue.shift : queue.first }
+  def stub_llm(*replies)
+    queue = replies.flatten
+    original = RubyLLM::Provider.instance_method(:complete)
+    RubyLLM::Provider.define_method(:complete) { |messages, **, &block| (queue.size > 1 ? queue.shift : queue.first).reply(messages, &block) }
     yield
   ensure
-    RubyLLM.singleton_class.define_method(:chat, original)
+    RubyLLM::Provider.define_method(:complete, original)
   end
 
   def stub_understudy(reply)
@@ -61,10 +54,10 @@ module LlmStubbing
   end
 end
 
-class FakeChat
-  attr_reader :prompt, :instructions
+class FakeReply
+  attr_reader :messages
 
-  def initialize(text, model: "gpt-5.1", chunks: nil, input_tokens: 1000, output_tokens: 500, &after_chunk)
+  def initialize(text, model: "gpt-5-nano", chunks: nil, input_tokens: 1000, output_tokens: 500, &after_chunk)
     @text = text
     @model = model
     @chunks = chunks || [ text ]
@@ -78,17 +71,20 @@ class FakeChat
     new(text, chunks: [ text[0...closing], text[closing..] ], &after_chunk)
   end
 
-  def with_instructions(text, **)
-    @instructions = text
-    self
+  def self.failing(error)
+    new("").tap { |fake| fake.define_singleton_method(:reply) { |*| raise error } }
   end
 
-  def with_schema(*)
-    self
+  def prompt
+    @messages.last.content
   end
 
-  def ask(prompt)
-    @prompt = prompt
+  def instructions
+    @messages.select { |message| message.role == :system }.map(&:content).join("\n\n")
+  end
+
+  def reply(messages)
+    @messages = messages.dup
 
     if block_given?
       @chunks.each do |chunk|

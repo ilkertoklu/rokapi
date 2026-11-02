@@ -17,6 +17,7 @@ class GameSession < ApplicationRecord
   has_many :rolls, through: :choices
   has_many :players, dependent: :destroy
   has_many :llm_calls, dependent: :delete_all
+  has_one :chat, dependent: :destroy
 
   enum :tone, Tone.keys.index_by(&:itself), default: "balanced", validate: true
   enum :length, Length.keys.index_by(&:itself), default: "medium", validate: true
@@ -29,9 +30,6 @@ class GameSession < ApplicationRecord
   validates :quest, inclusion: { in: Quest.keys }, allow_nil: true
   validates :locale, inclusion: { in: I18n.available_locales.map(&:to_s) }
   validates :max_players, inclusion: { in: [ 1, PARTY_SIZE ] }
-
-  store_accessor :story_bible, :title, :premise, :personal_stake, :antagonist, :ally, :twist, :beats,
-    :finale_question, :victory, :defeat, prefix: :story
 
   scope :ongoing, -> { where(ended_at: nil) }
   scope :unstarted, -> { where(started_at: nil) }
@@ -46,7 +44,7 @@ class GameSession < ApplicationRecord
   end
 
   def title
-    Quest[quest]&.title || story_title.presence || I18n.t("game_session.surprise_title")
+    Quest[quest]&.title || super.presence || I18n.t("game_session.surprise_title")
   end
 
   def player_for(user)

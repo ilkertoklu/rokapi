@@ -8,12 +8,12 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "two players take turns, each watching the other's scene" do
-    plan = FakeChat.new(PLAN_RESPONSE)
-    first_scene = FakeChat.new(SCENE_RESPONSE)
-    start_with plan, first_scene
+    first_scene = FakeReply.new(SCENE_RESPONSE)
+    start_with first_scene
 
-    assert_includes plan.prompt, "THE PARTY (2 players, taking turns)"
-    assert_includes first_scene.prompt, "THIS TURN: Ilker."
+    assert_includes first_scene.instructions, "The party, taking turns:\n- Ilker: "
+    assert_includes first_scene.instructions, "\n- Deniz: "
+    assert_equal "Scene 1 of 7. Ilker's turn. Write the first scene.", first_scene.prompt
 
     sign_in_as users(:ilker)
     get game_session_path(@room), as: :json
@@ -51,7 +51,7 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".d20", count: 0
 
     sign_in_as users(:ilker)
-    stub_llm(FakeChat.new(OUTCOME_RESPONSE)) do
+    stub_llm(FakeReply.new(OUTCOME_RESPONSE)) do
       perform_enqueued_jobs { post game_session_roll_path(@room), as: :json }
     end
 
@@ -61,12 +61,12 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".watch", text: /Ilker is reading the outcome/
 
     sign_in_as users(:ilker)
-    second_scene = FakeChat.new(SECOND_SCENE_RESPONSE)
+    second_scene = FakeReply.new(SECOND_SCENE_RESPONSE)
     stub_llm(second_scene) do
       perform_enqueued_jobs { post game_session_acknowledgement_path(@room), as: :json }
     end
-    assert_includes second_scene.prompt, "THIS TURN: Deniz."
-    assert_includes second_scene.prompt, "→ Choice by Ilker:"
+    assert_equal "Scene 2 of 7. Deniz's turn. Write the next scene.", second_scene.prompt
+    assert_includes second_scene.messages[-3].content, 'Ilker chose "Force the drawer open"'
 
     get game_session_path(@room), as: :json
     game = response.parsed_body

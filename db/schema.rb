@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_02_160004) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_02_184335) do
   create_table "characters", force: :cascade do |t|
     t.string "background", null: false
     t.datetime "created_at", null: false
@@ -22,6 +22,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_160004) do
     t.json "stats", null: false
     t.datetime "updated_at", null: false
     t.index ["player_id"], name: "index_characters_on_player_id", unique: true
+  end
+
+  create_table "chats", force: :cascade do |t|
+    t.integer "game_session_id", null: false
+    t.bigint "ruby_llm_model_id", null: false
+    t.boolean "cancelled", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["game_session_id"], name: "index_chats_on_game_session_id", unique: true
+    t.index ["ruby_llm_model_id"], name: "index_chats_on_ruby_llm_model_id"
   end
 
   create_table "choices", force: :cascade do |t|
@@ -47,12 +57,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_160004) do
     t.string "outcome"
     t.string "quest"
     t.datetime "started_at"
-    t.json "story_bible"
     t.string "tone", null: false
     t.datetime "updated_at", null: false
     t.string "code"
     t.integer "max_players", default: 1, null: false
     t.integer "rematch_of_id"
+    t.string "title"
     t.index ["code"], name: "index_game_sessions_on_code", unique: true, where: "started_at IS NULL"
     t.index ["creator_id"], name: "index_game_sessions_on_creator_id"
     t.index ["rematch_of_id"], name: "index_game_sessions_on_rematch_of_id", unique: true
@@ -91,6 +101,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_160004) do
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["user_id"], name: "index_login_codes_on_user_id"
+  end
+
+  create_table "messages", force: :cascade do |t|
+    t.bigint "chat_id", null: false
+    t.string "role", null: false
+    t.text "content"
+    t.boolean "cache_until_here", default: false, null: false
+    t.text "thinking_text"
+    t.text "thinking_signature"
+    t.json "citations"
+    t.json "server_tool_calls"
+    t.json "raw_content"
+    t.json "raw_reasoning"
+    t.string "finish_reason"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_id"], name: "index_messages_on_chat_id"
   end
 
   create_table "pay_charges", force: :cascade do |t|
@@ -217,6 +244,92 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_160004) do
     t.index ["player_id"], name: "index_rolls_on_player_id"
   end
 
+  create_table "ruby_llm_batches", force: :cascade do |t|
+    t.string "provider_batch_id", null: false
+    t.string "provider", null: false
+    t.string "status", null: false
+    t.string "raw_status"
+    t.boolean "completed", default: false, null: false
+    t.string "chat_type"
+    t.string "batch_protocol"
+    t.json "chat_ids", default: []
+    t.json "request_counts"
+    t.json "reported_cost"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["provider", "provider_batch_id"], name: "index_ruby_llm_batches_on_provider_and_provider_batch_id", unique: true
+    t.index ["status"], name: "index_ruby_llm_batches_on_status"
+  end
+
+  create_table "ruby_llm_models", force: :cascade do |t|
+    t.string "model_id", null: false
+    t.string "name", null: false
+    t.string "provider", null: false
+    t.string "family"
+    t.datetime "model_created_at"
+    t.integer "context_window"
+    t.integer "max_output_tokens"
+    t.date "knowledge_cutoff"
+    t.datetime "unlisted_at"
+    t.json "modalities", default: {}
+    t.json "capabilities", default: []
+    t.json "pricing", default: {}
+    t.json "metadata", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["family"], name: "index_ruby_llm_models_on_family"
+    t.index ["provider", "model_id"], name: "index_ruby_llm_models_on_provider_and_model_id", unique: true
+    t.index ["provider"], name: "index_ruby_llm_models_on_provider"
+  end
+
+  create_table "ruby_llm_tool_calls", force: :cascade do |t|
+    t.string "message_type", null: false
+    t.bigint "message_id", null: false
+    t.string "result_type"
+    t.bigint "result_id"
+    t.string "tool_call_id", null: false
+    t.string "name", null: false
+    t.text "thought_signature"
+    t.string "approval"
+    t.boolean "remote", default: false, null: false
+    t.json "arguments", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["message_type", "message_id"], name: "index_ruby_llm_tool_calls_on_message_type_and_message_id"
+    t.index ["name"], name: "index_ruby_llm_tool_calls_on_name"
+    t.index ["result_type", "result_id"], name: "index_ruby_llm_tool_calls_on_result_type_and_result_id"
+    t.index ["tool_call_id"], name: "index_ruby_llm_tool_calls_on_tool_call_id", unique: true
+  end
+
+  create_table "ruby_llm_usages", force: :cascade do |t|
+    t.string "chat_type", null: false
+    t.bigint "chat_id", null: false
+    t.string "message_type"
+    t.bigint "message_id"
+    t.string "operation", null: false
+    t.string "provider", null: false
+    t.string "model", null: false
+    t.string "status", null: false
+    t.integer "input_tokens"
+    t.integer "output_tokens"
+    t.integer "cache_read_tokens"
+    t.integer "cache_write_tokens"
+    t.integer "thinking_tokens"
+    t.decimal "input_cost", precision: 16, scale: 10
+    t.decimal "output_cost", precision: 16, scale: 10
+    t.decimal "cache_read_cost", precision: 16, scale: 10
+    t.decimal "cache_write_cost", precision: 16, scale: 10
+    t.decimal "thinking_cost", precision: 16, scale: 10
+    t.decimal "total_cost", precision: 16, scale: 10
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_type", "chat_id"], name: "index_ruby_llm_usages_on_chat_type_and_chat_id"
+    t.index ["message_type", "message_id"], name: "index_ruby_llm_usages_on_message_type_and_message_id"
+    t.index ["status"], name: "index_ruby_llm_usages_on_status"
+    t.check_constraint "operation IN ('chat', 'embedding', 'moderation', 'image', 'speech', 'transcription', 'ocr', 'rerank')"
+    t.check_constraint "status IN ('pending', 'succeeded', 'failed', 'cancelled')"
+  end
+
   create_table "scenes", force: :cascade do |t|
     t.integer "active_player_id", null: false
     t.datetime "created_at", null: false
@@ -266,12 +379,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_160004) do
   end
 
   add_foreign_key "characters", "players"
+  add_foreign_key "chats", "game_sessions"
+  add_foreign_key "chats", "ruby_llm_models"
   add_foreign_key "choices", "scenes"
   add_foreign_key "game_sessions", "game_sessions", column: "rematch_of_id", on_delete: :nullify
   add_foreign_key "game_sessions", "users", column: "creator_id"
   add_foreign_key "items", "characters"
   add_foreign_key "llm_calls", "game_sessions"
   add_foreign_key "login_codes", "users"
+  add_foreign_key "messages", "chats"
   add_foreign_key "pay_charges", "pay_customers", column: "customer_id"
   add_foreign_key "pay_charges", "pay_subscriptions", column: "subscription_id"
   add_foreign_key "pay_payment_methods", "pay_customers", column: "customer_id"
