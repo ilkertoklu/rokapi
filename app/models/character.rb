@@ -26,7 +26,15 @@ class Character < ApplicationRecord
   after_create_commit -> { broadcast_refresh_to game_session }
 
   def summary
-    [ Race.fetch(race).label, Klass.fetch(klass).label, Background.fetch(background).label ].join(" · ")
+    traits.map(&:label).join(" · ")
+  end
+
+  def traits
+    [ Race.fetch(race), Klass.fetch(klass), Background.fetch(background) ]
+  end
+
+  def starting_gear
+    Klass.fetch(klass).starting_items(locale: game_session.locale).map { |item| Item.new(item) }
   end
 
   def bonus_for(stat_key)
@@ -87,6 +95,6 @@ class Character < ApplicationRecord
     end
 
     def grant_starting_gear
-      Klass.fetch(klass).starting_items(locale: game_session.locale).each { |item| items.create! item }
+      items << starting_gear
     end
 end

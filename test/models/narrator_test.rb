@@ -218,25 +218,42 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal %i[user], retry_call.conversation.map(&:role), "the turn is not asked twice"
   end
 
-  test "a Turkish game is written in Turkish from an English briefing" do
-    @game_session.update! locale: "tr"
-    scene_call = FakeReply.new(SCENE_RESPONSE)
-
-    I18n.with_locale(:tr) { stub_llm(scene_call) { narrate } }
-
-    assert_includes scene_call.instructions, "Everything the players see is written in Turkish"
-    assert_includes scene_call.instructions, "Akçabük", "the quest frame carries the Turkish place names"
-    assert_includes scene_call.instructions, "Warrior", "the brief stays in English whatever the page speaks"
-    assert_includes scene_call.instructions, "Strength 16"
-    assert_equal "Scene 1 of 7, Ilker's turn. This is the first scene.\n", scene_call.prompt
-  end
-
-  test "an English game is written in English" do
+  test "the brief of an English game" do
     scene_call = FakeReply.new(SCENE_RESPONSE)
 
     stub_llm(scene_call) { narrate }
 
-    assert_includes scene_call.instructions, "Everything the players see is written in English"
+    assert_equal <<~BRIEF, scene_call.instructions[/\A.*(?=EACH TURN)/m]
+      You narrate Rokapi, a tabletop adventure played on a phone with a d20. Everything the players see is written in English, for ages 12 and up.
+
+      THIS GAME
+      Quest: The caravan carrying Whitebend's winter salt has been missing for three days. It has to be found and brought to the village before the blizzard closes the pass. The route runs from Whitebend to Blizzard Pass, on past the tracks, the abandoned lodges and the rope bridge at the pass. The caravan's loss could be an accident, or it could be an ambush.
+      Tone: Balanced
+      Length: 7 scenes; the last one is the finale.
+      The character:
+      - Ilker: Human (Versatile and balanced, at home in any class.), Warrior (Fights at the front, starts with a longsword and a round shield.), Soldier (Discipline, and the sight of war.). Health 31. Strength 16, Agility 11, Constitution 15, Intelligence 8, Wisdom 12, Charisma 14. Sets out with Longsword; Round shield.
+
+    BRIEF
+  end
+
+  test "the brief of a Turkish game, read in the default locale like the narration job" do
+    @game_session.update! locale: "tr"
+    scene_call = FakeReply.new(SCENE_RESPONSE)
+
+    stub_llm(scene_call) { narrate }
+
+    assert_equal <<~BRIEF, scene_call.instructions[/\A.*(?=EACH TURN)/m]
+      You narrate Rokapi, a tabletop adventure played on a phone with a d20. Everything the players see is written in Turkish, for ages 12 and up.
+
+      THIS GAME
+      Quest: Akçabük köyünün kış tuzunu getiren kervan üç gündür kayıp. Boran geçidi kapatmadan kervanı bulup köye ulaştırmak gerekiyor. Rota Akçabük'ten Boranlı Geçit'e uzanıyor; izler, terk edilmiş konaklar ve geçitteki asma köprü üzerinden ilerliyor. Kervanın kaybı bir kaza da olabilir, bir pusu da.
+      Tone: Balanced
+      Length: 7 scenes; the last one is the finale.
+      The character:
+      - Ilker: Human (Versatile and balanced, at home in any class.), Warrior (Fights at the front, starts with a longsword and a round shield.), Soldier (Discipline, and the sight of war.). Health 31. Strength 16, Agility 11, Constitution 15, Intelligence 8, Wisdom 12, Charisma 14. Sets out with Uzun kılıç; Yuvarlak kalkan.
+
+    BRIEF
+    assert_equal "Scene 1 of 7, Ilker's turn. This is the first scene.\n", scene_call.prompt
   end
 
   test "the surprise adventure takes its name from the first scene" do
