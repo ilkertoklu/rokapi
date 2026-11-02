@@ -49,5 +49,9 @@ Rails.application.routes.draw do
     resource :account, only: %i[show destroy]
   end
 
+  namespace :hotwire_native do
+    resource :path_configuration, only: :show
+  end
+
   get "up" => "rails/health#show", as: :rails_health_check
 end

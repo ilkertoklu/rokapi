@@ -34,6 +34,7 @@ Every call is logged with its cost. A finished game knows exactly what it cost t
 - The narrator needs an OpenAI key in the credentials as `openai.api_key`.
 - Login is by email with a one-time code; in development it lands in the log.
 - `bin/rokapi` plays the game against a running server, one UI step per command (`bin/rokapi help`).
+- The iOS and Android apps live in `native/` (`native/README.md`).
 
 
 ## Tests

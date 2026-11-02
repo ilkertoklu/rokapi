@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="<%= I18n.locale %>">
   <head>
-    <title><%= content_for(:title) || "Rokapi" %></title>
+    <title><%= document_title %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Rokapi">
@@ -21,7 +21,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
+  <%= tag.body class: ("hotwire-native" if hotwire_native_app?) do %>
     <main class="screen">
       <% if alert %>
         <p class="flash flash--alert"><%= alert %></p>
@@ -32,5 +32,5 @@
 
       <%= yield %>
     </main>
-  </body>
+  <% end %>
 </html>

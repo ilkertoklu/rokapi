@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.Rokapi" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="colorPrimary">@color/accent</item>
+        <item name="colorOnPrimary">@color/on_accent</item>
+        <item name="colorSecondary">@color/accent</item>
+        <item name="colorOnSecondary">@color/on_accent</item>
+        <item name="colorSurface">@color/background</item>
+        <item name="colorOnSurface">@color/ink</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="colorOnBackground">@color/ink</item>
+        <item name="android:windowBackground">@color/background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar">false</item>
+        <item name="toolbarStyle">@style/Widget.Rokapi.Toolbar</item>
+    </style>
+
+    <style name="Widget.Rokapi.Toolbar" parent="Widget.MaterialComponents.Toolbar">
+        <item name="android:background">@color/background</item>
+        <item name="titleTextColor">@color/ink</item>
+        <item name="navigationIconTint">@color/ink_faint</item>
+    </style>
+</resources>
