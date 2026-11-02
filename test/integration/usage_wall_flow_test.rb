@@ -28,6 +28,18 @@ class UsageWallFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to new_game_sessions_solo_path
   end
 
+  test "a spent month walls off new rooms too" do
+    spend_the_month_of users(:sevval)
+
+    get new_game_sessions_multi_path
+    assert_select "h1", text: "Your monthly usage is spent"
+
+    assert_no_difference -> { GameSession.count } do
+      post game_sessions_multi_path, params: { game_session: { quest: "lost_caravan", tone: "balanced", length: "short" } }
+    end
+    assert_redirected_to new_game_sessions_multi_path
+  end
+
   test "the wall answers JSON clients with the refill date" do
     spend_the_month_of users(:sevval)
 
