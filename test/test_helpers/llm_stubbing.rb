@@ -1,5 +1,9 @@
 module LlmStubbing
   SCENE_RESPONSE = <<~TEXT
+    Rain hammers the inn's roof tiles. The door swings on its hinges and creaks.
+
+    Inside, a single candle is still burning.
+
     ```json
     {"title": "The Old Inn", "location": "Whitebend",
      "choices": [
@@ -9,10 +13,6 @@ module LlmStubbing
      ],
      "finale": false, "outcome": null}
     ```
-
-    Rain hammers the inn's roof tiles. The door swings on its hinges and creaks.
-
-    Inside, a single candle is still burning.
   TEXT
 
   SECOND_SCENE_RESPONSE = SCENE_RESPONSE.sub('"title": "The Old Inn"', '"title": "The Stable"')
@@ -21,11 +21,11 @@ module LlmStubbing
   OUTCOME_RESPONSE = %({"resolution": "The drawer opens, but you cut your hand.", "effects": {"hp": -4}})
 
   FINALE_RESPONSE = <<~TEXT
+    The caravan bells echo down the valley as you ride into Whitebend.
+
     ```json
     {"title": "The Return", "location": "Whitebend", "choices": [], "finale": true, "outcome": "victory"}
     ```
-
-    The caravan bells echo down the valley as you ride into Whitebend.
   TEXT
 
   def stub_llm(*replies)
@@ -66,9 +66,9 @@ class FakeReply
     @after_chunk = after_chunk
   end
 
-  def self.split_at_structure(text, &after_chunk)
-    closing = text.index("```", 3) + 3
-    new(text, chunks: [ text[0...closing], text[closing..] ], &after_chunk)
+  def self.split_before_structure(text, &after_chunk)
+    opening = text.index("```")
+    new(text, chunks: [ text[0...opening], text[opening..] ], &after_chunk)
   end
 
   def self.failing(error)

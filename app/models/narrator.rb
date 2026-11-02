@@ -97,18 +97,15 @@ class Narrator
 
     def ask_streaming(scene, prompt)
       reply = Reply.new
+      shown = ""
       data = rejection = nil
 
       ask(prompt) do |chunk|
         next if rejection
 
         reply << chunk.content.to_s
-
-        if data
-          relay scene, reply.prose
-        elsif (data = structure_in(reply))
-          open_scene scene, data
-        end
+        relay scene, shown = reply.prose if data.nil? && reply.prose != shown
+        data ||= structure_in(reply)&.tap { |found| open_scene scene, found }
       rescue MalformedResponse => error
         rejection = error
       end

@@ -49,17 +49,15 @@ class NarratorTest < ActiveSupport::TestCase
     assert scene.narration.start_with?("Rain hammers")
   end
 
-  test "the stage refreshes before narration streams into it" do
+  test "the narration streams in before the stage refreshes with the title and the choices" do
     fake = FakeReply.new(SCENE_RESPONSE, chunks: SCENE_RESPONSE.chars.each_slice(40).map(&:join))
 
     streams = stub_llm(fake) do
       capture_turbo_stream_broadcasts(@game_session) { narrate }
     end
 
-    assert_equal "refresh", streams.first["action"]
-    assert_operator streams.index { |stream| stream["target"] == "scene_narration" },
-      :>, 0, "narration streamed before the stage was on screen"
-    assert_equal "refresh", streams.last["action"], "the choices arrive with a final refresh"
+    assert_equal "scene_narration", streams.first["target"], "the first words reach the screen before any refresh"
+    assert_equal "refresh", streams.last["action"], "the title and the choices arrive with a final refresh"
   end
 
   test "every narration stream carries the whole text so far" do
@@ -481,18 +479,18 @@ class NarratorTest < ActiveSupport::TestCase
     assert @game_session.ended_at.present?
   end
 
-  test "a finale takes the stage before its closing words stream in" do
+  test "the closing words stream in before the finale takes the stage" do
     play_and_continue
     finale = @game_session.current_scene
     staged = []
 
-    fake = FakeReply.split_at_structure(FINALE_RESPONSE) do
-      staged << [ finale.reload.finale?, @game_session.reload.outcome, @game_session.finished? ]
+    fake = FakeReply.split_before_structure(FINALE_RESPONSE) do
+      staged << [ finale.reload.narration.present?, finale.finale?, @game_session.reload.outcome ]
     end
     stub_llm(fake) { narrate }
 
-    assert_equal [ true, "victory", false ], staged.first,
-      "the finale screen must be up before the closing words stream in"
+    assert_equal [ true, false, nil ], staged.first, "the closing words are on screen before the verdict"
+    assert_equal [ true, true, "victory" ], staged.last
     assert @game_session.reload.finished?
   end
 
@@ -549,7 +547,7 @@ class NarratorTest < ActiveSupport::TestCase
 
   test "a scene that does not fit the screen is rewritten until the narrator gives up" do
     long = "word " * 20
-    { "the narration" => SCENE_RESPONSE + "\n#{"Snow falls. " * 50}",
+    { "the narration" => "#{"Snow falls. " * 50}\n\n" + SCENE_RESPONSE,
       "the choice label" => SCENE_RESPONSE.sub('"label": "Force the drawer open"', %("label": "#{long}")),
       "the difficulty reason" => SCENE_RESPONSE.sub('"The lock is old"', %("#{long}")) }.each do |part, reply|
       fake = FakeReply.new(reply)

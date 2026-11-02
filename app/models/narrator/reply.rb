@@ -16,13 +16,16 @@ class Narrator::Reply
   end
 
   def prose
-    closing = structure_end
-    closing ? @buffer[(closing + 1)..].sub(/\A\s*#{FENCE}/, "").sub(/#{FENCE}\s*\z/, "").strip : ""
+    @buffer[0...block_start].sub(/`+\z/, "").strip
   end
 
   private
+    def block_start
+      @buffer.index(FENCE) || @buffer.rindex(/^\{/) || @buffer.length
+    end
+
     def structure_start
-      @buffer.index("{")
+      @buffer.index("{", block_start)
     end
 
     def structure_end
