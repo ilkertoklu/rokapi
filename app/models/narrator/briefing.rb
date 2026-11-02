@@ -20,15 +20,15 @@ class Narrator::Briefing
 
   def outcome_prompt(roll)
     compose do
-      [ mission_block, bible_block, character_block(roll.scene), used_items_block(roll),
-        history_block, roll_block(roll), missing_healing_block(roll), "Resolve this result." ]
+      [ mission_block, bible_block, character_block(roll.scene), party_block(roll.scene), used_items_block(roll),
+        history_block, roll_block(roll), missing_healing_block(roll), turn_directive(roll.scene), "Resolve this result." ]
     end
   end
 
   def scene_prompt(scene)
     compose do
-      [ mission_block, bible_block, character_block(scene), history_block, repetition_block, variety_block,
-        wounded_block(scene), pacing_block(scene), action_block ]
+      [ mission_block, bible_block, character_block(scene), party_block(scene), history_block, repetition_block, variety_block,
+        wounded_block(scene), pacing_block(scene), action_block, turn_directive(scene) ]
     end
   end
 
@@ -159,10 +159,38 @@ class Narrator::Briefing
     end
 
     def character_portrait
-      character = @game_session.host.character
-      traits = [ Character::Race.fetch(character.race), Character::Klass.fetch(character.klass), Character::Background.fetch(character.background) ]
+      if @game_session.multiplayer?
+        "THE PARTY (#{party.size} players, taking turns):\n" +
+          party.map { |player| "#{player.name} — #{traits_of(player.character)}\n#{inventory_line(player.character)}" }.join("\n")
+      else
+        character = @game_session.host.character
+        "THE PLAYER'S CHARACTER: #{traits_of(character)}\n#{inventory_line(character)}"
+      end
+    end
+
+    def traits_of(character)
+      [ Character::Race.fetch(character.race), Character::Klass.fetch(character.klass), Character::Background.fetch(character.background) ]
         .map { |trait| "#{trait.label}: #{trait.description}" }.join(" ")
-      "THE PLAYER'S CHARACTER: #{traits}\n#{inventory_line(character)}"
+    end
+
+    def party_block(scene)
+      return unless @game_session.multiplayer?
+
+      name = scene.active_player.name
+      members = party.map { |player| "#{player.name} (#{player.character.summary}, health #{player.character.hp}/#{player.character.max_hp})" }
+      finale = " The finale gives every member of the party a moment." if scene.position >= @game_session.scene_budget
+
+      "THE PARTY travels together and takes turns: #{members.join("; ")}.\n" \
+        "THIS TURN: #{name}. Wherever these instructions say \"the player\" or \"the character\", read #{name}. " \
+        "\"You\" is #{name}: address #{name} by name, and name the others in the third person. Only #{name} acts and decides; the others are present and may be seen or speak a line.#{finale}"
+    end
+
+    def turn_directive(scene)
+      "This is #{scene.active_player.name}'s turn: your first sentence speaks to #{scene.active_player.name} by name." if @game_session.multiplayer?
+    end
+
+    def party
+      @party ||= @game_session.party.to_a
     end
 
     def inventory_line(character)
@@ -183,7 +211,7 @@ class Narrator::Briefing
     end
 
     def history_block
-      scenes = @game_session.scenes.played.chronological.includes(roll: :choice)
+      scenes = @game_session.scenes.played.chronological.includes(roll: [ :choice, { player: :user } ])
       return if scenes.none?
 
       "THE STORY SO FAR (scene by scene, with the player's choice and the roll):\n" + scenes.map { |scene| history_entry(scene) }.join("\n\n")
@@ -194,7 +222,8 @@ class Narrator::Briefing
       roll = scene.roll
       return entry if roll.nil? || !roll.resolved?
 
-      "#{entry}\n→ Choice: \"#{roll.choice.label}\" — #{grade_label(roll)}. #{roll.resolution}"
+      chooser = " by #{roll.player.name}" if @game_session.multiplayer?
+      "#{entry}\n→ Choice#{chooser}: \"#{roll.choice.label}\" — #{grade_label(roll)}. #{roll.resolution}"
     end
 
     def roll_block(roll)
