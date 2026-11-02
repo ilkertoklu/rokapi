@@ -2,7 +2,7 @@ require "test_helper"
 
 class Narrator::UnderstudyTest < ActiveSupport::TestCase
   setup do
-    @chat = Chat.create!(game_session: game_sessions(:ilker_solo), model: Narrator::Understudy::MODEL,
+    @chat = Narrator::Conversation.create!(game_session: game_sessions(:ilker_solo), model: Narrator::Understudy::MODEL,
       provider: :understudy, assume_model_exists: true)
   end
 
@@ -28,7 +28,7 @@ class Narrator::UnderstudyTest < ActiveSupport::TestCase
   test "earlier turns reach the command as the conversation so far" do
     request = with_command("cat") do
       @chat.with_instructions("Be the narrator.").ask("Scene 1 of 7. Write the first scene.")
-      JSON.parse Chat.find(@chat.id).ask("Scene 2 of 7. Write the next scene.").content
+      JSON.parse Narrator::Conversation.find(@chat.id).ask("Scene 2 of 7. Write the next scene.").content
     end
 
     assert_equal "Be the narrator.", request["system"]

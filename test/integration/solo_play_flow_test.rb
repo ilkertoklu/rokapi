@@ -53,8 +53,8 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".highlights", text: /Dice rolled/
     assert_select "[data-controller=share][data-share-text-value*=?]", "The Return — Victory"
     assert_select "[data-share-text-value*=?]", "The Lost Caravan"
-    assert_equal %w[system user assistant user assistant user assistant], game_session.chat.messages.pluck(:role)
-    assert_operator game_session.chat.cost.total, :>, 0
+    assert_equal %w[system user assistant user assistant user assistant], game_session.conversation.messages.pluck(:role)
+    assert_operator game_session.conversation.cost.total, :>, 0
   end
 
   test "the scene keeps its layout when the narrator stops writing" do
@@ -137,7 +137,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".outcome__effect", text: "-4 Health"
     assert_select ".action-panel", count: 0
     assert_equal 1, game_session.scenes.count
-    assert_equal 2, game_session.chat.ruby_llm_usages.count
+    assert_equal 2, game_session.conversation.ruby_llm_usages.count
 
     post game_session_acknowledgement_path(game_session)
     get game_session_path(game_session)

@@ -16,7 +16,7 @@ class GameSession < ApplicationRecord
   has_many :choices, through: :scenes
   has_many :rolls, through: :choices
   has_many :players, dependent: :destroy
-  has_one :chat, dependent: :destroy
+  has_one :conversation, class_name: "Narrator::Conversation", dependent: :destroy
 
   enum :tone, Tone.keys.index_by(&:itself), default: "balanced", validate: true
   enum :length, Length.keys.index_by(&:itself), default: "medium", validate: true

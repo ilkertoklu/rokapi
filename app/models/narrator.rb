@@ -1,6 +1,8 @@
 class Narrator
   class MalformedResponse < StandardError; end
 
+  def self.table_name_prefix = "narrator_"
+
   REWRITES = 2
   SCENE_WORDS = 90
   FINALE_WORDS = 120
@@ -33,7 +35,7 @@ class Narrator
   def narrate_outcome(roll)
     return if roll.resolved?
 
-    chat.with_schema OutcomeSchema
+    conversation.with_schema OutcomeSchema
     resolution, effects = rewriting(@cues.outcome(roll)) { |prompt| ask_outcome(roll, prompt) }
     roll.resolve resolution: resolution, effects: effects
   end
@@ -41,15 +43,15 @@ class Narrator
   def narrate_scene(scene)
     return unless scene.narrating?
 
-    chat.with_schema nil
+    conversation.with_schema nil
     data, prose = rewriting(@cues.scene(scene)) { |prompt| ask_streaming(scene, prompt) }
     close_scene scene, data, prose
   end
 
   private
-    def chat
-      @chat ||= if (chat = @game_session.reload_chat)
-        Voice.find(chat.id)
+    def conversation
+      @conversation ||= if (record = @game_session.reload_conversation)
+        Voice.find(record.id)
       else
         Voice.create!(game_session: @game_session, **voice)
       end
@@ -77,10 +79,10 @@ class Narrator
     end
 
     def ask(prompt, &)
-      if chat.messages.last&.role == "user"
-        chat.complete(&)
+      if conversation.messages.last&.role == "user"
+        conversation.complete(&)
       else
-        chat.ask(prompt, &)
+        conversation.ask(prompt, &)
       end
     end
 

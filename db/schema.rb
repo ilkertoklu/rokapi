@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_02_184336) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_02_200000) do
   create_table "characters", force: :cascade do |t|
     t.string "background", null: false
     t.datetime "created_at", null: false
@@ -22,16 +22,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_184336) do
     t.json "stats", null: false
     t.datetime "updated_at", null: false
     t.index ["player_id"], name: "index_characters_on_player_id", unique: true
-  end
-
-  create_table "chats", force: :cascade do |t|
-    t.integer "game_session_id", null: false
-    t.bigint "ruby_llm_model_id", null: false
-    t.boolean "cancelled", default: false, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["game_session_id"], name: "index_chats_on_game_session_id", unique: true
-    t.index ["ruby_llm_model_id"], name: "index_chats_on_ruby_llm_model_id"
   end
 
   create_table "choices", force: :cascade do |t|
@@ -91,8 +81,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_184336) do
     t.index ["user_id"], name: "index_login_codes_on_user_id"
   end
 
-  create_table "messages", force: :cascade do |t|
-    t.bigint "chat_id", null: false
+  create_table "narrator_conversations", force: :cascade do |t|
+    t.integer "game_session_id", null: false
+    t.bigint "ruby_llm_model_id", null: false
+    t.boolean "cancelled", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["game_session_id"], name: "index_narrator_conversations_on_game_session_id", unique: true
+    t.index ["ruby_llm_model_id"], name: "index_narrator_conversations_on_ruby_llm_model_id"
+  end
+
+  create_table "narrator_messages", force: :cascade do |t|
+    t.bigint "conversation_id", null: false
     t.string "role", null: false
     t.text "content"
     t.boolean "cache_until_here", default: false, null: false
@@ -105,7 +105,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_184336) do
     t.string "finish_reason"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["chat_id"], name: "index_messages_on_chat_id"
+    t.index ["conversation_id"], name: "index_narrator_messages_on_conversation_id"
   end
 
   create_table "pay_charges", force: :cascade do |t|
@@ -367,14 +367,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_02_184336) do
   end
 
   add_foreign_key "characters", "players"
-  add_foreign_key "chats", "game_sessions"
-  add_foreign_key "chats", "ruby_llm_models"
   add_foreign_key "choices", "scenes"
   add_foreign_key "game_sessions", "game_sessions", column: "rematch_of_id", on_delete: :nullify
   add_foreign_key "game_sessions", "users", column: "creator_id"
   add_foreign_key "items", "characters"
   add_foreign_key "login_codes", "users"
-  add_foreign_key "messages", "chats"
+  add_foreign_key "narrator_conversations", "game_sessions"
+  add_foreign_key "narrator_conversations", "ruby_llm_models"
+  add_foreign_key "narrator_messages", "narrator_conversations", column: "conversation_id"
   add_foreign_key "pay_charges", "pay_customers", column: "customer_id"
   add_foreign_key "pay_charges", "pay_subscriptions", column: "subscription_id"
   add_foreign_key "pay_payment_methods", "pay_customers", column: "customer_id"

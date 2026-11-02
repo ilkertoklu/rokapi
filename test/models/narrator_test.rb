@@ -29,11 +29,11 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal 3, scene.choices.find_by(stat: "strength").modifier
     assert_equal 1, scene.choices.find_by(stat: "wisdom").modifier
 
-    usage = @game_session.chat.ruby_llm_usages.sole
+    usage = @game_session.conversation.ruby_llm_usages.sole
     model = RubyLLM.models.find(usage.model)
     assert_equal [ 1000, 500 ], [ usage.input_tokens, usage.output_tokens ]
-    assert_in_delta (1000 * model.price(:input) + 500 * model.price(:output)) / 1_000_000, @game_session.chat.cost.total
-    assert_operator @game_session.chat.cost.total, :>, 0
+    assert_in_delta (1000 * model.price(:input) + 500 * model.price(:output)) / 1_000_000, @game_session.conversation.cost.total
+    assert_operator @game_session.conversation.cost.total, :>, 0
   end
 
   test "a scene written without its fence still gets its choices" do
@@ -84,7 +84,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal "The drawer opens, but you cut your hand.", roll.reload.resolution
     assert_equal 31 - 4, characters(:ilker_hero).reload.hp
     assert_equal 1, @game_session.scenes.count, "the outcome call must not write a scene"
-    assert_equal 2, @game_session.chat.ruby_llm_usages.count
+    assert_equal 2, @game_session.conversation.ruby_llm_usages.count
   end
 
   test "resolving a roll puts the outcome on screen" do
@@ -294,7 +294,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert_empty @game_session.scenes.sole.choices
   end
 
-  test "the brief opens one chat for the whole game" do
+  test "the brief opens one conversation for the whole game" do
     first = FakeReply.new(SCENE_RESPONSE)
     stub_llm(first) { narrate }
 
@@ -311,7 +311,7 @@ class NarratorTest < ActiveSupport::TestCase
     second = FakeReply.new(SECOND_SCENE_RESPONSE)
     stub_llm(second) { narrate }
 
-    assert_equal 1, Chat.where(game_session: @game_session).count
+    assert_equal 1, Narrator::Conversation.where(game_session: @game_session).count
     assert_equal first.instructions, second.instructions, "the brief never changes, so the cache holds"
     assert_equal %i[user assistant user assistant user], second.conversation.map(&:role)
     assert_includes second.conversation[1].content, "Rain hammers the inn's roof tiles"
@@ -426,7 +426,7 @@ class NarratorTest < ActiveSupport::TestCase
     resolve roll
 
     assert_equal 31 - 4, characters(:ilker_hero).reload.hp
-    assert_equal 2, @game_session.chat.ruby_llm_usages.count, "one scene and one outcome"
+    assert_equal 2, @game_session.conversation.ruby_llm_usages.count, "one scene and one outcome"
   end
 
   test "nothing is owed while the player is choosing" do
@@ -609,7 +609,7 @@ class NarratorTest < ActiveSupport::TestCase
     stub_llm(long, FakeReply.new(OUTCOME_RESPONSE)) { roll.narrate }
 
     assert_equal "The drawer opens, but you cut your hand.", roll.reload.resolution
-    assert_equal 1 + 2, @game_session.chat.ruby_llm_usages.count, "the scene, the rejected outcome and its rewrite"
+    assert_equal 1 + 2, @game_session.conversation.ruby_llm_usages.count, "the scene, the rejected outcome and its rewrite"
   end
 
   test "a character carries no more statuses than the limit" do
@@ -640,9 +640,9 @@ class NarratorTest < ActiveSupport::TestCase
     assert scene.narration.start_with?("Rain hammers")
     assert_equal 3, scene.choices.count
 
-    usage = @game_session.chat.ruby_llm_usages.sole
+    usage = @game_session.conversation.ruby_llm_usages.sole
     assert_equal [ "understudy", "understudy" ], [ usage.provider, usage.model ]
-    assert_equal 0, @game_session.chat.cost.total
+    assert_equal 0, @game_session.conversation.cost.total
   end
 
   test "the understudy resolves a roll at no cost" do
@@ -652,8 +652,8 @@ class NarratorTest < ActiveSupport::TestCase
     stub_understudy(OUTCOME_RESPONSE) { roll.narrate }
 
     assert_equal "The drawer opens, but you cut your hand.", roll.reload.resolution
-    assert_equal 2, @game_session.chat.ruby_llm_usages.count
-    assert_equal 0, @game_session.chat.cost.total
+    assert_equal 2, @game_session.conversation.ruby_llm_usages.count
+    assert_equal 0, @game_session.conversation.cost.total
   end
 
   private

@@ -51,15 +51,15 @@ class GameSessionTest < ActiveSupport::TestCase
       modifier: -1, target: 10
     choice.choose
     scene.roll_dice(by: players(:ilker_solo_host))
-    stub_llm(FakeReply.new(SCENE_RESPONSE)) { game_session.create_chat!.ask("Scene 1 of 7. Write the first scene.") }
+    stub_llm(FakeReply.new(SCENE_RESPONSE)) { game_session.create_conversation!.ask("Scene 1 of 7. Write the first scene.") }
 
     game_session.destroy
 
     assert_empty Scene.where(game_session_id: game_session.id)
     assert_empty Roll.where(choice_id: choice.id)
     assert_empty Player.where(game_session_id: game_session.id)
-    assert_empty Chat.where(game_session_id: game_session.id)
-    assert_empty Message.all
+    assert_empty Narrator::Conversation.where(game_session_id: game_session.id)
+    assert_empty Narrator::Message.all
     assert_empty RubyLLM::ActiveRecord::Usage.all
   end
 

@@ -1,0 +1,5 @@
+class Narrator::Conversation < ApplicationRecord
+  acts_as_chat message_class: "Narrator::Message", messages_foreign_key: :conversation_id
+
+  belongs_to :game_session
+end
