@@ -10,12 +10,11 @@ class Narrator::Brief
   end
 
   def quest
-    GameSession::Quest[@game_session.quest]&.brief(locale: @game_session.locale) ||
-      "A surprise adventure: the world and the quest are yours to invent, away from dragons, lost princesses and chosen ones."
+    GameSession::Quest[@game_session.quest]&.brief(locale: @game_session.locale) || "A surprise adventure: the world and the quest are yours to invent."
   end
 
   def tone
-    GameSession::Tone.fetch(@game_session.tone).directive
+    I18n.with_locale(:en) { GameSession::Tone.fetch(@game_session.tone).label }
   end
 
   def scenes
