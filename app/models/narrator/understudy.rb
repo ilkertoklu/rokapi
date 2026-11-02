@@ -13,9 +13,9 @@ class Narrator::Understudy < RubyLLM::Provider
         stdin.write request(messages, schema).to_json
         stdin.close
 
-        each_chunk(stdout) do |chunk|
-          content << chunk
-          yield RubyLLM::Chunk.new(role: :assistant, content: chunk, model_id: MODEL) if block_given?
+        stdout.each_line do |line|
+          content << line
+          yield RubyLLM::Chunk.new(role: :assistant, content: line, model_id: MODEL) if block_given?
         end
 
         raise Failure, "#{Rails.configuration.x.narrator_command} exited with #{process.value.exitstatus}" unless process.value.success?
@@ -39,40 +39,11 @@ class Narrator::Understudy < RubyLLM::Provider
         turns = earlier.map { |message| "<#{message.role}>\n#{message.content}\n</#{message.role}>" }
         "<conversation_so_far>\n#{turns.join("\n")}\n</conversation_so_far>\n\n#{latest.content}"
       end
-
-      def each_chunk(io)
-        pending = "".b
-
-        loop do
-          pending << io.readpartial(4096)
-          text, pending = split_after_last_character(pending)
-          yield text unless text.empty?
-        rescue EOFError
-          break
-        end
-
-        yield pending.force_encoding(Encoding::UTF_8).scrub unless pending.empty?
-      end
-
-      def split_after_last_character(bytes)
-        cut = (0..[ 3, bytes.bytesize ].min).find { |cut| utf8(bytes.byteslice(0, bytes.bytesize - cut)).valid_encoding? }
-        return [ utf8(bytes).scrub, "".b ] if cut.nil?
-
-        [ utf8(bytes.byteslice(0, bytes.bytesize - cut)), bytes.byteslice(bytes.bytesize - cut, cut) ]
-      end
-
-      def utf8(bytes)
-        bytes.dup.force_encoding(Encoding::UTF_8)
-      end
   end
 
   protocol :understudy, Protocol
 
-  def self.local?
-    true
-  end
+  def self.local? = true
 
-  def api_base
-    nil
-  end
+  def api_base = nil
 end

@@ -36,14 +36,13 @@ class Narrator::UnderstudyTest < ActiveSupport::TestCase
     assert request["prompt"].end_with?("</conversation_so_far>\n\nScene 2 of 7. Write the next scene.")
   end
 
-  test "what the command writes as it goes is relayed as chunks" do
-    reply = "Kar fırtınası köyü sardı; çığ düştü. " * 20
+  test "what the command writes as it goes is relayed line by line" do
+    reply = "Kar fırtınası köyü sardı.\nÇığ düştü, yol kapandı.\n"
     chunks = []
 
     response = stub_understudy(reply) { @chat.ask("Write the scene.") { chunks << it.content } }
 
-    assert_operator chunks.size, :>, 1
-    assert chunks.all?(&:valid_encoding?)
+    assert_equal [ "Kar fırtınası köyü sardı.\n", "Çığ düştü, yol kapandı.\n" ], chunks
     assert_equal reply, chunks.join
     assert_equal reply, response.content
   end
