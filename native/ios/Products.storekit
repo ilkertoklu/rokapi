@@ -1,0 +1,87 @@
+{
+  "identifier": "5E0F2B4A",
+  "nonRenewingSubscriptions": [],
+  "products": [],
+  "settings": {
+    "_failTransactionsEnabled": false,
+    "_locale": "en_US",
+    "_storefront": "USA",
+    "_storeKitErrors": []
+  },
+  "subscriptionGroups": [
+    {
+      "id": "21500001",
+      "localizations": [],
+      "name": "Rokapi",
+      "subscriptions": [
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "9.99",
+          "familyShareable": false,
+          "groupNumber": 3,
+          "internalID": "6700000001",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "About 8 adventures a month",
+              "displayName": "Standard",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "app.rokapi.standard.monthly",
+          "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "Standard Monthly",
+          "subscriptionGroupID": "21500001",
+          "type": "RecurringSubscription"
+        },
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "19.99",
+          "familyShareable": false,
+          "groupNumber": 2,
+          "internalID": "6700000002",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "20+ adventures a month",
+              "displayName": "Premium",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "app.rokapi.premium.monthly",
+          "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "Premium Monthly",
+          "subscriptionGroupID": "21500001",
+          "type": "RecurringSubscription"
+        },
+        {
+          "adHocOffers": [],
+          "codeOffers": [],
+          "displayPrice": "39.99",
+          "familyShareable": false,
+          "groupNumber": 1,
+          "internalID": "6700000003",
+          "introductoryOffer": null,
+          "localizations": [
+            {
+              "description": "50+ adventures a month",
+              "displayName": "Max",
+              "locale": "en_US"
+            }
+          ],
+          "productID": "app.rokapi.max.monthly",
+          "recurringSubscriptionPeriod": "P1M",
+          "referenceName": "Max Monthly",
+          "subscriptionGroupID": "21500001",
+          "type": "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version": {
+    "major": 4,
+    "minor": 0
+  }
+}

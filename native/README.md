@@ -6,10 +6,12 @@ iOS and Android shells around the web app, built with [Hotwire Native](https://n
 
 - Xcode 16 or later. The project is generated from `ios/project.yml` with [XcodeGen](https://github.com/yonaskolb/XcodeGen); after changing `project.yml`, run `xcodegen generate` in `ios/`.
 - Open `ios/Rokapi.xcodeproj`, pick a simulator and run. Debug builds talk to `http://localhost:3000` (`ROKAPI_URL` in `project.yml`).
+- The shared `Rokapi` scheme runs with `ios/Products.storekit`, so the paywall's purchases go through StoreKit local testing in the simulator. Its product ids match `config/store_products.yml`; with no PurchaseKit API key in credentials, Rails runs PurchaseKit in demo mode and completes those purchases itself.
 
 ## Android
 
 - Android Studio with JDK 17. Open `android/` and run the `app` configuration on an emulator, or `./gradlew installDebug`.
+- Purchases need a Play Console license tester on the emulator's Google account; there is no local billing sandbox.
 - Debug builds talk to `http://10.0.2.2:3000`, the emulator's address for the host (`ROOT_URL` in `app/build.gradle.kts`).
 
 Start the server with `bin/dev` before launching either app.

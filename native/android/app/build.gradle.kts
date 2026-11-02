@@ -57,5 +57,6 @@ java {
 dependencies {
     implementation("dev.hotwire:core:1.3.2")
     implementation("dev.hotwire:navigation-fragments:1.3.2")
+    implementation("com.github.purchasekit:purchasekit-android:0.9.0")
     implementation("com.google.android.material:material:1.12.0")
 }

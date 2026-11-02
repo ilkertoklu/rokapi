@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0AE98FBC90292A4FAF0D6C10 /* PurchaseKit in Frameworks */ = {isa = PBXBuildFile; productRef = A5FA96672CF73D1B064D39D2 /* PurchaseKit */; };
 		29D56DD4C78F51AB1670F193 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DE21135BD35AB560A5B2091 /* Colors.swift */; };
 		3E7DAE1BF85E0041CE4EACC6 /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DEAF0AB19F3400232EB7ADA /* Server.swift */; };
 		4851E29BDDE38264EC14F30F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F16C65FD2214149C0F92F99 /* AppDelegate.swift */; };
@@ -31,6 +32,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A2CD19570711C871665D8125 /* HotwireNative in Frameworks */,
+				0AE98FBC90292A4FAF0D6C10 /* PurchaseKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,6 +86,7 @@
 			name = Rokapi;
 			packageProductDependencies = (
 				05C1FA4D125C286ADCD70A3A /* HotwireNative */,
+				A5FA96672CF73D1B064D39D2 /* PurchaseKit */,
 			);
 			productName = Rokapi;
 			productReference = 43CD50E1B29E4DD47588B56F /* Rokapi.app */;
@@ -111,6 +114,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				E553AEB233CF3EA1F43E93C5 /* XCRemoteSwiftPackageReference "hotwire-native-ios" */,
+				132F7F629CBFE5759A1ECB14 /* XCRemoteSwiftPackageReference "purchasekit-ios" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F34533ECC5EF3872B8461282 /* Products */;
@@ -331,6 +335,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		132F7F629CBFE5759A1ECB14 /* XCRemoteSwiftPackageReference "purchasekit-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/purchasekit/purchasekit-ios";
+			requirement = {
+				kind = exactVersion;
+				version = 0.9.0;
+			};
+		};
 		E553AEB233CF3EA1F43E93C5 /* XCRemoteSwiftPackageReference "hotwire-native-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/hotwired/hotwire-native-ios";
@@ -346,6 +358,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E553AEB233CF3EA1F43E93C5 /* XCRemoteSwiftPackageReference "hotwire-native-ios" */;
 			productName = HotwireNative;
+		};
+		A5FA96672CF73D1B064D39D2 /* PurchaseKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 132F7F629CBFE5759A1ECB14 /* XCRemoteSwiftPackageReference "purchasekit-ios" */;
+			productName = PurchaseKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

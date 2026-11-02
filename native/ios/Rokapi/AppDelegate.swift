@@ -1,4 +1,5 @@
 import HotwireNative
+import PurchaseKit
 import UIKit
 import WebKit
 
@@ -31,6 +32,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         Hotwire.loadPathConfiguration(from: [
             .server(Server.url.appending(path: "hotwire_native/path_configuration.json"))
         ])
+
+        Hotwire.registerBridgeComponents([PaywallComponent.self])
 
         Hotwire.config.backButtonDisplayMode = .minimal
         Hotwire.config.showDoneButtonOnModals = true
