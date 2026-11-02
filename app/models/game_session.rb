@@ -57,6 +57,10 @@ class GameSession < ApplicationRecord
     code.present?
   end
 
+  def lobby?
+    multiplayer? && !started?
+  end
+
   def full?
     players.count >= max_players
   end

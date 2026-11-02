@@ -5,7 +5,7 @@ class GameSessionsController < ApplicationController
     @character = @player.character
 
     respond_to do |format|
-      format.html { redirect_to new_game_session_character_path(@game_session) if @character.nil? }
+      format.html { redirect_to new_game_session_character_path(@game_session) if @character.nil? && !@game_session.lobby? }
       format.json
     end
   end

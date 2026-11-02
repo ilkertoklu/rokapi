@@ -1,0 +1,56 @@
+<%# locals: (game_session:, player:) -%>
+<div class="lobby">
+  <div class="room-code">
+    <span class="overline room-code__label"><%= t(".code") %></span>
+    <span class="room-code__digits"><%= game_session.code %></span>
+    <span class="room-code__share" data-controller="share" data-share-copied-value="<%= t(".copied") %>"
+        data-share-text-value="<%= t(".share", code: game_session.code, url: new_game_sessions_join_url) %>">
+      <button type="button" class="room-code__copy" data-action="share#share" aria-label="<%= t(".copy") %>"><%= render "glyph", name: "copy" %></button>
+      <span class="room-code__copied" data-share-target="label" aria-live="polite"></span>
+    </span>
+  </div>
+
+  <section class="lobby-quest">
+    <span class="overline"><%= t(".quest") %></span>
+    <h2><%= game_session.title %></h2>
+    <p><%= GameSession::Quest[game_session.quest]&.brief || t("game_sessions.setup.surprise_text") %></p>
+    <span class="overline lobby-quest__meta"><%= lobby_meta(game_session) %></span>
+  </section>
+
+  <section>
+    <header class="lobby-players__head">
+      <h2 class="overline"><%= t(".players") %></h2>
+      <span><%= game_session.players.size %> / <%= game_session.max_players %></span>
+    </header>
+
+    <ol class="lobby-players">
+      <% game_session.players.in_join_order.includes(:user, :character).each.with_index(1) do |member, seat| %>
+        <% you = member == player %>
+        <%= tag.li class: [ "lobby-player", "lobby-player--seat-#{seat}", { "lobby-player--ready": member.ready?, "lobby-player--you": you } ] do %>
+          <span class="lobby-player__avatar"><%= member.user.initial %></span>
+          <span class="lobby-player__body">
+            <span class="lobby-player__name">
+              <%= member.user.name %>
+              <% if you || member == game_session.host %>
+                <small><% if you %>· <%= t(".you") %><% end %><% if member == game_session.host %> · <%= t(".host") %><% end %></small>
+              <% end %>
+            </span>
+            <span class="lobby-player__line"><%= lobby_player_line(member, you: you) %></span>
+          </span>
+          <span class="lobby-player__status"><%= lobby_player_status(member, you: you) %></span>
+        <% end %>
+      <% end %>
+    </ol>
+  </section>
+
+  <div class="sticky-footer stack">
+    <% if !player.ready? %>
+      <%= link_to t(".create_character"), new_game_session_character_path(game_session), class: "btn btn--primary" %>
+    <% elsif player == game_session.host %>
+      <p class="lobby__note"><%= game_session.everyone_ready? ? t(".only_you_start") : t(".wait_for_everyone") %></p>
+      <%= button_to t(".start"), game_session_start_path(game_session), class: "btn btn--primary", disabled: !game_session.everyone_ready? %>
+    <% else %>
+      <p class="lobby__note"><%= t(".host_starts", host: game_session.host.user.name) %></p>
+    <% end %>
+  </div>
+</div>

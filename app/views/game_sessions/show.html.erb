@@ -3,8 +3,12 @@
 <%= turbo_stream_from @game_session, id: dom_id(@game_session, :stream), data: { turbo_permanent: true } %>
 <%= render "game_sessions/connection" %>
 
-<div class="game" data-controller="sheet">
-  <%= render "game_sessions/stage", game_session: @game_session %>
+<% if @game_session.lobby? %>
+  <%= render "game_sessions/lobby", game_session: @game_session, player: @player %>
+<% else %>
+  <div class="game" data-controller="sheet">
+    <%= render "game_sessions/stage", game_session: @game_session %>
 
-  <%= render "characters/sheet", character: @character %>
-</div>
+    <%= render "characters/sheet", character: @character %>
+  </div>
+<% end %>

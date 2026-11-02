@@ -97,6 +97,12 @@ module Rokapi
       settle
     end
 
+    desc "start", "Start the multiplayer game as its host and wait for the opening scene"
+    def start
+      act :post, "#{game_path}/start.json"
+      settle
+    end
+
     desc "show", "Show where the game stands and what to do next"
     def show
       present game
@@ -292,7 +298,7 @@ module Rokapi
         scene = current_scene(game)
         roll = scene&.fetch("roll")
 
-        return false if game["finished"]
+        return false if game["finished"] || game["lobby"]
         return true if scene.nil?
 
         (scene["state"] == "narrating" && !scene["stalled"]) || (roll && !roll["resolved"] && !roll["stalled"])
@@ -315,6 +321,8 @@ module Rokapi
 
       def present(game, streamed: {}, narration: true)
         return puts(JSON.pretty_generate(game)) if options[:json]
+
+        return say_lobby(game) if game["lobby"]
 
         scene = current_scene(game)
         if scene.nil?
@@ -358,6 +366,23 @@ module Rokapi
           say_choice scene
           say_roll roll
           next_step "continue#{usable_hint(game)}"
+        end
+      end
+
+      def say_lobby(game)
+        say "LOBBY: room #{game["code"]} · #{game["title"]} · #{game["players"].size}/#{game["max_players"]} players"
+        game["players"].each do |player|
+          badges = [ ("YOU" if player["you"]), ("HOST" if player["host"]) ].compact.join(" ")
+          say "  #{player["ready"] ? "ready    " : "preparing"} #{player["name"]} #{badges} #{player["summary"]}".rstrip
+        end
+
+        if game["character"].nil?
+          next_step "heroes"
+        elsif game["host"] && game["everyone_ready"]
+          next_step "start"
+        else
+          say "\nWaiting for #{game["host"] ? "everyone to make a character" : "the host to start"}."
+          next_step "show"
         end
       end
 

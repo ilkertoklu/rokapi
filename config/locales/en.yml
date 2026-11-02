@@ -304,6 +304,30 @@ en:
           text: This room has no seats left. Ask the host to open a new room.
       create:
         rate_limited: Too many tries. Wait a few minutes.
+    lobby:
+      code: Room code
+      copy: Copy the room code
+      copied: Copied
+      share: "Join my Rokapi room with the code %{code}: %{url}"
+      quest: Quest
+      meta: "%{players} players · %{estimate} · %{tone} tone"
+      players: Players
+      you: YOU
+      host: HOST
+      no_character_yet: You have not created your character yet
+      just_joined: just joined
+      choosing: choosing a character…
+      ready: Ready
+      missing_character: No character
+      preparing: Getting ready
+      create_character: Create your character
+      only_you_start: Everyone is ready · only you can start
+      wait_for_everyone: You can start once everyone is ready
+      start: Start the adventure
+      host_starts: Only %{host} can start the adventure
+    starts:
+      create:
+        not_ready: Only the host can start, once everyone is ready.
     characters:
       new:
         title: Create your character

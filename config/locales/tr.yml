@@ -325,6 +325,30 @@ tr:
           text: Bu odada yer kalmadı. Ev sahibinden yeni oda açmasını iste.
       create:
         rate_limited: Çok fazla deneme. Birkaç dakika bekle.
+    lobby:
+      code: Oda kodu
+      copy: Oda kodunu kopyala
+      copied: Kopyalandı
+      share: "Rokapi odama %{code} koduyla katıl: %{url}"
+      quest: Görev
+      meta: "%{players} oyuncu · %{estimate} · %{tone} ton"
+      players: Oyuncular
+      you: SEN
+      host: HOST
+      no_character_yet: Karakterini henüz oluşturmadın
+      just_joined: az önce katıldı
+      choosing: karakter seçiliyor…
+      ready: Hazır
+      missing_character: Karakter eksik
+      preparing: Hazırlanıyor
+      create_character: Karakterini oluştur
+      only_you_start: Herkes hazır · yalnızca sen başlatabilirsin
+      wait_for_everyone: Herkes hazır olunca başlatabilirsin
+      start: Maceraya başla
+      host_starts: Maceraya yalnızca %{host} başlatabilir
+    starts:
+      create:
+        not_ready: Maceraya yalnızca host, herkes hazır olunca başlatabilir.
     characters:
       new:
         title: Karakterini oluştur
