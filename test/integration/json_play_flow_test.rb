@@ -27,7 +27,7 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
     assert_nil response.parsed_body["character"]
     assert_not response.parsed_body["started"]
 
-    stub_llm(FakeReply.new(SCENE_RESPONSE)) do
+    stub_understudy(SCENE_RESPONSE) do
       perform_enqueued_jobs do
         post game_session_character_path(game_session), params: { character: warrior }, as: :json
       end
@@ -51,7 +51,7 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
     get game_session_path(game_session), as: :json
     assert_equal "rolling", response.parsed_body["scenes"].last["state"]
 
-    stub_llm(FakeReply.new(OUTCOME_RESPONSE)) do
+    stub_understudy(OUTCOME_RESPONSE) do
       with_die(2) { perform_enqueued_jobs { post game_session_roll_path(game_session), as: :json } }
     end
     assert_response :no_content
@@ -63,7 +63,7 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
     assert_equal "The drawer opens, but you cut your hand.", roll["resolution"]
     assert_equal(-4, roll["effects"]["hp"])
 
-    stub_llm(FakeReply.new(FINALE_RESPONSE)) do
+    stub_understudy(FINALE_RESPONSE) do
       perform_enqueued_jobs { post game_session_acknowledgement_path(game_session), as: :json }
     end
     assert_response :no_content
@@ -73,7 +73,7 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
     assert game["finished"]
     assert_equal "victory", game["outcome"]
     assert game["scenes"].last["finale"]
-    assert_operator game["cost"], :>, 0
+    assert_equal 0.0, game["cost"]
   end
 
   test "a move out of turn is a conflict" do
@@ -127,7 +127,7 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
       post game_sessions_solo_path, params: { game_session: { quest: "lost_caravan", tone: "balanced", length: "short" } }, as: :json
       game_session = users(:sevval).game_sessions.sole
 
-      stub_llm(FakeReply.new(SCENE_RESPONSE)) do
+      stub_understudy(SCENE_RESPONSE) do
         perform_enqueued_jobs { post game_session_character_path(game_session), params: { character: warrior }, as: :json }
       end
 

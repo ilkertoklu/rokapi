@@ -8,12 +8,11 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "two players take turns, each watching the other's scene" do
-    first_scene = FakeReply.new(SCENE_RESPONSE)
-    start_with first_scene
+    first_scene = start_with(SCENE_RESPONSE).sole
 
-    assert_includes first_scene.instructions, "The party, taking turns:\n- Ilker: "
-    assert_includes first_scene.instructions, "\n- Deniz: "
-    assert_equal "Scene 1 of 7, Ilker's turn. This is the first scene.\n", first_scene.prompt
+    assert_includes first_scene["system"], "The party, taking turns:\n- Ilker: "
+    assert_includes first_scene["system"], "\n- Deniz: "
+    assert_equal "Scene 1 of 7, Ilker's turn. This is the first scene.\n", first_scene["prompt"]
 
     sign_in_as users(:ilker)
     get game_session_path(@room), as: :json
@@ -51,7 +50,7 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".d20", count: 0
 
     sign_in_as users(:ilker)
-    stub_llm(FakeReply.new(OUTCOME_RESPONSE)) do
+    stub_understudy(OUTCOME_RESPONSE) do
       perform_enqueued_jobs { post game_session_roll_path(@room), as: :json }
     end
 
@@ -61,12 +60,11 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".watch", text: /Ilker is reading the outcome/
 
     sign_in_as users(:ilker)
-    second_scene = FakeReply.new(SECOND_SCENE_RESPONSE)
-    stub_llm(second_scene) do
+    second_scene = stub_understudy(SECOND_SCENE_RESPONSE) do
       perform_enqueued_jobs { post game_session_acknowledgement_path(@room), as: :json }
-    end
-    assert_equal "Scene 2 of 7, Deniz's turn.\n", second_scene.prompt
-    assert_includes second_scene.conversation[-3].content, 'Ilker chose "Force the drawer open"'
+    end.sole
+    assert second_scene["prompt"].end_with?("\n\nScene 2 of 7, Deniz's turn.\n")
+    assert_includes second_scene["prompt"], "<user>\nIlker chose \"Force the drawer open\""
 
     get game_session_path(@room), as: :json
     game = response.parsed_body
@@ -94,14 +92,14 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
   end
 
   private
-    def start_with(*chats)
+    def start_with(*replies)
       [ users(:ilker), users(:deniz) ].each do |user|
         sign_in_as user
         post game_session_character_path(@room), params: { character: warrior }, as: :json
         assert_response :created
       end
 
-      stub_llm(*chats) do
+      stub_understudy(*replies) do
         perform_enqueued_jobs { @room.start(by: players(:ilker_room_host)) }
       end
     end

@@ -3,8 +3,6 @@ require "open3"
 class Narrator::Understudy < RubyLLM::Provider
   MODEL = "understudy"
 
-  class Failure < StandardError; end
-
   class Protocol < RubyLLM::Protocol
     def complete(messages, schema: nil, **, &)
       content = +""
@@ -18,7 +16,7 @@ class Narrator::Understudy < RubyLLM::Provider
           yield RubyLLM::Chunk.new(role: :assistant, content: line, model_id: MODEL) if block_given?
         end
 
-        raise Failure, "#{Rails.configuration.x.narrator_command} exited with #{process.value.exitstatus}" unless process.value.success?
+        raise RubyLLM::ServerError, "#{Rails.configuration.x.narrator_command} exited with #{process.value.exitstatus}" unless process.value.success?
       end
 
       RubyLLM::Message.new(role: :assistant, content: content, model: MODEL, cost: RubyLLM::Cost.new(total: 0))

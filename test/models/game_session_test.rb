@@ -51,7 +51,7 @@ class GameSessionTest < ActiveSupport::TestCase
       modifier: -1, target: 10
     choice.choose
     scene.roll_dice(by: players(:ilker_solo_host))
-    stub_llm(FakeReply.new(SCENE_RESPONSE)) { game_session.create_conversation!.ask("Scene 1 of 7. Write the first scene.") }
+    stub_understudy(OUTCOME_RESPONSE) { game_session.rolls.sole.narrate }
 
     game_session.destroy
 
