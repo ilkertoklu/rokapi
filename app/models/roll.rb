@@ -68,7 +68,7 @@ class Roll < ApplicationRecord
   end
 
   def narrate
-    Narrator.new(scene.game_session).narrate_outcome(self)
+    Narrator.for(scene.game_session).narrate_outcome(self)
   end
 
   def narrate_later

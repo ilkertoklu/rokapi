@@ -5,6 +5,7 @@ class Narrator::Conversation < ApplicationRecord
 
   def forget_last_exchange
     messages.reload.last(2).each(&:destroy)
+    reload
   end
 
   def settle(cue)

@@ -541,7 +541,7 @@ class NarratorTest < ActiveSupport::TestCase
 
   private
     def narrate
-      Narrator.new(@game_session).narrate_scene(@game_session.current_scene)
+      Narrator.for(@game_session).narrate_scene(@game_session.current_scene)
     end
 
     def resolve(roll)

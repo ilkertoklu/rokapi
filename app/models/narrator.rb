@@ -1,4 +1,4 @@
-class Narrator
+class Narrator < RubyLLM::Agent
   class MalformedResponse < StandardError; end
 
   REWRITES = 2
@@ -7,14 +7,24 @@ class Narrator
 
   def self.table_name_prefix = "narrator_"
 
-  def initialize(game_session)
-    @game_session = game_session
+  chat_model Conversation
+  caching
+  instructions game: -> { chat.game_session }
+
+  def self.for(game_session)
+    if (conversation = game_session.reload_conversation)
+      new chat: conversation, persist_instructions: false
+    elsif Rails.configuration.x.narrator_command.present?
+      new chat: Conversation.create!(game_session: game_session, model: Understudy::MODEL, provider: :understudy, assume_model_exists: true)
+    else
+      new chat: Conversation.create!(game_session: game_session)
+    end
   end
 
   def narrate_scene(scene)
     return unless scene.narrating?
 
-    prose, data = rewriting RubyLLM.render_prompt("narrator/voice/scene", scene: scene) do |cue|
+    prose, data = rewriting RubyLLM.render_prompt("narrator/scene", scene: scene) do |cue|
       streamed = +""
 
       reply = speak(cue) do |chunk|
@@ -31,7 +41,7 @@ class Narrator
   def narrate_outcome(roll)
     return if roll.resolved?
 
-    data = rewriting RubyLLM.render_prompt("narrator/voice/outcome", roll: roll) do |cue|
+    data = rewriting RubyLLM.render_prompt("narrator/outcome", roll: roll) do |cue|
       check_outcome speak(cue, schema: OutcomeSchema).parsed
     end
 
@@ -47,8 +57,7 @@ class Narrator
         yield prompt
       rescue MalformedResponse, JSON::ParserError => error
         Rails.logger.info "Narrator rejected a reply: #{error.message}"
-        conversation.forget_last_exchange
-        @conversation = nil
+        chat.forget_last_exchange
         raise MalformedResponse, error.message if (rewrites += 1) > REWRITES
 
         prompt = "#{cue}\nYour last reply was rejected: #{error.message}. Write the whole reply again."
@@ -57,18 +66,12 @@ class Narrator
     end
 
     def speak(cue, schema: nil, &)
-      conversation.with_schema schema
-      conversation.messages.last&.role == "user" ? conversation.complete(&) : conversation.ask(cue, &)
+      with_schema schema
+      messages.last&.role == "user" ? complete(&) : ask(cue, &)
     end
 
-    def conversation
-      @conversation ||= if (record = @game_session.reload_conversation)
-        Voice.find(record.id)
-      elsif Rails.configuration.x.narrator_command.present?
-        Voice.create!(game_session: @game_session, model: Understudy::MODEL, provider: :understudy, assume_model_exists: true)
-      else
-        Voice.create!(game_session: @game_session)
-      end
+    def game_session
+      chat.game_session
     end
 
     def check_scene(scene, content)
@@ -82,7 +85,7 @@ class Narrator
       raise MalformedResponse, "the narration is missing" if prose.empty?
       fit "the narration", prose, finale ? :finale : :scene
       raise MalformedResponse, "the title is missing" if title.blank?
-      raise MalformedResponse, "the title #{title.inspect} runs #{title.length} characters, at most #{@game_session.title_length} fit beside the progress dots" if title.length > @game_session.title_length
+      raise MalformedResponse, "the title #{title.inspect} runs #{title.length} characters, at most #{game_session.title_length} fit beside the progress dots" if title.length > game_session.title_length
       fit "the location", data["location"], :location
 
       if names_the_adventure?(scene)
@@ -127,12 +130,12 @@ class Narrator
       finale = data["finale"] == true
 
       ApplicationRecord.transaction do
-        @game_session.update! title: data["adventure"] if names_the_adventure?(scene)
+        game_session.update! title: data["adventure"] if names_the_adventure?(scene)
         scene.update! title: data["title"], location: data["location"], narration: prose, finale: finale, state: finale ? :played : :choosing
 
         if finale
-          @game_session.update! outcome: data["outcome"]
-          @game_session.finish
+          game_session.update! outcome: data["outcome"]
+          game_session.finish
         else
           data["choices"].each do |choice|
             scene.choices.create! label: choice["label"], stat: choice["stat"], modifier: scene.active_player.character.bonus_for(choice["stat"]),
@@ -143,6 +146,6 @@ class Narrator
     end
 
     def names_the_adventure?(scene)
-      scene.first? && @game_session.quest.nil?
+      scene.first? && game_session.quest.nil?
     end
 end

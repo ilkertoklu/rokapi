@@ -48,7 +48,7 @@ class Scene < ApplicationRecord
   end
 
   def narrate
-    Narrator.new(game_session).narrate_scene(self)
+    Narrator.for(game_session).narrate_scene(self)
   end
 
   def narrate_later
