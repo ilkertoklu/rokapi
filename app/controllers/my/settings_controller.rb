@@ -6,16 +6,16 @@ class My::SettingsController < ApplicationController
   end
 
   def update
-    Current.user.update_settings name: settings_params[:name], email: settings_params[:email]
-
-    respond_to do |format|
-      format.html { redirect_after_saving }
-      format.json { render :show }
-    end
-  rescue ActiveRecord::RecordInvalid => invalid
-    respond_to do |format|
-      format.html { render :show, status: :unprocessable_entity }
-      format.json { render json: invalid.record.errors, status: :unprocessable_entity }
+    if Current.user.update_settings name: settings_params[:name], email: settings_params[:email]
+      respond_to do |format|
+        format.html { redirect_after_saving }
+        format.json { render :show }
+      end
+    else
+      respond_to do |format|
+        format.html { render :show, status: :unprocessable_entity }
+        format.json { render json: Current.user.errors, status: :unprocessable_entity }
+      end
     end
   end
 

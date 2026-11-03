@@ -6,22 +6,19 @@ module User::EmailChangeable
   included do
     normalizes :unconfirmed_email, with: ->(email) { email.strip.downcase.presence }
 
-    validates :name, presence: true, on: :settings
     validates :unconfirmed_email, format: { with: URI::MailTo::EMAIL_REGEXP }, allow_nil: true
     validate :unconfirmed_email_available, if: :unconfirmed_email_changed?
+
+    after_update_commit :send_email_confirmation, if: :email_change_requested?
 
     generates_token_for :email_confirmation, expires_in: CONFIRMATION_TIME do
       unconfirmed_email
     end
   end
 
-  def update_settings(name:, email:)
-    self.name = name
+  def request_email_change(email)
     self.unconfirmed_email = email
     self.unconfirmed_email = nil if unconfirmed_email == self.email
-    save! context: :settings
-
-    send_email_confirmation if email_change_requested?
   end
 
   def email_change_pending?

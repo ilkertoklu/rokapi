@@ -115,8 +115,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "an email someone else holds cannot be requested" do
-    assert_raises(ActiveRecord::RecordInvalid) do
-      users(:ilker).update_settings name: "Ilker", email: users(:deniz).email
-    end
+    assert_not users(:ilker).update_settings(name: "Ilker", email: users(:deniz).email)
+    assert_nil users(:ilker).reload.unconfirmed_email
   end
 end

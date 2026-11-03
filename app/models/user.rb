@@ -17,6 +17,7 @@ class User < ApplicationRecord
 
   validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :terms, acceptance: { allow_nil: false }, on: :signup
+  validates :name, presence: true, on: :settings
 
   def send_login_code
     login_codes.delete_all
@@ -38,6 +39,12 @@ class User < ApplicationRecord
     self.terms_accepted_at ||= Time.current
     assign_attributes name: name, terms: terms
     save context: :signup
+  end
+
+  def update_settings(name:, email:)
+    self.name = name
+    request_email_change email
+    save context: :settings
   end
 
   def initial
