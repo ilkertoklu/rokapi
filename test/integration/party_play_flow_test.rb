@@ -10,9 +10,9 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
   test "two players take turns, each watching the other's scene" do
     first_scene = start_with(SCENE_RESPONSE).sole
 
-    assert_includes first_scene["system"], "The party, taking turns:\n- Ilker: "
+    assert_includes first_scene["system"], "The party, who take turns:\n- Ilker: "
     assert_includes first_scene["system"], "\n- Deniz: "
-    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion.\nIlker: 31/31 health; carries Longsword, Round shield; no statuses.\n", first_scene["prompt"]
+    assert_equal "Scene 1 of 7, Ilker's turn.\nIlker: 31/31 health; carries Longsword, Round shield; no statuses.\n", first_scene["prompt"]
 
     sign_in_as users(:ilker)
     get game_session_path(@room), as: :json
@@ -63,7 +63,7 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
     second_scene = stub_understudy(SECOND_SCENE_RESPONSE) do
       perform_enqueued_jobs { post game_session_acknowledgement_path(@room), as: :json }
     end.sole
-    assert second_scene["prompt"].include?("\n\nScene 2 of 7, Deniz's turn. Raise the stakes: pay for what came before, and let the one who stands in the way act.\nDeniz: ")
+    assert second_scene["prompt"].include?("\n\nScene 2 of 7, Deniz's turn.\nDeniz: ")
     assert_includes second_scene["prompt"], "<user>\nIlker chose \"Force the drawer open\""
 
     get game_session_path(@room), as: :json

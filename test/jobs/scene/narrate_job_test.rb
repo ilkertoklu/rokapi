@@ -43,6 +43,6 @@ test "the narrator speaks the default locale whatever the page that woke it" do
   I18n.with_locale(:tr) { @scene.narrate_later }
   request = stub_understudy(SCENE_RESPONSE) { perform_enqueued_jobs }.sole
 
-  assert_includes request["system"], "Tone: Balanced"
+  assert_includes request["system"], "The tone: balanced."
 end
 end
