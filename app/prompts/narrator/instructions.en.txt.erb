@@ -16,7 +16,7 @@ The outcome of a roll takes a paragraph or two, around a hundred words, and tell
 A scene: tell it, then end with a ```json block:
 
 ```json
-{"title": "...", "location": "...", "carries": ["..."], "choices": [{"label": "...", "stat": "strength|agility|constitution|intelligence|wisdom|charisma", "difficulty": 12}]}
+{"title": "...", "location": "...", "carries": {"...": "kept"}, "choices": [{"label": "...", "stat": "strength|agility|constitution|intelligence|wisdom|charisma", "difficulty": 12}]}
 ```
 
 Give two or three choices, things this hero could try now that lead different ways. The stat is whatever the attempt calls for, the difficulty <%= Choice::DIFFICULTY.min %> (easy) to <%= Choice::DIFFICULTY.max %> (very hard). The title and the location are a few words each.<%= %( The first scene's block also names the adventure: "adventure": "...".) if game.quest.nil? %>
@@ -25,11 +25,11 @@ A roll: tell what happens, then end with a ```json block of what changed for the
 
 ```json
 {"hp": -3,
- "carries": ["..."],
+ "carries": {"...": "kept"},
  "statuses_gained": [{"name": "...", "modifier": -1, "turns": 2}],
  "statuses_lost": ["..."]}
 ```
 
 The roll that ends the story, the last scene's or one that takes a hero's last health, tells what it does and then the ending the dice decided; its block adds "outcome": "victory" or "defeat".
 
-Every block lists in "carries" what the one whose turn it is has in hand once the reply is told, and the ending's block what they are left with when the story ends: the names on the sheet of what they still hold, and anything new or changed written as {"name": "...", "kind": "instant|passive|quest", "description": "...", "hp": 0, "uses": 0}. The sheet holds only things in hand and what passes; what the hero knows, who stands with them and what marks them for good live in the story. Health is only lost on a roll; it comes back through items. An instant item is spent when used and heals its hp, uses times; a passive item works in the story while it is carried; a quest item is a thing the quest turns on. A status passes: it adds its modifier, -2 to +2, to later rolls for <%= StatusEffect::TURNS.min %> to <%= StatusEffect::TURNS.max %> turns.
+Every block answers in "carries" for each thing on the sheet of the one whose turn it is: "kept" while it is still in their hands once the reply is told, or else where it is now, in a few words; the ending's block answers for when the story ends. Anything new or changed in their hands goes in under its own name as {"kind": "instant|passive|quest", "description": "...", "hp": 0, "uses": 0}. The sheet holds only things in hand and what passes; what the hero knows, who stands with them and what marks them for good live in the story. Health is only lost on a roll; it comes back through items. An instant item is spent when used and heals its hp, uses times; a passive item works in the story while it is carried; a quest item is a thing the quest turns on. A status passes: it adds its modifier, -2 to +2, to later rolls for <%= StatusEffect::TURNS.min %> to <%= StatusEffect::TURNS.max %> turns.

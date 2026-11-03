@@ -103,6 +103,19 @@ class RollTest < ActiveSupport::TestCase
     assert_equal [ "Longsword", "Inn ledger" ], roll.reload.items_lost
   end
 
+  test "each thing on the sheet is kept or told where it is now, and what is told anew under its own name" do
+    roll = roll_with(value: 9, target: 12)
+    roll.resolve resolution: "You hand the ledger to the guard, and your blade notches on the gate.", effects: {
+      "carries" => { "Longsword" => { "description" => "notched" }, "Healing potion" => true, "Inn ledger" => "with the guard at the gate",
+                     "Gate key" => { "kind" => "quest", "description" => "The guard's spare" } } }
+
+    character = characters(:ilker_hero).reload
+    assert_equal [ "Gate key", "Healing potion", "Longsword" ], character.items.carried.pluck(:name).sort
+    assert_equal "notched", character.items.find_by!(name: "Longsword").description
+    assert character.items.quest.exists?(name: "Gate key")
+    assert_equal [ "Longsword", "Inn ledger" ], roll.reload.items_lost
+  end
+
   test "an instant item is the player's to use, so leaving it off the list does not spend it" do
     roll_with(value: 9, target: 12).resolve resolution: "You drink deep.", effects: { "carries" => [ "Longsword", "Inn ledger" ] }
 

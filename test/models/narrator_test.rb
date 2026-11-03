@@ -452,7 +452,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "a scene that hands the hero something puts it on the sheet, but only a roll costs health" do
     giving = SCENE_RESPONSE.sub('"location": "Whitebend",', <<~JSON.chomp)
       "location": "Whitebend", "hp": -5,
-       "carries": ["Longsword", "Healing potion", {"name": "Village purse", "kind": "quest", "description": "The harvest money"}],
+       "carries": {"Longsword": "kept", "Healing potion": "kept", "Inn ledger": "with the innkeeper", "Village purse": {"kind": "quest", "description": "The harvest money"}},
        "statuses_gained": [{"name": "Watched", "modifier": -1, "turns": 2}, {"name": "Blessed", "modifier": 2, "turns": 2}],
     JSON
 
@@ -469,7 +469,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "the ending settles what the hero leaves behind" do
     roll = play_the_last_scene die: 20
 
-    stub_understudy(ENDING_RESPONSE.sub('{"outcome"', '{"carries": ["Healing potion", "Inn ledger"], "outcome"')) { roll.narrate }
+    stub_understudy(ENDING_RESPONSE.sub('{"outcome"', '{"carries": {"Longsword": "left in the snow", "Healing potion": "kept", "Inn ledger": "kept"}, "outcome"')) { roll.narrate }
 
     assert_not characters(:ilker_hero).items.exists?(name: "Longsword")
     assert @game_session.reload.finished?

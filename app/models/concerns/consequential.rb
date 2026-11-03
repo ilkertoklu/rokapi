@@ -28,7 +28,7 @@ module Consequential
       unlisted = character.items.carried.to_a
       gained, lost = [], []
 
-      Array(carries).each do |entry|
+      in_hand(carries).each do |entry|
         grant = entry.is_a?(Hash) ? entry : described(entry.to_s)
         next if grant["name"].blank?
 
@@ -44,6 +44,18 @@ module Consequential
       end
 
       { "items_gained" => gained, "items_lost" => lost + unlisted.reject(&:instant?).map(&:name) }
+    end
+
+    def in_hand(carries)
+      return Array(carries) unless carries.is_a?(Hash)
+
+      carries.filter_map do |name, whereabouts|
+        if whereabouts.is_a?(Hash)
+          whereabouts.merge("name" => name)
+        elsif whereabouts == true || whereabouts.to_s.strip.casecmp?("kept")
+          name
+        end
+      end
     end
 
     def described(entry)
