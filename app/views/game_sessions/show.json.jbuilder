@@ -1,5 +1,14 @@
-json.(@game_session, :id, :title, :quest, :tone, :length, :locale, :scene_budget, :outcome)
+json.(@game_session, :id, :title, :surprise, :tone, :length, :locale, :scene_budget, :outcome)
 json.started @game_session.started?
+
+unless @game_session.surprise?
+  json.card do
+    json.place @game_session.card.place.text
+    json.trouble @game_session.card.trouble.text
+    json.figure @game_session.card.figure.text
+  end
+end
+
 json.finished @game_session.finished?
 json.your_turn @game_session.current_scene&.active_player == @player
 json.multiplayer @game_session.multiplayer?

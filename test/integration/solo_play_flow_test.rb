@@ -70,7 +70,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".outcome", count: 0
     assert_select ".highlights", text: /2\s+Dice rolled/
     assert_select "[data-controller=share][data-share-text-value*=?]", "The Stable — Victory"
-    assert_select "[data-share-text-value*=?]", "The Lost Caravan"
+    assert_select "[data-share-text-value*=?]", "A fog-bound fishing village"
     assert_equal %w[system user assistant user assistant user assistant user assistant], game_session.conversation.messages.pluck(:role)
     assert_equal 0, game_session.conversation.cost.total
   end
@@ -198,7 +198,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
 
     get game_session_path(game_session)
     assert_select ".stalled"
-    assert_select ".location h1", text: "The Lost Caravan"
+    assert_select ".location h1", text: "A fog-bound fishing village"
 
     stub_understudy(SCENE_RESPONSE) do
       perform_enqueued_jobs { post game_session_narration_path(game_session) }
@@ -307,7 +307,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
 
     def start_playing
       post game_sessions_solo_path, params: {
-        game_session: { quest: "lost_caravan", tone: "balanced", length: "short" }
+        game_session: { card: "fishing_village missing_child weather_reader", tone: "balanced", length: "short" }
       }
       game_session = users(:sevval).game_sessions.sole
 

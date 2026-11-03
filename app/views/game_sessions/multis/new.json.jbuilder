@@ -1,5 +1,8 @@
-json.quests GameSession::Quest.all do |quest|
-  json.(quest, :key, :title, :hook)
+json.cards @cards do |card|
+  json.key card.key
+  json.place card.place.text
+  json.trouble card.trouble.text
+  json.figure card.figure.text
 end
 
 json.tones GameSession::Tone.all do |tone|

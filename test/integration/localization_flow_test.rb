@@ -55,10 +55,10 @@ class LocalizationFlowTest < ActionDispatch::IntegrationTest
     patch locale_path, params: { locale: "tr" }
 
     get new_game_sessions_solo_path
-    assert_select ".pick__title", text: "Kayıp Kervan"
+    assert_select ".redraw", text: "Yeniden çek"
     assert_select ".segment span", text: "Karanlık"
 
-    post game_sessions_solo_path, params: { game_session: { quest: "lost_caravan", tone: "dark", length: "short" } }
+    post game_sessions_solo_path, params: { game_session: { card: "fishing_village missing_child weather_reader", tone: "dark", length: "short" } }
     game_session = users(:sevval).game_sessions.sole
     assert_equal "tr", game_session.locale
 

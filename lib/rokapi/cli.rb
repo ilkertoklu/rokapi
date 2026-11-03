@@ -29,24 +29,23 @@ module Rokapi
       say "New games will be played in #{locale}."
     end
 
-    desc "quests", "List quests, tones and lengths"
-    def quests
+    desc "cards", "Show a sample hand of fate cards, the tones and the lengths"
+    def cards
       catalog = fetch("/game_sessions/solo/new.json")
 
-      say "QUESTS (--quest)"
-      catalog["quests"].each { |quest| say "  #{quest["key"]} — #{quest["title"]}: #{quest["hook"]}" }
-      say "  surprise — the narrator invents one"
+      say "CARDS (--card): every new game deals a fresh hand and plays the card at that position"
+      catalog["cards"].each.with_index(1) { |card, position| say "  #{position} — #{describe(card)}" }
+      say "  surprise — a card drawn face down"
       say "TONES (--tone): #{catalog["tones"].map { |tone| tone["key"] }.join(", ")}"
       say "LENGTHS (--length): #{catalog["lengths"].map { |length| "#{length["key"]} (#{length["scenes"]} scenes)" }.join(", ")}"
     end
 
     desc "new", "Start a solo game"
-    option :quest, default: "lost_caravan", desc: "Quest key or surprise"
+    option :card, default: "1", desc: "Position of the card to play from a fresh hand, or surprise"
     option :tone, default: "balanced"
     option :length, default: "medium"
     def new
-      response = act(:post, "/game_sessions/solo.json",
-        game_session: { quest: options[:quest] == "surprise" ? "" : options[:quest], tone: options[:tone], length: options[:length] })
+      response = act(:post, "/game_sessions/solo.json", game_session: setup("solo"))
       client.game_id = response.location[%r{/game_sessions/(\d+)}, 1].to_i
 
       say "Game #{client.game_id} created."
@@ -54,12 +53,11 @@ module Rokapi
     end
 
     desc "multi", "Open a multiplayer room and print its code"
-    option :quest, default: "lost_caravan", desc: "Quest key or surprise"
+    option :card, default: "1", desc: "Position of the card to play from a fresh hand, or surprise"
     option :tone, default: "balanced"
     option :length, default: "medium"
     def multi
-      room = act(:post, "/game_sessions/multi.json",
-        game_session: { quest: options[:quest] == "surprise" ? "" : options[:quest], tone: options[:tone], length: options[:length] }).json
+      room = act(:post, "/game_sessions/multi.json", game_session: setup("multi")).json
       client.game_id = room["id"]
 
       say "Room #{room["code"]} open as game #{room["id"]}. Friends join with: bin/rokapi join #{room["code"]} --as FRIEND"
@@ -183,6 +181,25 @@ module Rokapi
 
       def game
         fetch "#{game_path}.json"
+      end
+
+      def setup(mode)
+        { card: card_key(mode), tone: options[:tone], length: options[:length] }
+      end
+
+      def card_key(mode)
+        return "" if options[:card] == "surprise"
+
+        hand = fetch("/game_sessions/#{mode}/new.json")["cards"]
+        card = hand[options[:card].to_i - 1] if options[:card].to_i.positive?
+        raise Thor::Error, "Pick a card from 1 to #{hand.size}, or surprise." unless card
+
+        say "Card: #{describe(card)}"
+        card["key"]
+      end
+
+      def describe(card)
+        card.values_at("place", "trouble", "figure").join(" · ")
       end
 
       def character_catalog

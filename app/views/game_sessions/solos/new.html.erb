@@ -1,4 +1,4 @@
 <% content_for :title, "#{t(".title")} · Rokapi" %>
 
-<%= render "game_sessions/setup", url: game_sessions_solo_path, back: new_game_session_path, title: t(".title"), submit: t(".submit"),
+<%= render "game_sessions/setup", url: game_sessions_solo_path, back: new_game_session_path, title: t(".title"), submit: t(".submit"), cards: @cards,
       estimates: GameSession::Length.all.to_h { [ it.key, it.estimate ] } %>

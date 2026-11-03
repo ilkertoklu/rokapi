@@ -8,7 +8,10 @@ class LocalesTest < ActiveSupport::TestCase
     Character::Stat => %i[ label ],
     GameSession::Tone => %i[ label ],
     GameSession::Length => %i[ label estimate ],
-    GameSession::Quest => %i[ title hook brief secret ]
+    GameSession::Place => %i[ text ],
+    GameSession::Trouble => %i[ text ],
+    GameSession::Figure => %i[ text ],
+    GameSession::Twist => %i[ text ]
   }
 
   test "every key is translated into every language" do

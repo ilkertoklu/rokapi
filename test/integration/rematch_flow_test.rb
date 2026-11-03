@@ -77,7 +77,7 @@ class RematchFlowTest < ActionDispatch::IntegrationTest
     end
 
     def spend_the_month_of(user)
-      game_session = GameSession.create!(creator: user, quest: "lost_caravan")
+      game_session = GameSession.create!(creator: user)
       user.monthly_plan.scenes.times do |index|
         game_session.scenes.create! position: index + 1, active_player: game_session.host
       end

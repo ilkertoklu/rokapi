@@ -92,6 +92,10 @@
       -webkit-line-clamp: 3;
       line-clamp: 3;
     }
+
+    p:has(+ p) {
+      margin-block-end: 0;
+    }
   }
 
   .lobby-quest__meta {

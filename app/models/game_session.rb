@@ -6,7 +6,7 @@ class GameSession < ApplicationRecord
   PARTY_SIZE = 5
   CODE_LENGTH = 4
   JOINABLE_FOR = 24.hours
-  EARLIER_SURPRISES = 5
+  LATEST = 5
 
   belongs_to :creator, class_name: "User", default: -> { Current.user }
   belongs_to :rematch_of, class_name: "GameSession", optional: true
@@ -24,17 +24,21 @@ class GameSession < ApplicationRecord
   enum :outcome, %w[victory defeat].index_by(&:itself), prefix: true
 
   attribute :locale, default: -> { I18n.locale }
+  attribute :twist, default: -> { Twist.keys.sample }
 
-  normalizes :quest, with: ->(key) { key.presence }
-
-  validates :quest, inclusion: { in: Quest.keys }, allow_nil: true
+  validates :place, inclusion: { in: Place.keys }, on: :create
+  validates :trouble, inclusion: { in: Trouble.keys }, on: :create
+  validates :figure, inclusion: { in: Figure.keys }, on: :create
+  validates :twist, inclusion: { in: Twist.keys }, on: :create
   validates :locale, inclusion: { in: I18n.available_locales.map(&:to_s) }
   validates :max_players, inclusion: { in: [ 1, PARTY_SIZE ] }
 
   scope :ongoing, -> { where(ended_at: nil) }
   scope :unstarted, -> { where(started_at: nil) }
   scope :rooms, -> { where.not(code: nil) }
+  scope :latest, -> { order(created_at: :desc).limit(LATEST) }
 
+  before_validation :deal_card, on: :create, unless: :place?
   before_create :assign_code, if: -> { max_players > 1 }
   after_create -> { players.create!(user: creator) }
   after_create_commit -> { rematch_of.broadcast_refresh }, if: :rematch_of
@@ -44,7 +48,16 @@ class GameSession < ApplicationRecord
   end
 
   def title
-    Quest[quest]&.title || super.presence || I18n.t("game_session.surprise_title")
+    super.presence || (surprise? ? I18n.t("game_session.surprise_title") : card.place.text)
+  end
+
+  def card
+    Card.new(place: Place.fetch(place), trouble: Trouble.fetch(trouble), figure: Figure.fetch(figure))
+  end
+
+  def card=(key)
+    self.surprise = key.blank?
+    self.place, self.trouble, self.figure = key.to_s.split
   end
 
   def player_for(user)
@@ -102,7 +115,7 @@ class GameSession < ApplicationRecord
 
   def start_rematch(by:)
     with_lock do
-      rematch || create_rematch!(creator: by, quest: quest, tone: tone, length: length, locale: locale, max_players: max_players).tap do |room|
+      rematch || create_rematch!(creator: by, surprise: surprise, tone: tone, length: length, locale: locale, max_players: max_players).tap do |room|
         party.reject(&:departed?).each { |player| room.players.create!(user: player.user) unless player.user == by }
       end
     end
@@ -114,11 +127,6 @@ class GameSession < ApplicationRecord
 
   def scene_budget
     Length.fetch(length).scenes
-  end
-
-  def earlier_surprises
-    creator.created_game_sessions.where(quest: nil, created_at: ...created_at).where.not(title: [ nil, "" ])
-      .order(created_at: :desc).limit(EARLIER_SURPRISES).pluck(:title)
   end
 
   def verdict
@@ -159,6 +167,10 @@ class GameSession < ApplicationRecord
   end
 
   private
+    def deal_card
+      self.place, self.trouble, self.figure = Card.deal(1, to: creator).first.keys
+    end
+
     def assign_code
       self.code = loop do
         candidate = SecureRandom.random_number(10**CODE_LENGTH).to_s.rjust(CODE_LENGTH, "0")

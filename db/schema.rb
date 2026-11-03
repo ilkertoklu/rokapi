@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_03_200000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_03_210000) do
   create_table "characters", force: :cascade do |t|
     t.string "background", null: false
     t.datetime "created_at", null: false
@@ -44,7 +44,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_200000) do
     t.string "length", null: false
     t.string "locale", default: "en", null: false
     t.string "outcome"
-    t.string "quest"
     t.datetime "started_at"
     t.string "tone", null: false
     t.datetime "updated_at", null: false
@@ -52,6 +51,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_200000) do
     t.integer "max_players", default: 1, null: false
     t.integer "rematch_of_id"
     t.string "title"
+    t.string "place"
+    t.string "trouble"
+    t.string "figure"
+    t.string "twist"
+    t.boolean "surprise", default: false, null: false
     t.index ["code"], name: "index_game_sessions_on_code", unique: true, where: "started_at IS NULL"
     t.index ["creator_id"], name: "index_game_sessions_on_creator_id"
     t.index ["rematch_of_id"], name: "index_game_sessions_on_rematch_of_id", unique: true

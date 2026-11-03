@@ -5,7 +5,7 @@ class GameSessionTest < ActiveSupport::TestCase
   include ActiveJob::TestHelper, Turbo::Broadcastable::TestHelper
 
   test "creating a session enrolls the creator" do
-    game_session = GameSession.create!(creator: users(:ilker), quest: "sunken_village")
+    game_session = GameSession.create!(creator: users(:ilker), card: "mining_town dry_well indebted_smith")
 
     assert_equal users(:ilker), game_session.players.sole.user
     assert_equal game_session.players.sole, game_session.host
@@ -13,15 +13,50 @@ class GameSessionTest < ActiveSupport::TestCase
   end
 
   test "a new session keeps the language it was started in" do
-    game_session = I18n.with_locale(:tr) { GameSession.create!(creator: users(:ilker), quest: "sunken_village") }
+    game_session = I18n.with_locale(:tr) { GameSession.create!(creator: users(:ilker), card: "mining_town dry_well indebted_smith") }
 
     assert_equal "tr", game_session.locale
     assert_not GameSession.new(creator: users(:ilker), locale: "xx").valid?
   end
 
-  test "title falls back for surprise adventures" do
-    assert_equal "The Lost Caravan", game_sessions(:ilker_solo).title
-    assert_equal "Surprise adventure", GameSession.new.title
+  test "title falls back on the place, or on surprise when the card is face down" do
+    assert_equal "A fog-bound fishing village", game_sessions(:ilker_solo).title
+    assert_equal "Surprise adventure", GameSession.new(surprise: true).title
+  end
+
+  test "a picked card is played as it was shown, with a twist drawn on the server" do
+    game_session = GameSession.create!(creator: users(:ilker), card: "salt_caves silent_bell old_captain")
+
+    assert_equal %w[ salt_caves silent_bell old_captain ], game_session.card.keys
+    assert_not game_session.surprise?
+    assert_includes GameSession::Twist.keys, game_session.twist
+  end
+
+  test "a surprise draws a card the player does not see" do
+    game_session = GameSession.create!(creator: users(:ilker), card: "")
+
+    assert game_session.surprise?
+    assert_kind_of GameSession::Card, game_session.card
+  end
+
+  test "a card made of unknown keys is refused" do
+    assert_not GameSession.new(creator: users(:ilker), card: "nowhere dry_well indebted_smith").valid?
+    assert_not GameSession.new(creator: users(:ilker), card: "mining_town dry_well").valid?
+  end
+
+  test "a hand never repeats a place or a trouble, and leaves out the creator's latest ones" do
+    latest = GameSession::Place.all.first(5).zip(GameSession::Trouble.all.first(5)).map do |place, trouble|
+      GameSession.create!(creator: users(:sevval), card: "#{place.key} #{trouble.key} young_guard")
+    end
+
+    20.times do
+      hand = GameSession::Card.deal(to: users(:sevval))
+
+      assert_equal 3, hand.map(&:place).uniq.size
+      assert_equal 3, hand.map(&:trouble).uniq.size
+      assert_empty hand.map { it.place.key } & latest.map(&:place)
+      assert_empty hand.map { it.trouble.key } & latest.map(&:trouble)
+    end
   end
 
   test "starts and calls the narrator once every player has a character" do
@@ -71,7 +106,7 @@ class GameSessionTest < ActiveSupport::TestCase
   end
 
   test "a room gets a four digit code and solo gets none" do
-    room = GameSession.create!(creator: users(:ilker), quest: "sunken_village", max_players: GameSession::PARTY_SIZE)
+    room = GameSession.create!(creator: users(:ilker), card: "mining_town dry_well indebted_smith", max_players: GameSession::PARTY_SIZE)
 
     assert_match(/\A\d{4}\z/, room.code)
     assert room.multiplayer?
@@ -205,7 +240,8 @@ class GameSessionTest < ActiveSupport::TestCase
     assert_not rematch.started?
     assert rematch.lobby?
     assert_not_equal room.code, rematch.code
-    assert_equal room.slice(:quest, :tone, :length, :locale, :max_players), rematch.slice(:quest, :tone, :length, :locale, :max_players)
+    assert_equal room.slice(:surprise, :tone, :length, :locale, :max_players), rematch.slice(:surprise, :tone, :length, :locale, :max_players)
+    assert_not_equal room.place, rematch.place, "the rematch draws a fresh card"
     assert_equal users(:deniz), rematch.host.user
     assert_equal [ users(:deniz), users(:ilker), users(:sevval) ], rematch.party.map(&:user)
     assert rematch.players.none?(&:ready?)
@@ -232,7 +268,7 @@ class GameSessionTest < ActiveSupport::TestCase
 
   private
     def verdict_after(*values)
-      game_session = GameSession.create!(creator: users(:ilker), quest: "lost_caravan")
+      game_session = GameSession.create!(creator: users(:ilker), card: "fishing_village missing_child weather_reader")
 
       values.each.with_index(1) do |value, position|
         scene = game_session.scenes.create!(position: position, active_player: game_session.host, state: :played)
@@ -250,7 +286,7 @@ class GameSessionTest < ActiveSupport::TestCase
     end
 
     def create_room
-      GameSession.create!(creator: users(:deniz), quest: "sunken_village", max_players: GameSession::PARTY_SIZE)
+      GameSession.create!(creator: users(:deniz), card: "mining_town dry_well indebted_smith", max_players: GameSession::PARTY_SIZE)
     end
 
     def character_attributes

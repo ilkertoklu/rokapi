@@ -19,7 +19,7 @@ class User::AllowanceTest < ActiveSupport::TestCase
 
   test "each scene played spends the allowance until the wall" do
     user = users(:sevval)
-    game_session = GameSession.create!(creator: user, quest: "lost_caravan")
+    game_session = GameSession.create!(creator: user)
 
     play_scenes game_session, 9
     assert_equal 10, user.usage_left_percentage
@@ -35,7 +35,7 @@ class User::AllowanceTest < ActiveSupport::TestCase
 
   test "only sessions the user created spend, joining never does" do
     host, guest = users(:deniz), users(:sevval)
-    game_session = GameSession.create!(creator: host, quest: "lost_caravan")
+    game_session = GameSession.create!(creator: host)
     game_session.players.create!(user: guest)
 
     play_scenes game_session, 10
@@ -48,7 +48,7 @@ class User::AllowanceTest < ActiveSupport::TestCase
     user = users(:sevval)
     subscribe user, "standard"
 
-    play_scenes GameSession.create!(creator: user, quest: "lost_caravan"), 10
+    play_scenes GameSession.create!(creator: user), 10
 
     assert_equal 84, user.usage_left_percentage
   end
@@ -57,7 +57,7 @@ class User::AllowanceTest < ActiveSupport::TestCase
     user = travel_to(Time.zone.local(2026, 1, 31, 12)) { User.create!(email: "aysonu@example.com") }
 
     travel_to Time.zone.local(2026, 3, 10) do
-      play_scenes GameSession.create!(creator: user, quest: "lost_caravan"), 10
+      play_scenes GameSession.create!(creator: user), 10
 
       assert user.out_of_usage?
       assert_equal Time.zone.local(2026, 3, 31, 12), user.usage_refills_at
@@ -69,7 +69,7 @@ class User::AllowanceTest < ActiveSupport::TestCase
 
   test "scenes from before the current month no longer count" do
     user = travel_to(Time.zone.local(2026, 1, 10)) { User.create!(email: "eski@example.com") }
-    game_session = travel_to(Time.zone.local(2026, 2, 1)) { GameSession.create!(creator: user, quest: "lost_caravan") }
+    game_session = travel_to(Time.zone.local(2026, 2, 1)) { GameSession.create!(creator: user) }
 
     travel_to(Time.zone.local(2026, 2, 9)) { play_scenes game_session, 8 }
     travel_to(Time.zone.local(2026, 2, 10)) { play_scenes game_session, 1 }
@@ -82,7 +82,7 @@ class User::AllowanceTest < ActiveSupport::TestCase
   test "a subscription fills the usage at once and refills on renewal" do
     user = travel_to(Time.zone.local(2026, 1, 10)) { User.create!(email: "abone@example.com") }
 
-    travel_to(Time.zone.local(2026, 2, 2)) { play_scenes GameSession.create!(creator: user, quest: "lost_caravan"), 10 }
+    travel_to(Time.zone.local(2026, 2, 2)) { play_scenes GameSession.create!(creator: user), 10 }
 
     travel_to Time.zone.local(2026, 2, 3, 9) do
       assert user.out_of_usage?

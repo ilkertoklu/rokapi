@@ -107,7 +107,7 @@ class Narrator < RubyLLM::Agent
 
     def write_scene(scene, prose, data)
       ApplicationRecord.transaction do
-        game_session.update! title: data["adventure"] if scene.first? && game_session.quest.nil? && data["adventure"].present?
+        game_session.update! title: data["adventure"] if scene.first? && data["adventure"].present?
         scene.write narration: prose, effects: data, title: data["title"].presence, location: data["location"].presence, state: :choosing
 
         data["choices"].each do |choice|

@@ -7,14 +7,16 @@ class LobbyFlowTest < ActionDispatch::IntegrationTest
     @room = game_sessions(:ilker_room)
   end
 
-  test "the lobby shows the room, the quest and who is ready" do
+  test "the lobby shows the room, the card and who is ready" do
     sign_in_as users(:deniz)
     ready_up players(:ilker_room_host)
 
     get game_session_path(@room)
     assert_response :success
     assert_select ".room-code__digits", text: "4821"
-    assert_select ".lobby-quest h2", text: "The Lost Caravan"
+    assert_select ".lobby-quest h2", text: "A fog-bound fishing village"
+    assert_select ".lobby-quest p", text: "A child went out at dusk and has not come back"
+    assert_select ".lobby-quest p", text: "An old weather-reader who pleases no one"
     assert_select ".lobby-quest__meta", text: "5 players · ~30 min · balanced tone"
     assert_select ".lobby-players__head span", text: "2 / 5"
 
@@ -42,7 +44,7 @@ class LobbyFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "a guest who just arrived is marked as just joined, the host never is" do
-    room = GameSession.create!(creator: users(:ilker), quest: "lost_caravan", max_players: GameSession::PARTY_SIZE)
+    room = GameSession.create!(creator: users(:ilker), card: "fishing_village missing_child weather_reader", max_players: GameSession::PARTY_SIZE)
     room.join users(:deniz)
     sign_in_as users(:sevval)
     room.join users(:sevval)

@@ -14,11 +14,12 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
     assert_select "a[href=?]", new_game_sessions_solo_path
 
     get new_game_sessions_solo_path
-    assert_select ".pick__title", text: "The Lost Caravan"
+    assert_select "input[type=radio][name=?]", "game_session[card]", 4
     assert_select ".pick__title", text: "Surprise"
+    assert_select "a.redraw[href=?]", new_game_sessions_solo_path, text: "Draw again"
 
     post game_sessions_solo_path, params: {
-      game_session: { quest: "lost_caravan", tone: "dark", length: "short" }
+      game_session: { card: "fishing_village missing_child weather_reader", tone: "dark", length: "short" }
     }
     game_session = users(:sevval).game_sessions.sole
     assert_redirected_to new_game_session_character_path(game_session)
@@ -35,17 +36,18 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to game_session_path(game_session)
 
     follow_redirect!
-    assert_select ".location h1", text: "The Lost Caravan"
+    assert_select ".location h1", text: "A fog-bound fishing village"
     assert_select ".writing", text: /The narrator is getting ready/
     assert game_session.reload.started?
     assert game_session.scenes.sole.narrating?
   end
 
-  test "surprise adventures have no quest record" do
-    post game_sessions_solo_path, params: { game_session: { quest: "", tone: "fun", length: "medium" } }
+  test "a surprise is a card drawn face down" do
+    post game_sessions_solo_path, params: { game_session: { card: "", tone: "fun", length: "medium" } }
 
     game_session = users(:sevval).game_sessions.sole
-    assert_nil game_session.quest
+    assert game_session.surprise?
+    assert_includes GameSession::Place.keys, game_session.place
     assert_equal "Surprise adventure", game_session.title
   end
 
@@ -61,12 +63,12 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "tampered setup values are refused" do
-    post game_sessions_solo_path, params: { game_session: { quest: "", tone: "hacked", length: "short" } }
+    post game_sessions_solo_path, params: { game_session: { card: "", tone: "hacked", length: "short" } }
 
     assert_redirected_to new_game_sessions_solo_path
     assert_equal "That setup is not valid. Check your picks.", flash[:alert]
 
-    post game_sessions_solo_path, params: { game_session: { quest: "hacked", tone: "balanced", length: "short" } }
+    post game_sessions_solo_path, params: { game_session: { card: "hacked", tone: "balanced", length: "short" } }
 
     assert_redirected_to new_game_sessions_solo_path
     assert_empty users(:sevval).game_sessions
@@ -117,7 +119,7 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
   private
     def create_solo_session
       post game_sessions_solo_path, params: {
-        game_session: { quest: "lost_caravan", tone: "balanced", length: "short" }
+        game_session: { card: "fishing_village missing_child weather_reader", tone: "balanced", length: "short" }
       }
       users(:sevval).game_sessions.sole
     end

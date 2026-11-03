@@ -179,6 +179,14 @@
       radial-gradient(circle, var(--color-accent) calc(var(--pick-dot) - .75px), transparent var(--pick-dot));
   }
 
+  .redraw {
+    align-self: center;
+    padding: .5rem 1rem;
+    color: var(--color-accent-bright);
+    font: 600 .875rem var(--font-ui);
+    text-decoration: none;
+  }
+
   .profile {
     position: absolute;
     inset-block-start: calc(1rem + env(safe-area-inset-top));

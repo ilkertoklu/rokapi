@@ -13,6 +13,8 @@ class SoloSetupTest < ApplicationSystemTestCase
 
     click_on "Start a new adventure"
     click_on "Solo"
+    click_on "Draw again"
+    assert_text "Surprise"
     click_on "Create your character"
 
     choose "Mage", allow_label_click: true

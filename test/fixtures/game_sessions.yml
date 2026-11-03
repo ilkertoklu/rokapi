@@ -1,24 +1,36 @@
 ilker_solo:
-  quest: lost_caravan
+  place: fishing_village
+  trouble: missing_child
+  figure: weather_reader
+  twist: asker_is_cause
   creator: ilker
   tone: balanced
   length: short
 
 ilker_without_character:
-  quest: sunken_village
+  place: mining_town
+  trouble: dry_well
+  figure: indebted_smith
+  twist: villain_protects
   creator: ilker
   tone: balanced
   length: medium
 
 deniz_solo:
-  quest: lost_caravan
+  place: fishing_village
+  trouble: missing_child
+  figure: weather_reader
+  twist: asker_is_cause
   creator: deniz
   tone: balanced
   length: short
   started_at: <%= 1.hour.ago %>
 
 ilker_room:
-  quest: lost_caravan
+  place: fishing_village
+  trouble: missing_child
+  figure: weather_reader
+  twist: asker_is_cause
   creator: ilker
   tone: balanced
   length: short

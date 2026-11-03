@@ -19,14 +19,14 @@ class RoomFlowTest < ActionDispatch::IntegrationTest
     assert_select "input[type=submit][value=?]", "Create room"
     assert_select ".segment small", text: "~90 min"
 
-    post game_sessions_multi_path, params: { game_session: { quest: "sunken_village", tone: "dark", length: "short" } }
+    post game_sessions_multi_path, params: { game_session: { card: "mining_town dry_well indebted_smith", tone: "dark", length: "short" } }
 
     room = users(:sevval).game_sessions.sole
     assert_redirected_to game_session_path(room)
     assert room.multiplayer?
     assert_match(/\A\d{4}\z/, room.code)
     assert_equal GameSession::PARTY_SIZE, room.max_players
-    assert_equal [ "sunken_village", "dark", "short" ], [ room.quest, room.tone, room.length ]
+    assert_equal [ %w[ mining_town dry_well indebted_smith ], "dark", "short" ], [ room.card.keys, room.tone, room.length ]
     assert_equal room.host, room.players.sole
     assert_not room.started?
   end
@@ -103,7 +103,7 @@ class RoomFlowTest < ActionDispatch::IntegrationTest
   test "creating and joining as JSON" do
     sign_in_as users(:sevval)
 
-    post game_sessions_multi_path(format: :json), params: { game_session: { quest: "lost_caravan", tone: "balanced", length: "short" } }, as: :json
+    post game_sessions_multi_path(format: :json), params: { game_session: { card: "fishing_village missing_child weather_reader", tone: "balanced", length: "short" } }, as: :json
     assert_response :created
     room = GameSession.find(response.parsed_body["id"])
     assert_equal room.code, response.parsed_body["code"]

@@ -180,30 +180,74 @@ tr:
       long:
         label: Uzun
         estimate: "~60 dk"
-    quest:
-      lost_caravan:
-        title: Kayıp Kervan
-        hook: Boranda kaybolan tuz kervanının izi.
-        brief: >-
-          Akçabük köyünün kış tuzunu getiren kervan üç gündür kayıp ve boran bir haftaya kalmadan
-          geçidi kapatacak. Rota Akçabük'ten Boranlı Geçit'e uzanıyor: izler, terk edilmiş konaklar,
-          asma köprü. Tuz gelmezse Akçabük aç kalır.
-        secret: >-
-          Kervanbaşı Orhan tuzu dağ obasına sattı ve bunu gizlemek için sahte bir pusu kurdu; karşı
-          çıkan sürücüler konağın mahzeninde tutuluyor, obanın avcıları hâlâ geçidi gözlüyor.
-          Kahramanı yola çıkaran köy büyüğü bildiğinden azını söylüyor. Para gelmezse oba aç kalır.
-      sunken_village:
-        title: Gölün Sırrı
-        hook: Suyun altında kalmış eski bir köy.
-        brief: >-
-          Kuraklıkta çekilen göl, yıllar önce sular altında kalan köyü ortaya çıkardı; geceleri
-          gölden çan sesi duyduğunu söyleyenler var.
-        secret: >-
-          Köy kazayla batmadı; değirmenci Selim, köy açlık çekerken ambarı çürümeye bıraktığının
-          kanıtını gömmek için bendi açtı ve bugün hâlâ hayatta, kıyıda yaşlı ve saygın, balıkçının
-          oğullarına para verip insanları harabelerden uzak tutuyor. Çanı, son sağ kalanın torunu
-          çalıyor; adların yüksek sesle okunmasını istiyor. Her şeyi kanıtlayan defter su basmış
-          değirmende.
+    place:
+      fishing_village:
+        text: Sisli bir balıkçı köyü
+      mining_town:
+        text: Dağın dibinde bir maden kasabası
+      river_ferry:
+        text: Geniş bir ırmakta sal geçidi
+      steppe_camp:
+        text: Açık bozkırda bir çoban obası
+      charcoal_camp:
+        text: Ormanın derinliğinde bir kömürcü ocağı
+      border_fort:
+        text: Yolun bittiği yerde bir sınır kalesi
+      city_docks:
+        text: Surlu bir şehrin iskelesi
+      salt_caves:
+        text: Tepelerin altında tuz mağaraları
+    trouble:
+      missing_child:
+        text: Bir çocuk akşamüstü dışarı çıktı ve dönmedi
+      dry_well:
+        text: Tek kuyu su vermez oldu
+      riders_coming:
+        text: Sırtta atlılar görüldü; yeni aya kadar burada olurlar
+      stolen_seal:
+        text: Barışı ayakta tutan mühür çalındı
+      broken_oath:
+        text: Bir ant bozuldu; öbür taraf hesap sormaya geliyor
+      called_debt:
+        text: Eski bir borç istendi; hafta dolmadan ödenmesi gerek
+      sleeping_sickness:
+        text: Bir hastalık insanları uykuya yatırıyor ve uyanan olmuyor
+      silent_bell:
+        text: Tehlikeyi haber veren çan sustu
+    figure:
+      weather_reader:
+        text: Havayı okuyan, kimseye yaranamayan yaşlı biri
+      young_guard:
+        text: Terfi bekleyen genç bir nöbetçi
+      indebted_smith:
+        text: Borcunu ödeyemeyen bir demirci
+      unwilling_heir:
+        text: Mirası istemeyen bir varis
+      ambitious_clerk:
+        text: Ustasının yerine göz diken bir kâtip
+      path_child:
+        text: Her patikayı bilen, bir yuva isteyen bir çocuk
+      old_captain:
+        text: Son bir kez emir vermek isteyen emekli bir kaptan
+      doubted_healer:
+        text: Kimsenin inanmadığı bir şifacı
+    twist:
+      asker_is_cause:
+        text: yardım isteyen, derdin sebebi
+      villain_protects:
+        text: kötü sanılan aslında birini koruyor
+      left_willingly:
+        text: kayıp olan kendi isteğiyle gitti
+      both_hide_same:
+        text: iki taraf da aynı şeyi saklıyor
+      cover_for_worse:
+        text: dert, daha kötü bir şeyin örtüsü
+      helper_profits:
+        text: en çok yardım eden, işten en çok kazanan
+      old_wrong:
+        text: hepsi çok önce yapılmış bir haksızlığın karşılığı
+      no_villain:
+        text: kimse kötülük istemedi; bir iyilik ters gitti
 
   player:
     departed: Ayrılan oyuncu
@@ -303,7 +347,8 @@ tr:
     setup:
       quest: Görev
       surprise: Sürpriz
-      surprise_text: Anlatıcı bilinmeyen bir dünya kursun.
+      draw_again: Yeniden çek
+      surprise_text: "Kapalı çekilmiş bir kart: ne olduğunu oynarken öğrenirsin."
       tone: Ton
       length: Uzunluk
     solos:

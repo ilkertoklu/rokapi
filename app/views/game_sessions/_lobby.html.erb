@@ -13,7 +13,12 @@
   <section class="lobby-quest">
     <span class="overline"><%= t(".quest") %></span>
     <h2><%= game_session.title %></h2>
-    <p><%= GameSession::Quest[game_session.quest]&.brief || t("game_sessions.setup.surprise_text") %></p>
+    <% if game_session.surprise? %>
+      <p><%= t("game_sessions.setup.surprise_text") %></p>
+    <% else %>
+      <p><%= game_session.card.trouble.text %></p>
+      <p><%= game_session.card.figure.text %></p>
+    <% end %>
     <span class="overline lobby-quest__meta"><%= lobby_meta(game_session) %></span>
   </section>
 

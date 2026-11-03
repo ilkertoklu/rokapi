@@ -10,10 +10,11 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
   test "playing a solo adventure from setup to victory as JSON" do
     get new_game_sessions_solo_path, as: :json
     assert_response :success
-    assert_equal %w[lost_caravan sunken_village], response.parsed_body["quests"].pluck("key")
+    assert_equal 3, response.parsed_body["cards"].size
     assert_equal 7, response.parsed_body["lengths"].find { it["key"] == "short" }["scenes"]
+    card = response.parsed_body["cards"].second
 
-    post game_sessions_solo_path, params: { game_session: { quest: "lost_caravan", tone: "balanced", length: "short" } }, as: :json
+    post game_sessions_solo_path, params: { game_session: { card: card["key"], tone: "balanced", length: "short" } }, as: :json
     assert_response :created
     game_session = users(:sevval).game_sessions.sole
     assert_equal game_session_url(game_session), response.location
@@ -24,6 +25,7 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
     assert_equal 14, response.parsed_body["klasses"].find { it["key"] == "warrior" }["base_stats"]["strength"]
 
     get game_session_path(game_session), as: :json
+    assert_equal card.slice("place", "trouble", "figure"), response.parsed_body["card"]
     assert_nil response.parsed_body["character"]
     assert_not response.parsed_body["started"]
 
@@ -96,7 +98,7 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "an invalid character is rejected with its errors" do
-    post game_sessions_solo_path, params: { game_session: { quest: "lost_caravan", tone: "balanced", length: "short" } }, as: :json
+    post game_sessions_solo_path, params: { game_session: { card: "fishing_village missing_child weather_reader", tone: "balanced", length: "short" } }, as: :json
     game_session = users(:sevval).game_sessions.sole
 
     post game_session_character_path(game_session), params: { character: warrior.merge(stats: { strength: 18 }) }, as: :json
@@ -105,9 +107,9 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
   end
 
   test "an invalid game is rejected with its errors" do
-    post game_sessions_solo_path, params: { game_session: { quest: "nowhere", tone: "balanced", length: "short" } }, as: :json
+    post game_sessions_solo_path, params: { game_session: { card: "nowhere", tone: "balanced", length: "short" } }, as: :json
     assert_response :unprocessable_entity
-    assert response.parsed_body["quest"].present?
+    assert response.parsed_body["place"].present?
   end
 
   test "someone else's game is not found" do
@@ -136,7 +138,7 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
     end
 
     def play_to_choices
-      post game_sessions_solo_path, params: { game_session: { quest: "lost_caravan", tone: "balanced", length: "short" } }, as: :json
+      post game_sessions_solo_path, params: { game_session: { card: "fishing_village missing_child weather_reader", tone: "balanced", length: "short" } }, as: :json
       game_session = users(:sevval).game_sessions.sole
 
       stub_understudy(SCENE_RESPONSE) do

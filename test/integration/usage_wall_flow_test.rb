@@ -23,7 +23,7 @@ class UsageWallFlowTest < ActionDispatch::IntegrationTest
     assert_select "form", count: 0
 
     assert_no_difference -> { GameSession.count } do
-      post game_sessions_solo_path, params: { game_session: { quest: "lost_caravan", tone: "balanced", length: "short" } }
+      post game_sessions_solo_path, params: { game_session: { card: "fishing_village missing_child weather_reader", tone: "balanced", length: "short" } }
     end
     assert_redirected_to new_game_sessions_solo_path
   end
@@ -35,7 +35,7 @@ class UsageWallFlowTest < ActionDispatch::IntegrationTest
     assert_select "h1", text: "Your monthly usage is spent"
 
     assert_no_difference -> { GameSession.count } do
-      post game_sessions_multi_path, params: { game_session: { quest: "lost_caravan", tone: "balanced", length: "short" } }
+      post game_sessions_multi_path, params: { game_session: { card: "fishing_village missing_child weather_reader", tone: "balanced", length: "short" } }
     end
     assert_redirected_to new_game_sessions_multi_path
   end
@@ -44,7 +44,7 @@ class UsageWallFlowTest < ActionDispatch::IntegrationTest
     spend_the_month_of users(:sevval)
 
     assert_no_difference -> { GameSession.count } do
-      post game_sessions_solo_path, params: { game_session: { quest: "lost_caravan", tone: "balanced", length: "short" } }, as: :json
+      post game_sessions_solo_path, params: { game_session: { card: "fishing_village missing_child weather_reader", tone: "balanced", length: "short" } }, as: :json
     end
 
     assert_response :payment_required
@@ -62,7 +62,7 @@ class UsageWallFlowTest < ActionDispatch::IntegrationTest
 
   private
     def spend_the_month_of(user)
-      GameSession.create!(creator: user, quest: "lost_caravan").tap do |game_session|
+      GameSession.create!(creator: user).tap do |game_session|
         user.monthly_plan.scenes.times do |index|
           game_session.scenes.create! position: index + 1, active_player: game_session.host
         end

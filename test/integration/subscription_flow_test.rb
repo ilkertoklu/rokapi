@@ -130,7 +130,7 @@ class SubscriptionFlowTest < ActionDispatch::IntegrationTest
 
   private
     def create_scene_for(user, index)
-      game_session = user.created_game_sessions.first || GameSession.create!(creator: user, quest: "lost_caravan")
+      game_session = user.created_game_sessions.first || GameSession.create!(creator: user)
       game_session.scenes.create! position: index + 1, active_player: game_session.host
     end
 end

@@ -5,6 +5,7 @@ class GameSessions::SolosController < ApplicationController
     with: -> { redirect_to root_path, alert: t(".rate_limited") }
 
   def new
+    @cards = GameSession::Card.deal(to: Current.user)
   end
 
   def create
@@ -23,6 +24,6 @@ class GameSessions::SolosController < ApplicationController
 
   private
     def game_session_params
-      params.expect(game_session: [ :quest, :tone, :length ])
+      params.expect(game_session: [ :card, :tone, :length ])
     end
 end

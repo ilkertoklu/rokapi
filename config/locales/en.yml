@@ -161,32 +161,74 @@ en:
       long:
         label: Long
         estimate: "~60 min"
-    quest:
-      lost_caravan:
-        title: The Lost Caravan
-        hook: The trail of a salt caravan lost in a blizzard.
-        brief: >-
-          The caravan carrying Whitebend's winter salt has been missing for three days, and the
-          blizzard will close the pass within the week. The route runs from Whitebend to Blizzard
-          Pass: the tracks, the abandoned lodges, the rope bridge. Whitebend starves without the
-          salt.
-        secret: >-
-          The caravan master, Orhan, sold the salt to the mountain clan and staged an ambush to hide
-          it; the drivers who refused are held in the lodge cellar, and the clan's hunters still
-          watch the pass. The village elder who sent the hero knows more than she says. The clan
-          starves without the money.
-      sunken_village:
-        title: The Lake's Secret
-        hook: An old village left under the water.
-        brief: >-
-          The lake has drawn back in the drought and uncovered the village that went under years
-          ago, and some claim they hear its bell at night.
-        secret: >-
-          The village did not drown by accident; the miller, Selim, opened the dam to bury proof
-          that he had let the granary rot while the village starved, and he is still alive, old and
-          respected on the shore, paying the fisherman's sons to keep people out of the ruins. The
-          bell is rung by the last survivor's grandchild, who wants the names read aloud. The ledger
-          that proves it lies in the flooded mill.
+    place:
+      fishing_village:
+        text: A fog-bound fishing village
+      mining_town:
+        text: A mining town under the mountain
+      river_ferry:
+        text: A ferry crossing on a wide river
+      steppe_camp:
+        text: A herders' camp on the open steppe
+      charcoal_camp:
+        text: A charcoal burners' camp deep in the forest
+      border_fort:
+        text: A border fort at the end of the road
+      city_docks:
+        text: The docks of a walled city
+      salt_caves:
+        text: Salt caves beneath the hills
+    trouble:
+      missing_child:
+        text: A child went out at dusk and has not come back
+      dry_well:
+        text: The only well has stopped giving water
+      riders_coming:
+        text: Riders were seen on the ridge, and they will be here by the new moon
+      stolen_seal:
+        text: The seal that keeps the peace has been stolen
+      broken_oath:
+        text: A sworn oath was broken, and the other side is coming to settle it
+      called_debt:
+        text: An old debt has been called in, and it must be paid within the week
+      sleeping_sickness:
+        text: A sickness puts people to sleep, and they do not wake
+      silent_bell:
+        text: The bell that warns of danger has gone silent
+    figure:
+      weather_reader:
+        text: An old weather-reader who pleases no one
+      young_guard:
+        text: A young guard waiting for a promotion
+      indebted_smith:
+        text: A smith who cannot pay a debt
+      unwilling_heir:
+        text: An heir who wants nothing to do with the inheritance
+      ambitious_clerk:
+        text: A clerk who wants the master's seat
+      path_child:
+        text: A child who knows every path and wants a home
+      old_captain:
+        text: A retired captain who wants one last command
+      doubted_healer:
+        text: A healer who wants to be believed
+    twist:
+      asker_is_cause:
+        text: the one asking for help is the cause
+      villain_protects:
+        text: the one thought wicked is protecting someone
+      left_willingly:
+        text: the one who is missing left of their own will
+      both_hide_same:
+        text: both sides are hiding the same thing
+      cover_for_worse:
+        text: the trouble is a cover for something worse
+      helper_profits:
+        text: the one who helps most gains the most from it
+      old_wrong:
+        text: it all pays back a wrong done long ago
+      no_villain:
+        text: no one meant harm; a kindness went wrong
 
   player:
     departed: Departed player
@@ -286,7 +328,8 @@ en:
     setup:
       quest: Quest
       surprise: Surprise
-      surprise_text: Let the narrator build an unknown world.
+      draw_again: Draw again
+      surprise_text: "A card drawn face down: you find out as you play."
       tone: Tone
       length: Length
     solos:

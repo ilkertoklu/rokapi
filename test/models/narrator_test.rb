@@ -244,7 +244,7 @@ class NarratorTest < ActiveSupport::TestCase
     first = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
     assert_includes first["system"], "The story runs 7 scenes."
-    assert_includes first["system"], "The quest: The caravan carrying Whitebend's winter salt"
+    assert_includes first["system"], "- The place: A fog-bound fishing village"
     assert_includes first["system"], "Warrior"
     assert_equal "Scene 1 of 7, the story's first half, Ilker's turn.\n#{sheet}", first["prompt"], "the first turn has no story before it"
 
@@ -292,9 +292,12 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
     assert_includes request["system"], "Tell the story in English"
-    assert_equal <<~GAME, request["system"][/^The quest: .*?\n(?=\n)/m]
-      The quest: The caravan carrying Whitebend's winter salt has been missing for three days, and the blizzard will close the pass within the week. The route runs from Whitebend to Blizzard Pass: the tracks, the abandoned lodges, the rope bridge. Whitebend starves without the salt.
-      What really happened, which only you know: The caravan master, Orhan, sold the salt to the mountain clan and staged an ambush to hide it; the drivers who refused are held in the lodge cellar, and the clan's hunters still watch the pass. The village elder who sent the hero knows more than she says. The clan starves without the money.
+    assert_equal <<~GAME, request["system"][/^The quest, .*?\n(?=\n)/m]
+      The quest, drawn from a fate card; the names and the details are yours to give:
+      - The place: A fog-bound fishing village
+      - The trouble: A child went out at dusk and has not come back
+      - At the heart of it: An old weather-reader who pleases no one
+      What really happened, which only you know, takes this shape: the one asking for help is the cause. Settle who did what and why before the first scene.
       The tone: balanced. Wonder and danger in equal measure.
       The story runs 7 scenes.
       The hero:
@@ -307,8 +310,8 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
     assert_includes request["system"], "sade, doğal, gündelik Türkçeyle"
-    assert_includes request["system"], "Görev: Akçabük köyünün kış tuzunu getiren kervan üç gündür kayıp"
-    assert_includes request["system"], "Aslında olan, yalnızca senin bildiğin: Kervanbaşı Orhan tuzu dağ obasına sattı"
+    assert_includes request["system"], "- Yer: Sisli bir balıkçı köyü\n- Dert: Bir çocuk akşamüstü dışarı çıktı ve dönmedi\n"
+    assert_includes request["system"], "Aslında olan, yalnızca senin bildiğin, şu biçimde: yardım isteyen, derdin sebebi."
     assert_includes request["system"], "- Ilker: İnsan, Savaşçı (Ön safta dövüşür;"
     assert_includes request["system"], "Geçmişi: Asker. Can 31. Güç 16, Çeviklik 11,"
     assert_includes request["system"], "Yola çıkarken yanında: Uzun kılıç; Yuvarlak kalkan."
@@ -316,8 +319,8 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal "Scene 1 of 7, the story's first half, Ilker's turn.\n#{sheet}", request["prompt"]
   end
 
-  test "the surprise adventure takes its name from the first scene" do
-    @game_session.update! quest: nil
+  test "the adventure takes its name from the first scene" do
+    @game_session.update! surprise: true
     assert_equal "Surprise adventure", @game_session.title
 
     named = stub_understudy(SCENE_RESPONSE.sub('{"title"', '{"adventure": "Blizzard Salt", "title"')) { narrate }.sole
@@ -325,23 +328,6 @@ class NarratorTest < ActiveSupport::TestCase
     assert_includes named["system"], "names the adventure"
     assert_equal "Blizzard Salt", @game_session.reload.title
     assert_equal "The Old Inn", @game_session.current_scene.title
-  end
-
-  test "a surprise steers clear of the player's earlier surprises" do
-    @game_session.update! quest: nil
-    users(:ilker).created_game_sessions.create! quest: nil, title: "Ay Kuyuya Düştü", created_at: 1.day.ago
-    users(:ilker).created_game_sessions.create! quest: nil, title: "Later Than This One", created_at: 1.day.from_now
-
-    request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
-
-    assert_includes request["system"], "This player's earlier surprises were Ay Kuyuya Düştü; take them somewhere else."
-  end
-
-  test "a ready-made quest keeps its own name" do
-    request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
-
-    assert_not_includes request["system"], "names the adventure"
-    assert_equal "The Lost Caravan", @game_session.reload.title
   end
 
   test "a roll that takes the hero's last health ends the story in defeat" do
