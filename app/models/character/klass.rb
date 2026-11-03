@@ -18,7 +18,7 @@ class Character::Klass < Data.define(:key, :base_hp, :base_stats, :gear)
         gear: [ { key: "oak_staff", kind: "passive" }, { key: "spellbook", kind: "passive" } ].freeze),
     new(key: "healer", base_hp: 22,
         base_stats: { "strength" => 10, "agility" => 9, "constitution" => 13, "intelligence" => 12, "wisdom" => 15, "charisma" => 11 }.freeze,
-        gear: [ { key: "torch", kind: "passive" }, { key: "healing_potion", kind: "instant", hp_effect: 7, uses_left: 1 } ].freeze),
+        gear: [ { key: "healers_kit", kind: "passive" }, { key: "healing_potion", kind: "instant", hp_effect: 7, uses_left: 1 } ].freeze),
     new(key: "bard", base_hp: 20,
         base_stats: { "strength" => 9, "agility" => 12, "constitution" => 10, "intelligence" => 12, "wisdom" => 12, "charisma" => 15 }.freeze,
         gear: [ { key: "lute", kind: "passive" } ].freeze)

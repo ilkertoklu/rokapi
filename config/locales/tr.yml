@@ -86,7 +86,7 @@ tr:
         description: Eski sözlerin gücünü taşır; kırılgan ama yıkıcı.
       healer:
         label: Şifacı
-        description: Yoldaşlarını ayakta tutar; ışığı yanında taşır.
+        description: Hastaları ve yaralıları tedavi eder; yoldaşlarını ayakta tutar.
       bard:
         label: Ozan
         description: Sözü silah gibi kullanır; moral ve kurnazlık onun işi.
@@ -142,9 +142,9 @@ tr:
       spellbook:
         name: Büyü kitabı
         description: eski sözleri barındırır
-      torch:
-        name: Meşale
-        description: çevreyi aydınlatır
+      healers_kit:
+        name: Şifacı çantası
+        description: şifalı otlar ve sargı bezi
       healing_potion:
         name: Şifa iksiri
       lute:

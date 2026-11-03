@@ -50,9 +50,9 @@ class CharacterTest < ActiveSupport::TestCase
       stats: base.merge("wisdom" => 18, "constitution" => 16)
     )
 
-    torch = character.items.find_by!(name: "Torch")
-    assert torch.passive?
-    assert_equal "lights the way", torch.description
+    kit = character.items.find_by!(name: "Healer's kit")
+    assert kit.passive?
+    assert_equal "herbs and bandages", kit.description
 
     potion = character.items.find_by!(name: "Healing potion")
     assert potion.usable?
@@ -67,8 +67,8 @@ class CharacterTest < ActiveSupport::TestCase
         stats: Character::Klass.fetch("healer").base_stats.merge("wisdom" => 18, "constitution" => 16)
     end
 
-    assert_equal [ "Meşale", "Şifa iksiri" ], character.items.order(:id).pluck(:name)
-    assert_equal "çevreyi aydınlatır", character.items.find_by!(name: "Meşale").description
+    assert_equal [ "Şifacı çantası", "Şifa iksiri" ], character.items.order(:id).pluck(:name)
+    assert_equal "şifalı otlar ve sargı bezi", character.items.find_by!(name: "Şifacı çantası").description
   end
 
   test "a regained status replaces its namesake instead of stacking" do

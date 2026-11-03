@@ -67,7 +67,7 @@ en:
         description: Carries the force of old words, fragile but devastating.
       healer:
         label: Healer
-        description: Keeps companions standing, carrying the light along.
+        description: Treats the sick and wounded, keeping companions on their feet.
       bard:
         label: Bard
         description: Wields words like a weapon, dealing in morale and cunning.
@@ -123,9 +123,9 @@ en:
       spellbook:
         name: Spellbook
         description: holds the old words
-      torch:
-        name: Torch
-        description: lights the way
+      healers_kit:
+        name: Healer's kit
+        description: herbs and bandages
       healing_potion:
         name: Healing potion
       lute:
