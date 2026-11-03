@@ -111,6 +111,15 @@ class NarratorTest < ActiveSupport::TestCase
     CUE
   end
 
+  test "a narrow success is told it costs something" do
+    roll = play_first_scene(die: 11)
+
+    request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
+
+    assert_equal :narrow, roll.grade
+    assert_includes request["prompt"], "margin +0. It works, but not for free: it costs Ilker something on the way.\n"
+  end
+
   test "the last roll's outcome knows how the story ends and leaves the ending to the last scene" do
     @game_session.current_scene.update! position: @game_session.scene_budget - 1
     roll = play_first_scene
