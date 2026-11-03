@@ -39,6 +39,14 @@ class Scene::NarrateJobTest < ActiveJob::TestCase
     assert @game_session.current_scene.stalled?
   end
 
+  test "a narration queued for a game its host deleted is dropped quietly" do
+    @scene.narrate_later
+    users(:ilker).destroy!
+
+    assert_nothing_raised { perform_enqueued_jobs only: Scene::NarrateJob }
+    assert_no_enqueued_jobs only: Scene::NarrateJob
+  end
+
 test "the narrator speaks the default locale whatever the page that woke it" do
   I18n.with_locale(:tr) { @scene.narrate_later }
   request = stub_understudy(SCENE_RESPONSE) { perform_enqueued_jobs }.sole
