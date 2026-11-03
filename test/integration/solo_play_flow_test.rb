@@ -41,6 +41,8 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".outcome__resolution", text: "The drawer opens, but you cut your hand."
     assert_equal 1, game_session.scenes.count, "the story must not run ahead of the player"
 
+    game_session.current_scene.update! position: game_session.scene_budget - 1
+
     stub_understudy(FINALE_RESPONSE) do
       perform_enqueued_jobs { post game_session_acknowledgement_path(game_session) }
     end

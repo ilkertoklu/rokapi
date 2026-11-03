@@ -141,11 +141,29 @@ class NarratorTest < ActiveSupport::TestCase
     assert_empty character.status_effects.reload, "a one-turn status must not outlive its roll"
   end
 
-  test "a scene reusing a stat across choices is malformed" do
-    doubled = SCENE_RESPONSE.sub('"stat": "intelligence"', '"stat": "strength"')
+  test "choices may share a stat, number two, and have their difficulty kept in range" do
+    two = SCENE_RESPONSE.sub('"stat": "intelligence"', '"stat": "strength"').sub('"difficulty": 14', '"difficulty": 25')
+      .sub(%(,\n   {"label": "Listen at the stable in silence", "stat": "wisdom", "difficulty": 12}), "")
 
-    stub_understudy(*rewrites_of(doubled)) do
+    stub_understudy(two) { narrate }
+
+    assert_equal [ [ "strength", 10 ], [ "strength", 19 ] ], @game_session.current_scene.choices.order(:id).pluck(:stat, :target)
+  end
+
+  test "a choice on a stat the hero does not have is malformed" do
+    unknown = SCENE_RESPONSE.sub('"stat": "intelligence"', '"stat": "luck"')
+
+    stub_understudy(*rewrites_of(unknown)) do
       assert_raises(Narrator::MalformedResponse) { narrate }
+    end
+
+    assert @game_session.scenes.sole.narrating?
+  end
+
+  test "a scene without choices is malformed" do
+    stub_understudy(*rewrites_of(FINALE_RESPONSE)) do
+      error = assert_raises(Narrator::MalformedResponse) { narrate }
+      assert_equal "the scene has no choices", error.message
     end
 
     assert @game_session.scenes.sole.narrating?
@@ -240,11 +258,6 @@ class NarratorTest < ActiveSupport::TestCase
     @game_session.update! quest: nil
     assert_equal "Surprise adventure", @game_session.title
 
-    stub_understudy(*rewrites_of(SCENE_RESPONSE)) do
-      error = assert_raises(Narrator::MalformedResponse) { narrate }
-      assert_equal "the first scene must name the adventure", error.message
-    end
-
     named = stub_understudy(SCENE_RESPONSE.sub('{"title"', '{"adventure": "Blizzard Salt", "title"')) { narrate }.sole
 
     assert_includes named["system"], "names the adventure"
@@ -331,7 +344,7 @@ class NarratorTest < ActiveSupport::TestCase
   end
 
   test "a finale closes the game" do
-    play_and_continue die: 20
+    play_to_the_last_scene die: 20
 
     stub_understudy(FINALE_RESPONSE) { narrate }
 
@@ -345,11 +358,11 @@ class NarratorTest < ActiveSupport::TestCase
   end
 
   test "the finale ends as the dice decided" do
-    play_and_continue
+    play_to_the_last_scene
 
     stub_understudy(*rewrites_of(FINALE_RESPONSE)) do
       error = assert_raises(Narrator::MalformedResponse) { narrate }
-      assert_equal "scene 2 is the finale and the story ends in defeat", error.message
+      assert_equal "scene 7 is the last, and the story ends in defeat", error.message
     end
     assert_not @game_session.reload.finished?
 
@@ -376,13 +389,13 @@ class NarratorTest < ActiveSupport::TestCase
   end
 
   test "a reply that breaks a rule is rewritten with the reason" do
-    out_of_range = SCENE_RESPONSE.sub('"difficulty": 14', '"difficulty": 25')
+    unfenced = SCENE_RESPONSE.delete("`")
 
-    broken, rewrite = stub_understudy(out_of_range, SCENE_RESPONSE) { narrate }
+    broken, rewrite = stub_understudy(unfenced, SCENE_RESPONSE) { narrate }
 
     assert @game_session.scenes.sole.choosing?
     assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion.\n#{sheet}", broken["prompt"]
-    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion.\n#{sheet}\nYour last reply was rejected: difficulty 25 is outside 8-19. Write the whole reply again.", rewrite["prompt"],
+    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion.\n#{sheet}\nYour last reply was rejected: the ```json block is missing. Write the whole reply again.", rewrite["prompt"],
       "the rejected reply is not in the conversation the rewrite sees"
 
     messages = @game_session.conversation.messages.reload
@@ -392,11 +405,9 @@ class NarratorTest < ActiveSupport::TestCase
   end
 
   test "a reply that keeps breaking the rules is given up after the rewrites, leaving no trace" do
-    broken = SCENE_RESPONSE.sub('"difficulty": 14', '"difficulty": 25')
-
-    stub_understudy(*rewrites_of(broken)) do
+    stub_understudy(*rewrites_of(FINALE_RESPONSE)) do
       error = assert_raises(Narrator::MalformedResponse) { narrate }
-      assert_equal "difficulty 25 is outside 8-19", error.message
+      assert_equal "the scene has no choices", error.message
     end
 
     assert_equal 1 + Narrator::REWRITES, @game_session.conversation.ruby_llm_usages.count
@@ -424,7 +435,7 @@ class NarratorTest < ActiveSupport::TestCase
   end
 
   test "the finale's closing words stream in before the game is closed" do
-    play_and_continue die: 20
+    play_to_the_last_scene die: 20
 
     streams = capture_turbo_stream_broadcasts(@game_session) do
       stub_understudy(FINALE_RESPONSE) { narrate }
@@ -452,7 +463,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     stub_understudy(*rewrites_of(SCENE_RESPONSE)) do
       error = assert_raises(Narrator::MalformedResponse) { narrate }
-      assert_equal "scene 7 is the finale and the story ends in victory", error.message
+      assert_equal "scene 7 is the last, and the story ends in victory", error.message
     end
 
     assert_not @game_session.reload.finished?
@@ -503,6 +514,11 @@ class NarratorTest < ActiveSupport::TestCase
       resolve roll
       roll.acknowledge
       roll
+    end
+
+    def play_to_the_last_scene(die: 2)
+      @game_session.current_scene.update! position: @game_session.scene_budget - 1
+      play_and_continue die: die
     end
 
     def choose_and_roll(scene)

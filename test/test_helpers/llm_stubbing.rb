@@ -10,8 +10,7 @@ module LlmStubbing
        {"label": "Read the dusty ledger", "stat": "intelligence", "difficulty": 10},
        {"label": "Force the drawer open", "stat": "strength", "difficulty": 14},
        {"label": "Listen at the stable in silence", "stat": "wisdom", "difficulty": 12}
-     ],
-     "finale": false, "outcome": null}
+     ]}
     ```
   TEXT
 
@@ -30,7 +29,7 @@ module LlmStubbing
     The caravan bells echo down the valley as you ride into Whitebend.
 
     ```json
-    {"title": "The Return", "location": "Whitebend", "choices": [], "finale": true, "outcome": "victory"}
+    {"title": "The Return", "location": "Whitebend", "outcome": "victory"}
     ```
   TEXT
 

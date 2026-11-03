@@ -63,6 +63,8 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
     assert_equal "The drawer opens, but you cut your hand.", roll["resolution"]
     assert_equal(-4, roll["effects"]["hp"])
 
+    game_session.current_scene.update! position: game_session.scene_budget - 1
+
     stub_understudy(FINALE_RESPONSE.sub(%q("outcome": "victory"), %q("outcome": "defeat"))) do
       perform_enqueued_jobs { post game_session_acknowledgement_path(game_session), as: :json }
     end

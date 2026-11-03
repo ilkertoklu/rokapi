@@ -84,52 +84,37 @@ class Narrator < RubyLLM::Agent
     end
 
     def check_scene(scene, prose, data)
-      finale, title, choices = data["finale"] == true, data["title"].to_s, Array(data["choices"])
-      raise MalformedResponse, "the title is missing" if title.blank?
-
-      if names_the_adventure?(scene)
-        raise MalformedResponse, "the first scene must name the adventure" if data["adventure"].blank?
-      end
-
-      if finale || scene.active_player.character.hp.zero? || scene.last?
-        raise MalformedResponse, "scene #{scene.position} is the finale and the story ends in #{outcome_of(scene)}" unless finale && data["outcome"] == outcome_of(scene)
+      if (ending = scene.ending)
+        raise MalformedResponse, "scene #{scene.position} is the last, and the story ends in #{ending}" unless data["outcome"] == ending
       else
-        stats = choices.map { |choice| choice["stat"] }
-        raise MalformedResponse, "expected 3 choices on 3 distinct stats" unless stats.size == 3 && stats.uniq.size == 3 && (stats - Character::Stat.keys).empty?
-
-        choices.each do |choice|
-          raise MalformedResponse, "a choice has no label" if choice["label"].blank?
-          raise MalformedResponse, "difficulty #{choice["difficulty"].inspect} is outside #{Choice::DIFFICULTY.min}-#{Choice::DIFFICULTY.max}" unless Choice::DIFFICULTY.cover?(choice["difficulty"])
-        end
+        choices = Array(data["choices"])
+        raise MalformedResponse, "the scene has no choices" if choices.empty?
+        raise MalformedResponse, "every choice needs a label and one of the stats #{Character::Stat.keys.join(", ")}" unless choices.all? { |choice| playable?(choice) }
       end
 
       [ prose, data ]
     end
 
+    def playable?(choice)
+      choice.is_a?(Hash) && choice["label"].present? && Character::Stat.keys.include?(choice["stat"])
+    end
+
     def write_scene(scene, prose, data)
-      finale = data["finale"] == true
+      ending = scene.ending
 
       ApplicationRecord.transaction do
-        game_session.update! title: data["adventure"] if names_the_adventure?(scene)
-        scene.update! title: data["title"], location: data["location"], narration: prose, finale: finale, state: finale ? :played : :choosing
+        game_session.update! title: data["adventure"] if scene.first? && game_session.quest.nil? && data["adventure"].present?
+        scene.update! title: data["title"].presence, location: data["location"].presence, narration: prose, finale: ending.present?, state: ending ? :played : :choosing
 
-        if finale
-          game_session.update! outcome: data["outcome"]
+        if ending
+          game_session.update! outcome: ending
           game_session.finish
         else
           data["choices"].each do |choice|
             scene.choices.create! label: choice["label"], stat: choice["stat"], modifier: scene.active_player.character.bonus_for(choice["stat"]),
-              target: choice["difficulty"]
+              target: choice["difficulty"].to_i
           end
         end
       end
-    end
-
-    def outcome_of(scene)
-      scene.active_player.character.hp.zero? ? "defeat" : game_session.verdict
-    end
-
-    def names_the_adventure?(scene)
-      scene.first? && game_session.quest.nil?
     end
 end

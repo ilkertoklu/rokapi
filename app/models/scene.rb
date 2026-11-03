@@ -39,6 +39,14 @@ class Scene < ApplicationRecord
     position >= game_session.scene_budget
   end
 
+  def ending
+    if active_player.character.hp.zero?
+      "defeat"
+    elsif last?
+      game_session.verdict
+    end
+  end
+
   def opening?
     first? && title.nil?
   end

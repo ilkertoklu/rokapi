@@ -26,13 +26,12 @@ A scene is the narration as plain prose, then a ```json block:
 
 ```json
 {"title": "...", "location": "...",
- "choices": [{"label": "...", "stat": "strength|agility|constitution|intelligence|wisdom|charisma", "difficulty": 12}],
- "finale": false, "outcome": null}
+ "choices": [{"label": "...", "stat": "strength|agility|constitution|intelligence|wisdom|charisma", "difficulty": 12}]}
 ```
 
-- Three choices on three different stats for the player whose turn it is, difficulty <%= Choice::DIFFICULTY.min %> to <%= Choice::DIFFICULTY.max %>.
+- Two or three choices for the player whose turn it is, on whichever stats fit, difficulty <%= Choice::DIFFICULTY.min %> to <%= Choice::DIFFICULTY.max %>.
 - The title and the location are a few words each; a label is a short line.
-<%= %(- The first scene also names the adventure: "adventure": "...", a name of a few words.\n) if game.quest.nil? %>- The finale has no choices, "finale": true, "outcome" as I tell you. The dice decided the outcome; make the ending earn it.
+<%= %(- The first scene also names the adventure: "adventure": "...", a name of a few words.\n) if game.quest.nil? %>- The last scene has no choices and carries "outcome" as I tell you. The dice decided the outcome; make the ending earn it.
 
 A roll is resolved the same way: what happens as plain prose, then a ```json block with what changed for the character who rolled. Leave out what did not change:
 
