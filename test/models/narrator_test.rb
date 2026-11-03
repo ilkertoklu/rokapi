@@ -266,7 +266,7 @@ class NarratorTest < ActiveSupport::TestCase
       The tone: balanced. Wonder and danger in equal measure.
       The story runs 7 scenes.
       The hero:
-      - Ilker: Human (Versatile and balanced, at home in any class.), Warrior (Fights at the front, starts with a longsword and a round shield.), Soldier by background (Discipline, and the sight of war.). Health 31. Strength 16, Agility 11, Constitution 15, Intelligence 8, Wisdom 12, Charisma 14. Sets out with Longsword; Round shield.
+      - Ilker: Human, Warrior (Fights at the front, starts with a longsword and a round shield.), Soldier by background. Health 31. Strength 16, Agility 11, Constitution 15, Intelligence 8, Wisdom 12, Charisma 14. Sets out with Longsword; Round shield.
     GAME
   end
 
@@ -277,8 +277,8 @@ class NarratorTest < ActiveSupport::TestCase
     assert_includes request["system"], "sade, doğal, gündelik Türkçeyle"
     assert_includes request["system"], "Görev: Akçabük köyünün kış tuzunu getiren kervan üç gündür kayıp"
     assert_includes request["system"], "Aslında olan, yalnızca senin bildiğin: Kervanbaşı Orhan tuzu dağ obasına sattı"
-    assert_includes request["system"], "- Ilker: İnsan (Çok yönlü ve dengeli; her sınıfa kolay uyum sağlar.), Savaşçı (Ön safta dövüşür;"
-    assert_includes request["system"], "Asker geçmişli (Disiplin ve savaş görmüşlük.). Can 31. Güç 16, Çeviklik 11,"
+    assert_includes request["system"], "- Ilker: İnsan, Savaşçı (Ön safta dövüşür;"
+    assert_includes request["system"], "Asker geçmişli. Can 31. Güç 16, Çeviklik 11,"
     assert_includes request["system"], "Yola çıkarken yanında: Uzun kılıç; Yuvarlak kalkan."
     assert_no_match(/Warrior|Strength|The quest/, request["system"])
     assert_equal "Scene 1 of 7, Ilker's turn.\n#{sheet}", request["prompt"]
