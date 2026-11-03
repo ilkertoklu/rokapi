@@ -116,7 +116,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
 
-    assert request["prompt"].end_with?("\nThe next scene is the last, and the story ends in defeat: leave the ending to it.\n")
+    assert request["prompt"].end_with?("\nThe next scene is the last, and the story ends in defeat. Tell only what this roll does, in a paragraph or two, and stop there: the ending belongs to that last scene.\n")
   end
 
   test "a used item is settled by the outcome and not raised again by the next scene" do
