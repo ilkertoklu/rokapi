@@ -5,7 +5,7 @@ class My::AccountsController < ApplicationController
   def destroy
     if confirmed?
       Current.user.destroy!
-      cookies.delete :session_id
+      terminate_session
 
       respond_to do |format|
         format.html { redirect_to welcome_path, notice: t(".deleted") }
