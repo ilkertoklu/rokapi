@@ -48,7 +48,7 @@ class Character < ApplicationRecord
 
   def sheet
     carried = items.carried.map(&:summary)
-    effects = status_effects.map { |status| "#{status.name} (#{format('%+d', status.modifier)} to rolls)" }
+    effects = status_effects.map { |status| "#{status.name} (#{[ "#{format('%+d', status.modifier)} to rolls", status.expires_when ].compact.join(", ")})" }
 
     "#{hp}/#{max_hp} health; carries #{carried.any? ? carried.join(", ") : "nothing"}; #{effects.any? ? "statuses: #{effects.join(", ")}" : "no statuses"}"
   end

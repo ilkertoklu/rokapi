@@ -136,6 +136,18 @@ class RollTest < ActiveSupport::TestCase
     end
   end
 
+  test "a status the story must lift outlasts the turns until a block lifts it" do
+    arrow = { "name" => "Arrow in the shoulder", "modifier" => -1, "expires_when" => "until the arrow is drawn" }
+    roll_with(value: 9, target: 12).resolve resolution: "The arrow takes you high in the shoulder.", effects: { "statuses_gained" => [ arrow ] }
+
+    4.times { roll_with(value: 9, target: 12).resolve resolution: "You stumble on.", effects: {} }
+    status = characters(:ilker_hero).status_effects.find_by!(name: "Arrow in the shoulder")
+    assert_equal [ nil, "until the arrow is drawn" ], [ status.turns_left, status.expires_when ]
+
+    roll_with(value: 15, target: 12).resolve resolution: "Mara draws the arrow.", effects: { "statuses_lost" => [ "Arrow in the shoulder" ] }
+    assert_empty characters(:ilker_hero).status_effects
+  end
+
   test "statuses beyond the limit are dropped" do
     character = characters(:ilker_hero)
     character.status_effects.create! name: "Bruised Ribs", modifier: -1, turns_left: 3

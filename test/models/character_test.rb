@@ -81,13 +81,13 @@ class CharacterTest < ActiveSupport::TestCase
     assert_equal 3, soaked.turns_left
   end
 
-  test "the sheet tells the narrator how a status weighs, never how long it has left" do
+  test "the sheet tells the narrator how a status weighs and what in the story lifts it, never how many turns it has left" do
     character = characters(:ilker_hero)
     character.gain_status(name: "Soaked Through", modifier: -2, turns_left: 1)
     character.gain_status(name: "Dragging Leg", modifier: -1, expires_when: "until it eases")
 
     assert_includes character.sheet, "Soaked Through (-2 to rolls)"
-    assert_includes character.sheet, "Dragging Leg (-1 to rolls)"
+    assert_includes character.sheet, "Dragging Leg (-1 to rolls, until it eases)"
   end
 
   test "losing takes carried items and statuses, never spent history" do
