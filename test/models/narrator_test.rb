@@ -168,7 +168,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert_includes first["system"], "Length: 7 scenes"
     assert_includes first["system"], "Quest: The caravan carrying Whitebend's winter salt"
     assert_includes first["system"], "Warrior"
-    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion and decide the secret.\n#{sheet}", first["prompt"], "the first turn has no story before it"
+    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion.\n#{sheet}", first["prompt"], "the first turn has no story before it"
 
     roll = with_die(2) { choose_and_roll @game_session.current_scene }
     stub_understudy(OUTCOME_RESPONSE) { roll.narrate }
@@ -206,7 +206,7 @@ class NarratorTest < ActiveSupport::TestCase
     retry_call = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
     assert @game_session.current_scene.choosing?
-    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion and decide the secret.\n#{sheet}", retry_call["prompt"], "the turn is not asked twice"
+    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion.\n#{sheet}", retry_call["prompt"], "the turn is not asked twice"
     assert_equal %w[system user assistant], @game_session.conversation.messages.pluck(:role)
   end
 
@@ -233,7 +233,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert_includes request["system"], "Warrior (Fights at the front", "the brief stays in English whatever the page speaks"
     assert_includes request["system"], "Sets out with Uzun kılıç; Yuvarlak kalkan."
     assert_includes request["system"], "Geçidin ağzında rüzgâr bıçak gibi", "the voice sample speaks the game's language"
-    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion and decide the secret.\n#{sheet}", request["prompt"]
+    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion.\n#{sheet}", request["prompt"]
   end
 
   test "the surprise adventure takes its name from the first scene" do
@@ -371,7 +371,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(FINALE_RESPONSE) { narrate }.sole
 
-    assert_match(/This scene is the finale and the story ends in victory: pay off the secret and what was planted, then close.\nIlker: .*\n\z/, request["prompt"])
+    assert_match(/This scene is the finale and the story ends in victory: pay off what was planted, then close.\nIlker: .*\n\z/, request["prompt"])
     assert @game_session.reload.finished?
   end
 
@@ -381,8 +381,8 @@ class NarratorTest < ActiveSupport::TestCase
     broken, rewrite = stub_understudy(out_of_range, SCENE_RESPONSE) { narrate }
 
     assert @game_session.scenes.sole.choosing?
-    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion and decide the secret.\n#{sheet}", broken["prompt"]
-    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion and decide the secret.\n#{sheet}\nYour last reply was rejected: difficulty 25 is outside 8-19. Write the whole reply again.", rewrite["prompt"],
+    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion.\n#{sheet}", broken["prompt"]
+    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion.\n#{sheet}\nYour last reply was rejected: difficulty 25 is outside 8-19. Write the whole reply again.", rewrite["prompt"],
       "the rejected reply is not in the conversation the rewrite sees"
 
     messages = @game_session.conversation.messages.reload

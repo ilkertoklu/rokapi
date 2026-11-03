@@ -87,10 +87,6 @@ class Narrator < RubyLLM::Agent
       finale, title, choices = data["finale"] == true, data["title"].to_s, Array(data["choices"])
       raise MalformedResponse, "the title is missing" if title.blank?
 
-      if scene.first? && !finale
-        raise MalformedResponse, "the first scene must carry the secret" if data["secret"].blank?
-      end
-
       if names_the_adventure?(scene)
         raise MalformedResponse, "the first scene must name the adventure" if data["adventure"].blank?
       end
@@ -123,7 +119,7 @@ class Narrator < RubyLLM::Agent
         else
           data["choices"].each do |choice|
             scene.choices.create! label: choice["label"], stat: choice["stat"], modifier: scene.active_player.character.bonus_for(choice["stat"]),
-              target: choice["difficulty"], difficulty_reason: choice["difficulty_reason"]
+              target: choice["difficulty"]
           end
         end
       end

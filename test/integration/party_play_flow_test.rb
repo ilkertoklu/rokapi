@@ -12,7 +12,7 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
 
     assert_includes first_scene["system"], "The party, taking turns:\n- Ilker: "
     assert_includes first_scene["system"], "\n- Deniz: "
-    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion and decide the secret.\nIlker: 31/31 health; carries Longsword, Round shield; no statuses.\n", first_scene["prompt"]
+    assert_equal "Scene 1 of 7, Ilker's turn. Open the story in motion.\nIlker: 31/31 health; carries Longsword, Round shield; no statuses.\n", first_scene["prompt"]
 
     sign_in_as users(:ilker)
     get game_session_path(@room), as: :json

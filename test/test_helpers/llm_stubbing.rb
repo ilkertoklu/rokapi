@@ -5,11 +5,11 @@ module LlmStubbing
     Inside, a single candle is still burning.
 
     ```json
-    {"title": "The Old Inn", "location": "Whitebend", "secret": "The innkeeper sold the caravan to the pass clan and the ledger proves it.",
+    {"title": "The Old Inn", "location": "Whitebend",
      "choices": [
-       {"label": "Read the dusty ledger", "stat": "intelligence", "difficulty": 10, "difficulty_reason": "The dust lies thick"},
-       {"label": "Force the drawer open", "stat": "strength", "difficulty": 14, "difficulty_reason": "The lock is old"},
-       {"label": "Listen at the stable in silence", "stat": "wisdom", "difficulty": 12, "difficulty_reason": "The wind is howling"}
+       {"label": "Read the dusty ledger", "stat": "intelligence", "difficulty": 10},
+       {"label": "Force the drawer open", "stat": "strength", "difficulty": 14},
+       {"label": "Listen at the stable in silence", "stat": "wisdom", "difficulty": 12}
      ],
      "finale": false, "outcome": null}
     ```

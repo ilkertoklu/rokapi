@@ -208,14 +208,6 @@
     }
   }
 
-  .dice__reason {
-    margin: .75rem 0 0;
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: .875rem;
-    color: var(--color-ink-faint);
-  }
-
   .outcome--success::before {
     background: radial-gradient(circle, color-mix(in srgb, var(--color-positive) 18%, transparent), transparent 65%);
   }
