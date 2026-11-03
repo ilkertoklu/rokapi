@@ -15,20 +15,19 @@ Tell it the way you would at the table, where the outcome of a roll and the next
 A scene: tell it, then end with a ```json block:
 
 ```json
-{"title": "...", "location": "...", "choices": [{"label": "...", "stat": "strength|agility|constitution|intelligence|wisdom|charisma", "difficulty": 12}]}
+{"title": "...", "location": "...", "carries": ["..."], "choices": [{"label": "...", "stat": "strength|agility|constitution|intelligence|wisdom|charisma", "difficulty": 12}]}
 ```
 
 Give two or three choices, things this hero could try now that lead different ways. The stat is whatever the attempt calls for, the difficulty <%= Choice::DIFFICULTY.min %> (easy) to <%= Choice::DIFFICULTY.max %> (very hard). The title and the location are a few words each.<%= %( The first scene's block also names the adventure: "adventure": "...".) if game.quest.nil? %>
-The last scene tells the ending the dice decided. Its block has no choices: {"title": "...", "location": "...", "outcome": "victory" or "defeat"}.
+The last scene tells the ending the dice decided. Its block has no choices: {"title": "...", "location": "...", "carries": ["..."], "outcome": "victory" or "defeat"}.
 
 A roll: tell what happens, then end with a ```json block of what changed for the one who rolled, leaving out what did not:
 
 ```json
 {"hp": -3,
- "items_gained": [{"name": "...", "kind": "instant|passive|quest", "description": "...", "hp": 0, "uses": 0}],
- "items_lost": ["..."],
+ "carries": ["..."],
  "statuses_gained": [{"name": "...", "modifier": -1, "turns": 2}],
  "statuses_lost": ["..."]}
 ```
 
-Health is only lost here; it comes back through items. An instant item is spent when used and heals its hp, uses times; a passive item works in the story while it is carried; a quest item matters to the quest. A status adds its modifier, -2 to +2, to later rolls for <%= StatusEffect::TURNS.min %> to <%= StatusEffect::TURNS.max %> turns.
+Every block lists in "carries" what the one whose turn it is holds once the reply is told: the names on the sheet that are still theirs, and anything new written as {"name": "...", "kind": "instant|passive|quest", "description": "...", "hp": 0, "uses": 0}. Health is only lost on a roll; it comes back through items. An instant item is spent when used and heals its hp, uses times; a passive item works in the story while it is carried; a quest item matters to the quest. A status adds its modifier, -2 to +2, to later rolls for <%= StatusEffect::TURNS.min %> to <%= StatusEffect::TURNS.max %> turns.

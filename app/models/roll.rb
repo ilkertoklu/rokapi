@@ -1,9 +1,8 @@
 class Roll < ApplicationRecord
   DIE = 20
   HEALTH_FLOOR = { narrow: -3, failure: -6, heavy: -9, catastrophe: -12 }.freeze
-  EMPTY_EFFECTS = { "hp" => 0, "items_gained" => [], "items_lost" => [], "statuses_gained" => [], "statuses_lost" => [] }.freeze
 
-  include Stallable
+  include Consequential, Stallable
 
   belongs_to :choice
   belongs_to :player
@@ -11,11 +10,6 @@ class Roll < ApplicationRecord
   has_one :scene, through: :choice
 
   delegate :modifier, :target, to: :choice
-
-  store_accessor :effects, :hp, suffix: :change
-  store_accessor :effects, :items_gained, :items_lost, :statuses_gained, :statuses_lost
-
-  normalizes :effects, with: ->(effects) { EMPTY_EFFECTS.merge(effects.to_h.deep_stringify_keys) }
 
   before_create { self.success = total >= target }
 
@@ -78,6 +72,7 @@ class Roll < ApplicationRecord
   def resolve(resolution:, effects:)
     transaction do
       update! resolution: resolution, effects: bounded(effects.to_h)
+      character.status_effects.each(&:tick)
       apply_effects
     end
   end
@@ -100,47 +95,15 @@ class Roll < ApplicationRecord
       end
     end
 
-    def bounded(effects)
-      statuses_lost = Array(effects["statuses_lost"])
-      statuses_gained = granted(effects["statuses_gained"]).map { |grant| status_from(grant) }.select { |status| critical? || !status["modifier"].positive? }
-      kept = player.character.status_effects.map(&:name) - statuses_lost - statuses_gained.pluck("name")
-
-      { "hp" => effects["hp"].to_i.clamp(HEALTH_FLOOR.fetch(grade, 0), 0),
-        "items_gained" => granted(effects["items_gained"]).map { |grant| item_from(grant) },
-        "items_lost" => Array(effects["items_lost"]),
-        "statuses_gained" => statuses_gained.first([ StatusEffect::LIMIT - kept.size, 0 ].max),
-        "statuses_lost" => statuses_lost }
+    def character
+      player.character
     end
 
-    def granted(grants)
-      Array(grants).grep(Hash).select { |grant| grant["name"].present? }
+    def health_floor
+      HEALTH_FLOOR.fetch(grade, 0)
     end
 
-    def item_from(grant)
-      kind = Item.kinds.fetch(grant["kind"], "passive")
-      instant = kind == "instant"
-
-      { "name" => grant["name"], "kind" => kind, "description" => grant["description"],
-        "hp_effect" => instant ? grant["hp"].to_i : 0,
-        "uses_left" => ([ grant["uses"].to_i, Item::MINIMUM_USES ].max if instant) }
-    end
-
-    def status_from(grant)
-      turns = grant["turns"].to_i
-      expires_when = grant["expires_when"].presence
-
-      { "name" => grant["name"], "modifier" => grant["modifier"].to_i.clamp(StatusEffect::MODIFIER_RANGE), "expires_when" => expires_when,
-        "turns_left" => turns.positive? ? turns.clamp(StatusEffect::TURNS) : (StatusEffect::DEFAULT_TURNS if expires_when.nil?) }
-    end
-
-    def apply_effects
-      character = player.character
-      character.status_effects.each(&:tick)
-      character.adjust_hp hp_change
-
-      items_lost.each { |name| character.lose_item name }
-      items_gained.each { |item| character.items.create! item }
-      statuses_lost.each { |name| character.lose_status name }
-      statuses_gained.each { |status| character.gain_status(**status.symbolize_keys) }
+    def boon?
+      critical?
     end
 end

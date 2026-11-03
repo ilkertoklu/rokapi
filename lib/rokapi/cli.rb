@@ -438,6 +438,7 @@ module Rokapi
       def say_scene(game, scene)
         say_scene_heading game, scene
         say scene["narration"].to_s
+        say_effects scene["effects"]
       end
 
       def say_status(game)
@@ -462,9 +463,12 @@ module Rokapi
         status = " #{format("%+d", roll["status_modifier"])} status" unless roll["status_modifier"].zero?
         say "ROLL: d20=#{roll["value"]} #{format("%+d", roll["modifier"])}#{status} = #{roll["total"]} vs #{roll["target"]} → #{roll["grade"].upcase}"
         say "RESULT: #{roll["resolution"]}"
+        say_effects roll["effects"]
+      end
 
-        effects = roll["effects"].to_h.reject { |_, value| value.nil? || value == 0 || value == [] }
-        say "EFFECTS: #{effects.to_json}" if effects.any?
+      def say_effects(effects)
+        changes = effects.to_h.reject { |_, value| value.nil? || value == 0 || value == [] }
+        say "EFFECTS: #{changes.to_json}" if changes.any?
       end
 
       def say_footer(game)

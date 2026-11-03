@@ -35,8 +35,7 @@ class RollTest < ActiveSupport::TestCase
 
     roll.resolve resolution: "You find a salve in the chest, but you come out soaked.", effects: {
       "hp" => -2,
-      "items_gained" => [ { "name" => "Yellow salve", "kind" => "instant", "description" => "", "hp" => 5, "uses" => 1 } ],
-      "items_lost" => [ "Inn ledger" ],
+      "carries" => [ "Longsword", "Healing potion", { "name" => "Yellow salve", "kind" => "instant", "description" => "", "hp" => 5, "uses" => 1 } ],
       "statuses_gained" => [ { "name" => "Soaked Through", "modifier" => -2, "turns" => 2, "expires_when" => "" } ],
       "statuses_lost" => [ "Dragging Leg" ] }
 
@@ -76,8 +75,9 @@ class RollTest < ActiveSupport::TestCase
     roll = roll_with(value: 9, target: 12)
 
     roll.resolve resolution: "You find a salve in the chest, but you come out soaked.", effects: {
-      "items_gained" => [ { "name" => "Yellow salve", "kind" => "instant", "description" => "", "hp" => 5, "uses" => 0 },
-                          { "name" => "Old map", "kind" => "passive", "description" => "Shows the pass", "hp" => 4, "uses" => 3 } ],
+      "carries" => [ "Longsword", "Healing potion", "Inn ledger",
+                     { "name" => "Yellow salve", "kind" => "instant", "description" => "", "hp" => 5, "uses" => 0 },
+                     { "name" => "Old map", "kind" => "passive", "description" => "Shows the pass", "hp" => 4, "uses" => 3 } ],
       "statuses_gained" => [ { "name" => "Soaked Through", "modifier" => -5, "turns" => 0, "expires_when" => "" } ] }
 
     salve = characters(:ilker_hero).items.find_by!(name: "Yellow salve")
@@ -92,13 +92,35 @@ class RollTest < ActiveSupport::TestCase
     assert_equal(-2, roll.reload.statuses_gained.sole["modifier"], "the roll keeps the effects as applied")
   end
 
-  test "a resolution may replace an item it takes away" do
-    roll_with(value: 9, target: 12).resolve resolution: "Your flask breaks, but you find another in the wreckage.", effects: {
-      "items_gained" => [ { "name" => "Healing potion", "kind" => "instant", "description" => "", "hp" => 6, "uses" => 1 } ],
-      "items_lost" => [ "Healing potion" ] }
+  test "what the hero no longer carries leaves the sheet, and what is told anew is rewritten" do
+    roll = roll_with(value: 9, target: 12)
+    roll.resolve resolution: "The guards take the ledger and notch your blade.", effects: {
+      "carries" => [ "Longsword (notched)", "Healing potion (instant: +7 health, 1 use)" ] }
 
-    potions = characters(:ilker_hero).items.usable.where(name: "Healing potion")
-    assert_equal 6, potions.sole.hp_effect, "the lost copy goes first so the replacement survives"
+    character = characters(:ilker_hero).reload
+    assert_equal [ "Healing potion", "Longsword" ], character.items.carried.pluck(:name).sort
+    assert_equal "notched", character.items.find_by!(name: "Longsword").description
+    assert_equal [ "Longsword", "Inn ledger" ], roll.reload.items_lost
+  end
+
+  test "an instant item is the player's to use, so leaving it off the list does not spend it" do
+    roll_with(value: 9, target: 12).resolve resolution: "You drink deep.", effects: { "carries" => [ "Longsword", "Inn ledger" ] }
+
+    assert characters(:ilker_hero).items.usable.exists?(name: "Healing potion")
+  end
+
+  test "a listed instant item keeps its own uses whatever the block says" do
+    roll_with(value: 9, target: 12).resolve resolution: "You check your flask.", effects: {
+      "carries" => [ "Longsword", "Inn ledger", { "name" => "Healing potion", "kind" => "instant", "hp" => 20, "uses" => 9 } ] }
+
+    potion = characters(:ilker_hero).items.usable.sole
+    assert_equal [ 7, 1 ], [ potion.hp_effect, potion.uses_left ]
+  end
+
+  test "a block that does not say what the hero carries leaves the inventory alone" do
+    assert_no_difference -> { characters(:ilker_hero).items.carried.count } do
+      roll_with(value: 9, target: 12).resolve resolution: "You stumble.", effects: { "hp" => -2 }
+    end
   end
 
   test "statuses beyond the limit are dropped" do
@@ -116,12 +138,14 @@ class RollTest < ActiveSupport::TestCase
     assert_equal 3, character.status_effects.find_by!(name: "Burned Palms").turns_left, "a status lasts 3 turns at most"
   end
 
-  test "a grant of unknown kind is carried as a passive item, and a grant without a name is dropped" do
-    assert_difference -> { Item.count }, +1 do
-      roll_with(value: 9, target: 12).resolve resolution: "You find something.", effects: { "items_gained" => [ { "name" => "Old charm", "kind" => "relic" }, { "kind" => "quest" }, "Rope" ] }
+  test "a grant of unknown kind or a bare name is carried as a passive item, and a grant without a name is dropped" do
+    assert_difference -> { Item.count }, +2 do
+      roll_with(value: 9, target: 12).resolve resolution: "You find something.", effects: {
+        "carries" => [ "Longsword", "Healing potion", "Inn ledger", { "name" => "Old charm", "kind" => "relic" }, { "kind" => "quest" }, "Rope (frayed)" ] }
     end
 
     assert Item.find_by!(name: "Old charm").passive?
+    assert_equal "frayed", Item.find_by!(name: "Rope").description
   end
 
   private

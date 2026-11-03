@@ -1,7 +1,7 @@
 class Scene < ApplicationRecord
   class OutOfTurn < StandardError; end
 
-  include Stallable
+  include Consequential, Stallable
 
   belongs_to :game_session, touch: true
   belongs_to :active_player, class_name: "Player"
@@ -15,6 +15,13 @@ class Scene < ApplicationRecord
   scope :chronological, -> { order(:position) }
 
   after_save_commit -> { broadcast_refresh_to game_session }
+
+  def write(narration:, effects:, **attributes)
+    transaction do
+      update! narration: narration, effects: bounded(effects.to_h), **attributes
+      apply_effects
+    end
+  end
 
   def stream(prose)
     return if narration == prose
@@ -79,4 +86,17 @@ class Scene < ApplicationRecord
   def counter
     I18n.t("scene.counter", position: position, total: game_session.scene_budget)
   end
+
+  private
+    def character
+      active_player.character
+    end
+
+    def health_floor
+      0
+    end
+
+    def boon?
+      false
+    end
 end

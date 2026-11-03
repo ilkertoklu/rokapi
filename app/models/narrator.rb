@@ -104,7 +104,7 @@ class Narrator < RubyLLM::Agent
 
       ApplicationRecord.transaction do
         game_session.update! title: data["adventure"] if scene.first? && game_session.quest.nil? && data["adventure"].present?
-        scene.update! title: data["title"].presence, location: data["location"].presence, narration: prose, finale: ending.present?, state: ending ? :played : :choosing
+        scene.write narration: prose, effects: data, title: data["title"].presence, location: data["location"].presence, finale: ending.present?, state: ending ? :played : :choosing
 
         if ending
           game_session.update! outcome: ending

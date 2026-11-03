@@ -383,6 +383,32 @@ class NarratorTest < ActiveSupport::TestCase
     assert @game_session.ended_at.present?
   end
 
+  test "a scene that hands the hero something puts it on the sheet, but only a roll costs health" do
+    giving = SCENE_RESPONSE.sub('"location": "Whitebend",', <<~JSON.chomp)
+      "location": "Whitebend", "hp": -5,
+       "carries": ["Longsword", "Healing potion", {"name": "Village purse", "kind": "quest", "description": "The harvest money"}],
+       "statuses_gained": [{"name": "Watched", "modifier": -1, "turns": 2}, {"name": "Blessed", "modifier": 2, "turns": 2}],
+    JSON
+
+    stub_understudy(giving) { narrate }
+
+    character = characters(:ilker_hero).reload
+    assert character.items.quest.exists?(name: "Village purse")
+    assert_not character.items.exists?(name: "Inn ledger")
+    assert_equal [ "Watched" ], character.status_effects.pluck(:name), "only a critical roll grants a boon"
+    assert_equal 31, character.hp
+    assert_equal [ "Village purse" ], @game_session.current_scene.items_gained.pluck("name")
+  end
+
+  test "the finale settles what the hero leaves behind" do
+    play_to_the_last_scene die: 20
+
+    stub_understudy(FINALE_RESPONSE.sub('"outcome"', '"carries": ["Healing potion", "Inn ledger"], "outcome"')) { narrate }
+
+    assert_not characters(:ilker_hero).items.exists?(name: "Longsword")
+    assert @game_session.reload.finished?
+  end
+
   test "the finale ends as the dice decided" do
     play_to_the_last_scene
 

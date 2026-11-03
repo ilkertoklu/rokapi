@@ -1,4 +1,4 @@
-json.(scene, :position, :title, :location, :state, :finale, :narration)
+json.(scene, :position, :title, :location, :state, :finale, :narration, :effects)
 json.stalled scene.stalled?
 json.active_player scene.active_player.name
 

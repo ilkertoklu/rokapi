@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_03_100000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_03_200000) do
   create_table "characters", force: :cascade do |t|
     t.string "background", null: false
     t.datetime "created_at", null: false
@@ -329,6 +329,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_03_100000) do
     t.string "state", default: "narrating", null: false
     t.string "title"
     t.datetime "updated_at", null: false
+    t.json "effects"
     t.index ["active_player_id"], name: "index_scenes_on_active_player_id"
     t.index ["game_session_id", "position"], name: "index_scenes_on_game_session_id_and_position", unique: true
   end
