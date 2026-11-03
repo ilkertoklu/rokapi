@@ -23,7 +23,9 @@ module Rokapi
 
     desc "locale LOCALE", "Play new games in en or tr"
     def locale(locale)
-      client.patch "/locale", locale: locale
+      raise Thor::Error, "Pick en or tr." unless %w[en tr].include?(locale)
+
+      authenticated { client.patch "/locale", locale: locale }
       say "New games will be played in #{locale}."
     end
 
