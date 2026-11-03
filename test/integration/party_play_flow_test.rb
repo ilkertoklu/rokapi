@@ -15,8 +15,8 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
     assert_includes first_scene["system"], 'Speak to the one whose turn it is as "you" and call the others by name'
     assert_equal <<~CUE, first_scene["prompt"]
       Scene 1 of 7, the story's first half, Ilker's turn.
-      Ilker, human warrior, soldier by background: 31/31 health; carries Longsword, Round shield; no statuses.
-      In the scene with Ilker: Deniz, human warrior, soldier by background, 31/31 health.
+      Ilker, human warrior (background: soldier): 31/31 health; carries Longsword, Round shield; no statuses.
+      In the scene with Ilker: Deniz, human warrior (background: soldier), 31/31 health.
     CUE
 
     sign_in_as users(:ilker)
@@ -58,7 +58,7 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
     outcome = stub_understudy(OUTCOME_RESPONSE) do
       perform_enqueued_jobs { post game_session_roll_path(@room), as: :json }
     end.sole
-    assert_includes outcome["prompt"], "\nIn the scene with Ilker: Deniz, human warrior, soldier by background, 31/31 health.\n"
+    assert_includes outcome["prompt"], "\nIn the scene with Ilker: Deniz, human warrior (background: soldier), 31/31 health.\n"
 
     sign_in_as users(:deniz)
     get game_session_path(@room)
@@ -69,7 +69,7 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
     second_scene = stub_understudy(SECOND_SCENE_RESPONSE) do
       perform_enqueued_jobs { post game_session_acknowledgement_path(@room), as: :json }
     end.sole
-    assert second_scene["prompt"].include?("\n\nScene 2 of 7, the story's first half, Deniz's turn. Pick up where the last outcome stopped, without retelling it. The heroes do only what the players chose: where the way forks, the fork goes into the choices.\nDeniz, human warrior, soldier by background: ")
+    assert second_scene["prompt"].include?("\n\nScene 2 of 7, the story's first half, Deniz's turn. Pick up where the last outcome stopped, without retelling it. The heroes do only what the players chose: where the way forks, the fork goes into the choices.\nDeniz, human warrior (background: soldier): ")
     assert_includes second_scene["prompt"], "<user>\nIn scene 1 of 7, the story's first half, Ilker chose \"Force the drawer open\""
 
     get game_session_path(@room), as: :json

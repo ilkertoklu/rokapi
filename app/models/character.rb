@@ -35,7 +35,7 @@ class Character < ApplicationRecord
 
   def identity
     race, klass, background = traits.map { it.label(locale: :en).downcase }
-    "#{race} #{klass}, #{background} by background"
+    "#{race} #{klass} (background: #{background})"
   end
 
   def portrait
