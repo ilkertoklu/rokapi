@@ -44,6 +44,17 @@ class User::AllowanceTest < ActiveSupport::TestCase
     assert_equal 100, guest.usage_left_percentage
   end
 
+  test "a user out of usage can join a rematch but not open one" do
+    host, guest = users(:deniz), users(:sevval)
+    game_session = GameSession.create!(creator: host)
+    play_scenes game_session, 10
+
+    assert_not host.can_rematch?(game_session)
+
+    game_session.start_rematch(by: guest)
+    assert host.can_rematch?(game_session.reload)
+  end
+
   test "a bigger plan stretches the same play" do
     user = users(:sevval)
     subscribe user, "standard"

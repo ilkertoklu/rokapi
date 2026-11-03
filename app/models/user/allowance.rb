@@ -18,6 +18,10 @@ module User::Allowance
     usage_left_percentage.zero?
   end
 
+  def can_rematch?(game_session)
+    game_session.rematch.present? || !out_of_usage?
+  end
+
   def usage_refills_at
     usage_period.end
   end

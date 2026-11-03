@@ -1,7 +1,7 @@
 class GameSessions::RematchesController < ApplicationController
   include GameSessionScoped
 
-  before_action :ensure_finished_party, :stop_at_usage_wall
+  before_action :ensure_finished_party, :ensure_rematch_allowance
 
   def create
     rematch = @game_session.start_rematch(by: Current.user)
@@ -14,11 +14,16 @@ class GameSessions::RematchesController < ApplicationController
 
   private
     def ensure_finished_party
-      head :conflict unless @game_session.multiplayer? && @game_session.finished?
+      unless @game_session.multiplayer? && @game_session.finished?
+        respond_to do |format|
+          format.html { redirect_to_game_session }
+          format.json { head :conflict }
+        end
+      end
     end
 
-    def stop_at_usage_wall
-      if @game_session.rematch.nil? && Current.user.out_of_usage?
+    def ensure_rematch_allowance
+      unless Current.user.can_rematch?(@game_session)
         respond_to do |format|
           format.html { redirect_to new_game_sessions_multi_path }
           format.json { render "plans/wall", status: :payment_required }

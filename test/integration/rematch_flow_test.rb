@@ -70,6 +70,16 @@ class RematchFlowTest < ActionDispatch::IntegrationTest
     assert_response :conflict
   end
 
+  test "asking an unfinished room for a rematch goes back to the game" do
+    @room.update! ended_at: nil
+    sign_in_as users(:ilker)
+
+    assert_no_difference -> { GameSession.count } do
+      post game_session_rematch_path(@room)
+    end
+    assert_redirected_to game_session_path(@room)
+  end
+
   private
     def warrior
       { race: "human", klass: "warrior", background: "soldier",
