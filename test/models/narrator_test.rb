@@ -110,6 +110,15 @@ class NarratorTest < ActiveSupport::TestCase
     CUE
   end
 
+  test "the last roll's outcome knows how the story ends and leaves the ending to the last scene" do
+    @game_session.current_scene.update! position: @game_session.scene_budget - 1
+    roll = play_first_scene
+
+    request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
+
+    assert request["prompt"].end_with?("\nThe next scene is the last, and the story ends in defeat: leave the ending to it.\n")
+  end
+
   test "a used item is settled by the outcome and not raised again by the next scene" do
     roll = play_first_scene
     items(:healing_potion).use

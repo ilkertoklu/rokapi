@@ -39,6 +39,10 @@ class Scene < ApplicationRecord
     position >= game_session.scene_budget
   end
 
+  def followed_by_the_last?
+    position + 1 >= game_session.scene_budget
+  end
+
   def ending
     if active_player.character.hp.zero?
       "defeat"

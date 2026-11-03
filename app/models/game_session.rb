@@ -188,6 +188,6 @@ class GameSession < ApplicationRecord
     end
 
     def finale_next?(previous)
-      current_scene.position + 1 >= scene_budget || previous.character.hp.zero?
+      current_scene.followed_by_the_last? || previous.character.hp.zero?
     end
 end
