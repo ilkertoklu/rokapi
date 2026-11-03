@@ -12,7 +12,7 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
 
     assert_includes first_scene["system"], "The party, who take turns:\n- Ilker: "
     assert_includes first_scene["system"], "\n- Deniz: "
-    assert_equal "Scene 1 of 7, Ilker's turn.\nIlker: 31/31 health; carries Longsword, Round shield; no statuses.\n", first_scene["prompt"]
+    assert_equal "Scene 1 of 7, Ilker's turn.\nIlker, human warrior, soldier by background: 31/31 health; carries Longsword, Round shield; no statuses.\n", first_scene["prompt"]
 
     sign_in_as users(:ilker)
     get game_session_path(@room), as: :json
@@ -63,7 +63,7 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
     second_scene = stub_understudy(SECOND_SCENE_RESPONSE) do
       perform_enqueued_jobs { post game_session_acknowledgement_path(@room), as: :json }
     end.sole
-    assert second_scene["prompt"].include?("\n\nScene 2 of 7, Deniz's turn. Pick up where the last outcome stopped, without retelling it. The heroes do only what the players chose: where the way forks, the fork goes into the choices.\nDeniz: ")
+    assert second_scene["prompt"].include?("\n\nScene 2 of 7, Deniz's turn. Pick up where the last outcome stopped, without retelling it. The heroes do only what the players chose: where the way forks, the fork goes into the choices.\nDeniz, human warrior, soldier by background: ")
     assert_includes second_scene["prompt"], "<user>\nIlker chose \"Force the drawer open\""
 
     get game_session_path(@room), as: :json

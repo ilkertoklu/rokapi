@@ -137,7 +137,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
 
-    assert request["prompt"].include?("\n\nScene 2 of 7, Ilker's turn. Pick up where the last outcome stopped, without retelling it. The heroes do only what the players chose: where the way forks, the fork goes into the choices.\nIlker: ")
+    assert request["prompt"].include?("\n\nScene 2 of 7, Ilker's turn. Pick up where the last outcome stopped, without retelling it. The heroes do only what the players chose: where the way forks, the fork goes into the choices.\nIlker, human warrior, soldier by background: ")
   end
 
   test "statuses weigh on the roll and wear off with it" do
@@ -241,7 +241,7 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
 
     assert_equal 2 * 8, request["prompt"].scan(/^<(user|assistant)>$/).size
-    assert request["prompt"].include?("\n\nScene 5 of 7, Ilker's turn. Pick up where the last outcome stopped, without retelling it. The heroes do only what the players chose: where the way forks, the fork goes into the choices.\nIlker: ")
+    assert request["prompt"].include?("\n\nScene 5 of 7, Ilker's turn. Pick up where the last outcome stopped, without retelling it. The heroes do only what the players chose: where the way forks, the fork goes into the choices.\nIlker, human warrior, soldier by background: ")
   end
 
   test "a turn the provider never answered is answered on the next attempt" do
@@ -266,7 +266,7 @@ class NarratorTest < ActiveSupport::TestCase
       The tone: balanced. Wonder and danger in equal measure.
       The story runs 7 scenes.
       The hero:
-      - Ilker: Human (Versatile and balanced, at home in any class.), Warrior (Fights at the front, starts with a longsword and a round shield.), Soldier (Discipline, and the sight of war.). Health 31. Strength 16, Agility 11, Constitution 15, Intelligence 8, Wisdom 12, Charisma 14. Sets out with Longsword; Round shield.
+      - Ilker: Human (Versatile and balanced, at home in any class.), Warrior (Fights at the front, starts with a longsword and a round shield.), Soldier by background (Discipline, and the sight of war.). Health 31. Strength 16, Agility 11, Constitution 15, Intelligence 8, Wisdom 12, Charisma 14. Sets out with Longsword; Round shield.
     GAME
   end
 
@@ -278,7 +278,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert_includes request["system"], "Görev: Akçabük köyünün kış tuzunu getiren kervan üç gündür kayıp"
     assert_includes request["system"], "Aslında olan, yalnızca senin bildiğin: Kervanbaşı Orhan tuzu dağ obasına sattı"
     assert_includes request["system"], "- Ilker: İnsan (Çok yönlü ve dengeli; her sınıfa kolay uyum sağlar.), Savaşçı (Ön safta dövüşür;"
-    assert_includes request["system"], "Can 31. Güç 16, Çeviklik 11,"
+    assert_includes request["system"], "Asker geçmişli (Disiplin ve savaş görmüşlük.). Can 31. Güç 16, Çeviklik 11,"
     assert_includes request["system"], "Yola çıkarken yanında: Uzun kılıç; Yuvarlak kalkan."
     assert_no_match(/Warrior|Strength|The quest/, request["system"])
     assert_equal "Scene 1 of 7, Ilker's turn.\n#{sheet}", request["prompt"]
@@ -459,7 +459,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(FINALE_RESPONSE) { narrate }.sole
 
-    assert_match(/Pick up where the last outcome stopped, without retelling it. This is the last scene, and the story ends in victory: 1 of the 1 rolls succeeded. The ending is only what the choices and rolls so far bring about: no one, Ilker included, makes a move in it that those did not set up.\nIlker: .*\n\z/, request["prompt"])
+    assert_match(/Pick up where the last outcome stopped, without retelling it. This is the last scene, and the story ends in victory: 1 of the 1 rolls succeeded. The ending is only what the choices and rolls so far bring about: no one, Ilker included, makes a move in it that those did not set up.\nIlker, human warrior, soldier by background: .*\n\z/, request["prompt"])
     assert @game_session.reload.finished?
   end
 
@@ -564,7 +564,7 @@ class NarratorTest < ActiveSupport::TestCase
 
   private
     def sheet(hp: 31)
-      "Ilker: #{hp}/31 health; carries Longsword, Healing potion (instant: +7 health, 1 use), Inn ledger (quest item); no statuses.\n"
+      "Ilker, human warrior, soldier by background: #{hp}/31 health; carries Longsword, Healing potion (instant: +7 health, 1 use), Inn ledger (quest item); no statuses.\n"
     end
 
     def narrate

@@ -33,6 +33,11 @@ class Character < ApplicationRecord
     [ Race.fetch(race), Klass.fetch(klass), Background.fetch(background) ]
   end
 
+  def identity
+    race, klass, background = traits.map { it.label(locale: :en).downcase }
+    "#{race} #{klass}, #{background} by background"
+  end
+
   def starting_gear
     Klass.fetch(klass).starting_items(locale: game_session.locale).map { |item| Item.new(item) }
   end
