@@ -3,7 +3,6 @@ class Narrator < RubyLLM::Agent
 
   REWRITES = 2
   FENCE = "```"
-  WORDS = { scene: 90, finale: 120, resolution: 40, location: 5, adventure: 4, secret: 60, label: 9, reason: 10 }.freeze
 
   def self.table_name_prefix = "narrator_"
 
@@ -42,7 +41,7 @@ class Narrator < RubyLLM::Agent
     return if roll.resolved?
 
     resolution, effects = rewriting RubyLLM.render_prompt("narrator/outcome", roll: roll) do |cue|
-      check_outcome(*told(speak(cue).content))
+      told speak(cue).content
     end
 
     roll.resolve resolution: resolution, effects: effects
@@ -86,19 +85,14 @@ class Narrator < RubyLLM::Agent
 
     def check_scene(scene, prose, data)
       finale, title, choices = data["finale"] == true, data["title"].to_s, Array(data["choices"])
-      fit "the narration", prose, finale ? :finale : :scene
       raise MalformedResponse, "the title is missing" if title.blank?
-      raise MalformedResponse, "the title #{title.inspect} runs #{title.length} characters, at most #{game_session.title_length} fit beside the progress dots" if title.length > game_session.title_length
-      fit "the location", data["location"], :location
 
       if scene.first? && !finale
         raise MalformedResponse, "the first scene must carry the secret" if data["secret"].blank?
-        fit "the secret", data["secret"], :secret
       end
 
       if names_the_adventure?(scene)
         raise MalformedResponse, "the first scene must name the adventure" if data["adventure"].blank?
-        fit "the adventure", data["adventure"], :adventure
       end
 
       if finale || scene.active_player.character.hp.zero? || scene.last?
@@ -109,24 +103,11 @@ class Narrator < RubyLLM::Agent
 
         choices.each do |choice|
           raise MalformedResponse, "a choice has no label" if choice["label"].blank?
-          fit "the choice label", choice["label"], :label
-          fit "the difficulty reason", choice["difficulty_reason"], :reason
           raise MalformedResponse, "difficulty #{choice["difficulty"].inspect} is outside #{Choice::DIFFICULTY.min}-#{Choice::DIFFICULTY.max}" unless Choice::DIFFICULTY.cover?(choice["difficulty"])
         end
       end
 
       [ prose, data ]
-    end
-
-    def check_outcome(resolution, effects)
-      fit "the resolution", resolution, :resolution
-
-      [ resolution, effects ]
-    end
-
-    def fit(part, text, limit)
-      count = text.to_s.split.size
-      raise MalformedResponse, "#{part} runs #{count} words, at most #{WORDS[limit]} fit the screen: #{text.to_s.squish.inspect}" if count > WORDS[limit]
     end
 
     def write_scene(scene, prose, data)

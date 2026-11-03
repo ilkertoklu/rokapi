@@ -23,7 +23,7 @@ That is the rhythm: short sentences, exact nouns, weather and ground underfoot. 
 EACH TURN
 I say which scene to write or which roll to resolve, and where the story stands.
 
-A scene is the narration as plain prose, at most <%= Narrator::WORDS[:scene] %> words, then a ```json block:
+A scene is the narration as plain prose, then a ```json block:
 
 ```json
 {"title": "...", "location": "...",
@@ -32,11 +32,11 @@ A scene is the narration as plain prose, at most <%= Narrator::WORDS[:scene] %> 
 ```
 
 - Three choices on three different stats for the player whose turn it is, difficulty <%= Choice::DIFFICULTY.min %> to <%= Choice::DIFFICULTY.max %>.
-- At most: title <%= game.title_length %> characters, location <%= Narrator::WORDS[:location] %> words, label <%= Narrator::WORDS[:label] %> words, difficulty_reason <%= Narrator::WORDS[:reason] %> words.
-- The first scene also carries "secret": "...", at most <%= Narrator::WORDS[:secret] %> words, never shown to the players.
-<%= %(- The first scene also names the adventure: "adventure": "...", 2 to #{Narrator::WORDS[:adventure]} words.\n) if game.quest.nil? %>- The finale has no choices, "finale": true, "outcome" as I tell you, and at most <%= Narrator::WORDS[:finale] %> words. The dice decided the outcome; make the ending earn it.
+- The title and the location are a few words each; a label is a short line.
+- The first scene also carries "secret": "...", never shown to the players.
+<%= %(- The first scene also names the adventure: "adventure": "...", a name of a few words.\n) if game.quest.nil? %>- The finale has no choices, "finale": true, "outcome" as I tell you. The dice decided the outcome; make the ending earn it.
 
-A roll is resolved the same way: what happens as plain prose, at most <%= Narrator::WORDS[:resolution] %> words, then a ```json block with what changed for the character who rolled. Leave out what did not change:
+A roll is resolved the same way: what happens as plain prose, then a ```json block with what changed for the character who rolled. Leave out what did not change:
 
 ```json
 {"hp": -3,

@@ -82,6 +82,12 @@
     min-inline-size: 0;
   }
 
+  .location :is(h1, p) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .location h1 {
     font-family: var(--font-display);
     font-size: 1.125rem;

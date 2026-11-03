@@ -436,33 +436,15 @@ class NarratorTest < ActiveSupport::TestCase
     assert @game_session.reload.outcome_victory?
   end
 
-  test "a scene that does not fit the screen is rewritten until the narrator gives up" do
-    long = "word " * 20
-    { "the narration" => "#{"Snow falls. " * 50}\n\n" + SCENE_RESPONSE,
-      "the choice label" => SCENE_RESPONSE.sub('"label": "Force the drawer open"', %("label": "#{long}")),
-      "the difficulty reason" => SCENE_RESPONSE.sub('"The lock is old"', %("#{long}")) }.each do |part, reply|
-      requests = stub_understudy(*rewrites_of(reply)) do
-        error = assert_raises(Narrator::MalformedResponse) { narrate }
-        assert_match(/\A#{part} runs \d+ words, at most \d+ fit the screen: "/, error.message)
-      end
-
-      assert_includes requests.last["prompt"], "rejected: #{part} runs"
-      assert @game_session.scenes.sole.narrating?
-    end
-  end
-
-  test "a title must fit beside the progress dots on one line" do
+  test "a scene is kept whole however long the narrator makes it" do
     @game_session.update! length: "long"
-    coaching_inn = SCENE_RESPONSE.sub('"title": "The Old Inn"', '"title": "The Old Coaching Inn"')
+    long = SCENE_RESPONSE.sub('"title": "The Old Inn"', '"title": "The Old Coaching Inn by the Frozen Ford"').sub("Inside, a single candle is still burning.", "Snow falls. " * 300)
 
-    stub_understudy(*rewrites_of(coaching_inn)) do
-      error = assert_raises(Narrator::MalformedResponse) { narrate }
-      assert_equal 'the title "The Old Coaching Inn" runs 20 characters, at most 12 fit beside the progress dots', error.message
-    end
+    stub_understudy(long) { narrate }
 
-    @game_session.update! length: "short"
-    stub_understudy(coaching_inn) { narrate }
-    assert_equal "The Old Coaching Inn", @game_session.scenes.sole.title
+    scene = @game_session.scenes.sole
+    assert_equal "The Old Coaching Inn by the Frozen Ford", scene.title
+    assert_equal 300, scene.narration.scan("Snow falls.").size
   end
 
   test "the last scene must be the finale" do
@@ -476,14 +458,12 @@ class NarratorTest < ActiveSupport::TestCase
     assert_not @game_session.reload.finished?
   end
 
-  test "a resolution that does not fit the screen is rewritten" do
+  test "an outcome is kept whole however long the narrator makes it" do
     roll = play_first_scene
-    long = OUTCOME_RESPONSE.sub("The drawer opens, but you cut your hand.", "The drawer sticks. " * 20)
 
-    stub_understudy(long, OUTCOME_RESPONSE) { roll.narrate }
+    stub_understudy(OUTCOME_RESPONSE.sub("The drawer opens, but you cut your hand.", "The drawer sticks. " * 100)) { roll.narrate }
 
-    assert_equal "The drawer opens, but you cut your hand.", roll.reload.resolution
-    assert_equal 1 + 2, @game_session.conversation.ruby_llm_usages.count, "the scene, the rejected outcome and its rewrite"
+    assert_equal 100, roll.reload.resolution.scan("The drawer sticks.").size
   end
 
   test "the understudy narrates at no cost" do
