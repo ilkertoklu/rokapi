@@ -7,6 +7,9 @@ class SignupFlowTest < ActionDispatch::IntegrationTest
 
     user = User.find_by!(email: "taze@posta.com")
     post session_path, params: { code: LoginCode.last.code }
+    assert_redirected_to root_url
+
+    follow_redirect!
     assert_redirected_to new_signup_profile_path
 
     post signup_profile_path, params: { user: { name: "Robin", terms: "1" } }
@@ -19,6 +22,24 @@ class SignupFlowTest < ActionDispatch::IntegrationTest
     get root_path
     assert_response :success
     assert user.reload.profile_complete?
+  end
+
+  test "a game link that sent a new player to log in is gone by the next login" do
+    get game_session_path(game_sessions(:ilker_room))
+    assert_redirected_to welcome_path
+
+    post login_codes_path, params: { email: "taze@posta.com" }
+    post session_path, params: { code: LoginCode.last.code }
+    assert_redirected_to game_session_url(game_sessions(:ilker_room))
+
+    follow_redirect!
+    assert_redirected_to new_signup_profile_path
+    post signup_profile_path, params: { name: "Robin", terms: "1" }
+    delete session_path
+
+    post login_codes_path, params: { email: "taze@posta.com" }
+    post session_path, params: { code: LoginCode.last.code }
+    assert_redirected_to root_url
   end
 
   test "profile completion requires accepting the terms" do

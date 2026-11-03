@@ -65,6 +65,7 @@ class AccountDeletionFlowTest < ActionDispatch::IntegrationTest
 
     post login_codes_path, params: { email: "ilker@example.com" }
     post session_path, params: { code: LoginCode.last.code }
+    follow_redirect!
     assert_redirected_to new_signup_profile_path
 
     user = User.find_by!(email: "ilker@example.com")

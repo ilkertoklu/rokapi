@@ -14,7 +14,7 @@ class SessionsController < ApplicationController
     if (user = pending_user) && user.verify_login_code(params.expect(:code))
       clear_pending_email
       start_new_session_for user
-      redirect_to user.profile_complete? ? after_authentication_url : new_signup_profile_path
+      redirect_to after_authentication_url
     else
       redirect_to new_session_path, alert: t(".wrong_code")
     end
