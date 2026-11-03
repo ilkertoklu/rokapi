@@ -46,10 +46,19 @@ class UserTest < ActiveSupport::TestCase
   test "complete_profile names the user and accepts the terms" do
     user = users(:incomplete)
 
-    user.complete_profile(name: "Robin")
+    assert user.complete_profile(name: "Robin", terms: "1")
 
-    assert user.profile_complete?
+    assert user.reload.profile_complete?
     assert_equal "Robin", user.name
+  end
+
+  test "complete_profile records no acceptance the terms did not get" do
+    user = users(:incomplete)
+
+    assert_not user.complete_profile(name: "Robin", terms: "0")
+    assert_not user.complete_profile(name: "Robin", terms: nil)
+
+    assert_nil user.reload.terms_accepted_at
   end
 
   test "update_settings saves the name and holds a new email until it is confirmed" do

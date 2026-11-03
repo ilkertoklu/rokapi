@@ -16,6 +16,7 @@ class User < ApplicationRecord
   normalizes :name, with: ->(name) { name.squish.truncate(NAME_LENGTH, omission: "") }
 
   validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
+  validates :terms, acceptance: { allow_nil: false }, on: :signup
 
   def send_login_code
     login_codes.delete_all
@@ -33,8 +34,10 @@ class User < ApplicationRecord
     name.present? && terms_accepted_at.present?
   end
 
-  def complete_profile(name:)
-    update! name: name, terms_accepted_at: terms_accepted_at || Time.current
+  def complete_profile(name:, terms:)
+    self.terms_accepted_at ||= Time.current
+    assign_attributes name: name, terms: terms
+    save context: :signup
   end
 
   def initial

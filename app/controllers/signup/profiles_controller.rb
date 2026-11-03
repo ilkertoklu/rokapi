@@ -5,8 +5,7 @@ class Signup::ProfilesController < ApplicationController
   end
 
   def create
-    if terms_accepted?
-      Current.user.complete_profile name: params.expect(:name)
+    if Current.user.complete_profile(name: profile_params[:name], terms: profile_params[:terms])
       redirect_to signup_welcome_path
     else
       redirect_to new_signup_profile_path, alert: t(".terms_required")
@@ -14,7 +13,7 @@ class Signup::ProfilesController < ApplicationController
   end
 
   private
-    def terms_accepted?
-      params[:terms] == "1"
+    def profile_params
+      params.expect(user: %i[ name terms ])
     end
 end

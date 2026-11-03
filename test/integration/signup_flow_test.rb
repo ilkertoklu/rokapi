@@ -9,7 +9,7 @@ class SignupFlowTest < ActionDispatch::IntegrationTest
     post session_path, params: { code: LoginCode.last.code }
     assert_redirected_to new_signup_profile_path
 
-    post signup_profile_path, params: { name: "Robin", terms: "1" }
+    post signup_profile_path, params: { user: { name: "Robin", terms: "1" } }
     assert_redirected_to signup_welcome_path
 
     follow_redirect!
@@ -24,7 +24,7 @@ class SignupFlowTest < ActionDispatch::IntegrationTest
   test "profile completion requires accepting the terms" do
     sign_in_as users(:incomplete)
 
-    post signup_profile_path, params: { name: "Robin", terms: "0" }
+    post signup_profile_path, params: { user: { name: "Robin", terms: "0" } }
     assert_redirected_to new_signup_profile_path
     assert_not users(:incomplete).reload.profile_complete?
   end
@@ -34,7 +34,19 @@ class SignupFlowTest < ActionDispatch::IntegrationTest
     sign_in_as user
 
     assert_no_changes -> { user.reload.terms_accepted_at } do
-      post signup_profile_path, params: { name: "Ilker", terms: "1" }
+      post signup_profile_path, params: { user: { name: "Ilker", terms: "1" } }
+    end
+  end
+
+  test "the profile form posts the name and terms as the user's" do
+    sign_in_as users(:incomplete)
+
+    get new_signup_profile_path
+
+    assert_select "form[action=?][method=post]", signup_profile_path do
+      assert_select "input[name=_method]", count: 0
+      assert_select "input[name=?]", "user[name]"
+      assert_select "input[type=checkbox][name=?]", "user[terms]"
     end
   end
 

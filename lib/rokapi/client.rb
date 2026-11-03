@@ -44,7 +44,7 @@ module Rokapi
       response = post("/session", code: code)
       raise Error, "The login code was not accepted." if response.location.to_s.end_with?("/session/new") || !logged_in?
 
-      post "/signup/profile", name: name, terms: "1" if response.location.to_s.include?("/signup/profile")
+      post "/signup/profile", "user[name]" => name, "user[terms]" => "1" if response.location.to_s.include?("/signup/profile")
       fetch_csrf_token "/"
     end
 

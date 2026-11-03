@@ -1,6 +1,6 @@
 <% content_for :title, "#{t(".title")} · Rokapi" %>
 
-<%= form_with url: signup_profile_path, class: "flow" do |form| %>
+<%= form_with model: Current.user, url: signup_profile_path, method: :post, class: "flow" do |form| %>
   <header class="page-head">
     <h1><%= t(".title") %></h1>
   </header>
