@@ -11,18 +11,18 @@ Rokapi is a Rails 8 application: vanilla Rails, Hotwire, SQLite. LLM calls go th
 
 ## How a game plays
 
-1. **Setup.** Pick one of three fate cards, each a place, a trouble and a person at the heart of it, or draw again, or take one face down as a surprise. Then a tone (fun, balanced, dark) and a length (7, 12 or 18 scenes).
-2. **Character.** Six races, six classes, six backgrounds, and points to spread across six stats.
-3. **Scenes.** Every scene ends in two or three choices, each tied to a stat and a target number. You pick one and roll.
-4. **Outcomes.** The narrator tells what the roll did and returns its effects: health, what you carry, status effects that weigh on later rolls.
-5. **Finale.** The last scene is played like the others, and its roll tells the ending. Your rolls decide victory or defeat, and the last one counts twice.
+1. **Setup.** Pick a fate card: a place, a trouble and a person. Or take a surprise. Then pick a tone and a length.
+2. **Character.** Pick a race, a class and a background, and spread points across six stats.
+3. **Scenes.** Each scene ends in two or three choices. You pick one and roll.
+4. **Outcomes.** The narrator tells what happened. Your health, items and statuses change with it.
+5. **Finale.** The last roll ends the story. Your rolls decide if you win.
 
 
 ## The narrator
 
-The narrator does what a good game master does. Each fate card carries a hidden twist only the narrator sees; it settles what really happened and lets it come out a piece at a time. It writes each scene, offers choices that carry real stakes, takes the dice as they fall, and follows the consequences through to the end.
+The narrator works like a good game master. Each fate card has a hidden twist that only the narrator knows, and the story reveals it bit by bit.
 
-Every scene is written with the whole game in view. The narrator is one conversation per game: it has every scene played so far, your character as they stand right now, and where the story is, early, in the middle or late. The last scene knows what happened in the first.
+The narrator remembers every scene of the game, so the ending knows what happened at the start.
 
 Every call is logged with its cost. A finished game knows exactly what it cost to tell.
 
@@ -37,7 +37,7 @@ Every call is logged with its cost. A finished game knows exactly what it cost t
 
 ### Narrating without an API key
 
-In development, `NARRATOR_COMMAND` hands every narrator call to a command of your own instead of the API: `NARRATOR_COMMAND=~/bin/narrate bin/dev`. The command is run through the shell once per call and gets one JSON object on stdin: `system` (the instructions) and `prompt` (the conversation so far and the turn). It writes the reply to stdout, exactly as the model would write it, and exits 0. Whatever the command writes before it exits streams into the scene as it arrives. These calls are logged as model `understudy` at zero cost. Without the variable, and in every other environment, the narrator calls the API.
+In development you can send narrator calls to your own command instead of the API: `NARRATOR_COMMAND=~/bin/narrate bin/dev`. The command reads a JSON object with `system` and `prompt` on stdin and writes the reply to stdout. These calls cost nothing. Without the variable, the narrator calls the API.
 
 
 
