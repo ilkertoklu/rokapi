@@ -104,7 +104,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert request["prompt"].end_with?(<<~CUE)
 
 
-      Ilker chose "#{roll.choice.label}": die 2, modifier #{format("%+d", roll.modifier)}, statuses +0, total #{roll.total} against #{roll.target}. #{roll.grade_label}, margin #{format("%+d", roll.margin)}. It does not work, and what goes wrong takes the story somewhere new instead of back for another try.
+      In scene 1 of 7, the story's first half, Ilker chose "#{roll.choice.label}": die 2, modifier #{format("%+d", roll.modifier)}, statuses +0, total #{roll.total} against #{roll.target}. #{roll.grade_label}, margin #{format("%+d", roll.margin)}. It does not work, and what goes wrong takes the story somewhere new instead of back for another try.
       Used since the scene began, already applied: Healing potion (+7 health).
       Ilker now: 31/31 health; carries Longsword, Inn ledger (quest item); no statuses.
       Tell only what this roll does, in a paragraph or two, and stop there: the next scene comes in my next message.
@@ -129,6 +129,17 @@ class NarratorTest < ActiveSupport::TestCase
     assert request["prompt"].end_with?("\nThe next scene is the last, and the story ends in defeat. Tell only what this roll does, in a paragraph or two, and stop there: the ending belongs to that last scene.\n")
   end
 
+  test "the scene and the roll in the middle of the story say so" do
+    @game_session.current_scene.update! position: 4
+
+    scene = stub_understudy(SCENE_RESPONSE) { narrate }.sole
+    roll = with_die(2) { choose_and_roll @game_session.current_scene }
+    outcome = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
+
+    assert scene["prompt"].start_with?("Scene 4 of 7, the middle of the story, Ilker's turn.")
+    assert outcome["prompt"].include?("\nIn scene 4 of 7, the middle of the story, Ilker chose ")
+  end
+
   test "a used item is settled by the outcome and not raised again by the next scene" do
     roll = play_first_scene
     items(:healing_potion).use
@@ -137,7 +148,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
 
-    assert request["prompt"].include?("\n\nScene 2 of 7, Ilker's turn. Pick up where the last outcome stopped, without retelling it. The heroes do only what the players chose: where the way forks, the fork goes into the choices.\nIlker, human warrior, soldier by background: ")
+    assert request["prompt"].include?("\n\nScene 2 of 7, the story's first half, Ilker's turn. Pick up where the last outcome stopped, without retelling it. The heroes do only what the players chose: where the way forks, the fork goes into the choices.\nIlker, human warrior, soldier by background: ")
   end
 
   test "statuses weigh on the roll and wear off with it" do
@@ -214,7 +225,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert_includes first["system"], "The story runs 7 scenes."
     assert_includes first["system"], "The quest: The caravan carrying Whitebend's winter salt"
     assert_includes first["system"], "Warrior"
-    assert_equal "Scene 1 of 7, Ilker's turn.\n#{sheet}", first["prompt"], "the first turn has no story before it"
+    assert_equal "Scene 1 of 7, the story's first half, Ilker's turn.\n#{sheet}", first["prompt"], "the first turn has no story before it"
 
     roll = with_die(2) { choose_and_roll @game_session.current_scene }
     stub_understudy(OUTCOME_RESPONSE) { roll.narrate }
@@ -241,7 +252,7 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
 
     assert_equal 2 * 8, request["prompt"].scan(/^<(user|assistant)>$/).size
-    assert request["prompt"].include?("\n\nScene 5 of 7, Ilker's turn. Pick up where the last outcome stopped, without retelling it. The heroes do only what the players chose: where the way forks, the fork goes into the choices.\nIlker, human warrior, soldier by background: ")
+    assert request["prompt"].include?("\n\nScene 5 of 7, the story's second half, Ilker's turn. Pick up where the last outcome stopped, without retelling it. The heroes do only what the players chose: where the way forks, the fork goes into the choices.\nIlker, human warrior, soldier by background: ")
   end
 
   test "a turn the provider never answered is answered on the next attempt" do
@@ -252,7 +263,7 @@ class NarratorTest < ActiveSupport::TestCase
     retry_call = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
     assert @game_session.current_scene.choosing?
-    assert_equal "Scene 1 of 7, Ilker's turn.\n#{sheet}", retry_call["prompt"], "the turn is not asked twice"
+    assert_equal "Scene 1 of 7, the story's first half, Ilker's turn.\n#{sheet}", retry_call["prompt"], "the turn is not asked twice"
     assert_equal %w[system user assistant], @game_session.conversation.messages.pluck(:role)
   end
 
@@ -281,7 +292,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert_includes request["system"], "Asker geçmişli. Can 31. Güç 16, Çeviklik 11,"
     assert_includes request["system"], "Yola çıkarken yanında: Uzun kılıç; Yuvarlak kalkan."
     assert_no_match(/Warrior|Strength|The quest/, request["system"])
-    assert_equal "Scene 1 of 7, Ilker's turn.\n#{sheet}", request["prompt"]
+    assert_equal "Scene 1 of 7, the story's first half, Ilker's turn.\n#{sheet}", request["prompt"]
   end
 
   test "the surprise adventure takes its name from the first scene" do
@@ -488,8 +499,8 @@ class NarratorTest < ActiveSupport::TestCase
     broken, rewrite = stub_understudy(unfenced, SCENE_RESPONSE) { narrate }
 
     assert @game_session.scenes.sole.choosing?
-    assert_equal "Scene 1 of 7, Ilker's turn.\n#{sheet}", broken["prompt"]
-    assert_equal "Scene 1 of 7, Ilker's turn.\n#{sheet}\nYour last reply was rejected: the ```json block is missing. Write the whole reply again.", rewrite["prompt"],
+    assert_equal "Scene 1 of 7, the story's first half, Ilker's turn.\n#{sheet}", broken["prompt"]
+    assert_equal "Scene 1 of 7, the story's first half, Ilker's turn.\n#{sheet}\nYour last reply was rejected: the ```json block is missing. Write the whole reply again.", rewrite["prompt"],
       "the rejected reply is not in the conversation the rewrite sees"
 
     messages = @game_session.conversation.messages.reload

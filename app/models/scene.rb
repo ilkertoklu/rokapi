@@ -54,6 +54,18 @@ class Scene < ApplicationRecord
     position + 1 >= game_session.scene_budget
   end
 
+  def part_of_the_story
+    middle = (game_session.scene_budget + 1) / 2.0
+
+    if position < middle.floor
+      "the story's first half"
+    elsif position > middle.ceil
+      "the story's second half"
+    else
+      "the middle of the story"
+    end
+  end
+
   def ending
     if active_player.character.hp.zero?
       "defeat"
