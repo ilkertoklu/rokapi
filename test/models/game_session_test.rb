@@ -25,9 +25,9 @@ class GameSessionTest < ActiveSupport::TestCase
   end
 
   test "a picked card is played as it was shown, with a twist drawn on the server" do
-    game_session = GameSession.create!(creator: users(:ilker), card: "salt_caves silent_bell old_captain")
+    game_session = GameSession.create!(creator: users(:ilker), card: "salt_caves lost_messenger old_captain")
 
-    assert_equal %w[ salt_caves silent_bell old_captain ], game_session.card.keys
+    assert_equal %w[ salt_caves lost_messenger old_captain ], game_session.card.keys
     assert_not game_session.surprise?
     assert_includes GameSession::Twist.keys, game_session.twist
   end

@@ -178,23 +178,71 @@ en:
         text: The docks of a walled city
       salt_caves:
         text: Salt caves beneath the hills
+      lighthouse_rock:
+        text: A lighthouse on a rock out at sea
+      merchant_ship:
+        text: A merchant ship three days from any shore
+      snowbound_pass:
+        text: A snowbound mountain pass with a single inn
+      cliff_monastery:
+        text: A monastery cut into a cliff
+      stilt_village:
+        text: A village on stilts in the reed marshes
+      desert_caravanserai:
+        text: A caravanserai at a desert well
+      buried_tunnels:
+        text: Old tunnels under a ruined city
+      tanners_quarter:
+        text: The tanners' quarter of a crowded city
+      keep_kitchens:
+        text: The kitchens of a lord's keep
+      frozen_lake_lodge:
+        text: A hunters' lodge by a frozen lake
+      prison_island:
+        text: A prison island in a cold sea
+      burial_mounds:
+        text: A plain of old kings' burial mounds
     trouble:
       missing_child:
         text: A child went out at dusk and has not come back
       dry_well:
-        text: The only well has stopped giving water
+        text: The drinking water has gone foul, and the last clean barrel is half empty
       riders_coming:
-        text: Riders were seen on the ridge, and they will be here by the new moon
+        text: Raiders were sighted, and they will be here by the new moon
       stolen_seal:
-        text: The seal that keeps the peace has been stolen
+        text: The seal that keeps the peace was stolen, and the envoys arrive tomorrow
       broken_oath:
         text: A sworn oath was broken, and the other side is coming to settle it
       called_debt:
         text: An old debt has been called in, and it must be paid within the week
       sleeping_sickness:
         text: A sickness puts people to sleep, and they do not wake
-      silent_bell:
-        text: The bell that warns of danger has gone silent
+      missing_healer:
+        text: The only healer vanished the night a fever broke out
+      dead_fire:
+        text: The fire that must never go out has gone out, and no one can light it again
+      dark_wards:
+        text: The old warding stones went dark last night, and something has already come through
+      beast_returns:
+        text: A beast driven off years ago is back, and it comes closer every night
+      kidnapped:
+        text: Someone has been taken, and the time given for the ransom is running out
+      stolen_stores:
+        text: The winter stores were stolen in a single night
+      broken_wedding:
+        text: A wedding meant to end a feud was called off this morning
+      empty_strongbox:
+        text: The tax collector arrives in three days, and the strongbox is empty
+      witch_bargain:
+        text: A bargain struck with a witch comes due at the full moon
+      lost_messenger:
+        text: A messenger carrying a warning never arrived
+      false_accusation:
+        text: Someone will be banished at dawn for a crime they swear they did not commit
+      rival_claim:
+        text: A rival has claimed the place and given everyone ten days to leave
+      cut_off:
+        text: The only way out has been cut off, and the food will last a week
     figure:
       weather_reader:
         text: An old weather-reader who pleases no one
@@ -211,14 +259,38 @@ en:
       old_captain:
         text: A retired captain who wants one last command
       doubted_healer:
-        text: A healer who wants to be believed
+        text: A healer no one believes
+      weary_smuggler:
+        text: A smuggler who wants out of the trade
+      doubting_novice:
+        text: A novice who has lost their faith and is afraid to say so
+      selling_innkeeper:
+        text: An innkeeper who wants to sell up and leave
+      exiled_noble:
+        text: An exiled noble who wants their name back
+      stable_hand:
+        text: A stable hand who wants to ride with the lord's guard
+      hermit:
+        text: A hermit who wants to be left alone
+      hiding_apprentice:
+        text: An apprentice mage who broke something and hid it
+      lonely_moneylender:
+        text: A moneylender who wants to be liked
+      unknown_bard:
+        text: A bard who wants one song people will remember
+      gravedigger:
+        text: A gravedigger who wants a better life for their child
+      greedy_bridgekeeper:
+        text: A bridge-keeper who wants a bigger cut
+      last_of_the_house:
+        text: The last of an old family, holding a crumbling house together
     twist:
       asker_is_cause:
         text: the one asking for help is the cause
       villain_protects:
         text: the one thought wicked is protecting someone
       left_willingly:
-        text: the one who is missing left of their own will
+        text: what is gone went of its own will
       both_hide_same:
         text: both sides are hiding the same thing
       cover_for_worse:
@@ -229,6 +301,12 @@ en:
         text: it all pays back a wrong done long ago
       no_villain:
         text: no one meant harm; a kindness went wrong
+      trouble_shields:
+        text: the trouble is keeping something worse away
+      outsider_framed:
+        text: someone arranged for an outsider to come and take the blame
+      two_culprits:
+        text: there are two culprits, and neither knows of the other
 
   player:
     departed: Departed player

@@ -196,24 +196,72 @@ tr:
       city_docks:
         text: Surlu bir şehrin iskelesi
       salt_caves:
-        text: Tepelerin altında tuz mağaraları
+        text: Tepelerin altındaki tuz mağaraları
+      lighthouse_rock:
+        text: Açık denizde, bir kayanın üstünde bir fener
+      merchant_ship:
+        text: Her kıyıya üç gün uzaklıkta bir tüccar gemisi
+      snowbound_pass:
+        text: Karla kapanmış, tek hanlı bir dağ geçidi
+      cliff_monastery:
+        text: Sarp bir kayalığa oyulmuş manastır
+      stilt_village:
+        text: Sazlıkta kazıklar üstüne kurulmuş bir köy
+      desert_caravanserai:
+        text: Çölde bir kuyunun başındaki kervansaray
+      buried_tunnels:
+        text: Yıkık bir şehrin altındaki eski tüneller
+      tanners_quarter:
+        text: Kalabalık bir şehrin debbağlar mahallesi
+      keep_kitchens:
+        text: Bir bey kalesinin mutfakları
+      frozen_lake_lodge:
+        text: Donmuş bir gölün kıyısında avcı kulübesi
+      prison_island:
+        text: Soğuk bir denizin ortasında zindan adası
+      burial_mounds:
+        text: Eski hakanların kurganlarıyla dolu bir bozkır
     trouble:
       missing_child:
         text: Bir çocuk akşamüstü dışarı çıktı ve dönmedi
       dry_well:
-        text: Tek kuyu su vermez oldu
+        text: İçme suyu bozuldu; son temiz fıçı da yarıya indi
       riders_coming:
-        text: Sırtta atlılar görüldü; yeni aya kadar burada olurlar
+        text: Akıncılar görüldü; yeni aya kadar burada olurlar
       stolen_seal:
-        text: Barışı ayakta tutan mühür çalındı
+        text: Barışı ayakta tutan mühür çalındı ve elçiler yarın geliyor
       broken_oath:
         text: Bir ant bozuldu; öbür taraf hesap sormaya geliyor
       called_debt:
         text: Eski bir borç istendi; hafta dolmadan ödenmesi gerek
       sleeping_sickness:
         text: Bir hastalık insanları uykuya yatırıyor ve uyanan olmuyor
-      silent_bell:
-        text: Tehlikeyi haber veren çan sustu
+      missing_healer:
+        text: Ateşli hastalığın başladığı gece tek şifacı ortadan kayboldu
+      dead_fire:
+        text: Hiç sönmemesi gereken ateş söndü ve kimse yeniden yakamıyor
+      dark_wards:
+        text: Eski koruma taşları dün gece karardı ve içeri bir şey girdi bile
+      beast_returns:
+        text: Yıllar önce kovulan bir canavar geri döndü ve her gece biraz daha yaklaşıyor
+      kidnapped:
+        text: Biri kaçırıldı ve fidye için verilen süre doluyor
+      stolen_stores:
+        text: Kışlık erzak tek bir gecede çalındı
+      broken_wedding:
+        text: Bir kan davasını bitirecek düğün bu sabah bozuldu
+      empty_strongbox:
+        text: Vergi tahsildarı üç gün sonra geliyor ve sandık boş
+      witch_bargain:
+        text: Bir cadıyla yapılan pazarlığın vadesi dolunayda doluyor
+      lost_messenger:
+        text: Bir uyarı getiren ulak hiç gelmedi
+      false_accusation:
+        text: Biri, işlemediğine yemin ettiği bir suç yüzünden şafakta sürgün edilecek
+      rival_claim:
+        text: Bir hasım burada hak iddia etti ve herkese gitmeleri için on gün verdi
+      cut_off:
+        text: Dışarı çıkan tek yol kesildi ve yiyecek bir hafta yeter
     figure:
       weather_reader:
         text: Havayı okuyan, kimseye yaranamayan yaşlı biri
@@ -231,13 +279,37 @@ tr:
         text: Son bir kez emir vermek isteyen emekli bir kaptan
       doubted_healer:
         text: Kimsenin inanmadığı bir şifacı
+      weary_smuggler:
+        text: İşi bırakmak isteyen bir kaçakçı
+      doubting_novice:
+        text: İnancını yitirmiş ama bunu söylemeye korkan bir çömez
+      selling_innkeeper:
+        text: Hanını satıp gitmek isteyen bir hancı
+      exiled_noble:
+        text: Adını geri isteyen sürgün bir soylu
+      stable_hand:
+        text: Atlı muhafız olmak isteyen bir seyis
+      hermit:
+        text: Rahat bırakılmak isteyen bir münzevi
+      hiding_apprentice:
+        text: Bir şeyi kırıp saklayan çırak bir büyücü
+      lonely_moneylender:
+        text: Sevilmek isteyen bir tefeci
+      unknown_bard:
+        text: Akılda kalacak tek bir türkü isteyen bir ozan
+      gravedigger:
+        text: Çocuğuna daha iyi bir hayat isteyen bir mezarcı
+      greedy_bridgekeeper:
+        text: Payını büyütmek isteyen bir köprü bekçisi
+      last_of_the_house:
+        text: Eski bir ailenin, yıkılan konağını ayakta tutmaya çalışan son ferdi
     twist:
       asker_is_cause:
         text: yardım isteyen, derdin sebebi
       villain_protects:
         text: kötü sanılan aslında birini koruyor
       left_willingly:
-        text: kayıp olan kendi isteğiyle gitti
+        text: kaybolan kendi isteğiyle gitti
       both_hide_same:
         text: iki taraf da aynı şeyi saklıyor
       cover_for_worse:
@@ -248,6 +320,12 @@ tr:
         text: hepsi çok önce yapılmış bir haksızlığın karşılığı
       no_villain:
         text: kimse kötülük istemedi; bir iyilik ters gitti
+      trouble_shields:
+        text: dert, daha kötü bir şeyi uzak tutuyor
+      outsider_framed:
+        text: biri, suçu üstlensin diye bir yabancının gelmesini ayarladı
+      two_culprits:
+        text: iki suçlu var ve ikisi de birbirinden habersiz
 
   player:
     departed: Ayrılan oyuncu
