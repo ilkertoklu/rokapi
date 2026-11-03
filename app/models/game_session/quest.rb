@@ -1,7 +1,7 @@
 class GameSession::Quest < Data.define(:key)
   extend Catalog
 
-  translates :title, :hook, :brief
+  translates :title, :hook, :brief, :secret
 
   ALL = [
     new(key: "lost_caravan"),

@@ -252,7 +252,8 @@ class NarratorTest < ActiveSupport::TestCase
 
     assert_includes request["system"], "Tell the story in English"
     assert_equal <<~GAME, request["system"][/^The quest: .*?\n(?=\n)/m]
-      The quest: The caravan carrying Whitebend's winter salt has been missing for three days, and the blizzard will close the pass within the week. The route runs from Whitebend to Blizzard Pass: the tracks, the abandoned lodges, the rope bridge. What really happened: the caravan master, Orhan, sold the salt to the mountain clan and staged an ambush to hide it; the drivers who refused are held in the lodge cellar, and the clan's hunters still watch the pass. The village elder who sent the hero knows more than she says. Whitebend starves without the salt; the clan starves without the money.
+      The quest: The caravan carrying Whitebend's winter salt has been missing for three days, and the blizzard will close the pass within the week. The route runs from Whitebend to Blizzard Pass: the tracks, the abandoned lodges, the rope bridge. Whitebend starves without the salt.
+      What really happened, which only you know: The caravan master, Orhan, sold the salt to the mountain clan and staged an ambush to hide it; the drivers who refused are held in the lodge cellar, and the clan's hunters still watch the pass. The village elder who sent the hero knows more than she says. The clan starves without the money.
       The tone: balanced. Wonder and danger in equal measure.
       The story runs 7 scenes.
       The hero:
@@ -266,6 +267,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     assert_includes request["system"], "sade, doğal, gündelik Türkçeyle"
     assert_includes request["system"], "Görev: Akçabük köyünün kış tuzunu getiren kervan üç gündür kayıp"
+    assert_includes request["system"], "Aslında olan, yalnızca senin bildiğin: Kervanbaşı Orhan tuzu dağ obasına sattı"
     assert_includes request["system"], "- Ilker: İnsan (Çok yönlü ve dengeli; her sınıfa kolay uyum sağlar.), Savaşçı (Ön safta dövüşür;"
     assert_includes request["system"], "Can 31. Güç 16, Çeviklik 11,"
     assert_includes request["system"], "Yola çıkarken yanında: Uzun kılıç; Yuvarlak kalkan."
