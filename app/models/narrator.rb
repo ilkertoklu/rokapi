@@ -8,7 +8,7 @@ class Narrator < RubyLLM::Agent
 
   chat_model Conversation
   caching
-  instructions game: -> { chat.game_session }
+  instructions { prompt "instructions.#{chat.game_session.locale}", game: chat.game_session }
 
   def self.for(game_session)
     if (conversation = game_session.reload_conversation)

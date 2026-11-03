@@ -259,14 +259,16 @@ class NarratorTest < ActiveSupport::TestCase
     GAME
   end
 
-  test "the brief of a Turkish game, read in the default locale like the narration job" do
+  test "a Turkish game is briefed in Turkish, even from the narration job's default locale" do
     @game_session.update! locale: "tr"
     request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
-    assert_includes request["system"], "Tell the story in Turkish"
-    assert_includes request["system"], "The quest: Akçabük köyünün kış tuzunu getiren kervan üç gündür kayıp", "the quest frame carries the Turkish place names"
-    assert_includes request["system"], "Warrior (Fights at the front", "the brief stays in English whatever the page speaks"
-    assert_includes request["system"], "Sets out with Uzun kılıç; Yuvarlak kalkan."
+    assert_includes request["system"], "sade, doğal, gündelik Türkçeyle"
+    assert_includes request["system"], "Görev: Akçabük köyünün kış tuzunu getiren kervan üç gündür kayıp"
+    assert_includes request["system"], "- Ilker: İnsan (Çok yönlü ve dengeli; her sınıfa kolay uyum sağlar.), Savaşçı (Ön safta dövüşür;"
+    assert_includes request["system"], "Can 31. Güç 16, Çeviklik 11,"
+    assert_includes request["system"], "Yola çıkarken yanında: Uzun kılıç; Yuvarlak kalkan."
+    assert_no_match(/Warrior|Strength|The quest/, request["system"])
     assert_equal "Scene 1 of 7, Ilker's turn.\n#{sheet}", request["prompt"]
   end
 
