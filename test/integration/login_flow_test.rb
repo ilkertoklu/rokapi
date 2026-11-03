@@ -27,6 +27,20 @@ class LoginFlowTest < ActionDispatch::IntegrationTest
     assert_match(/That code is wrong/, flash[:alert])
   end
 
+  test "a code spent on wrong tries points to a new code" do
+    post login_codes_path, params: { email: users(:ilker).email }
+    code = LoginCode.last.code
+
+    LoginCode::MAX_ATTEMPTS.times { post session_path, params: { code: "000000" } }
+    post session_path, params: { code: code }
+
+    assert_redirected_to new_session_path
+    assert_equal "That code is wrong or has expired. Try again or send a new code.", flash[:alert]
+
+    get root_path
+    assert_redirected_to welcome_path
+  end
+
   test "friends on one network all get their codes" do
     counting_rate_limits do
       6.times do |friend|

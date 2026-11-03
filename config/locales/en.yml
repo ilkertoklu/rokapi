@@ -643,7 +643,7 @@ en:
       resend: Resend code
     create:
       rate_limited: Too many attempts. Try again in 15 minutes.
-      wrong_code: That code is wrong or has expired. Try again.
+      wrong_code: That code is wrong or has expired. Try again or send a new code.
 
   signup:
     profiles:

@@ -662,7 +662,7 @@ tr:
       resend: Kodu tekrar gönder
     create:
       rate_limited: Çok fazla deneme yapıldı. 15 dakika sonra tekrar dene.
-      wrong_code: Kod hatalı ya da süresi doldu. Tekrar dene.
+      wrong_code: Kod hatalı ya da süresi doldu. Tekrar dene ya da yeni kod gönder.
 
   signup:
     profiles:
