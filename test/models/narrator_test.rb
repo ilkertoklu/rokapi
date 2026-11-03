@@ -137,7 +137,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
 
-    assert request["prompt"].include?("\n\nScene 2 of 7, Ilker's turn. Pick up where the last outcome stopped, without retelling it.\nIlker: ")
+    assert request["prompt"].include?("\n\nScene 2 of 7, Ilker's turn. Pick up where the last outcome stopped, without retelling it. The heroes do only what the players chose: where the way forks, the fork goes into the choices.\nIlker: ")
   end
 
   test "statuses weigh on the roll and wear off with it" do
@@ -241,7 +241,7 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
 
     assert_equal 2 * 8, request["prompt"].scan(/^<(user|assistant)>$/).size
-    assert request["prompt"].include?("\n\nScene 5 of 7, Ilker's turn. Pick up where the last outcome stopped, without retelling it.\nIlker: ")
+    assert request["prompt"].include?("\n\nScene 5 of 7, Ilker's turn. Pick up where the last outcome stopped, without retelling it. The heroes do only what the players chose: where the way forks, the fork goes into the choices.\nIlker: ")
   end
 
   test "a turn the provider never answered is answered on the next attempt" do
