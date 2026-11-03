@@ -1,7 +1,7 @@
 <% content_for :title, "#{t(".title")} · Rokapi" %>
 
-<div class="flow" data-controller="code" data-code-length-value="<%= LoginCode::CODE_LENGTH %>"
-    data-code-verify-value="<%= t(".verify") %>" data-code-digits-left-value="<%= t(".digits_left").to_json %>">
+<%= tag.div class: "flow", data: { controller: "code", code_length_value: LoginCode::CODE_LENGTH, code_verify_value: t(".verify"),
+      code_digits_left_value: t(".digits_left").to_json } do %>
   <%= render "back", to: new_login_code_path, title: t(".title") %>
 
   <p class="hint"><%= t(".sent_html", length: LoginCode::CODE_LENGTH, email: pending_email) %></p>
@@ -25,4 +25,4 @@
       <%= t(".resend") %><span class="resend__timer" data-countdown-target="timer"></span>
     <% end %>
   </div>
-</div>
+<% end %>

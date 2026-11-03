@@ -3,11 +3,11 @@
   <div class="room-code">
     <span class="overline room-code__label"><%= t(".code") %></span>
     <span class="room-code__digits"><%= game_session.code %></span>
-    <span class="room-code__share" data-controller="share" data-share-copied-value="<%= t(".copied") %>"
-        data-share-text-value="<%= t(".share", code: game_session.code, url: new_game_sessions_join_url) %>">
+    <%= tag.span class: "room-code__share", data: { controller: "share", share_copied_value: t(".copied"),
+          share_text_value: t(".share", code: game_session.code, url: new_game_sessions_join_url) } do %>
       <button type="button" class="room-code__copy" data-action="share#share" aria-label="<%= t(".copy") %>"><%= render "glyph", name: "copy" %></button>
       <span class="room-code__copied" data-share-target="label" aria-live="polite"></span>
-    </span>
+    <% end %>
   </div>
 
   <section class="lobby-quest">
