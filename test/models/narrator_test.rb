@@ -306,9 +306,18 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(FINALE_RESPONSE.sub('"outcome": "victory"', '"outcome": "defeat"')) { narrate }.sole
 
-    assert_equal "Scene 1 of 7, Ilker's turn. Ilker has fallen, their health spent. This is the last scene, and the story ends in defeat.\n#{sheet(hp: 0)}", request["prompt"]
+    assert_equal "Scene 1 of 7, Ilker's turn. Ilker has fallen, their health spent. This is the last scene, and the story ends in defeat. The ending is only what the choices and rolls so far bring about: no one, Ilker included, makes a move in it that those did not set up.\n#{sheet(hp: 0)}", request["prompt"]
     assert @game_session.reload.finished?
     assert @game_session.outcome_defeat?
+  end
+
+  test "a party's finale leaves every hero to what the dice set up" do
+    players(:deniz_solo_host).update! game_session: @game_session
+    characters(:ilker_hero).update! hp: 0
+
+    request = stub_understudy(FINALE_RESPONSE.sub('"outcome": "victory"', '"outcome": "defeat"')) { narrate }.sole
+
+    assert_includes request["prompt"], "The ending is only what the choices and rolls so far bring about: no one, Ilker and Deniz included, makes a move in it that those did not set up."
   end
 
   test "a downed character is denied another scene and a victory alike" do
@@ -439,7 +448,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(FINALE_RESPONSE) { narrate }.sole
 
-    assert_match(/Pick up where the last outcome stopped, without retelling it. This is the last scene, and the story ends in victory.\nIlker: .*\n\z/, request["prompt"])
+    assert_match(/Pick up where the last outcome stopped, without retelling it. This is the last scene, and the story ends in victory: 1 of the 1 rolls succeeded. The ending is only what the choices and rolls so far bring about: no one, Ilker included, makes a move in it that those did not set up.\nIlker: .*\n\z/, request["prompt"])
     assert @game_session.reload.finished?
   end
 
