@@ -175,6 +175,18 @@ class GameSessionTest < ActiveSupport::TestCase
     assert_equal [ host, deniz, sevval, host, deniz, sevval, host ], room.scenes.chronological.map(&:active_player)
   end
 
+  test "the last roll counts twice toward the verdict and settles a tie" do
+    assert_equal "victory", verdict_after(15, 15, 5, 5, 15)
+    assert_equal "defeat", verdict_after(15, 15, 15, 5, 5)
+    assert_equal "victory", verdict_after(15, 15, 15, 15, 5)
+    assert_equal "defeat", verdict_after(5, 5, 5, 15)
+  end
+
+  test "a catastrophe on the last roll always loses and a critical always wins" do
+    assert_equal "defeat", verdict_after(15, 15, 15, 15, 1)
+    assert_equal "victory", verdict_after(5, 5, 5, 5, 20)
+  end
+
   test "solo play stays with the host every scene" do
     game_session = game_sessions(:ilker_without_character)
     players(:ilker_without_character_host).ready_up(character_attributes)
@@ -219,6 +231,17 @@ class GameSessionTest < ActiveSupport::TestCase
   end
 
   private
+    def verdict_after(*values)
+      game_session = GameSession.create!(creator: users(:ilker), quest: "lost_caravan")
+
+      values.each.with_index(1) do |value, position|
+        scene = game_session.scenes.create!(position: position, active_player: game_session.host, state: :played)
+        scene.choices.create!(label: "Press on", stat: "strength", modifier: 0, target: 11).create_roll!(player: game_session.host, value: value)
+      end
+
+      game_session.verdict
+    end
+
     def finished_room
       game_sessions(:ilker_room).tap do |room|
         room.players.each { it.ready_up(character_attributes) }

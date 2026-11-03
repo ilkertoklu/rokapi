@@ -122,7 +122,11 @@ class GameSession < ApplicationRecord
   end
 
   def verdict
-    rolls.where(success: true).count >= rolls.where(success: false).count ? "victory" : "defeat"
+    *earlier, last = rolls.order(:created_at).to_a
+    successes, failures = [ *earlier, last, last ].partition(&:success?).map(&:size)
+    won = last.grade.in?(%i[ critical catastrophe ]) || successes == failures ? last.success? : successes > failures
+
+    won ? "victory" : "defeat"
   end
 
   def current_scene
