@@ -4,7 +4,7 @@
     data-code-verify-value="<%= t(".verify") %>" data-code-digits-left-value="<%= t(".digits_left").to_json %>">
   <%= render "back", to: new_login_code_path, title: t(".title") %>
 
-  <p class="hint"><%= t(".sent_html", length: LoginCode::CODE_LENGTH, email: session[:pending_email]) %></p>
+  <p class="hint"><%= t(".sent_html", length: LoginCode::CODE_LENGTH, email: pending_email) %></p>
 
   <%= form_with url: session_path, class: "code-form" do |form| %>
     <div class="code">
