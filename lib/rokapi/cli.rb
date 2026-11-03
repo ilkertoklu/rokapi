@@ -129,7 +129,7 @@ module Rokapi
         say_scene game, scene
         say "(#{scene["active_player"]}’s turn)" if game["multiplayer"]
         say_choice scene
-        say_roll scene["roll"] if scene["roll"]&.fetch("resolved")
+        say_roll scene["roll"], ending: scene["finale"] if scene["roll"]&.fetch("resolved")
       end
       say_footer game
     end
@@ -383,6 +383,8 @@ module Rokapi
         roll = scene["roll"]
         case
         when game["finished"]
+          say_choice scene
+          say_roll roll, ending: true if roll
           say_footer game
           next_step game["multiplayer"] ? "rematch" : "new"
         when spectating?(game)
@@ -459,10 +461,10 @@ module Rokapi
         say "\n>>> CHOICE: #{choice["label"]} [#{choice["stat"]} #{format("%+d", choice["modifier"])} | #{choice["difficulty"]}, target #{choice["target"]}]"
       end
 
-      def say_roll(roll)
+      def say_roll(roll, ending: false)
         status = " #{format("%+d", roll["status_modifier"])} status" unless roll["status_modifier"].zero?
         say "ROLL: d20=#{roll["value"]} #{format("%+d", roll["modifier"])}#{status} = #{roll["total"]} vs #{roll["target"]} → #{roll["grade"].upcase}"
-        say "RESULT: #{roll["resolution"]}"
+        say "#{ending ? "ENDING" : "RESULT"}: #{roll["resolution"]}"
         say_effects roll["effects"]
       end
 

@@ -120,13 +120,34 @@ class NarratorTest < ActiveSupport::TestCase
     assert_includes request["prompt"], "margin +0. It works, but not for free: it costs Ilker something on the way.\n"
   end
 
-  test "the last roll's outcome knows how the story ends and leaves the ending to the last scene" do
+  test "the roll before the last scene leaves the ending to it" do
     @game_session.current_scene.update! position: @game_session.scene_budget - 1
     roll = play_first_scene
 
     request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
 
-    assert request["prompt"].end_with?("\nThe next scene is the last, and the story ends in defeat. Tell only what this roll does, in a paragraph or two, and stop there: the ending belongs to that last scene.\n")
+    assert request["prompt"].end_with?("\nTell only what this roll does, in a paragraph or two, and stop there: the next scene comes in my next message.\n")
+  end
+
+  test "the last scene is played like any other, up to the moment that decides the story" do
+    @game_session.current_scene.update! position: @game_session.scene_budget
+
+    request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
+
+    assert request["prompt"].start_with?("Scene 7 of 7, the story's last scene, Ilker's turn.")
+    assert_includes request["prompt"], "the fork goes into the choices. Bring the story to the moment that decides it: the roll on the choice made here ends it.\n"
+    assert @game_session.current_scene.choosing?
+    assert_equal 3, @game_session.current_scene.choices.count
+    assert_not @game_session.reload.finished?
+  end
+
+  test "the last roll tells the ending the dice decided" do
+    roll = play_the_last_scene
+
+    request = stub_understudy(ENDING_RESPONSE.sub("victory", "defeat")) { roll.narrate }.sole
+
+    assert_includes request["prompt"], "\nIn scene 7 of 7, the story's last scene, Ilker chose "
+    assert request["prompt"].end_with?(%(\nThis is the last roll, and the story ends with it, in defeat: 0 of the 0 rolls before it succeeded. Tell what this roll does, then how the story ends. The ending is only what the choices and rolls bring about: no one, Ilker included, makes a move in it that those did not set up. The block adds "outcome": "defeat".\n))
   end
 
   test "the scene and the roll in the middle of the story say so" do
@@ -200,7 +221,7 @@ class NarratorTest < ActiveSupport::TestCase
   end
 
   test "a scene without choices is malformed" do
-    stub_understudy(*rewrites_of(FINALE_RESPONSE)) do
+    stub_understudy(*rewrites_of(ENDING_RESPONSE)) do
       error = assert_raises(Narrator::MalformedResponse) { narrate }
       assert_equal "the scene has no choices", error.message
     end
@@ -323,12 +344,16 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal "The Lost Caravan", @game_session.reload.title
   end
 
-  test "a downed character forces the defeat finale" do
-    characters(:ilker_hero).update! hp: 0
+  test "a roll that takes the hero's last health ends the story in defeat" do
+    characters(:ilker_hero).update! hp: 3
+    roll = play_first_scene
 
-    request = stub_understudy(FINALE_RESPONSE.sub('"outcome": "victory"', '"outcome": "defeat"')) { narrate }.sole
+    told, rewritten = stub_understudy(OUTCOME_RESPONSE, OUTCOME_RESPONSE.sub('{"hp": -4}', '{"hp": -4, "outcome": "defeat"}')) { roll.narrate }
 
-    assert_equal "Scene 1 of 7, Ilker's turn. Ilker has fallen, their health spent. This is the last scene, and the story ends in defeat. The ending is only what the choices and rolls so far bring about: no one, Ilker included, makes a move in it that those did not set up.\n#{sheet(hp: 0)}", request["prompt"]
+    assert_includes told["prompt"], %(\nThis roll can take the last of Ilker's health. If it does, Ilker falls and the story ends here in defeat: tell how, and add "outcome": "defeat" to the block. If not, tell only what this roll does)
+    assert_includes rewritten["prompt"], %(Your last reply was rejected: the story ends with this roll, in defeat: tell the ending and add "outcome": "defeat" to the block.)
+    assert_equal 0, characters(:ilker_hero).reload.hp
+    assert @game_session.current_scene.finale?
     assert @game_session.reload.finished?
     assert @game_session.outcome_defeat?
   end
@@ -343,35 +368,24 @@ class NarratorTest < ActiveSupport::TestCase
     assert request["prompt"].end_with?("\nIn the scene with Ilker: Deniz, human healer, soldier by background, 28/28 health.\n")
   end
 
-  test "a party's finale leaves every hero to what the dice set up" do
+  test "a party's ending leaves every hero to what the dice set up, each with a part in it" do
     players(:deniz_solo_host).update! game_session: @game_session
-    characters(:ilker_hero).update! hp: 0
+    roll = play_the_last_scene
 
-    request = stub_understudy(FINALE_RESPONSE.sub('"outcome": "victory"', '"outcome": "defeat"')) { narrate }.sole
+    request = stub_understudy(ENDING_RESPONSE.sub("victory", "defeat")) { roll.narrate }.sole
 
-    assert_includes request["prompt"], "The ending is only what the choices and rolls so far bring about: no one, Ilker and Deniz included, makes a move in it that those did not set up."
+    assert_includes request["prompt"], %(no one, Ilker and Deniz included, makes a move in it that those did not set up. Each of them has a part in it: Ilker tried "Read the dusty ledger" (failed); Deniz tried nothing. The block adds)
   end
 
-  test "a party's finale gives every hero a part from what each of them tried" do
-    players(:deniz_solo_host).update! game_session: @game_session
-    play_to_the_last_scene
+  test "a roll that leaves the hero standing before the last scene does not end the story" do
+    roll = play_first_scene
 
-    request = stub_understudy(FINALE_RESPONSE.sub('"outcome": "victory"', '"outcome": "defeat"')) { narrate }.sole
-
-    assert_includes request["prompt"], %(makes a move in it that those did not set up. Each of them has a part in it: Ilker tried "Read the dusty ledger" (failed); Deniz tried nothing.\n)
-  end
-
-  test "a downed character is denied another scene and a victory alike" do
-    characters(:ilker_hero).update! hp: 0
-
-    stub_understudy(*rewrites_of(SCENE_RESPONSE)) do
-      assert_raises(Narrator::MalformedResponse) { narrate }
-    end
-    stub_understudy(*rewrites_of(FINALE_RESPONSE)) do
-      assert_raises(Narrator::MalformedResponse) { narrate }
+    stub_understudy(*rewrites_of(OUTCOME_RESPONSE.sub('{"hp": -4}', '{"hp": -4, "outcome": "defeat"}'))) do
+      error = assert_raises(Narrator::MalformedResponse) { roll.narrate }
+      assert_equal "the story goes on after this roll, so the block has no outcome", error.message
     end
 
-    assert @game_session.scenes.sole.narrating?
+    assert_nil roll.reload.resolution
     assert_not @game_session.reload.finished?
   end
 
@@ -422,18 +436,17 @@ class NarratorTest < ActiveSupport::TestCase
     assert_nil roll.reload.resolution
   end
 
-  test "a finale closes the game" do
-    play_to_the_last_scene die: 20
+  test "the last roll closes the game on its ending" do
+    roll = play_the_last_scene die: 20
 
-    stub_understudy(FINALE_RESPONSE) { narrate }
+    stub_understudy(ENDING_RESPONSE) { roll.narrate }
 
     finale = @game_session.current_scene
     assert finale.finale?
-    assert finale.played?
-    assert_empty finale.choices
+    assert_equal 3, finale.choices.count
+    assert_equal "The drawer gives, and the caravan bells echo down the valley as you ride into Whitebend.", finale.closing
     assert @game_session.reload.finished?
     assert @game_session.outcome_victory?
-    assert @game_session.ended_at.present?
   end
 
   test "a scene that hands the hero something puts it on the sheet, but only a roll costs health" do
@@ -453,44 +466,27 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal [ "Village purse" ], @game_session.current_scene.items_gained.pluck("name")
   end
 
-  test "the finale settles what the hero leaves behind" do
-    play_to_the_last_scene die: 20
+  test "the ending settles what the hero leaves behind" do
+    roll = play_the_last_scene die: 20
 
-    stub_understudy(FINALE_RESPONSE.sub('"outcome"', '"carries": ["Healing potion", "Inn ledger"], "outcome"')) { narrate }
+    stub_understudy(ENDING_RESPONSE.sub('{"outcome"', '{"carries": ["Healing potion", "Inn ledger"], "outcome"')) { roll.narrate }
 
     assert_not characters(:ilker_hero).items.exists?(name: "Longsword")
     assert @game_session.reload.finished?
   end
 
-  test "the finale ends as the dice decided" do
-    play_to_the_last_scene
+  test "the ending is the one the dice decided" do
+    roll = play_the_last_scene
 
-    stub_understudy(*rewrites_of(FINALE_RESPONSE)) do
-      error = assert_raises(Narrator::MalformedResponse) { narrate }
-      assert_equal "scene 7 is the last, and the story ends in defeat", error.message
+    stub_understudy(*rewrites_of(ENDING_RESPONSE)) do
+      error = assert_raises(Narrator::MalformedResponse) { roll.narrate }
+      assert_equal %(the story ends with this roll, in defeat: tell the ending and add "outcome": "defeat" to the block), error.message
     end
     assert_not @game_session.reload.finished?
 
-    stub_understudy(FINALE_RESPONSE.sub('"outcome": "victory"', '"outcome": "defeat"')) { narrate }
+    stub_understudy(ENDING_RESPONSE.sub("victory", "defeat")) { roll.narrate }
 
     assert @game_session.reload.outcome_defeat?
-  end
-
-  test "the final scene is demanded when the budget is spent" do
-    @game_session.update! length: "short"
-    @game_session.scenes.sole.update! state: :played, title: "Scene 1", narration: "Events."
-    (2...@game_session.scene_budget).each do |position|
-      @game_session.scenes.create! position: position, active_player: players(:ilker_solo_host),
-        state: :played, title: "Scene #{position}", narration: "Events."
-    end
-    roll = build_roll
-    resolve roll
-    roll.acknowledge
-
-    request = stub_understudy(FINALE_RESPONSE) { narrate }.sole
-
-    assert_match(/Pick up where the last outcome stopped, without retelling it. This is the last scene, and the story ends in victory: 1 of the 1 rolls succeeded. The ending is only what the choices and rolls so far bring about: no one, Ilker included, makes a move in it that those did not set up.\nIlker, human warrior, soldier by background: .*\n\z/, request["prompt"])
-    assert @game_session.reload.finished?
   end
 
   test "a reply that breaks a rule is rewritten with the reason" do
@@ -510,7 +506,7 @@ class NarratorTest < ActiveSupport::TestCase
   end
 
   test "a reply that keeps breaking the rules is given up after the rewrites, leaving no trace" do
-    stub_understudy(*rewrites_of(FINALE_RESPONSE)) do
+    stub_understudy(*rewrites_of(ENDING_RESPONSE)) do
       error = assert_raises(Narrator::MalformedResponse) { narrate }
       assert_equal "the scene has no choices", error.message
     end
@@ -539,19 +535,6 @@ class NarratorTest < ActiveSupport::TestCase
     assert @game_session.scenes.sole.narrating?
   end
 
-  test "the finale's closing words stream in before the game is closed" do
-    play_to_the_last_scene die: 20
-
-    streams = capture_turbo_stream_broadcasts(@game_session) do
-      stub_understudy(FINALE_RESPONSE) { narrate }
-    end
-
-    assert_equal "The caravan bells echo down the valley as you ride into Whitebend.", streams.first.at("template").text
-    assert_equal "refresh", streams.last["action"]
-    assert @game_session.current_scene.finale?
-    assert @game_session.reload.outcome_victory?
-  end
-
   test "a scene is kept whole however long the narrator makes it" do
     @game_session.update! length: "long"
     long = SCENE_RESPONSE.sub('"title": "The Old Inn"', '"title": "The Old Coaching Inn by the Frozen Ford"').sub("Inside, a single candle is still burning.", "Snow falls. " * 300)
@@ -561,17 +544,6 @@ class NarratorTest < ActiveSupport::TestCase
     scene = @game_session.scenes.sole
     assert_equal "The Old Coaching Inn by the Frozen Ford", scene.title
     assert_equal 300, scene.narration.scan("Snow falls.").size
-  end
-
-  test "the last scene must be the finale" do
-    @game_session.current_scene.update! position: @game_session.scene_budget
-
-    stub_understudy(*rewrites_of(SCENE_RESPONSE)) do
-      error = assert_raises(Narrator::MalformedResponse) { narrate }
-      assert_equal "scene 7 is the last, and the story ends in victory", error.message
-    end
-
-    assert_not @game_session.reload.finished?
   end
 
   test "an outcome is kept whole however long the narrator makes it" do
@@ -621,23 +593,14 @@ class NarratorTest < ActiveSupport::TestCase
       roll
     end
 
-    def play_to_the_last_scene(die: 2)
-      @game_session.current_scene.update! position: @game_session.scene_budget - 1
-      play_and_continue die: die
+    def play_the_last_scene(die: 2)
+      @game_session.current_scene.update! position: @game_session.scene_budget
+      play_first_scene die: die
     end
 
     def choose_and_roll(scene)
       choice = scene.choices.first
       choice.choose
       scene.roll_dice(by: scene.active_player)
-    end
-
-    def build_roll
-      scene = @game_session.scenes.create! position: @game_session.scene_budget + 10,
-        active_player: players(:ilker_solo_host), state: :choosing, title: "Ara"
-      choice = scene.choices.create! label: "Press on", stat: "strength", modifier: 3,
-        target: 12
-      choice.choose
-      with_die(20) { scene.roll_dice(by: players(:ilker_solo_host)) }
     end
 end

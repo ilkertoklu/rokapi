@@ -71,10 +71,25 @@ class Roll < ApplicationRecord
 
   def resolve(resolution:, effects:)
     transaction do
+      ending = ending_with(effects)
+
       update! resolution: resolution, effects: bounded(effects.to_h)
       character.status_effects.each(&:tick)
       apply_effects
+      scene.conclude ending if ending
     end
+  end
+
+  def ending_with(effects)
+    if scene.last?
+      scene.game_session.verdict
+    elsif character.hp + bounded(effects.to_h)["hp"] <= 0
+      "defeat"
+    end
+  end
+
+  def life_at_stake?
+    character.hp + health_floor <= 0
   end
 
   private

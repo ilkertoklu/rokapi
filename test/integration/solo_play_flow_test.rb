@@ -43,8 +43,20 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
 
     game_session.current_scene.update! position: game_session.scene_budget - 1
 
-    stub_understudy(FINALE_RESPONSE) do
+    stub_understudy(SECOND_SCENE_RESPONSE) do
       perform_enqueued_jobs { post game_session_acknowledgement_path(game_session) }
+    end
+
+    get game_session_path(game_session)
+    assert_select ".location p", text: "Whitebend · Stop 7/7"
+    assert_select ".choice__label", text: "Force the drawer open"
+    assert_not game_session.reload.finished?, "the last scene is played like any other"
+
+    last_choice = game_session.current_scene.choices.find_by!(stat: "strength")
+    post game_session_choice_selection_path(game_session, last_choice)
+
+    stub_understudy(ENDING_RESPONSE) do
+      with_die(20) { perform_enqueued_jobs { post game_session_roll_path(game_session) } }
     end
 
     assert game_session.reload.finished?
@@ -52,10 +64,14 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
 
     get game_session_path(game_session)
     assert_select ".finale__outcome", text: "Victory"
-    assert_select ".highlights", text: /Dice rolled/
-    assert_select "[data-controller=share][data-share-text-value*=?]", "The Return — Victory"
+    assert_select ".finale h1", text: "The Stable"
+    assert_select ".finale__move", text: /Force the drawer open\s+CRITICAL SUCCESS!/
+    assert_select ".finale__closing", text: /the caravan bells echo down the valley/
+    assert_select ".outcome", count: 0
+    assert_select ".highlights", text: /2\s+Dice rolled/
+    assert_select "[data-controller=share][data-share-text-value*=?]", "The Stable — Victory"
     assert_select "[data-share-text-value*=?]", "The Lost Caravan"
-    assert_equal %w[system user assistant user assistant user assistant], game_session.conversation.messages.pluck(:role)
+    assert_equal %w[system user assistant user assistant user assistant user assistant], game_session.conversation.messages.pluck(:role)
     assert_equal 0, game_session.conversation.cost.total
   end
 
@@ -78,25 +94,21 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".action-panel__prompt", text: "Your turn"
   end
 
-  test "the closing words are written on the finale screen" do
-    game_session = start_playing
-    game_session.update! outcome: :victory
-    scene = game_session.current_scene
-    scene.update! title: "The Return", narration: "The caravan bells echo.", finale: true
+  test "the finale screen shows the deciding roll and the ending it told" do
+    game_session = play_to_choices
+    choice = game_session.current_scene.choices.find_by!(stat: "strength")
+    post game_session_choice_selection_path(game_session, choice)
+    game_session.current_scene.update! position: game_session.scene_budget
+
+    stub_understudy(ENDING_RESPONSE.sub("victory", "defeat")) do
+      with_die(1) { perform_enqueued_jobs { post game_session_roll_path(game_session) } }
+    end
 
     get game_session_path(game_session)
-    assert_select "#scene_narration.finale__closing", text: /The caravan bells echo/
-    assert_select ".finale__outcome", text: "Victory"
-    assert_select ".writing", 1
-    assert_select ".highlights", 0
-    while_writing = above_the_closing
-
-    scene.update! state: :played
-    game_session.finish
-
-    get game_session_path(game_session)
-    assert_equal while_writing, above_the_closing,
-      "nothing may appear above the closing words when writing ends, or the reader loses their place"
+    assert_select ".finale__outcome", text: "Defeat"
+    assert_select ".finale__move.finale__move--failure", text: /Force the drawer open\s+CATASTROPHE!/
+    assert_select ".finale__closing p", text: /The drawer gives/
+    assert_select ".writing", 0
     assert_select ".highlights", text: /Dice rolled/
     assert_select "[data-controller=share]"
   end
@@ -291,12 +303,6 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
       Nokogiri::HTML5(response.body).at("#game_stage").element_children
         .take_while { |element| element["class"].to_s.exclude?("narration") }
         .map { |element| element["class"] }
-    end
-
-    def above_the_closing
-      Nokogiri::HTML5(response.body).css(".finale > *")
-        .take_while { |element| element["id"] != "scene_narration" }
-        .map { |element| [ element["class"], element.text.squish ] }
     end
 
     def start_playing

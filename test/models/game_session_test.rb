@@ -163,7 +163,7 @@ class GameSessionTest < ActiveSupport::TestCase
     assert_equal players(:ilker_room_host), room.scenes.sole.active_player
   end
 
-  test "turns rotate through the party in join order and the finale keeps the last player" do
+  test "turns rotate through the party in join order, up to the last scene" do
     room = game_sessions(:ilker_room)
     sevval = room.join(users(:sevval))
     room.players.each { it.ready_up(character_attributes) }
@@ -172,18 +172,7 @@ class GameSessionTest < ActiveSupport::TestCase
     (room.scene_budget - 1).times { room.advance }
 
     host, deniz = players(:ilker_room_host), players(:deniz_room_guest)
-    assert_equal [ host, deniz, sevval, host, deniz, sevval, sevval ], room.scenes.chronological.map(&:active_player)
-  end
-
-  test "the finale comes early for a collapsed player and keeps them" do
-    room = game_sessions(:ilker_room)
-    room.players.each { it.ready_up(character_attributes) }
-    room.start(by: players(:ilker_room_host))
-
-    players(:ilker_room_host).character.update! hp: 0
-    room.advance
-
-    assert_equal players(:ilker_room_host), room.current_scene.active_player
+    assert_equal [ host, deniz, sevval, host, deniz, sevval, host ], room.scenes.chronological.map(&:active_player)
   end
 
   test "solo play stays with the host every scene" do

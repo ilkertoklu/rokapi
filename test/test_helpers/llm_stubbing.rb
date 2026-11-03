@@ -25,11 +25,11 @@ module LlmStubbing
     ```
   TEXT
 
-  FINALE_RESPONSE = <<~TEXT
-    The caravan bells echo down the valley as you ride into Whitebend.
+  ENDING_RESPONSE = <<~TEXT
+    The drawer gives, and the caravan bells echo down the valley as you ride into Whitebend.
 
     ```json
-    {"title": "The Return", "location": "Whitebend", "outcome": "victory"}
+    {"outcome": "victory"}
     ```
   TEXT
 

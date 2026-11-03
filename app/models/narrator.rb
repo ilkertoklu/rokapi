@@ -31,7 +31,7 @@ class Narrator < RubyLLM::Agent
         scene.stream streamed.split(FENCE, 2).first.to_s.sub(/`+\z/, "").strip
       end
 
-      check_scene scene, *told(reply.content)
+      check_scene(*told(reply.content))
     end
 
     write_scene scene, prose, data
@@ -41,7 +41,7 @@ class Narrator < RubyLLM::Agent
     return if roll.resolved?
 
     resolution, effects = rewriting RubyLLM.render_prompt("narrator/outcome", roll: roll) do |cue|
-      told speak(cue).content
+      check_outcome roll, *told(speak(cue).content)
     end
 
     roll.resolve resolution: resolution, effects: effects
@@ -83,13 +83,19 @@ class Narrator < RubyLLM::Agent
       [ prose, data ]
     end
 
-    def check_scene(scene, prose, data)
-      if (ending = scene.ending)
-        raise MalformedResponse, "scene #{scene.position} is the last, and the story ends in #{ending}" unless data["outcome"] == ending
-      else
-        choices = Array(data["choices"])
-        raise MalformedResponse, "the scene has no choices" if choices.empty?
-        raise MalformedResponse, "every choice needs a label and one of the stats #{Character::Stat.keys.join(", ")}" unless choices.all? { |choice| playable?(choice) }
+    def check_scene(prose, data)
+      choices = Array(data["choices"])
+      raise MalformedResponse, "the scene has no choices" if choices.empty?
+      raise MalformedResponse, "every choice needs a label and one of the stats #{Character::Stat.keys.join(", ")}" unless choices.all? { |choice| playable?(choice) }
+
+      [ prose, data ]
+    end
+
+    def check_outcome(roll, prose, data)
+      ending = roll.ending_with(data)
+
+      unless data["outcome"] == ending
+        raise MalformedResponse, ending ? %(the story ends with this roll, in #{ending}: tell the ending and add "outcome": "#{ending}" to the block) : "the story goes on after this roll, so the block has no outcome"
       end
 
       [ prose, data ]
@@ -100,20 +106,13 @@ class Narrator < RubyLLM::Agent
     end
 
     def write_scene(scene, prose, data)
-      ending = scene.ending
-
       ApplicationRecord.transaction do
         game_session.update! title: data["adventure"] if scene.first? && game_session.quest.nil? && data["adventure"].present?
-        scene.write narration: prose, effects: data, title: data["title"].presence, location: data["location"].presence, finale: ending.present?, state: ending ? :played : :choosing
+        scene.write narration: prose, effects: data, title: data["title"].presence, location: data["location"].presence, state: :choosing
 
-        if ending
-          game_session.update! outcome: ending
-          game_session.finish
-        else
-          data["choices"].each do |choice|
-            scene.choices.create! label: choice["label"], stat: choice["stat"], modifier: scene.active_player.character.bonus_for(choice["stat"]),
-              target: choice["difficulty"].to_i
-          end
+        data["choices"].each do |choice|
+          scene.choices.create! label: choice["label"], stat: choice["stat"], modifier: scene.active_player.character.bonus_for(choice["stat"]),
+            target: choice["difficulty"].to_i
         end
       end
     end

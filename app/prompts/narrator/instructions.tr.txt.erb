@@ -20,7 +20,6 @@ Sahne: anlat, sonra bir ```json bloğuyla bitir:
 ```
 
 İki ya da üç seçenek ver: bu kahramanın şimdi deneyebileceği, farklı yönlere giden şeyler. Stat, denemenin gerektirdiği yetenek; zorluk <%= Choice::DIFFICULTY.min %> (kolay) ile <%= Choice::DIFFICULTY.max %> (çok zor) arası. Başlık ve yer birkaç kelime olsun.<%= %( İlk sahnenin bloğu macerayı da adlandırır: "adventure": "...".) if game.quest.nil? %>
-Son sahne, zarların belirlediği sonu anlatır. Bloğunda seçenek olmaz: {"title": "...", "location": "...", "carries": ["..."], "outcome": "victory" ya da "defeat"}.
 
 Zar: ne olduğunu anlat, sonra zarı atan için neyin değiştiğini gösteren bir ```json bloğuyla bitir; değişmeyeni yazma:
 
@@ -31,4 +30,6 @@ Zar: ne olduğunu anlat, sonra zarı atan için neyin değiştiğini gösteren b
  "statuses_lost": ["..."]}
 ```
 
-Her blok, "carries" içinde sırası gelen oyuncunun cevap bittiğinde elinde olanları, son sahnenin bloğu da hikâye bittiğinde elinde kalanları sayar: durumunda yazanlardan hâlâ elinde olanların adları, yeni ya da değişmiş her şey de {"name": "...", "kind": "instant|passive|quest", "description": "...", "hp": 0, "uses": 0} biçiminde. Durumda yalnızca elde tutulan şeyler ve gelip geçen hâller yer alır; kahramanın bildikleri, yanında duranlar ve onda kalıcı iz bırakanlar hikâyede yaşar. Can yalnızca zar atılınca düşer; eşyalarla geri gelir. Anlık (instant) eşya kullanılınca harcanır ve uses kez hp kadar can verir; pasif (passive) eşya taşındığı sürece hikâyede işe yarar; görev (quest) eşyası, görevin bağlı olduğu bir nesnedir. Bir durum (status) gelip geçer: değiştiricisini (-2 ile +2) <%= StatusEffect::TURNS.min %> ile <%= StatusEffect::TURNS.max %> tur boyunca sonraki zarlara ekler.
+Hikâyeyi bitiren zarın sonucu, son sahnenin zarı da olsa bir kahramanın son canını alan zar da olsa, önce zarın getirdiğini, sonra zarların belirlediği sonu anlatır; bloğuna "outcome": "victory" ya da "defeat" eklenir.
+
+Her blok, "carries" içinde sırası gelen oyuncunun cevap bittiğinde elinde olanları, hikâyeyi bitiren zarın bloğu da hikâye bittiğinde elinde kalanları sayar: durumunda yazanlardan hâlâ elinde olanların adları, yeni ya da değişmiş her şey de {"name": "...", "kind": "instant|passive|quest", "description": "...", "hp": 0, "uses": 0} biçiminde. Durumda yalnızca elde tutulan şeyler ve gelip geçen hâller yer alır; kahramanın bildikleri, yanında duranlar ve onda kalıcı iz bırakanlar hikâyede yaşar. Can yalnızca zar atılınca düşer; eşyalarla geri gelir. Anlık (instant) eşya kullanılınca harcanır ve uses kez hp kadar can verir; pasif (passive) eşya taşındığı sürece hikâyede işe yarar; görev (quest) eşyası, görevin bağlı olduğu bir nesnedir. Bir durum (status) gelip geçer: değiştiricisini (-2 ile +2) <%= StatusEffect::TURNS.min %> ile <%= StatusEffect::TURNS.max %> tur boyunca sonraki zarlara ekler.

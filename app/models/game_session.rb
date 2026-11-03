@@ -179,15 +179,9 @@ class GameSession < ApplicationRecord
 
       if previous.nil?
         host
-      elsif finale_next?(previous) && !previous.departed?
-        previous
       else
         party = players.in_join_order.to_a
         party.rotate(party.index(previous) + 1).find { |player| !player.departed? }
       end
-    end
-
-    def finale_next?(previous)
-      current_scene.followed_by_the_last? || previous.character.hp.zero?
     end
 end

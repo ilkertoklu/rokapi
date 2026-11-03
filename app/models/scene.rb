@@ -50,14 +50,18 @@ class Scene < ApplicationRecord
     position >= game_session.scene_budget
   end
 
-  def followed_by_the_last?
-    position + 1 >= game_session.scene_budget
+  def conclude(outcome)
+    update! finale: true
+    game_session.update! outcome: outcome
+    game_session.finish
   end
 
   def part_of_the_story
     middle = (game_session.scene_budget + 1) / 2.0
 
-    if position < middle.floor
+    if last?
+      "the story's last scene"
+    elsif position < middle.floor
       "the story's first half"
     elsif position > middle.ceil
       "the story's second half"
@@ -66,12 +70,8 @@ class Scene < ApplicationRecord
     end
   end
 
-  def ending
-    if active_player.character.hp.zero?
-      "defeat"
-    elsif last?
-      game_session.verdict
-    end
+  def closing
+    roll&.resolution || narration
   end
 
   def opening?
