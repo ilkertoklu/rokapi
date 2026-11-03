@@ -102,6 +102,16 @@ class UserTest < ActiveSupport::TestCase
     assert_nil user.unconfirmed_email
   end
 
+  test "confirm_email drops the pending change when another account took the address" do
+    user = users(:ilker)
+    user.update_settings name: "Ilker", email: "new@ilker.test"
+    users(:deniz).update_columns email: "new@ilker.test"
+
+    assert_not user.confirm_email
+    assert_equal "ilker@example.com", user.email
+    assert_nil user.reload.unconfirmed_email
+  end
+
   test "the confirmation token lasts 24 hours" do
     user = users(:ilker)
     user.update_settings name: "Ilker", email: "new@ilker.test"

@@ -31,6 +31,9 @@ module User::EmailChangeable
 
   def confirm_email
     update! email: unconfirmed_email, unconfirmed_email: nil
+  rescue ActiveRecord::RecordNotUnique
+    reload.update! unconfirmed_email: nil
+    false
   end
 
   private

@@ -137,6 +137,18 @@ class SettingsFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_url
   end
 
+  test "a confirmation that loses the address to another account drops the pending change" do
+    link = request_email_change_to "new@ilker.test"
+    users(:deniz).update_columns email: "new@ilker.test"
+
+    patch link
+    assert_redirected_to my_settings_path
+    assert_equal "That email is already in use by another account.", flash[:alert]
+    assert_equal "ilker@example.com", users(:ilker).reload.email
+    assert_nil users(:ilker).unconfirmed_email
+    assert_equal "new@ilker.test", users(:deniz).reload.email
+  end
+
   test "an email that belongs to someone else is refused" do
     patch my_settings_path, params: { user: { name: "Ilker", email: users(:deniz).email } }
 

@@ -7,10 +7,11 @@ class EmailConfirmationsController < ApplicationController
   end
 
   def update
-    @user.confirm_email
-    redirect_to after_confirmation_path, notice: t(".confirmed", email: @user.email)
-  rescue ActiveRecord::RecordNotUnique
-    redirect_to after_confirmation_path, alert: t(".taken")
+    if @user.confirm_email
+      redirect_to after_confirmation_path, notice: t(".confirmed", email: @user.email)
+    else
+      redirect_to after_confirmation_path, alert: t(".taken")
+    end
   end
 
   private
