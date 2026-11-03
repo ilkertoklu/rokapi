@@ -87,6 +87,23 @@ class LoginFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to root_url
   end
 
+  test "friends on one network each get their own resends" do
+    counting_rate_limits do
+      post login_codes_path, params: { email: users(:ilker).email }
+      3.times do
+        post login_codes_resend_path
+        assert_equal "A new code is on its way.", flash[:notice]
+      end
+
+      post login_codes_resend_path
+      assert_match(/Too many code requests/, flash[:alert])
+
+      post login_codes_path, params: { email: users(:deniz).email }
+      post login_codes_resend_path
+      assert_equal "A new code is on its way.", flash[:notice]
+    end
+  end
+
   test "logging out" do
     sign_in_as users(:ilker)
 
@@ -111,14 +128,4 @@ class LoginFlowTest < ActionDispatch::IntegrationTest
     get new_login_code_path
     assert_redirected_to root_url
   end
-
-  private
-    def counting_rate_limits
-      store = ApplicationController.cache_store
-      counter = ActiveSupport::Cache::MemoryStore.new
-      store.define_singleton_method(:increment) { |*args, **options| counter.increment(*args, **options) }
-      yield
-    ensure
-      store.singleton_class.remove_method(:increment)
-    end
 end

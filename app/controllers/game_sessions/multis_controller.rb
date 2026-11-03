@@ -1,7 +1,7 @@
 class GameSessions::MultisController < ApplicationController
   include UsageWall
 
-  rate_limit to: 10, within: 5.minutes, only: :create,
+  rate_limit to: 10, within: 5.minutes, only: :create, by: -> { Current.user.id },
     with: -> { redirect_to root_path, alert: t(".rate_limited") }
 
   def new

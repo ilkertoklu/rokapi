@@ -51,6 +51,23 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
     assert_equal "Surprise adventure", game_session.title
   end
 
+  test "players on one network each get their own adventure limit" do
+    adventure = { game_session: { card: "fishing_village missing_child weather_reader", tone: "dark", length: "short" } }
+
+    counting_rate_limits do
+      10.times { post game_sessions_solo_path, params: adventure }
+      assert_no_difference -> { GameSession.count } do
+        post game_sessions_solo_path, params: adventure
+      end
+      assert_match(/Too many adventures started/, flash[:alert])
+
+      sign_in_as users(:deniz)
+      assert_difference -> { GameSession.count } do
+        post game_sessions_solo_path, params: adventure
+      end
+    end
+  end
+
   test "invalid stat allocation is rejected" do
     game_session = create_solo_session
 

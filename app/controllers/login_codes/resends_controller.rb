@@ -2,7 +2,7 @@ class LoginCodes::ResendsController < ApplicationController
   include PendingLogin
 
   require_unauthenticated_access
-  rate_limit to: 3, within: 5.minutes,
+  rate_limit to: 3, within: 5.minutes, by: -> { pending_email.to_s },
     with: -> { redirect_to new_session_path, alert: t(".rate_limited") }
 
   def create

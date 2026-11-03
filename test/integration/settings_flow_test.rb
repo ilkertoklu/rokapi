@@ -28,6 +28,22 @@ class SettingsFlowTest < ActionDispatch::IntegrationTest
     assert_equal "Ilker T", users(:ilker).reload.name
   end
 
+  test "players on one network each get their own settings limit" do
+    counting_rate_limits do
+      5.times do
+        patch my_settings_path, params: { user: { name: "Ilker", email: "ilker@example.com" } }
+        assert_equal "Saved.", flash[:notice]
+      end
+
+      patch my_settings_path, params: { user: { name: "Ilker", email: "ilker@example.com" } }
+      assert_match(/Too many changes/, flash[:alert])
+
+      sign_in_as users(:deniz)
+      patch my_settings_path, params: { user: { name: "Deniz", email: users(:deniz).email } }
+      assert_equal "Saved.", flash[:notice]
+    end
+  end
+
   test "a blank name is refused and keeps what was typed" do
     patch my_settings_path, params: { user: { name: " ", email: "new@ilker.test" } }
 

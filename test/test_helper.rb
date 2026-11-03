@@ -11,7 +11,7 @@ end
 
 module ActiveSupport
   class TestCase
-    include LlmStubbing, LoadedDice, Subscribing
+    include LlmStubbing, LoadedDice, RateLimiting, Subscribing
 
     parallelize(workers: :number_of_processors)
 

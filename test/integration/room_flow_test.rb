@@ -31,6 +31,24 @@ class RoomFlowTest < ActionDispatch::IntegrationTest
     assert_not room.started?
   end
 
+  test "friends on one network each get their own room limit" do
+    room = { game_session: { card: "mining_town dry_well indebted_smith", tone: "dark", length: "short" } }
+
+    counting_rate_limits do
+      sign_in_as users(:sevval)
+      10.times { post game_sessions_multi_path, params: room }
+      assert_no_difference -> { GameSession.count } do
+        post game_sessions_multi_path, params: room
+      end
+      assert_match(/Too many rooms created/, flash[:alert])
+
+      sign_in_as users(:deniz)
+      assert_difference -> { GameSession.count } do
+        post game_sessions_multi_path, params: room
+      end
+    end
+  end
+
   test "joining a room by its code" do
     room = game_sessions(:ilker_room)
     sign_in_as users(:sevval)

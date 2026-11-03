@@ -1,5 +1,5 @@
 class My::SettingsController < ApplicationController
-  rate_limit to: 5, within: 3.minutes, only: :update,
+  rate_limit to: 5, within: 3.minutes, only: :update, by: -> { Current.user.id },
     with: -> { redirect_to my_settings_path, alert: t(".rate_limited") }
 
   def show
