@@ -385,9 +385,13 @@ tr:
       validity: Bağlantı 24 saat geçerlidir. O zamana kadar eski adresinle giriş yapmaya devam edersin. Bu isteği sen yapmadıysan bu e-postayı yok sayabilirsin.
 
   email_confirmations:
+    expired: Bu onay bağlantısının süresi doldu. Yeni bir bağlantı için e-postanı Ayarlar'da yeniden kaydet.
     show:
+      title: E-postanı onayla
+      text_html: <strong>%{email}</strong> adresini Rokapi e-postan yap.
+      confirm: E-postamı onayla
+    update:
       confirmed: E-postan artık %{email}.
-      expired: Bu onay bağlantısının süresi doldu. Yeni bir bağlantı için e-postanı Ayarlar'da yeniden kaydet.
       taken: Bu e-posta başka bir hesapta kullanılıyor.
 
   game_sessions:

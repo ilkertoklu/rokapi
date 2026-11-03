@@ -1,0 +1,11 @@
+<% content_for :title, "#{t(".title")} · Rokapi" %>
+
+<div class="sent">
+  <span class="sent__icon"><%= render "glyph", name: "mail" %></span>
+  <h1><%= t(".title") %></h1>
+  <p class="sent__text"><%= t(".text_html", email: @user.unconfirmed_email) %></p>
+</div>
+
+<div class="sticky-footer">
+  <%= button_to t(".confirm"), email_confirmation_path(params[:token]), method: :patch, class: "btn btn--primary" %>
+</div>

@@ -366,9 +366,13 @@ en:
       validity: The link is valid for 24 hours. Until then you keep signing in with your old address. If you did not ask for this, you can ignore this email.
 
   email_confirmations:
+    expired: That confirmation link has expired. Save your new email in Settings again to get a fresh one.
     show:
+      title: Confirm your email
+      text_html: Make <strong>%{email}</strong> your Rokapi email.
+      confirm: Confirm my email
+    update:
       confirmed: Your email is now %{email}.
-      expired: That confirmation link has expired. Save your new email in Settings again to get a fresh one.
       taken: That email is already in use by another account.
 
   game_sessions:

@@ -56,7 +56,7 @@ class SettingsFlowTest < ActionDispatch::IntegrationTest
 
     mail = ActionMailer::Base.deliveries.sole
     assert_equal [ "new@ilker.test" ], mail.to
-    get mail.text_part.body.to_s[%r{http://example.com(/email_confirmations/\S+)}, 1]
+    patch mail.text_part.body.to_s[%r{http://example.com(/email_confirmations/\S+)}, 1]
     assert_redirected_to my_settings_path
     assert_equal "new@ilker.test", users(:ilker).reload.email
     assert_nil users(:ilker).unconfirmed_email
@@ -65,11 +65,27 @@ class SettingsFlowTest < ActionDispatch::IntegrationTest
     assert_select ".flash--notice", text: "Your email is now new@ilker.test."
   end
 
+  test "opening the link asks before it changes anything" do
+    link = request_email_change_to "new@ilker.test"
+
+    2.times do
+      get link
+      assert_response :success
+      assert_select ".sent__text strong", text: "new@ilker.test"
+      assert_select "form[action=?] button.btn", link, text: "Confirm my email"
+    end
+    assert_equal "ilker@example.com", users(:ilker).reload.email
+    assert_equal "new@ilker.test", users(:ilker).unconfirmed_email
+  end
+
   test "the link confirms the email even when opened signed out" do
     link = request_email_change_to "new@ilker.test"
     delete session_path
 
     get link
+    assert_response :success
+
+    patch link
     assert_redirected_to new_login_code_path
     assert_equal "new@ilker.test", users(:ilker).reload.email
   end
@@ -87,9 +103,13 @@ class SettingsFlowTest < ActionDispatch::IntegrationTest
 
   test "a link is spent once the email is confirmed" do
     link = request_email_change_to "new@ilker.test"
-    get link
+    patch link
 
     get link
+    assert_redirected_to my_settings_path
+    assert_match(/expired/, flash[:alert])
+
+    patch link
     assert_match(/expired/, flash[:alert])
   end
 
@@ -97,7 +117,7 @@ class SettingsFlowTest < ActionDispatch::IntegrationTest
     stale = request_email_change_to "first@ilker.test"
     request_email_change_to "second@ilker.test"
 
-    get stale
+    patch stale
     assert_match(/expired/, flash[:alert])
     assert_equal "ilker@example.com", users(:ilker).reload.email
   end
@@ -110,7 +130,7 @@ class SettingsFlowTest < ActionDispatch::IntegrationTest
     post session_path, params: { code: users(:ilker).login_codes.sole.code }
     assert_redirected_to root_url
 
-    get link
+    patch link
     delete session_path
     post login_codes_path, params: { email: "new@ilker.test" }
     post session_path, params: { code: users(:ilker).login_codes.sole.code }
