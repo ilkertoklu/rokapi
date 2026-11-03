@@ -107,6 +107,7 @@ class NarratorTest < ActiveSupport::TestCase
       Ilker chose "#{roll.choice.label}": die 2, modifier #{format("%+d", roll.modifier)}, statuses +0, total #{roll.total} against #{roll.target}. #{roll.grade_label}, margin #{format("%+d", roll.margin)}.
       Used since the scene began, already applied: Healing potion (+7 health).
       Ilker now: 31/31 health; carries Longsword, Inn ledger (quest item); no statuses.
+      Tell only what this roll does, in a paragraph or two, and stop there: the next scene comes in my next message.
     CUE
   end
 
