@@ -116,16 +116,12 @@ class RollTest < ActiveSupport::TestCase
     assert_equal 3, character.status_effects.find_by!(name: "Burned Palms").turns_left, "a status lasts 3 turns at most"
   end
 
-  test "a grant of unknown kind applies nothing" do
-    roll = roll_with(value: 9, target: 12)
-
-    assert_no_difference -> { Item.count } do
-      assert_raises(ArgumentError) do
-        roll.resolve resolution: "You find something.", effects: { "items_gained" => [ { "name" => "Old charm", "kind" => "relic" } ] }
-      end
+  test "a grant of unknown kind is carried as a passive item, and a grant without a name is dropped" do
+    assert_difference -> { Item.count }, +1 do
+      roll_with(value: 9, target: 12).resolve resolution: "You find something.", effects: { "items_gained" => [ { "name" => "Old charm", "kind" => "relic" }, { "kind" => "quest" }, "Rope" ] }
     end
 
-    assert_nil roll.reload.resolution
+    assert Item.find_by!(name: "Old charm").passive?
   end
 
   private

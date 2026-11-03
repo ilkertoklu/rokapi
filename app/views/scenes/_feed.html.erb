@@ -9,7 +9,7 @@
     </p>
 
     <% if roll&.resolved? %>
-      <p class="feed__resolution"><%= roll.resolution %></p>
+      <%= simple_format roll.resolution, class: "feed__resolution" %>
 
       <% roll.items_gained.each do |gain| %>
         <div class="feed__gain">

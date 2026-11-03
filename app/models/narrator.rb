@@ -32,7 +32,7 @@ class Narrator < RubyLLM::Agent
         scene.stream streamed.split(FENCE, 2).first.to_s.sub(/`+\z/, "").strip
       end
 
-      check_scene scene, reply.content
+      check_scene scene, *told(reply.content)
     end
 
     write_scene scene, prose, data
@@ -41,11 +41,11 @@ class Narrator < RubyLLM::Agent
   def narrate_outcome(roll)
     return if roll.resolved?
 
-    data = rewriting RubyLLM.render_prompt("narrator/outcome", roll: roll) do |cue|
-      check_outcome speak(cue, schema: OutcomeSchema).parsed
+    resolution, effects = rewriting RubyLLM.render_prompt("narrator/outcome", roll: roll) do |cue|
+      check_outcome(*told(speak(cue).content))
     end
 
-    roll.resolve resolution: data["resolution"], effects: data["effects"]
+    roll.resolve resolution: resolution, effects: effects
   end
 
   private
@@ -65,8 +65,7 @@ class Narrator < RubyLLM::Agent
       end
     end
 
-    def speak(cue, schema: nil, &)
-      with_schema schema
+    def speak(cue, &)
       messages.last&.role == "user" ? complete(&) : ask(cue, &)
     end
 
@@ -74,15 +73,19 @@ class Narrator < RubyLLM::Agent
       chat.game_session
     end
 
-    def check_scene(scene, content)
+    def told(content)
       prose, structure = content.to_s.split(FENCE, 3).map(&:strip)
       raise MalformedResponse, "the #{FENCE}json block is missing" if structure.nil?
+      raise MalformedResponse, "the narration is missing" if prose.empty?
 
       data = JSON.parse(structure.delete_prefix("json"))
       raise MalformedResponse, "the #{FENCE}json block must hold one object" unless data.is_a?(Hash)
 
+      [ prose, data ]
+    end
+
+    def check_scene(scene, prose, data)
       finale, title, choices = data["finale"] == true, data["title"].to_s, Array(data["choices"])
-      raise MalformedResponse, "the narration is missing" if prose.empty?
       fit "the narration", prose, finale ? :finale : :scene
       raise MalformedResponse, "the title is missing" if title.blank?
       raise MalformedResponse, "the title #{title.inspect} runs #{title.length} characters, at most #{game_session.title_length} fit beside the progress dots" if title.length > game_session.title_length
@@ -115,11 +118,10 @@ class Narrator < RubyLLM::Agent
       [ prose, data ]
     end
 
-    def check_outcome(data)
-      raise MalformedResponse, "the resolution is missing" unless data.is_a?(Hash) && data["resolution"].present?
-      fit "the resolution", data["resolution"], :resolution
+    def check_outcome(resolution, effects)
+      fit "the resolution", resolution, :resolution
 
-      data
+      [ resolution, effects ]
     end
 
     def fit(part, text, limit)

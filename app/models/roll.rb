@@ -102,20 +102,25 @@ class Roll < ApplicationRecord
 
     def bounded(effects)
       statuses_lost = Array(effects["statuses_lost"])
-      statuses_gained = Array(effects["statuses_gained"]).map { |grant| status_from(grant) }.select { |status| critical? || !status["modifier"].positive? }
+      statuses_gained = granted(effects["statuses_gained"]).map { |grant| status_from(grant) }.select { |status| critical? || !status["modifier"].positive? }
       kept = player.character.status_effects.map(&:name) - statuses_lost - statuses_gained.pluck("name")
 
       { "hp" => effects["hp"].to_i.clamp(HEALTH_FLOOR.fetch(grade, 0), 0),
-        "items_gained" => Array(effects["items_gained"]).map { |grant| item_from(grant) },
+        "items_gained" => granted(effects["items_gained"]).map { |grant| item_from(grant) },
         "items_lost" => Array(effects["items_lost"]),
         "statuses_gained" => statuses_gained.first([ StatusEffect::LIMIT - kept.size, 0 ].max),
         "statuses_lost" => statuses_lost }
     end
 
-    def item_from(grant)
-      instant = grant["kind"] == "instant"
+    def granted(grants)
+      Array(grants).grep(Hash).select { |grant| grant["name"].present? }
+    end
 
-      { "name" => grant["name"], "kind" => grant["kind"], "description" => grant["description"],
+    def item_from(grant)
+      kind = Item.kinds.fetch(grant["kind"], "passive")
+      instant = kind == "instant"
+
+      { "name" => grant["name"], "kind" => kind, "description" => grant["description"],
         "hp_effect" => instant ? grant["hp"].to_i : 0,
         "uses_left" => ([ grant["uses"].to_i, Item::MINIMUM_USES ].max if instant) }
     end

@@ -18,7 +18,13 @@ module LlmStubbing
   SECOND_SCENE_RESPONSE = SCENE_RESPONSE.sub('"title": "The Old Inn"', '"title": "The Stable"')
     .sub("Rain hammers the inn's roof tiles", "The stable door is barred from the inside")
 
-  OUTCOME_RESPONSE = %({"resolution": "The drawer opens, but you cut your hand.", "effects": {"hp": -4}})
+  OUTCOME_RESPONSE = <<~TEXT
+    The drawer opens, but you cut your hand.
+
+    ```json
+    {"hp": -4}
+    ```
+  TEXT
 
   FINALE_RESPONSE = <<~TEXT
     The caravan bells echo down the valley as you ride into Whitebend.

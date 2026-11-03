@@ -97,6 +97,10 @@
     color: var(--color-ink-prose);
   }
 
+  .feed__resolution + .feed__resolution {
+    margin-block-start: .75em;
+  }
+
   .feed__gain {
     align-self: stretch;
     display: flex;

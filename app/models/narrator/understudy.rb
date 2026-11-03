@@ -4,11 +4,11 @@ class Narrator::Understudy < RubyLLM::Provider
   MODEL = "understudy"
 
   class Protocol < RubyLLM::Protocol
-    def complete(messages, schema: nil, **, &)
+    def complete(messages, **, &)
       content = +""
 
       Open3.popen2(Rails.configuration.x.narrator_command) do |stdin, stdout, process|
-        stdin.write request(messages, schema).to_json
+        stdin.write request(messages).to_json
         stdin.close
 
         stdout.each_line do |line|
@@ -23,11 +23,10 @@ class Narrator::Understudy < RubyLLM::Provider
     end
 
     private
-      def request(messages, schema)
+      def request(messages)
         system, conversation = messages.partition { |message| message.role == :system }
 
-        { system: system.map(&:content).join("\n\n").presence, prompt: transcript(conversation),
-          schema: schema&.dig(:schema) }
+        { system: system.map(&:content).join("\n\n").presence, prompt: transcript(conversation) }
       end
 
       def transcript(conversation)

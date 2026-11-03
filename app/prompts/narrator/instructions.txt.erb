@@ -36,7 +36,16 @@ A scene is the narration as plain prose, at most <%= Narrator::WORDS[:scene] %> 
 - The first scene also carries "secret": "...", at most <%= Narrator::WORDS[:secret] %> words, never shown to the players.
 <%= %(- The first scene also names the adventure: "adventure": "...", 2 to #{Narrator::WORDS[:adventure]} words.\n) if game.quest.nil? %>- The finale has no choices, "finale": true, "outcome" as I tell you, and at most <%= Narrator::WORDS[:finale] %> words. The dice decided the outcome; make the ending earn it.
 
-A roll is resolved in the structure you are given: the resolution in at most <%= Narrator::WORDS[:resolution] %> words, and the effects on the character who rolled.
+A roll is resolved the same way: what happens as plain prose, at most <%= Narrator::WORDS[:resolution] %> words, then a ```json block with what changed for the character who rolled. Leave out what did not change:
+
+```json
+{"hp": -3,
+ "items_gained": [{"name": "...", "kind": "instant|passive|quest", "description": "...", "hp": 0, "uses": 0}],
+ "items_lost": ["..."],
+ "statuses_gained": [{"name": "...", "modifier": -1, "turns": 2}],
+ "statuses_lost": ["..."]}
+```
 
 - hp is 0 or negative.
-- A status lasts <%= StatusEffect::TURNS.min %> to <%= StatusEffect::TURNS.max %> turns or until its condition; a character carries at most <%= StatusEffect::LIMIT %>.
+- An instant item is spent when used and heals its hp, uses times; a passive item works in the story while it is carried; a quest item matters to the quest.
+- A status adds its modifier, -2 to +2, to later rolls for <%= StatusEffect::TURNS.min %> to <%= StatusEffect::TURNS.max %> turns; a character carries at most <%= StatusEffect::LIMIT %>.

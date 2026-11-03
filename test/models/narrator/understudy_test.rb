@@ -6,22 +6,17 @@ class Narrator::UnderstudyTest < ActiveSupport::TestCase
       provider: :understudy, assume_model_exists: true)
   end
 
-  test "the command receives the system prompt, the user prompt and the schema as JSON" do
+  test "the command receives the system prompt and the user prompt as JSON" do
     request = stub_understudy(OUTCOME_RESPONSE) do
-      @chat.with_instructions("Be the narrator.").with_schema(Narrator::OutcomeSchema).ask("Resolve the roll.")
+      @chat.with_instructions("Be the narrator.").ask("Resolve the roll.")
     end.sole
 
-    assert_equal "Be the narrator.", request["system"]
-    assert_equal "Resolve the roll.", request["prompt"]
-    assert_equal "object", request.dig("schema", "type")
-    assert_includes request.dig("schema", "properties").keys, "resolution"
-    assert_not request["schema"].key?("$schema"), "the schema is sent as the API gets it, without metadata"
+    assert_equal({ "system" => "Be the narrator.", "prompt" => "Resolve the roll." }, request)
   end
 
-  test "a reply without a schema is asked for without one" do
+  test "a chat without instructions sends no system prompt" do
     request = stub_understudy(SCENE_RESPONSE) { @chat.ask("Write the scene.") }.sole
 
-    assert_nil request["schema"]
     assert_nil request["system"]
   end
 
@@ -48,11 +43,11 @@ class Narrator::UnderstudyTest < ActiveSupport::TestCase
 
   test "the reply is the understudy's, costs nothing and is kept" do
     response = nil
-    stub_understudy(%({"resolution": "Done."})) { response = @chat.ask("Resolve the roll.") }
+    stub_understudy("Done.") { response = @chat.ask("Resolve the roll.") }
 
     assert_equal "understudy", response.model
     assert_equal 0, response.cost.total
-    assert_equal({ "resolution" => "Done." }, response.parsed)
+    assert_equal "Done.", response.content
     assert_equal %w[user assistant], @chat.messages.pluck(:role)
   end
 

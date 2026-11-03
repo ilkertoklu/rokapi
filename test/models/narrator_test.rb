@@ -108,7 +108,6 @@ class NarratorTest < ActiveSupport::TestCase
       Used since the scene began, already applied: Healing potion (+7 health).
       Ilker now: 31/31 health; carries Longsword, Inn ledger (quest item); no statuses.
     CUE
-    assert_equal "object", request.dig("schema", "type"), "the outcome is asked in its structure"
   end
 
   test "a used item is settled by the outcome and not raised again by the next scene" do
@@ -319,10 +318,10 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal 3, scene.choices.count
   end
 
-  test "an outcome with a blank resolution is malformed" do
+  test "an outcome without its prose is malformed" do
     roll = play_first_scene
 
-    stub_understudy(*rewrites_of(%({"resolution": "", "effects": {"hp": -4}}))) do
+    stub_understudy(*rewrites_of(OUTCOME_RESPONSE.sub("The drawer opens, but you cut your hand.", ""))) do
       assert_raises Narrator::MalformedResponse do
         roll.narrate
       end
@@ -479,7 +478,7 @@ class NarratorTest < ActiveSupport::TestCase
 
   test "a resolution that does not fit the screen is rewritten" do
     roll = play_first_scene
-    long = %({"resolution": "#{"The drawer sticks. " * 20}", "effects": {"hp": 0}})
+    long = OUTCOME_RESPONSE.sub("The drawer opens, but you cut your hand.", "The drawer sticks. " * 20)
 
     stub_understudy(long, OUTCOME_RESPONSE) { roll.narrate }
 
