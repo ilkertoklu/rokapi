@@ -159,6 +159,15 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal [ [ "strength", 10 ], [ "strength", 19 ] ], @game_session.current_scene.choices.order(:id).pluck(:stat, :target)
   end
 
+  test "a first scene without a title still opens the game" do
+    stub_understudy(SCENE_RESPONSE.sub('"title": "The Old Inn", ', "")) { narrate }
+
+    scene = @game_session.scenes.sole
+    assert_nil scene.title
+    assert_not scene.opening?
+    assert scene.choosing?
+  end
+
   test "a choice on a stat the hero does not have is malformed" do
     unknown = SCENE_RESPONSE.sub('"stat": "intelligence"', '"stat": "luck"')
 

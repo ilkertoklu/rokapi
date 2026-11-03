@@ -52,7 +52,7 @@ class Scene < ApplicationRecord
   end
 
   def opening?
-    first? && title.nil?
+    first? && narrating?
   end
 
   def narrator_writing?
