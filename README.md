@@ -2,7 +2,7 @@
 
 [Rokapi](https://en.wikipedia.org/wiki/Georgian_mythology#Spirits,_creatures,_and_other_beings) (როკაპი) is an evil spirit in Georgian mythology, chained to a column under the earth.
 
-This is a tabletop-style adventure game narrated by an AI. You build a character, pick a quest, and play scene by scene: the narrator writes the scene, offers three choices, you roll a d20, and the outcome is woven back into the story. Health, inventory and status effects carry through to the finale.
+This is a tabletop-style adventure game narrated by an AI. You build a character, draw a fate card, and play scene by scene: the narrator writes the scene, offers two or three choices, you roll a d20, and the outcome is woven back into the story. Health, inventory and status effects carry through to the finale.
 
 An LLM will happily write prose all day. The hard part is getting it to tell a story worth playing: one that holds an arc, respects the dice, and makes you want the next scene, rather than improvising a fresh reply every turn.
 
@@ -11,19 +11,18 @@ Rokapi is a Rails 8 application: vanilla Rails, Hotwire, SQLite. LLM calls go th
 
 ## How a game plays
 
-1. **Setup.** Choose a quest (two hand-written ones, or "surprise" and let the narrator invent a world), a tone (fun, balanced, dark) and a length (7, 12 or 18 scenes).
+1. **Setup.** Pick one of three fate cards, each a place, a trouble and a person at the heart of it, or draw again, or take one face down as a surprise. Then a tone (fun, balanced, dark) and a length (7, 12 or 18 scenes).
 2. **Character.** Six races, six classes, six backgrounds, and points to spread across six stats.
-3. **Story bible.** Before the first scene, the narrator plans the whole arc: who wants what, where it goes wrong, how it can end. Every later scene is written against that plan.
-4. **Scenes.** Every scene but the last ends in three choices, each tied to a stat and a target number. You pick one and roll.
-5. **Outcomes.** The narrator resolves the roll in a sentence or two and returns structured effects: health, items gained or lost, status effects that modify later rolls.
-6. **Finale.** The last scene closes the story. The bible wrote two endings at the start; your rolls decide which one you get.
+3. **Scenes.** Every scene ends in two or three choices, each tied to a stat and a target number. You pick one and roll.
+4. **Outcomes.** The narrator tells what the roll did and returns its effects: health, what you carry, status effects that weigh on later rolls.
+5. **Finale.** The last scene is played like the others, and its roll tells the ending. Your rolls decide victory or defeat, and the last one counts twice.
 
 
 ## The narrator
 
-The narrator does what a good game master does. Before the first scene it plans the adventure: who wants what, what stands in the way, how it could end well and how it could end badly. Then it writes each scene, offers choices that carry real stakes, takes the dice as they fall, and follows the consequences through to the end it set up.
+The narrator does what a good game master does. Each fate card carries a hidden twist only the narrator sees; it settles what really happened and lets it come out a piece at a time. It writes each scene, offers choices that carry real stakes, takes the dice as they fall, and follows the consequences through to the end.
 
-Every scene is written with the whole game in view. The narrator gets the plan, your character as they stand right now, and every scene played so far in full: the text, the choice you made, the roll and what came of it. The last scene knows what happened in the first.
+Every scene is written with the whole game in view. The narrator is one conversation per game: it has every scene played so far, your character as they stand right now, and where the story is, early, in the middle or late. The last scene knows what happened in the first.
 
 Every call is logged with its cost. A finished game knows exactly what it cost to tell.
 
@@ -32,13 +31,13 @@ Every call is logged with its cost. A finished game knows exactly what it cost t
 
 - Ruby 4.0.1, then `bin/setup`.
 - The narrator needs an OpenAI key in the credentials as `openai.api_key`.
-- Login is by email with a one-time code; in development it lands in the log.
+- Login is by email with a one-time code; in development the mail is written to `tmp/mails/`.
 - `bin/rokapi` plays the game against a running server, one UI step per command (`bin/rokapi help`).
 - The iOS and Android apps live in `native/` (`native/README.md`).
 
 ### Narrating without an API key
 
-In development, `NARRATOR_COMMAND` hands every narrator call to a command of your own instead of the API: `NARRATOR_COMMAND=~/bin/narrate bin/dev`. The command is run through the shell once per call and gets one JSON object on stdin: `model` (the model the call is meant for, or `null` for the narrator's own), `system` (the instructions), `prompt` (the briefing) and `schema` (a JSON Schema, or `null`). It writes the reply to stdout and exits 0. When `schema` is set, the reply is a single JSON object matching it, with no fences or prose around it; otherwise it is the scene exactly as the model would write it. Whatever the command writes before it exits streams into the scene as it arrives. These calls are logged as model `understudy` at zero cost. Without the variable, and in every other environment, the narrator calls the API.
+In development, `NARRATOR_COMMAND` hands every narrator call to a command of your own instead of the API: `NARRATOR_COMMAND=~/bin/narrate bin/dev`. The command is run through the shell once per call and gets one JSON object on stdin: `system` (the instructions) and `prompt` (the conversation so far and the turn). It writes the reply to stdout, exactly as the model would write it, and exits 0. Whatever the command writes before it exits streams into the scene as it arrives. These calls are logged as model `understudy` at zero cost. Without the variable, and in every other environment, the narrator calls the API.
 
 
 
