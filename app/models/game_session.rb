@@ -6,6 +6,7 @@ class GameSession < ApplicationRecord
   PARTY_SIZE = 5
   CODE_LENGTH = 4
   JOINABLE_FOR = 24.hours
+  EARLIER_SURPRISES = 5
 
   belongs_to :creator, class_name: "User", default: -> { Current.user }
   belongs_to :rematch_of, class_name: "GameSession", optional: true
@@ -113,6 +114,11 @@ class GameSession < ApplicationRecord
 
   def scene_budget
     Length.fetch(length).scenes
+  end
+
+  def earlier_surprises
+    creator.created_game_sessions.where(quest: nil, created_at: ...created_at).where.not(title: [ nil, "" ])
+      .order(created_at: :desc).limit(EARLIER_SURPRISES).pluck(:title)
   end
 
   def verdict

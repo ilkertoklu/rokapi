@@ -263,6 +263,16 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal "The Old Inn", @game_session.current_scene.title
   end
 
+  test "a surprise steers clear of the player's earlier surprises" do
+    @game_session.update! quest: nil
+    users(:ilker).created_game_sessions.create! quest: nil, title: "Ay Kuyuya Düştü", created_at: 1.day.ago
+    users(:ilker).created_game_sessions.create! quest: nil, title: "Later Than This One", created_at: 1.day.from_now
+
+    request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
+
+    assert_includes request["system"], "This player's earlier surprises were Ay Kuyuya Düştü; take them somewhere else."
+  end
+
   test "a ready-made quest keeps its own name" do
     request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
