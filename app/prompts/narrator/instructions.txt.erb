@@ -19,7 +19,7 @@ A scene: tell it, then end with a ```json block:
 ```
 
 Give two or three choices, things this hero could try now that lead different ways. The stat is whatever the attempt calls for, the difficulty <%= Choice::DIFFICULTY.min %> (easy) to <%= Choice::DIFFICULTY.max %> (very hard). The title and the location are a few words each.<%= %( The first scene's block also names the adventure: "adventure": "...".) if game.quest.nil? %>
-The last scene tells the ending the dice decided. Its block has no choices: {"title": "...", "outcome": "victory" or "defeat"}.
+The last scene tells the ending the dice decided. Its block has no choices: {"title": "...", "location": "...", "outcome": "victory" or "defeat"}.
 
 A roll: tell what happens, then end with a ```json block of what changed for the one who rolled, leaving out what did not:
 
