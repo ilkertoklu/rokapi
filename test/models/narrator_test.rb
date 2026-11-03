@@ -322,6 +322,16 @@ class NarratorTest < ActiveSupport::TestCase
     assert @game_session.outcome_defeat?
   end
 
+  test "a party's scene puts the rest of the party beside the hero, but not those who left" do
+    players(:deniz_solo_host).update! game_session: @game_session
+    @game_session.players.create!(user: users(:sevval)).create_character! characters(:deniz_hero).attributes.slice("race", "klass", "background", "stats")
+    users(:sevval).destroy!
+
+    request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
+
+    assert request["prompt"].end_with?("\nIn the scene with Ilker: Deniz, human healer, soldier by background, 28/28 health.\n")
+  end
+
   test "a party's finale leaves every hero to what the dice set up" do
     players(:deniz_solo_host).update! game_session: @game_session
     characters(:ilker_hero).update! hp: 0

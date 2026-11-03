@@ -38,6 +38,10 @@ class Scene < ApplicationRecord
     active_player == player
   end
 
+  def companions
+    game_session.party.reject { turn_of?(it) || it.departed? }
+  end
+
   def first?
     position == 1
   end

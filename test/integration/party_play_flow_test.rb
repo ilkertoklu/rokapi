@@ -10,9 +10,14 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
   test "two players take turns, each watching the other's scene" do
     first_scene = start_with(SCENE_RESPONSE).sole
 
-    assert_includes first_scene["system"], "The party, who take turns:\n- Ilker: "
+    assert_includes first_scene["system"], "The party, who travel together and take turns:\n- Ilker: "
     assert_includes first_scene["system"], "\n- Deniz: "
-    assert_equal "Scene 1 of 7, Ilker's turn.\nIlker, human warrior, soldier by background: 31/31 health; carries Longsword, Round shield; no statuses.\n", first_scene["prompt"]
+    assert_includes first_scene["system"], 'Speak to the one whose turn it is as "you" and call the others by name'
+    assert_equal <<~CUE, first_scene["prompt"]
+      Scene 1 of 7, Ilker's turn.
+      Ilker, human warrior, soldier by background: 31/31 health; carries Longsword, Round shield; no statuses.
+      In the scene with Ilker: Deniz, human warrior, soldier by background, 31/31 health.
+    CUE
 
     sign_in_as users(:ilker)
     get game_session_path(@room), as: :json
@@ -50,9 +55,10 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".d20", count: 0
 
     sign_in_as users(:ilker)
-    stub_understudy(OUTCOME_RESPONSE) do
+    outcome = stub_understudy(OUTCOME_RESPONSE) do
       perform_enqueued_jobs { post game_session_roll_path(@room), as: :json }
-    end
+    end.sole
+    assert_includes outcome["prompt"], "\nIn the scene with Ilker: Deniz, human warrior, soldier by background, 31/31 health.\n"
 
     sign_in_as users(:deniz)
     get game_session_path(@room)

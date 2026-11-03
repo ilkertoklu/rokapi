@@ -38,6 +38,10 @@ class Character < ApplicationRecord
     "#{race} #{klass}, #{background} by background"
   end
 
+  def portrait
+    "#{name}, #{identity}, #{hp}/#{max_hp} health"
+  end
+
   def starting_gear
     Klass.fetch(klass).starting_items(locale: game_session.locale).map { |item| Item.new(item) }
   end
