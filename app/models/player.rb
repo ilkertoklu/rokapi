@@ -25,6 +25,10 @@ class Player < ApplicationRecord
     game_session.started? ? update!(user: nil) : destroy!
   end
 
+  def attempts
+    rolls.includes(:choice).order(:created_at).map { |roll| %("#{roll.choice.label}" (#{roll.success? ? "succeeded" : "failed"})) }
+  end
+
   def ready?
     character.present?
   end

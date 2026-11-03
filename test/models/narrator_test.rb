@@ -341,6 +341,15 @@ class NarratorTest < ActiveSupport::TestCase
     assert_includes request["prompt"], "The ending is only what the choices and rolls so far bring about: no one, Ilker and Deniz included, makes a move in it that those did not set up."
   end
 
+  test "a party's finale gives every hero a part from what each of them tried" do
+    players(:deniz_solo_host).update! game_session: @game_session
+    play_to_the_last_scene
+
+    request = stub_understudy(FINALE_RESPONSE.sub('"outcome": "victory"', '"outcome": "defeat"')) { narrate }.sole
+
+    assert_includes request["prompt"], %(makes a move in it that those did not set up. Each of them has a part in it: Ilker tried "Read the dusty ledger" (failed); Deniz tried nothing.\n)
+  end
+
   test "a downed character is denied another scene and a victory alike" do
     characters(:ilker_hero).update! hp: 0
 
