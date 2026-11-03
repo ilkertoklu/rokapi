@@ -104,7 +104,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert request["prompt"].end_with?(<<~CUE)
 
 
-      Ilker chose "#{roll.choice.label}": die 2, modifier #{format("%+d", roll.modifier)}, statuses +0, total #{roll.total} against #{roll.target}. #{roll.grade_label}, margin #{format("%+d", roll.margin)}.
+      Ilker chose "#{roll.choice.label}": die 2, modifier #{format("%+d", roll.modifier)}, statuses +0, total #{roll.total} against #{roll.target}. #{roll.grade_label}, margin #{format("%+d", roll.margin)}. It does not work, and what goes wrong takes the story somewhere new instead of back for another try.
       Used since the scene began, already applied: Healing potion (+7 health).
       Ilker now: 31/31 health; carries Longsword, Inn ledger (quest item); no statuses.
       Tell only what this roll does, in a paragraph or two, and stop there: the next scene comes in my next message.
