@@ -6,7 +6,7 @@ class My::SettingsController < ApplicationController
   end
 
   def update
-    Current.user.update_settings(**settings_params)
+    Current.user.update_settings name: settings_params[:name], email: settings_params[:email]
 
     respond_to do |format|
       format.html { redirect_after_saving }
@@ -21,7 +21,7 @@ class My::SettingsController < ApplicationController
 
   private
     def settings_params
-      params.expect(user: %i[ name email ]).to_h.symbolize_keys
+      params.expect(user: %i[ name email ])
     end
 
     def redirect_after_saving

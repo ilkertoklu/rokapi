@@ -137,6 +137,23 @@ class SettingsFlowTest < ActionDispatch::IntegrationTest
     assert response.parsed_body["unconfirmed_email"].present?
   end
 
+  test "a JSON save without an email keeps the email" do
+    patch my_settings_path(format: :json), params: { user: { name: "Ilker T" } }, as: :json
+
+    assert_response :success
+    assert_equal "Ilker T", users(:ilker).reload.name
+    assert_equal "ilker@example.com", users(:ilker).email
+    assert_nil users(:ilker).unconfirmed_email
+  end
+
+  test "a JSON save without a name is refused" do
+    patch my_settings_path(format: :json), params: { user: { email: "ilker@example.com" } }, as: :json
+
+    assert_response :unprocessable_entity
+    assert response.parsed_body["name"].present?
+    assert_equal "Ilker", users(:ilker).reload.name
+  end
+
   private
     def request_email_change_to(email)
       perform_enqueued_jobs do
