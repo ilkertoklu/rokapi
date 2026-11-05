@@ -53,7 +53,7 @@ class Narrator::UnderstudyTest < ActiveSupport::TestCase
 
   test "a chat on a model of its own asks the command for that model" do
     chat = RubyLLM.chat(model: "claude-opus-5-5", provider: :understudy, assume_model_exists: true)
-    Rails.configuration.x.narrator_command = "echo $NARRATOR_MODEL"
+    Rails.configuration.x.narrator_command = "cat > /dev/null; echo $NARRATOR_MODEL"
 
     reply = chat.ask("Write the plan.")
 
