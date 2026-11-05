@@ -130,7 +130,7 @@ class GameSession < ApplicationRecord
   end
 
   def clues_found
-    rolls.filter_map { it.effects&.dig("clue") }.map(&:to_i).uniq.sort
+    rolls.filter_map { Integer(it.effects&.dig("clue"), exception: false) }.select(&:positive?).uniq.sort
   end
 
   def plan_story
