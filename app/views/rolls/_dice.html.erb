@@ -1,4 +1,4 @@
-<%# locals: (choice:, roll:, game_session:) -%>
+<%# locals: (choice:, roll:, character:, game_session:) -%>
 <div class="dice">
   <p class="dice__prompt"><%= choice.label %></p>
 
@@ -20,6 +20,16 @@
         <span class="modifier"><%= format("%+d", choice.modifier) %></span>
       </dd>
     </div>
+    <% character.status_effects.each do |status| %>
+      <div>
+        <dt><%= t(".status") %></dt>
+        <dd class="dice__bonus">
+          <%= status.name %>
+          <span class="arrow">→</span>
+          <%= tag.span format("%+d", status.modifier), class: [ "modifier", "modifier--negative": status.modifier.negative? ] %>
+        </dd>
+      </div>
+    <% end %>
   </dl>
 </div>
 

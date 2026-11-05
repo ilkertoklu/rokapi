@@ -4,6 +4,7 @@
 
   <p class="outcome__math">
     <%= roll.value %> <span><%= format("%+d", roll.modifier) %> <%= Character::Stat.fetch(roll.choice.stat).label.downcase %></span>
+    <% if roll.status_modifier.nonzero? %><span><%= format("%+d", roll.status_modifier) %> <%= t(".statuses") %></span><% end %>
     = <strong><%= roll.total %></strong> · <%= t(".target", target: roll.target) %> · <%= roll.choice.difficulty_label %>
   </p>
 

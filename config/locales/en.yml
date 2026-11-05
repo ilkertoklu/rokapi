@@ -616,6 +616,7 @@ en:
       difficulty_source: "· narrator"
       target: Target %{target}
       bonus: Bonus
+      status: Status
       roll: Roll the die
       stalled: The narrator stalled. Your roll has not been resolved yet.
       resolving: The narrator is resolving the roll
@@ -626,6 +627,7 @@ en:
       health_change: "%{change} Health"
       added_to_inventory: Added to inventory
       status: Status
+      statuses: statuses
       continue: Continue
 
   scenes:

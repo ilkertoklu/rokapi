@@ -165,6 +165,24 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".action-panel__prompt", text: "Your turn"
   end
 
+  test "a status that weighs on the roll is shown before and after it" do
+    game_session = play_to_choices
+    game_session.players.sole.character.gain_status name: "Bruised Shoulder", modifier: -1, turns_left: 2
+
+    choice = game_session.current_scene.choices.find_by!(stat: "strength")
+    post game_session_choice_selection_path(game_session, choice)
+
+    get game_session_path(game_session)
+    assert_select ".dice__facts dd", text: /Bruised Shoulder\s+→\s+-1/
+
+    stub_understudy(OUTCOME_RESPONSE) do
+      with_die(8) { perform_enqueued_jobs { post game_session_roll_path(game_session) } }
+    end
+
+    get game_session_path(game_session)
+    assert_select ".outcome__math", text: "8 #{format("%+d", choice.modifier)} strength -1 statuses = #{7 + choice.modifier} · target #{choice.target} · #{choice.difficulty_label}"
+  end
+
   test "a stalled outcome can be sent back to the narrator" do
     game_session = play_to_choices
 

@@ -206,6 +206,10 @@
       color: var(--color-positive-bright);
       font-weight: 700;
     }
+
+    .modifier--negative {
+      color: var(--color-negative-bright);
+    }
   }
 
   .outcome--success::before {

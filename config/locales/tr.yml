@@ -635,6 +635,7 @@ tr:
       difficulty_source: "· anlatıcı"
       target: Hedef %{target}
       bonus: Katkı
+      status: Statü
       roll: Zarı at
       stalled: Anlatıcı duraksadı. Zarın sonucu henüz yazılamadı.
       resolving: Anlatıcı sonucu yazıyor
@@ -645,6 +646,7 @@ tr:
       health_change: "%{change} Can"
       added_to_inventory: Envantere eklendi
       status: Statü
+      statuses: statü
       continue: Devam et
 
   scenes:
