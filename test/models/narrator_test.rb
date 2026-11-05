@@ -104,7 +104,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert request["prompt"].end_with?(<<~CUE)
 
 
-      In scene 1 of 7, the story's first half, Ilker chose "#{roll.choice.label}": die 2, modifier #{format("%+d", roll.modifier)}, statuses +0, total #{roll.total} against #{roll.target}. #{roll.grade_label}, margin #{format("%+d", roll.margin)}. It does not work, and that costs something within the plan: time, someone's trust or health. The story still moves on, not in a new direction and not back for a second try: if a clue is left, Ilker comes by it anyway, late or at that cost (none found so far). Show the clue plainly and add "clue": its number to the block.
+      In scene 1 of 7, the story's first half, Ilker chose "#{roll.choice.label}": die 2, modifier #{format("%+d", roll.modifier)}, statuses +0, total #{roll.total} against #{roll.target}. #{roll.grade_label}, margin #{format("%+d", roll.margin)}. It does not work, and that costs something within the plan: time, someone's trust or health. The story still moves on, not in a new direction and not back for a second try: if a clue is left, Ilker comes by it anyway, late or at that cost (none found so far). Show the clue plainly and add "clue": its number to the block. Keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left.
       Used since the scene began, already applied: Healing potion (+7 health).
       Ilker now: 31/31 health; carries Longsword, Inn ledger (quest item); no statuses.
       Tell only what this roll does, in a paragraph or two, and stop there: the next scene comes in my next message.
@@ -126,7 +126,7 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
 
     assert_equal :solid, roll.grade
-    assert_includes request["prompt"], %(margin +4. It hands Ilker a clue from the plan not found yet, if one is left (none found so far). Show the clue plainly and add "clue": its number to the block.\n)
+    assert_includes request["prompt"], %(margin +4. It hands Ilker a clue from the plan not found yet, if one is left (none found so far). Show the clue plainly and add "clue": its number to the block. Keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left.\n)
   end
 
   test "the clues found so far are named in every later scene and roll" do
@@ -139,7 +139,7 @@ class NarratorTest < ActiveSupport::TestCase
     outcome = stub_understudy(OUTCOME_RESPONSE) { later.narrate }.sole
 
     assert_equal [ 2 ], @game_session.clues_found
-    assert_includes scene["prompt"], "\n\nScene 2 of 7, the story's first half, Ilker's turn. Pick up where the last outcome stopped, without retelling it. Clues found so far: 2. The heroes do only"
+    assert_includes scene["prompt"], "\n\nScene 2 of 7, the story's first half, Ilker's turn. Pick up where the last outcome stopped, without retelling it, and keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left. Clues found so far: 2. The heroes do only"
     assert_includes outcome["prompt"], "It hands Ilker a clue from the plan not found yet, if one is left (found so far: 2)."
   end
 
@@ -193,7 +193,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
 
-    assert request["prompt"].include?("\n\nScene 2 of 7, the story's first half, Ilker's turn. Pick up where the last outcome stopped, without retelling it. No clue found yet. The heroes do only what the players chose: where the way forks, the fork goes into the choices.\nIlker, human warrior (background: soldier): ")
+    assert request["prompt"].include?("\n\nScene 2 of 7, the story's first half, Ilker's turn. Pick up where the last outcome stopped, without retelling it, and keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left. No clue found yet. The heroes do only what the players chose: where the way forks, the fork goes into the choices.\nIlker, human warrior (background: soldier): ")
   end
 
   test "statuses weigh on the roll and wear off with it" do
@@ -324,7 +324,7 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
 
     assert_equal 2 * 8, request["prompt"].scan(/^<(user|assistant)>$/).size
-    assert request["prompt"].include?("\n\nScene 5 of 7, the story's second half, Ilker's turn. Pick up where the last outcome stopped, without retelling it. No clue found yet. The heroes do only what the players chose: where the way forks, the fork goes into the choices.\nIlker, human warrior (background: soldier): ")
+    assert request["prompt"].include?("\n\nScene 5 of 7, the story's second half, Ilker's turn. Pick up where the last outcome stopped, without retelling it, and keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left. No clue found yet. The heroes do only what the players chose: where the way forks, the fork goes into the choices.\nIlker, human warrior (background: soldier): ")
   end
 
   test "a turn the provider never answered is answered on the next attempt" do

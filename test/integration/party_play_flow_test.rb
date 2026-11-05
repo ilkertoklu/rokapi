@@ -69,7 +69,7 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
     second_scene = stub_understudy(SECOND_SCENE_RESPONSE) do
       perform_enqueued_jobs { post game_session_acknowledgement_path(@room), as: :json }
     end.sole
-    assert second_scene["prompt"].include?("\n\nScene 2 of 7, the story's first half, Deniz's turn. Pick up where the last outcome stopped, without retelling it. No clue found yet. The heroes do only what the players chose: where the way forks, the fork goes into the choices.\nDeniz, human warrior (background: soldier): ")
+    assert second_scene["prompt"].include?("\n\nScene 2 of 7, the story's first half, Deniz's turn. Pick up where the last outcome stopped, without retelling it, and keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left. No clue found yet. The heroes do only what the players chose: where the way forks, the fork goes into the choices.\nDeniz, human warrior (background: soldier): ")
     assert_includes second_scene["prompt"], "<user>\nIn scene 1 of 7, the story's first half, Ilker chose \"Force the drawer open\""
 
     get game_session_path(@room), as: :json
