@@ -85,6 +85,29 @@ class GameSessionTest < ActiveSupport::TestCase
     assert GameSession::Place.all.all? { it.troubles.size >= GameSession::LATEST + GameSession::Card::HAND }
   end
 
+  test "names are drawn in the story's language, leaving out the creator's latest plans and the party" do
+    users(:sevval).update!(name: "Ayşe")
+    GameSession.create!(creator: users(:sevval), card: "salt_caves lost_messenger old_captain", plan: "Hatice, Hasan'ın mektubunu sakladı.")
+    game_session = GameSession.create!(creator: users(:sevval), card: "salt_caves lost_messenger old_captain", locale: "tr")
+
+    20.times do
+      names = game_session.fresh_names
+
+      assert_equal GameSession::NAMES, names.uniq.size
+      assert_empty names - I18n.t("game_session.names", locale: :tr)
+      assert_empty names & %w[ Hatice Hasan Ayşe ]
+    end
+  end
+
+  test "every language holds a hundred different names" do
+    I18n.available_locales.each do |locale|
+      names = I18n.t("game_session.names", locale: locale)
+
+      assert_operator names.size, :>=, 100
+      assert_equal names.uniq, names
+    end
+  end
+
   test "starts and calls the narrator once every player has a character" do
     game_session = game_sessions(:ilker_without_character)
 

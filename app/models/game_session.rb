@@ -7,6 +7,7 @@ class GameSession < ApplicationRecord
   CODE_LENGTH = 4
   JOINABLE_FOR = 24.hours
   LATEST = 5
+  NAMES = 8
 
   belongs_to :creator, class_name: "User", default: -> { Current.user }
   belongs_to :rematch_of, class_name: "GameSession", optional: true
@@ -134,6 +135,10 @@ class GameSession < ApplicationRecord
     rolls.filter_map { Integer(it.effects&.dig("clue"), exception: false) }.select(&:positive?).uniq.sort
   end
 
+  def fresh_names
+    (I18n.t("game_session.names", locale: locale) - names_in_latest_plans - players.map(&:name)).sample(NAMES)
+  end
+
   def plan_story
     update! plan: Narrator::Planner.for(self).plan
   end
@@ -174,6 +179,14 @@ class GameSession < ApplicationRecord
   private
     def deal_card
       self.place, self.trouble, self.figure = Card.deal(1, to: creator).first.keys
+    end
+
+    def names_in_latest_plans
+      latest_plans.join(" ").scan(/[[:alpha:]]+/).uniq
+    end
+
+    def latest_plans
+      creator ? creator.created_game_sessions.excluding(self).where.not(plan: nil).latest.pluck(:plan) : []
     end
 
     def draw_twist

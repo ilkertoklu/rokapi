@@ -154,6 +154,17 @@ tr:
   game_session:
     surprise_title: Sürpriz macera
     party: "Ekip: %{names}"
+    names: [
+      Ayşe, Fatma, Emine, Hatice, Zeynep, Elif, Meryem, Zehra, Şerife, Hacer, Gülsüm, Fadime,
+      Döndü, Saliha, Hanife, Cemile, Safiye, Rukiye, Hayriye, Nefise, Naciye, Huriye, Asiye, Havva,
+      Kevser, Gülizar, Mihriban, Gülbahar, Saadet, Nazife, Feride, Leyla, Melek, Peri, Sultan, Nazlı,
+      Esma, Dudu, Gülnaz, Bedriye, Halime, Zeliha, Selvi, Elmas, Sevim, Güllü, Hamide, Münevver,
+      Nuriye, Raziye, Ali, Hasan, Hüseyin, Mehmet, Ahmet, Mustafa, İbrahim, İsmail, Osman, Yusuf,
+      Halil, Ramazan, Bekir, Süleyman, Recep, Musa, Rıza, Kadir, Cemal, Hamza, Davut, Yakup,
+      İlyas, Şükrü, Nuri, Hayri, Kâzım, Veli, Sadık, Cafer, Haydar, Tahir, Zeki, Rüstem,
+      Bayram, Celal, Hikmet, Necip, Remzi, Sabri, Şevket, Yahya, Mahmut, Ömer, Eyüp, Arif,
+      Asım, Tevfik, Dursun, Kamil
+    ]
     duration:
       hours: "%{hours}sa %{minutes}dk"
       minutes: "%{minutes}dk"

@@ -135,6 +135,17 @@ en:
   game_session:
     surprise_title: Surprise adventure
     party: "Party: %{names}"
+    names: [
+      Edda, Maren, Wren, Hilde, Agnes, Mabel, Elsie, Greta, Ida, Nell, Tilda, Bess,
+      Rosa, Hanna, Lena, Mira, Elin, Brenna, Linnea, Ottilie, Petra, Sabine, Thea, Una,
+      Vera, Wilma, Alma, Berit, Cora, Dagny, Elke, Gerda, Hester, Ilse, Liesl, Marta,
+      Nora, Oona, Pia, Ragna, Signe, Tova, Ulla, Ada, Bryn, Della, Etta, Gwen,
+      Orla, Tamsin, Aldo, Bram, Cormac, Dirk, Edric, Fenn, Garrick, Hollis, Ivo, Jory,
+      Kasimir, Lorcan, Matthias, Nils, Osric, Piet, Rafe, Sten, Tobin, Ulric, Wendel, Anselm,
+      Bertil, Dorran, Egil, Falk, Gideon, Hamish, Ingram, Jasper, Leif, Marek, Niall, Odo,
+      Pell, Roderick, Silas, Ulf, Viktor, Willem, Abel, Barnaby, Corin, Davin, Emeric, Florian,
+      Godfrey, Hugo, Jonas, Konrad
+    ]
     duration:
       hours: "%{hours}h %{minutes}m"
       minutes: "%{minutes} min"

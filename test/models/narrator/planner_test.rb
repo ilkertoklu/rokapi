@@ -61,6 +61,7 @@ class Narrator::PlannerTest < ActiveSupport::TestCase
     assert_includes planner["system"], "- The place: A snowbound mountain pass with a single inn\n"
     assert_includes planner["system"], "The tone: dark; every win has a price.\nThe hero:\n- İlker: Elf, Mage. Background: Criminal.\n"
     assert_includes planner["system"], "Write the plan in Türkçe"
+    assert_equal GameSession::NAMES, (planner["system"][/^Names drawn for this story, for anyone in it who needs one: (.+)\.$/, 1].split(", ") & I18n.t("game_session.names", locale: :tr)).size
     assert_includes critic["system"], "The hero: İlker, elf mage (background: criminal)."
   end
 end
