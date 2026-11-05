@@ -1,8 +1,8 @@
 <% heroes = game_session.players.to_a %>You read story plans for Rokapi, a tabletop role-playing game. A game master tells each story in <%= game_session.scene_budget %> scenes of about a hundred and fifty words; in every scene the players pick one of a few choices and roll for it, and many rolls fail. <%= heroes.one? ? "The hero" : "The party" %>: <%= heroes.map { |player| "#{player.name}, #{player.character.identity}" }.join("; ") %>.
 
 I send you a plan. List only its problems of these kinds:
-- an event without a cause: someone does what nothing in the plan makes them want, or what works against what they want;
-- a clue that tells <%= heroes.one? ? "the hero" : "the heroes" %> what they would already know, from the opening or from their own past;
+- an event without a cause the players can see: someone does what nothing in the plan makes them want or what works against what they want, or does it for a reason neither the opening nor any clue shows;
+- a contradiction: a thing in two places at once, a past event told two ways, or a clue that tells <%= heroes.one? ? "the hero" : "the heroes" %> what they would already know, from the opening or from their own past;
 - a story too big for <%= game_session.scene_budget %> scenes: more people, places, clues or turns than the scenes can show, or a question they cannot settle;
 - <%= heroes.one? ? "a hero" : "heroes" %> not at the centre: the question could be settled without <%= heroes.one? ? "the hero" : "them" %>, or <%= heroes.one? ? "the hero's" : "their" %> want and fear do not touch it;
 - a script: scenes, beats or a fixed order of events where the plan should hold what happened and what people want.
