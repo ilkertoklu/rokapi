@@ -83,7 +83,7 @@ tr:
         description: Gölgede yürür; kilitler ve tuzaklar ona dert değil.
       mage:
         label: Büyücü
-        description: Eski sözlerin gücünü taşır; kırılgan ama yıkıcı.
+        description: Büyü yapar; kırılgan ama yıkıcı.
       healer:
         label: Şifacı
         description: Hastaları ve yaralıları tedavi eder; yoldaşlarını ayakta tutar.
@@ -141,7 +141,7 @@ tr:
         name: Meşe asa
       spellbook:
         name: Büyü kitabı
-        description: eski sözleri barındırır
+        description: bildiğin büyüler yazılı
       healers_kit:
         name: Şifacı çantası
         description: şifalı otlar ve sargı bezi

@@ -64,7 +64,7 @@ en:
         description: Walks in shadow, untroubled by locks and traps.
       mage:
         label: Mage
-        description: Carries the force of old words, fragile but devastating.
+        description: Casts spells; fragile but devastating.
       healer:
         label: Healer
         description: Treats the sick and wounded, keeping companions on their feet.
@@ -122,7 +122,7 @@ en:
         name: Oak staff
       spellbook:
         name: Spellbook
-        description: holds the old words
+        description: the spells you know
       healers_kit:
         name: Healer's kit
         description: herbs and bandages
