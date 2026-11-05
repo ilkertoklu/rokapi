@@ -15,8 +15,6 @@ class Narrator < RubyLLM::Agent
 
     if (conversation = game_session.reload_conversation)
       new chat: conversation, persist_instructions: false
-    elsif Rails.configuration.x.narrator_command.present?
-      new chat: game_session.create_conversation!(model: Understudy::MODEL, provider: :understudy, assume_model_exists: true)
     else
       new chat: game_session.create_conversation!
     end

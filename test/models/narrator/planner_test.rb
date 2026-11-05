@@ -43,12 +43,9 @@ class Narrator::PlannerTest < ActiveSupport::TestCase
     end
   end
 
-  test "the planner and the critic run on Opus, through the narrator command when there is one" do
+  test "the planner and the critic run on Opus" do
     assert_equal [ "claude-opus-5-5", "anthropic" ], Narrator::Planner.for(@game_session).chat.then { [ it.model_id, it.provider ] }
-
-    stub_understudy do
-      assert_equal [ "claude-opus-5-5", "understudy" ], Narrator::Critic.for(@game_session).chat.then { [ it.model_id, it.provider ] }
-    end
+    assert_equal [ "claude-opus-5-5", "anthropic" ], Narrator::Critic.for(@game_session).chat.then { [ it.model_id, it.provider ] }
   end
 
   test "a plan can be rehearsed from cards without a game" do

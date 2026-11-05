@@ -37,7 +37,7 @@ Every call is logged with its cost. A finished game knows exactly what it cost t
 
 ### Narrating without an API key
 
-In development you can send narrator calls to your own command instead of the API: `NARRATOR_COMMAND=~/bin/narrate bin/dev`. The command reads a JSON object with `system` and `prompt` on stdin and writes the reply to stdout. These calls cost nothing. Without the variable, the narrator calls the API.
+In development you can send narrator calls to your own command instead of the API: `NARRATOR_COMMAND=~/bin/narrate bin/dev`. The command reads a JSON object with `system` and `prompt` on stdin, finds the requested model in `NARRATOR_MODEL`, and writes the reply to stdout. These calls cost nothing. Without the variable, the narrator calls the API.
 
 
 

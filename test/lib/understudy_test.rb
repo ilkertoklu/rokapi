@@ -1,9 +1,8 @@
 require "test_helper"
 
-class Narrator::UnderstudyTest < ActiveSupport::TestCase
+class UnderstudyTest < ActiveSupport::TestCase
   setup do
-    @chat = Narrator::Conversation.create!(game_session: game_sessions(:ilker_solo), model: Narrator::Understudy::MODEL,
-      provider: :understudy, assume_model_exists: true)
+    @chat = Narrator::Conversation.create!(game_session: game_sessions(:ilker_solo))
   end
 
   test "the command receives the system prompt and the user prompt as JSON" do
@@ -41,18 +40,18 @@ class Narrator::UnderstudyTest < ActiveSupport::TestCase
     assert_equal reply, @chat.messages.last.content
   end
 
-  test "the reply is the understudy's, costs nothing and is kept" do
+  test "the reply costs nothing and is kept" do
     response = nil
     stub_understudy("Done.") { response = @chat.ask("Resolve the roll.") }
 
-    assert_equal "understudy", response.model
+    assert_equal "gpt-5-nano", response.model
     assert_equal 0, response.cost.total
     assert_equal "Done.", response.content
     assert_equal %w[user assistant], @chat.messages.pluck(:role)
   end
 
-  test "a chat on a model of its own asks the command for that model" do
-    chat = RubyLLM.chat(model: "claude-opus-5-5", provider: :understudy, assume_model_exists: true)
+  test "the command is asked for the model the chat runs on" do
+    chat = RubyLLM.chat(model: "claude-opus-5-5")
     Rails.configuration.x.narrator_command = "cat > /dev/null; echo $NARRATOR_MODEL"
 
     reply = chat.ask("Write the plan.")

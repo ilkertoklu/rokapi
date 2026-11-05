@@ -7,12 +7,10 @@ class Narrator::Offstage < RubyLLM::Agent
   attr_reader :game_session
 
   def self.for(game_session)
-    understudy = Rails.configuration.x.narrator_command.present? ? { provider: :understudy, assume_model_exists: true } : {}
-
     if game_session.persisted?
-      new game_session: game_session, chat: game_session.conversations.planning.create!(model: MODEL, **understudy)
+      new game_session: game_session, chat: game_session.conversations.planning.create!(model: MODEL)
     else
-      new game_session: game_session, **understudy
+      new game_session: game_session
     end
   end
 

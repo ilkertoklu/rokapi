@@ -644,12 +644,12 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal 100, roll.reload.resolution.scan("The drawer sticks.").size
   end
 
-  test "the understudy narrates at no cost" do
+  test "the narrator command narrates at no cost" do
     roll = play_first_scene
     resolve roll
 
     usages = @game_session.conversation.ruby_llm_usages
-    assert_equal [ [ "understudy", "understudy" ] ], usages.pluck(:provider, :model).uniq
+    assert_equal [ [ "openai", "gpt-5-nano" ] ], usages.pluck(:provider, :model).uniq
     assert_equal 2, usages.count
     assert_equal 0, @game_session.conversation.cost.total
   end
