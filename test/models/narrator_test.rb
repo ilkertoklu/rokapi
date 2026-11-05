@@ -246,7 +246,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert_includes first["system"], "The story runs 7 scenes."
     assert_includes first["system"], "Mara hid her son in the lighthouse"
     assert_includes first["system"], "Warrior"
-    assert_equal "Scene 1 of 7, the story's first half, Ilker's turn.\n#{sheet}", first["prompt"], "the first turn has no story before it"
+    assert_equal opening, first["prompt"], "the first turn has no story before it"
 
     roll = with_die(2) { choose_and_roll @game_session.current_scene }
     stub_understudy(OUTCOME_RESPONSE) { roll.narrate }
@@ -268,7 +268,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal PLAN_RESPONSE.strip, @game_session.reload.plan
     assert_includes planner["system"], "You plan a story for Rokapi"
     assert_equal PLAN_RESPONSE.strip, critic["prompt"]
-    assert_includes scene["system"], "never go against it.\n\n#{PLAN_RESPONSE.strip}\n\nThe tone:"
+    assert_includes scene["system"], "that the players have not already seen.\n\n#{PLAN_RESPONSE.strip}\n\nThe tone:"
     assert @game_session.current_scene.choosing?
 
     roll = with_die(2) { choose_and_roll @game_session.current_scene }
@@ -311,7 +311,7 @@ class NarratorTest < ActiveSupport::TestCase
     retry_call = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
     assert @game_session.current_scene.choosing?
-    assert_equal "Scene 1 of 7, the story's first half, Ilker's turn.\n#{sheet}", retry_call["prompt"], "the turn is not asked twice"
+    assert_equal opening, retry_call["prompt"], "the turn is not asked twice"
     assert_equal %w[system user assistant], @game_session.conversation.messages.pluck(:role)
   end
 
@@ -320,7 +320,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     assert_includes request["system"], "Tell the story in English"
     assert_equal <<~GAME, request["system"][/^The story's plan .*?\n(?=\nBe the game master)/m]
-      The story's plan is below, and only you know it. Add the detail it leaves out, but never go against it.
+      The story's plan is below, and only you know it. Add the detail it leaves out, but never go against it. The players know only what the story has shown them: bring in every person, place and past event plainly, saying who or what it is, before anyone leans on it. What the plan hides comes out through its clues: a roll that succeeds hands the players one they have not found, shown plainly enough that they can tell what it points to. In the second half the clues turn the story, and by the end the players know the whole of it. What a success wins stays won. Invent only the detail that colours a scene, never a new secret, danger, object or power the plan does not hold, and nothing the ending turns on that the players have not already seen.
 
       Mara hid her son in the lighthouse to keep him from the press gang, then begged the village to search for him.
 
@@ -336,12 +336,13 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
     assert_includes request["system"], "sade, doğal, gündelik Türkçeyle"
-    assert_includes request["system"], "Hikâyenin planı aşağıda ve onu yalnızca sen biliyorsun. Eksik bıraktığı ayrıntıları sen ekle, ama ona hiçbir yerde ters düşme.\n\nMara hid her son"
+    assert_includes request["system"], "Hikâyenin planı aşağıda ve onu yalnızca sen biliyorsun. Eksik bıraktığı ayrıntıları sen ekle, ama ona hiçbir yerde ters düşme. "
+    assert_includes request["system"], "sonun dayandığı her şeyi de oyuncular önceden görmüş olsun.\n\nMara hid her son"
     assert_includes request["system"], "- Ilker: İnsan, Savaşçı (Ön safta dövüşür;"
     assert_includes request["system"], "Geçmişi: Asker. Can 31. Güç 16, Çeviklik 11,"
     assert_includes request["system"], "Yola çıkarken yanında: Uzun kılıç; Yuvarlak kalkan."
     assert_no_match(/Warrior|Strength|The story's plan/, request["system"])
-    assert_equal "Scene 1 of 7, the story's first half, Ilker's turn.\n#{sheet}", request["prompt"]
+    assert_equal opening, request["prompt"]
   end
 
   test "the adventure takes its name from the first scene" do
@@ -506,8 +507,8 @@ class NarratorTest < ActiveSupport::TestCase
     broken, rewrite = stub_understudy(unfenced, SCENE_RESPONSE) { narrate }
 
     assert @game_session.scenes.sole.choosing?
-    assert_equal "Scene 1 of 7, the story's first half, Ilker's turn.\n#{sheet}", broken["prompt"]
-    assert_equal "Scene 1 of 7, the story's first half, Ilker's turn.\n#{sheet}\nYour last reply was rejected: the ```json block is missing. Write the whole reply again.", rewrite["prompt"],
+    assert_equal opening, broken["prompt"]
+    assert_equal "#{opening}\nYour last reply was rejected: the ```json block is missing. Write the whole reply again.", rewrite["prompt"],
       "the rejected reply is not in the conversation the rewrite sees"
 
     messages = @game_session.conversation.messages.reload
@@ -576,6 +577,10 @@ class NarratorTest < ActiveSupport::TestCase
   end
 
   private
+    def opening
+      "Scene 1 of 7, the story's first half, Ilker's turn. This is the opening, as the plan's opening has it: show where Ilker is and why, who is there and who they are, and end on the trouble landing on Ilker, so the reader knows what is at stake. Reveal nothing of what the plan hides.\n#{sheet}"
+    end
+
     def sheet(hp: 31)
       "Ilker, human warrior (background: soldier): #{hp}/31 health; carries Longsword, Healing potion (instant: +7 health, 1 use), Inn ledger (quest item); no statuses.\n"
     end
