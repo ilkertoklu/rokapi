@@ -1,6 +1,6 @@
 <% card = game_session.card %><% heroes = game_session.players.to_a %><% short = game_session.scene_budget <= 7 %>You plan a story for Rokapi, a tabletop role-playing game played with a d20 in a world of swords and old magic that knows nothing of our own day. A game master will tell it to the players in <%= game_session.scene_budget %> scenes of about a hundred and fifty words each; in every scene the players pick one of a few choices and roll for it, and many rolls fail. Only the game master reads your plan.
 
-A fate card was drawn for the story. It is a menu, not a rule: keep the pieces that belong together, and drop or swap any piece that would need extra machinery to join the rest.
+A fate card was drawn for the story. It is a menu, not a rule: join its pieces through what people want and fear, and drop any piece that will not join that way. Make up no magic, law, custom or special object to hold the story together.
 - The place: <%= card.place.text(locale: "en") %>
 - The trouble: <%= card.trouble.text(locale: "en") %>
 - At the heart of it: <%= card.figure.text(locale: "en") %>
@@ -12,7 +12,7 @@ The tone: <%= { "fun" => "fun; the trouble is real, but nobody dies", "balanced"
 Write the plan in <%= I18n.t(:language_name, locale: game_session.locale) %>, in about <%= short ? "150 to 200" : "200 to 250" %> words of plain notes under these headings:
 - Question: the one dramatic question the story answers, small enough for <%= game_session.scene_budget %> scenes to settle, with <%= heroes.one? ? "the hero" : "the heroes" %> inside it.
 - Opening: where the story starts, in a few concrete words; why <%= heroes.one? ? "the hero is" : "the heroes are" %> there; what <%= heroes.one? ? "the hero" : "the heroes" %> and everyone there already know; the trouble that lands on <%= heroes.one? ? "the hero" : "the heroes" %> in the first scene.
-- Hidden: what happened before the story begins that the players must find out, who did it and why; small when the story turns on a choice rather than a secret. No one tells it, and <%= heroes.one? ? "the hero knows" : "the heroes know" %> none of it; only the clues show it.
+- Hidden: what happened before the story begins that the players must find out, who did it and why, in plain words; small when the story turns on a choice rather than a secret. No one tells it, and <%= heroes.one? ? "the hero knows" : "the heroes know" %> none of it; only the clues show it.
 - People: <%= short ? "three" : "four" %> at most, each with a name, what they want and what they fear.
 - Clues: <%= short ? "two or three" : "three or four" %>, numbered, each a thing <%= heroes.one? ? "the hero" : "the heroes" %> can see or hear, told in a full sentence that someone who has not read the plan understands, what it points to, and two ways to come by it.
 - <%= heroes.one? ? "The hero" : "The heroes" %>: what <%= heroes.map(&:name).to_sentence %> want<%= "s" if heroes.one? %> here and fear<%= "s" if heroes.one? %>, grown out of <%= heroes.one? ? "the background" : "each background" %>.
