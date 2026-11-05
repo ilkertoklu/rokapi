@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_05_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_05_170000) do
   create_table "characters", force: :cascade do |t|
     t.string "background", null: false
     t.datetime "created_at", null: false
@@ -91,7 +91,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_05_120000) do
     t.boolean "cancelled", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["game_session_id"], name: "index_narrator_conversations_on_game_session_id", unique: true
+    t.string "purpose", default: "narration", null: false
+    t.index ["game_session_id"], name: "index_narrator_conversations_on_game_session_id"
+    t.index ["game_session_id"], name: "index_narrator_conversations_on_game_session_id_narration", unique: true, where: "purpose = 'narration'"
     t.index ["ruby_llm_model_id"], name: "index_narrator_conversations_on_ruby_llm_model_id"
   end
 

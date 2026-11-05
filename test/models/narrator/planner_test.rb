@@ -44,17 +44,17 @@ class Narrator::PlannerTest < ActiveSupport::TestCase
   end
 
   test "the planner and the critic run on Opus, through the narrator command when there is one" do
-    assert_equal [ "claude-opus-5-5", "anthropic" ], Narrator::Planner.for(@game_session).model.then { [ it.id, it.provider ] }
+    assert_equal [ "claude-opus-5-5", "anthropic" ], Narrator::Planner.for(@game_session).chat.then { [ it.model_id, it.provider ] }
 
     stub_understudy do
-      assert_equal [ "claude-opus-5-5", "understudy" ], Narrator::Critic.for(@game_session).model.then { [ it.id, it.provider ] }
+      assert_equal [ "claude-opus-5-5", "understudy" ], Narrator::Critic.for(@game_session).chat.then { [ it.model_id, it.provider ] }
     end
   end
 
   test "a plan can be rehearsed from cards without a game" do
     passes = nil
     planner, critic = stub_understudy(*PLANNING) do
-      assert_no_difference -> { GameSession.count } do
+      assert_no_difference %w[ GameSession.count User.count Narrator::Conversation.count Narrator::Message.count RubyLLM::ActiveRecord::Usage.count ] do
         passes = Narrator::Planner.rehearse card: "snowbound_pass dry_well ambitious_clerk", twist: "both_hide_same", tone: "dark", length: "short", locale: "tr",
           heroes: [ { name: "İlker", race: "elf", klass: "mage", background: "criminal" } ]
       end

@@ -3,6 +3,8 @@ class Narrator::Conversation < ApplicationRecord
 
   belongs_to :game_session
 
+  enum :purpose, %w[narration planning].index_by(&:itself)
+
   def forget_last_exchange
     messages.reload.last(2).each(&:destroy)
     reload

@@ -299,6 +299,30 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal 1, stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.size, "the plan is written only once"
   end
 
+  test "a planned game keeps one conversation for the story beside the planner's and the critic's" do
+    @game_session.update! plan: nil
+
+    planner, critic, scene = stub_understudy(*PLANNING, SCENE_RESPONSE) { narrate }
+    roll = with_die(2) { choose_and_roll @game_session.current_scene }
+    stub_understudy(OUTCOME_RESPONSE) { roll.narrate }
+
+    assert_equal %w[narration planning planning], @game_session.conversations.pluck(:purpose).sort
+    assert_equal [ planner["system"], critic["system"] ], @game_session.conversations.planning.order(:id).map { it.messages.first.content }
+    assert_equal scene["system"], @game_session.conversation.messages.first.content
+    assert_equal 2, @game_session.conversation.ruby_llm_usages.count, "one scene and one outcome"
+  end
+
+  test "a planned game's cost includes the planner and the critic" do
+    @game_session.update! plan: nil
+    stub_understudy(*PLANNING, SCENE_RESPONSE) { narrate }
+
+    RubyLLM::ActiveRecord::Usage.update_all total_cost: 0.25
+    @game_session.reload
+
+    assert_equal 0.25, @game_session.conversation.cost.total
+    assert_equal 0.75, @game_session.cost.total
+  end
+
   test "a planner that never answers leaves the game unplanned and the scene unwritten" do
     @game_session.update! plan: nil
 

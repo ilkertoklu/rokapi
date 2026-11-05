@@ -17,7 +17,8 @@ class GameSession < ApplicationRecord
   has_many :choices, through: :scenes
   has_many :rolls, through: :choices
   has_many :players, dependent: :destroy
-  has_one :conversation, class_name: "Narrator::Conversation", dependent: :destroy
+  has_many :conversations, class_name: "Narrator::Conversation", dependent: :destroy
+  has_one :conversation, -> { narration }, class_name: "Narrator::Conversation"
 
   enum :tone, Tone.keys.index_by(&:itself), default: "balanced", validate: true
   enum :length, Length.keys.index_by(&:itself), default: "medium", validate: true
@@ -135,6 +136,10 @@ class GameSession < ApplicationRecord
 
   def plan_story
     update! plan: Narrator::Planner.for(self).plan
+  end
+
+  def cost
+    RubyLLM::Cost.aggregate(conversations.includes(:ruby_llm_usages).map(&:cost))
   end
 
   def current_scene
