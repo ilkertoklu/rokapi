@@ -9,7 +9,10 @@ The tone: <%= { "fun" => "fun; the trouble is real, but nobody dies", "balanced"
 <%= heroes.one? ? "The hero" : "The party, who travel together" %>:
 <% heroes.each do |player| %><% race, klass, background = player.character.traits %>- <%= player.name %>: <%= race.label(locale: "en") %>, <%= klass.label(locale: "en") %>. Background: <%= background.label(locale: "en") %>.
 <% end %>Names drawn for this story, for anyone in it who needs one: <%= game_session.fresh_names.join(", ") %>.
-
+<% if (pasts = game_session.latest_pasts).any? %>The players' latest stories hid these pasts:
+<% pasts.each do |past| %>- <%= past %>
+<% end %>Tell a story unlike them.
+<% end %>
 Write the plan in <%= I18n.t(:language_name, locale: game_session.locale) %>, in about <%= short ? "150 to 200" : "200 to 250" %> words of plain notes under these headings:
 - Question: the one dramatic question the story answers, small enough for <%= game_session.scene_budget %> scenes to settle, with <%= heroes.one? ? "the hero" : "the heroes" %> inside it.
 - Opening: where the story starts, in a few concrete words; why <%= heroes.one? ? "the hero is" : "the heroes are" %> there; what <%= heroes.one? ? "the hero" : "the heroes" %> and everyone there already know; the trouble that lands on <%= heroes.one? ? "the hero" : "the heroes" %> in the first scene.

@@ -99,6 +99,18 @@ class GameSessionTest < ActiveSupport::TestCase
     end
   end
 
+  test "the latest pasts are what the creator's latest plans hid, newest first" do
+    [ "The smith fouled the well.", "Mara hid her son.", "The keeper slept and the light went out." ].each do |hidden|
+      GameSession.create!(creator: users(:sevval), card: "lighthouse_rock called_debt hiding_apprentice",
+        plan: "**Question:** Will the debt be paid?\n\n**Opening:** A storm.\n\n**Hidden:** #{hidden}\nNobody knows.\n\n**People:**\n- Edda")
+    end
+    GameSession.create!(creator: users(:ilker), card: "lighthouse_rock called_debt hiding_apprentice", plan: "**Question:** ?\n\n**Opening:** .\n\n**Hidden:** Someone else's.")
+    game_session = GameSession.create!(creator: users(:sevval), card: "lighthouse_rock called_debt hiding_apprentice")
+
+    assert_equal [ "The keeper slept and the light went out. Nobody knows.", "Mara hid her son. Nobody knows.", "The smith fouled the well. Nobody knows." ], game_session.latest_pasts
+    assert_empty GameSession.new.latest_pasts
+  end
+
   test "every language holds a hundred different names" do
     I18n.available_locales.each do |locale|
       names = I18n.t("game_session.names", locale: locale)

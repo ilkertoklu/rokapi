@@ -21,6 +21,16 @@ class Narrator::PlannerTest < ActiveSupport::TestCase
     assert_equal PLAN_RESPONSE.strip, critic["prompt"], "the critic reads the plan without the planner's conversation"
   end
 
+  test "the planner is told what the players' latest stories hid, and a first story is told nothing" do
+    planner, _ = stub_understudy(*PLANNING) { Narrator::Planner.for(@game_session).plan }
+    assert_not_includes planner["system"], "latest stories"
+
+    GameSession.create!(creator: users(:ilker), card: "lighthouse_rock called_debt hiding_apprentice",
+      plan: "**Question:** Will the debt be paid?\n\n**Opening:** A storm.\n\n**Hidden:** The keeper slept and the light went out.")
+    planner, _ = stub_understudy(*PLANNING) { Narrator::Planner.for(@game_session).plan }
+    assert_includes planner["system"], "The players' latest stories hid these pasts:\n- The keeper slept and the light went out.\nTell a story unlike them.\n\nWrite the plan"
+  end
+
   test "a plan with problems is rewritten once, and no more" do
     passes = nil
     requests = stub_understudy(PLAN_RESPONSE, "The plan has gaps:\n- The mother has no reason to beg for a search.\n", REWRITTEN_PLAN, "- The tide never matters.") do

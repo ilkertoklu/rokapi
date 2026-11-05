@@ -139,6 +139,10 @@ class GameSession < ApplicationRecord
     (I18n.t("game_session.names", locale: locale) - names_in_latest_plans - players.map(&:name)).sample(NAMES)
   end
 
+  def latest_pasts
+    latest_plans.filter_map { it.split(/\n\s*\n/).third&.sub(/\A[^:\n]*:\**/, "")&.squish.presence }
+  end
+
   def plan_story
     update! plan: Narrator::Planner.for(self).plan
   end
