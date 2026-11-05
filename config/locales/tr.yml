@@ -212,7 +212,7 @@ tr:
       buried_tunnels:
         text: Yıkık bir şehrin altındaki eski tüneller
       tanners_quarter:
-        text: Kalabalık bir şehrin debbağlar mahallesi
+        text: Kalabalık bir şehrin tabakhane mahallesi
       keep_kitchens:
         text: Bir bey kalesinin mutfakları
       frozen_lake_lodge:
@@ -290,7 +290,7 @@ tr:
       stable_hand:
         text: Atlı muhafız olmak isteyen bir seyis
       hermit:
-        text: Rahat bırakılmak isteyen bir münzevi
+        text: Herkesten uzakta tek başına yaşayan, rahat bırakılmak isteyen biri
       hiding_apprentice:
         text: Bir şeyi kırıp saklayan çırak bir büyücü
       lonely_moneylender:
