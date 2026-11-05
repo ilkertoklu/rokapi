@@ -440,7 +440,7 @@ tr:
       solo: Tek kişilik
       solo_text: 1 oyuncu · 15-60 dk · sana özel hikâye
       multiplayer: Çok kişilik
-      multiplayer_text: 2-5 oyuncu · 30-90 dk · ortak hikâye
+      multiplayer_text: 2-5 oyuncu · 15-60 dk · ortak hikâye
       hint: Çok kişilikte bir oda kodu paylaşır, arkadaşların kodla katılır.
     setup:
       quest: Görev
@@ -460,10 +460,6 @@ tr:
       new:
         title: Yeni macera
         submit: Oda oluştur
-        estimates:
-          short: "~30 dk"
-          medium: "~60 dk"
-          long: "~90 dk"
       create:
         rate_limited: Çok fazla oda kuruldu. Biraz bekle.
         invalid: Kurulum geçersiz. Seçimlerini kontrol et.

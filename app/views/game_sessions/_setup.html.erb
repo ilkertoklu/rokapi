@@ -1,4 +1,4 @@
-<%# locals: (url:, back:, title:, submit:, estimates:, cards:) -%>
+<%# locals: (url:, back:, title:, submit:, cards:) -%>
 <%= form_with url: url, scope: :game_session, class: "flow" do |form| %>
   <%= render "back", to: back, title: title %>
 
@@ -53,7 +53,7 @@
       <% GameSession::Length.all.each do |length| %>
         <label class="segment">
           <%= form.radio_button :length, length.key, checked: length.key == "medium" %>
-          <span><%= length.label %><small><%= estimates.fetch(length.key) %></small></span>
+          <span><%= length.label %><small><%= length.estimate %></small></span>
         </label>
       <% end %>
     </div>

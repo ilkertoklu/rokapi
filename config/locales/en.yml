@@ -421,7 +421,7 @@ en:
       solo: Solo
       solo_text: 1 player · 15-60 min · a story of your own
       multiplayer: Multiplayer
-      multiplayer_text: 2-5 players · 30-90 min · a shared story
+      multiplayer_text: 2-5 players · 15-60 min · a shared story
       hint: In multiplayer you share a room code, and your friends join with it.
     setup:
       quest: Quest
@@ -441,10 +441,6 @@ en:
       new:
         title: New adventure
         submit: Create room
-        estimates:
-          short: "~30 min"
-          medium: "~60 min"
-          long: "~90 min"
       create:
         rate_limited: Too many rooms created. Wait a little.
         invalid: The setup is not valid. Check your choices.

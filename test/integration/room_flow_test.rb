@@ -17,7 +17,7 @@ class RoomFlowTest < ActionDispatch::IntegrationTest
 
     get new_game_sessions_multi_path
     assert_select "input[type=submit][value=?]", "Create room"
-    assert_select ".segment small", text: "~90 min"
+    assert_select ".segment small", text: "~60 min"
 
     post game_sessions_multi_path, params: { game_session: { card: "mining_town dry_well indebted_smith", tone: "dark", length: "short" } }
 
