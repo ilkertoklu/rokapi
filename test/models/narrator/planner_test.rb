@@ -50,4 +50,20 @@ class Narrator::PlannerTest < ActiveSupport::TestCase
       assert_equal [ "claude-opus-5-5", "understudy" ], Narrator::Critic.for(@game_session).model.then { [ it.id, it.provider ] }
     end
   end
+
+  test "a plan can be rehearsed from cards without a game" do
+    passes = nil
+    planner, critic = stub_understudy(*PLANNING) do
+      assert_no_difference -> { GameSession.count } do
+        passes = Narrator::Planner.rehearse card: "snowbound_pass dry_well ambitious_clerk", twist: "both_hide_same", tone: "dark", length: "short", locale: "tr",
+          heroes: [ { name: "İlker", race: "elf", klass: "mage", background: "criminal" } ]
+      end
+    end
+
+    assert_equal [ [ PLAN_RESPONSE.strip, [] ] ], passes.map { [ it.plan, it.problems ] }
+    assert_includes planner["system"], "- The place: A snowbound mountain pass with a single inn\n"
+    assert_includes planner["system"], "The tone: dark; every win has a price.\nThe hero:\n- İlker: Elf, Mage. Background: Criminal.\n"
+    assert_includes planner["system"], "Write the plan in Türkçe"
+    assert_includes critic["system"], "The hero: İlker, elf mage (background: criminal)."
+  end
 end

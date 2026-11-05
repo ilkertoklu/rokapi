@@ -3,6 +3,13 @@ class Narrator::Planner < Narrator::Offstage
 
   Pass = Data.define(:plan, :problems)
 
+  def self.rehearse(card:, twist:, tone:, length:, locale:, heroes:)
+    game_session = GameSession.new(card: card, twist: twist, tone: tone, length: length, locale: locale)
+    heroes.each { |hero| game_session.players.build(user: User.new(name: hero[:name])).build_character(hero.except(:name)) }
+
+    self.for(game_session).passes
+  end
+
   def plan
     passes.last.plan
   end
