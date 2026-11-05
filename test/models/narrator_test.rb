@@ -164,14 +164,14 @@ class NarratorTest < ActiveSupport::TestCase
     assert_not @game_session.reload.finished?
   end
 
-  test "the last roll leaves the ending to the story and hands over no clue" do
+  test "the last roll weighs every roll before it, leaves the ending to the story and hands over no clue" do
     roll = play_the_last_scene
 
     request = stub_understudy(ENDING_RESPONSE.sub("victory", "defeat")) { roll.narrate }.sole
 
     assert_includes request["prompt"], "\nIn scene 7 of 7, the story's last scene, Ilker chose "
     assert_not_includes request["prompt"], "Show the clue plainly"
-    assert request["prompt"].end_with?(%(\nThis is the last roll, and the story ends with it: 0 of the 0 rolls before it succeeded. Victory or defeat is the story's to decide: weigh what the heroes found and did, this roll included, against the plan's endings, and give the ending they have earned. Tell what this roll does, then how the story ends, with only what the story has shown: what the heroes never found stays unsaid, and no one explains it. A roll that succeeds here gets the heroes what they reached for; a defeat comes from what they failed to find or do, plainly. The ending is only what the choices and rolls bring about: no one, Ilker included, makes a move in it that those did not set up. The block adds "outcome": "victory" or "defeat".\n))
+    assert request["prompt"].end_with?(%(\nThis is the last roll, and the story ends with it. So far Ilker tried "Read the dusty ledger" (failed). Victory or defeat is the story's to decide: weigh what the heroes found and did, this roll as one among the rest, against the plan's endings, and give the ending they have earned. Tell what this roll does, then how the story ends, with only what the story has shown: what the heroes never found stays unsaid, and no one explains it. A roll that succeeds here gets the heroes what they reached for; one that fails costs them something, but does not undo what the rolls before it won. The heroes settle the question with what they did, and make no move the players did not choose; the others go on as they want and fear, and no one steps in to win or lose it for them. The block adds "outcome": "victory" or "defeat".\n))
   end
 
   test "the scene and the roll in the middle of the story say so" do
@@ -404,13 +404,14 @@ class NarratorTest < ActiveSupport::TestCase
     assert request["prompt"].end_with?("\nIn the scene with Ilker: Deniz, human healer (background: soldier), 28/28 health.\n")
   end
 
-  test "a party's ending leaves every hero to what the dice set up, each with a part in it" do
+  test "a party's ending weighs what each hero tried, and each has a part in it" do
     players(:deniz_solo_host).update! game_session: @game_session
     roll = play_the_last_scene
 
     request = stub_understudy(ENDING_RESPONSE.sub("victory", "defeat")) { roll.narrate }.sole
 
-    assert_includes request["prompt"], %(no one, Ilker and Deniz included, makes a move in it that those did not set up. Each of them has a part in it: Ilker tried "Read the dusty ledger" (failed); Deniz tried nothing. The block adds)
+    assert_includes request["prompt"], %(So far Ilker tried "Read the dusty ledger" (failed); Deniz tried nothing. Victory or defeat)
+    assert_includes request["prompt"], %(The heroes settle the question with what they did, each with a part in it, and make no move the players did not choose;)
   end
 
   test "a roll that leaves the hero standing before the last scene does not end the story" do
