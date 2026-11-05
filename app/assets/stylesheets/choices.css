@@ -114,8 +114,8 @@
     font-size: .875rem;
 
     .glyph {
-      inline-size: 15px;
-      block-size: 15px;
+      inline-size: 18px;
+      block-size: 18px;
       flex: none;
       color: var(--color-accent-dim);
     }

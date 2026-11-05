@@ -7,13 +7,13 @@
 
   <%= render "back", to: new_game_sessions_solo_path, title: t(".title") %>
 
-  <%= render "choice_fieldset", form: form, legend: t(".race"), glyph: "person", attribute: :race,
+  <%= render "choice_fieldset", form: form, legend: t(".race"), attribute: :race,
         options: Character::Race.all, selected: @character.race %>
 
-  <%= render "choice_fieldset", form: form, legend: t(".klass"), glyph: "sword", attribute: :klass,
+  <%= render "choice_fieldset", form: form, legend: t(".klass"), attribute: :klass,
         options: Character::Klass.all, selected: @character.klass, rebase: true %>
 
-  <%= render "choice_fieldset", form: form, legend: t(".background"), glyph: "book", attribute: :background,
+  <%= render "choice_fieldset", form: form, legend: t(".background"), attribute: :background,
         options: Character::Background.all, selected: @character.background %>
 
   <fieldset class="choices">

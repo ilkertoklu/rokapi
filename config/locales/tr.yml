@@ -70,7 +70,7 @@ tr:
         description: Küçük, kıvrak ve şanslı; gözden kolay kaçar.
       tiefling:
         label: Tiefling
-        description: Gizemli ve karizmatik; içinde eski bir ateş yanar.
+        description: Şeytani bir soydan gelir; boynuzlu ve karizmatik, kanında cehennem ateşi yanar.
     klass:
       warrior:
         label: Savaşçı
