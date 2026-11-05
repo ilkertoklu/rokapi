@@ -11,7 +11,7 @@ The tone: <%= { "fun" => "fun; the trouble is real, but nobody dies", "balanced"
 <% end %>
 Write the plan in <%= I18n.t(:language_name, locale: game_session.locale) %>, in about <%= short ? "150 to 200" : "200 to 250" %> words of plain notes under these headings:
 - Question: the one dramatic question the story answers, small enough for <%= game_session.scene_budget %> scenes to settle, with <%= heroes.one? ? "the hero" : "the heroes" %> inside it.
-- Opening: where the story starts, in a few concrete words; why <%= heroes.one? ? "the hero is" : "the heroes are" %> there; what everyone there already knows; the trouble that lands on <%= heroes.one? ? "the hero" : "the heroes" %> in the first scene.
+- Opening: where the story starts, in a few concrete words; why <%= heroes.one? ? "the hero is" : "the heroes are" %> there; what <%= heroes.one? ? "the hero" : "the heroes" %> and everyone there already know; the trouble that lands on <%= heroes.one? ? "the hero" : "the heroes" %> in the first scene.
 - Hidden: what happened before the story begins that the players must find out, who did it and why; small when the story turns on a choice rather than a secret. No one tells it, and <%= heroes.one? ? "the hero knows" : "the heroes know" %> none of it; only the clues show it.
 - People: <%= short ? "three" : "four" %> at most, each with a name, what they want and what they fear.
 - Clues: <%= short ? "two or three" : "three or four" %>, numbered, what each points to, and two ways to come by each.
