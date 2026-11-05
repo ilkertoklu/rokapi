@@ -14,7 +14,7 @@ Write the plan in <%= I18n.t(:language_name, locale: game_session.locale) %>, in
 - Opening: where the story starts, in a few concrete words; why <%= heroes.one? ? "the hero is" : "the heroes are" %> there; what <%= heroes.one? ? "the hero" : "the heroes" %> and everyone there already know; the trouble that lands on <%= heroes.one? ? "the hero" : "the heroes" %> in the first scene.
 - Hidden: what happened before the story begins that the players must find out, who did it and why; small when the story turns on a choice rather than a secret. No one tells it, and <%= heroes.one? ? "the hero knows" : "the heroes know" %> none of it; only the clues show it.
 - People: <%= short ? "three" : "four" %> at most, each with a name, what they want and what they fear.
-- Clues: <%= short ? "two or three" : "three or four" %>, numbered, what each points to, and two ways to come by each.
+- Clues: <%= short ? "two or three" : "three or four" %>, numbered, each a thing <%= heroes.one? ? "the hero" : "the heroes" %> can see or hear, told in a full sentence that someone who has not read the plan understands, what it points to, and two ways to come by it.
 - <%= heroes.one? ? "The hero" : "The heroes" %>: what <%= heroes.map(&:name).to_sentence %> want<%= "s" if heroes.one? %> here and fear<%= "s" if heroes.one? %>, grown out of <%= heroes.one? ? "the background" : "each background" %>.
 - Endings: two or three, each answering the question and resting only on what the opening and the clues show, what follows from winning and from losing, written as consequences, "if this, then that", not as a script.
 
