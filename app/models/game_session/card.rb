@@ -4,15 +4,20 @@ class GameSession::Card < Data.define(:place, :trouble, :figure)
   class << self
     def deal(count = HAND, to:)
       latest = to.created_game_sessions.latest
-      places, troubles = fresh(GameSession::Place, latest.pluck(:place)), fresh(GameSession::Trouble, latest.pluck(:trouble))
-      figures = GameSession::Figure.all.shuffle
+      latest_places, latest_troubles = latest.pluck(:place), latest.pluck(:trouble)
 
-      Array.new(count) { new(place: places[it], trouble: troubles[it], figure: figures[it]) }
+      fresh(GameSession::Place.keys, latest_places).first(count).each_with_object([]) do |key, hand|
+        place = GameSession::Place.fetch(key)
+        trouble = fresh(place.troubles - hand.map { it.trouble.key }, latest_troubles).first
+        figure = fresh(place.figures, hand.map { it.figure.key }).first
+
+        hand << new(place: place, trouble: GameSession::Trouble.fetch(trouble), figure: GameSession::Figure.fetch(figure))
+      end
     end
 
     private
-      def fresh(catalog, used)
-        catalog.all.shuffle.partition { used.exclude?(it.key) }.flatten
+      def fresh(keys, used)
+        keys.shuffle.partition { used.exclude?(it) }.flatten
       end
   end
 

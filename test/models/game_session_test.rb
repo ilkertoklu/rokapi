@@ -59,6 +59,25 @@ class GameSessionTest < ActiveSupport::TestCase
     end
   end
 
+  test "a card draws its trouble and figure from the ones its place holds" do
+    20.times do
+      GameSession::Card.deal(to: users(:sevval)).each do |card|
+        assert_includes card.place.troubles, card.trouble.key
+        assert_includes card.place.figures, card.figure.key
+      end
+    end
+  end
+
+  test "every place holds known troubles and figures, and every trouble and figure has a place" do
+    troubles, figures = GameSession::Place.all.flat_map(&:troubles), GameSession::Place.all.flat_map(&:figures)
+
+    assert_empty troubles - GameSession::Trouble.keys
+    assert_empty figures - GameSession::Figure.keys
+    assert_empty GameSession::Trouble.keys - troubles
+    assert_empty GameSession::Figure.keys - figures
+    assert GameSession::Place.all.all? { it.troubles.size >= GameSession::LATEST + GameSession::Card::HAND }
+  end
+
   test "starts and calls the narrator once every player has a character" do
     game_session = game_sessions(:ilker_without_character)
 
