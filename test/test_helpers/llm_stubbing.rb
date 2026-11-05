@@ -14,6 +14,13 @@ module LlmStubbing
     ```
   TEXT
 
+  PLAN_RESPONSE = <<~TEXT
+    Question: Will the hero find the lost child before the tide comes in?
+    Truth: The child's mother hid him in the lighthouse to keep him from the press gang.
+  TEXT
+
+  PLANNING = [ PLAN_RESPONSE, "none" ].freeze
+
   SECOND_SCENE_RESPONSE = SCENE_RESPONSE.sub('"title": "The Old Inn"', '"title": "The Stable"')
     .sub("Rain hammers the inn's roof tiles", "The stable door is barred from the inside")
 

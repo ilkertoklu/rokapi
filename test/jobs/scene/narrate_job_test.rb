@@ -18,6 +18,17 @@ class Scene::NarrateJobTest < ActiveJob::TestCase
     assert @game_session.current_scene.stalled?
   end
 
+  test "a plan that comes back empty leaves the first scene stalled" do
+    @game_session.update! plan: nil
+
+    stub_understudy("\n\n") do
+      assert_raises(Narrator::MalformedResponse) { Scene::NarrateJob.new(@scene).perform_now }
+    end
+
+    assert @scene.reload.stalled?
+    assert_nil @game_session.reload.plan
+  end
+
   test "a provider error is retried" do
     stub_understudy(nil) do
       assert_enqueued_with job: Scene::NarrateJob do

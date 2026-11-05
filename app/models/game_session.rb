@@ -129,6 +129,10 @@ class GameSession < ApplicationRecord
     Length.fetch(length).scenes
   end
 
+  def plan_story
+    update! plan: Narrator::Planner.for(self).plan
+  end
+
   def verdict
     *earlier, last = rolls.order(:created_at).to_a
     successes, failures = [ *earlier, last, last ].partition(&:success?).map(&:size)

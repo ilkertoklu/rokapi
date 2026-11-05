@@ -11,6 +11,8 @@ class Narrator < RubyLLM::Agent
   instructions { prompt "instructions.#{chat.game_session.locale}", game: chat.game_session }
 
   def self.for(game_session)
+    game_session.plan_story unless game_session.plan?
+
     if (conversation = game_session.reload_conversation)
       new chat: conversation, persist_instructions: false
     elsif Rails.configuration.x.narrator_command.present?

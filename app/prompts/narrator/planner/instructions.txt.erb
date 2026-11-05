@@ -1,0 +1,20 @@
+<% card = game_session.card %><% heroes = game_session.players.to_a %>You plan a story for Rokapi, a tabletop role-playing game played with a d20 in a world of swords and old magic that knows nothing of our own day. A game master will tell it to the players in <%= game_session.scene_budget %> scenes of about a hundred and fifty words each; in every scene the players pick one of a few choices and roll for it, and many rolls fail. Only the game master reads your plan.
+
+A fate card was drawn for the story. It is a menu, not a rule: keep the pieces that belong together, and drop or swap any piece that would need extra machinery to join the rest.
+- The place: <%= card.place.text(locale: "en") %>
+- The trouble: <%= card.trouble.text(locale: "en") %>
+- At the heart of it: <%= card.figure.text(locale: "en") %>
+- What the story turns on: <%= GameSession::Twist.fetch(game_session.twist).text(locale: "en") %>
+The tone: <%= { "fun" => "fun; the trouble is real, but nobody dies", "balanced" => "balanced; wonder and danger in equal measure", "dark" => "dark; every win has a price" }.fetch(game_session.tone) %>.
+<%= heroes.one? ? "The hero" : "The party, who travel together" %>:
+<% heroes.each do |player| %><% race, klass, background = player.character.traits %>- <%= player.name %>: <%= race.label(locale: "en") %>, <%= klass.label(locale: "en") %>. Background: <%= background.label(locale: "en") %>.
+<% end %>
+Write the plan in <%= I18n.t(:language_name, locale: game_session.locale) %>, in about 150 to 250 words of plain notes under these headings:
+- Question: the one dramatic question the story answers, small enough for <%= game_session.scene_budget %> scenes to settle, with <%= heroes.one? ? "the hero" : "the heroes" %> inside it.
+- Truth: what happened before the story begins, who did it and why.
+- People: a handful at most, each with a name, what they want and what they fear.
+- Clues: three or four, what each points to, and two ways to come by each.
+- <%= heroes.one? ? "The hero" : "The heroes" %>: what <%= heroes.map(&:name).to_sentence %> want<%= "s" if heroes.one? %> here and fear<%= "s" if heroes.one? %>, grown out of <%= heroes.one? ? "the background" : "each background" %>.
+- Endings: what follows from winning and from losing, written as consequences, "if this, then that", not as a script.
+
+Plan what has happened and what people want, not what will happen: no scenes, no beats, no order of events. Every event has its cause in someone's want or fear. Reply with the plan only.

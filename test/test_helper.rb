@@ -7,6 +7,8 @@ Dir[Rails.root.join("test/test_helpers/**/*.rb")].each { require it }
 RubyLLM.configure do |config|
   config.openai_api_key = "unreachable"
   config.openai_api_base = "http://127.0.0.1:9"
+  config.anthropic_api_key = "unreachable"
+  config.anthropic_api_base = "http://127.0.0.1:9"
 end
 
 module ActiveSupport

@@ -244,7 +244,7 @@ class NarratorTest < ActiveSupport::TestCase
     first = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
     assert_includes first["system"], "The story runs 7 scenes."
-    assert_includes first["system"], "- The place: A fog-bound fishing village"
+    assert_includes first["system"], "Mara hid her son in the lighthouse"
     assert_includes first["system"], "Warrior"
     assert_equal "Scene 1 of 7, the story's first half, Ilker's turn.\n#{sheet}", first["prompt"], "the first turn has no story before it"
 
@@ -258,6 +258,33 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal %w[user assistant user assistant], second["prompt"].scan(/^<(user|assistant)>$/).flatten
     assert_includes second["prompt"], "Rain hammers the inn's roof tiles"
     assert_includes second["prompt"], "The drawer opens, but you cut your hand."
+  end
+
+  test "a game is planned once, before its first scene, and the brief carries the plan" do
+    @game_session.update! plan: nil
+
+    planner, critic, scene = stub_understudy(*PLANNING, SCENE_RESPONSE) { narrate }
+
+    assert_equal PLAN_RESPONSE.strip, @game_session.reload.plan
+    assert_includes planner["system"], "You plan a story for Rokapi"
+    assert_equal PLAN_RESPONSE.strip, critic["prompt"]
+    assert_includes scene["system"], "never go against it.\n\n#{PLAN_RESPONSE.strip}\n\nThe tone:"
+    assert @game_session.current_scene.choosing?
+
+    roll = with_die(2) { choose_and_roll @game_session.current_scene }
+    assert_equal 1, stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.size, "the plan is written only once"
+  end
+
+  test "a planner that never answers leaves the game unplanned and the scene unwritten" do
+    @game_session.update! plan: nil
+
+    stub_understudy(nil) do
+      assert_raises(RubyLLM::ServerError) { narrate }
+    end
+
+    assert_nil @game_session.reload.plan
+    assert_nil @game_session.conversation
+    assert @game_session.current_scene.narrating?
   end
 
   test "the story so far is the conversation itself" do
@@ -292,12 +319,11 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
     assert_includes request["system"], "Tell the story in English"
-    assert_equal <<~GAME, request["system"][/^The quest, .*?\n(?=\n)/m]
-      The quest, drawn from a fate card; the names and the details are yours to give:
-      - The place: A fog-bound fishing village
-      - The trouble: A child went out at dusk and has not come back
-      - At the heart of it: An old weather-reader who pleases no one
-      What really happened, which only you know, takes this shape: the one asking for help is the cause. Settle who did what and why before the first scene.
+    assert_equal <<~GAME, request["system"][/^The story's plan .*?\n(?=\nBe the game master)/m]
+      The story's plan is below, and only you know it. Add the detail it leaves out, but never go against it.
+
+      Mara hid her son in the lighthouse to keep him from the press gang, then begged the village to search for him.
+
       The tone: balanced. Wonder and danger in equal measure.
       The story runs 7 scenes.
       The hero:
@@ -310,12 +336,11 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
     assert_includes request["system"], "sade, doğal, gündelik Türkçeyle"
-    assert_includes request["system"], "- Yer: Sisli bir balıkçı köyü\n- Dert: Bir çocuk akşamüstü dışarı çıktı ve dönmedi\n"
-    assert_includes request["system"], "Aslında olan, yalnızca senin bildiğin, şu biçimde: yardım isteyen, derdin sebebi."
+    assert_includes request["system"], "Hikâyenin planı aşağıda ve onu yalnızca sen biliyorsun. Eksik bıraktığı ayrıntıları sen ekle, ama ona hiçbir yerde ters düşme.\n\nMara hid her son"
     assert_includes request["system"], "- Ilker: İnsan, Savaşçı (Ön safta dövüşür;"
     assert_includes request["system"], "Geçmişi: Asker. Can 31. Güç 16, Çeviklik 11,"
     assert_includes request["system"], "Yola çıkarken yanında: Uzun kılıç; Yuvarlak kalkan."
-    assert_no_match(/Warrior|Strength|The quest/, request["system"])
+    assert_no_match(/Warrior|Strength|The story's plan/, request["system"])
     assert_equal "Scene 1 of 7, the story's first half, Ilker's turn.\n#{sheet}", request["prompt"]
   end
 

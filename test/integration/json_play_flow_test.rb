@@ -29,7 +29,7 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
     assert_nil response.parsed_body["character"]
     assert_not response.parsed_body["started"]
 
-    stub_understudy(SCENE_RESPONSE) do
+    stub_understudy(*PLANNING, SCENE_RESPONSE) do
       perform_enqueued_jobs do
         post game_session_character_path(game_session), params: { character: warrior }, as: :json
       end
@@ -141,7 +141,7 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
       post game_sessions_solo_path, params: { game_session: { card: "fishing_village missing_child weather_reader", tone: "balanced", length: "short" } }, as: :json
       game_session = users(:sevval).game_sessions.sole
 
-      stub_understudy(SCENE_RESPONSE) do
+      stub_understudy(*PLANNING, SCENE_RESPONSE) do
         perform_enqueued_jobs { post game_session_character_path(game_session), params: { character: warrior }, as: :json }
       end
 

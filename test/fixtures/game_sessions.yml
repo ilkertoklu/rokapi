@@ -3,6 +3,7 @@ ilker_solo:
   trouble: missing_child
   figure: weather_reader
   twist: asker_is_cause
+  plan: Mara hid her son in the lighthouse to keep him from the press gang, then begged the village to search for him.
   creator: ilker
   tone: balanced
   length: short
@@ -12,6 +13,7 @@ ilker_without_character:
   trouble: dry_well
   figure: indebted_smith
   twist: villain_protects
+  plan: The smith fouled the well to keep the mine owner's men from settling in the town.
   creator: ilker
   tone: balanced
   length: medium
@@ -21,6 +23,7 @@ deniz_solo:
   trouble: missing_child
   figure: weather_reader
   twist: asker_is_cause
+  plan: Mara hid her son in the lighthouse to keep him from the press gang, then begged the village to search for him.
   creator: deniz
   tone: balanced
   length: short
@@ -31,6 +34,7 @@ ilker_room:
   trouble: missing_child
   figure: weather_reader
   twist: asker_is_cause
+  plan: Mara hid her son in the lighthouse to keep him from the press gang, then begged the village to search for him.
   creator: ilker
   tone: balanced
   length: short

@@ -18,3 +18,21 @@ gpt_5_nano:
         input_per_million: 0.05
         output_per_million: 0.4
         cache_read_input_per_million: 0.005
+
+claude_opus_5_5:
+  model_id: claude-opus-5-5
+  name: Claude Opus 5.5
+  provider: anthropic
+  family: claude-opus
+  context_window: 1000000
+  max_output_tokens: 128000
+  modalities:
+    input: [ text, image, pdf ]
+    output: [ text ]
+  capabilities: [ function_calling, structured_output, reasoning, vision, tool_choice ]
+  pricing:
+    text_tokens:
+      standard:
+        input_per_million: 4
+        output_per_million: 20
+        cache_read_input_per_million: 0.2

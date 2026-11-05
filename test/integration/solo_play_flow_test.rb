@@ -10,7 +10,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
   test "playing a solo adventure from setup to victory" do
     game_session = nil
 
-    stub_understudy(SCENE_RESPONSE) do
+    stub_understudy(*PLANNING, SCENE_RESPONSE) do
       perform_enqueued_jobs { game_session = start_playing }
     end
 
@@ -191,7 +191,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     game_session = start_playing
     clear_enqueued_jobs
 
-    stub_understudy(*Array.new(1 + Narrator::REWRITES, "No structure.")) do
+    stub_understudy(*PLANNING, *Array.new(1 + Narrator::REWRITES, "No structure.")) do
       assert_raises(Narrator::MalformedResponse) { Scene::NarrateJob.new(game_session.current_scene).perform_now }
     end
     clear_enqueued_jobs
@@ -216,7 +216,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     get game_session_path(game_session)
     assert_select ".stalled"
 
-    stub_understudy(SCENE_RESPONSE) do
+    stub_understudy(*PLANNING, SCENE_RESPONSE) do
       perform_enqueued_jobs do
         post game_session_narration_path(game_session)
       end
@@ -321,7 +321,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
 
     def play_to_choices
       start_playing.tap do |game_session|
-        stub_understudy(SCENE_RESPONSE) { perform_enqueued_jobs }
+        stub_understudy(*PLANNING, SCENE_RESPONSE) { perform_enqueued_jobs }
         assert game_session.current_scene.choosing?
       end
     end
