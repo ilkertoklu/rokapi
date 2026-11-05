@@ -25,7 +25,6 @@ class GameSession < ApplicationRecord
   enum :outcome, %w[victory defeat].index_by(&:itself), prefix: true
 
   attribute :locale, default: -> { I18n.locale }
-  attribute :twist, default: -> { Twist.keys.sample }
 
   validates :place, inclusion: { in: Place.keys }, on: :create
   validates :trouble, inclusion: { in: Trouble.keys }, on: :create
@@ -40,6 +39,7 @@ class GameSession < ApplicationRecord
   scope :latest, -> { order(created_at: :desc).limit(LATEST) }
 
   before_validation :deal_card, on: :create, unless: :place?
+  before_validation :draw_twist, on: :create, unless: :twist?
   before_create :assign_code, if: -> { max_players > 1 }
   after_create -> { players.create!(user: creator) }
   after_create_commit -> { rematch_of.broadcast_refresh }, if: :rematch_of
@@ -174,6 +174,10 @@ class GameSession < ApplicationRecord
   private
     def deal_card
       self.place, self.trouble, self.figure = Card.deal(1, to: creator).first.keys
+    end
+
+    def draw_twist
+      self.twist = Trouble[trouble]&.twists&.sample
     end
 
     def assign_code

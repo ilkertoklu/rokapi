@@ -29,7 +29,14 @@ class GameSessionTest < ActiveSupport::TestCase
 
     assert_equal %w[ salt_caves lost_messenger old_captain ], game_session.card.keys
     assert_not game_session.surprise?
-    assert_includes GameSession::Twist.keys, game_session.twist
+    assert_includes game_session.card.trouble.twists, game_session.twist
+  end
+
+  test "every trouble turns on twists that exist, and every twist fits some trouble" do
+    twists = GameSession::Trouble.all.flat_map(&:twists)
+
+    assert_empty twists - GameSession::Twist.keys
+    assert_empty GameSession::Twist.keys - twists
   end
 
   test "a surprise draws a card the player does not see" do
