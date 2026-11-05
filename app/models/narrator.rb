@@ -96,7 +96,9 @@ class Narrator < RubyLLM::Agent
     def check_outcome(roll, prose, data)
       ending = roll.ending_with(data)
 
-      unless data["outcome"] == ending
+      if roll.scene.last? && ending.nil?
+        raise MalformedResponse, %(the story ends with this roll: tell the ending the story has earned and add "outcome": "victory" or "defeat" to the block)
+      elsif data["outcome"] != ending
         raise MalformedResponse, ending ? %(the story ends with this roll, in #{ending}: tell the ending and add "outcome": "#{ending}" to the block) : "the story goes on after this roll, so the block has no outcome"
       end
 

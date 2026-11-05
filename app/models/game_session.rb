@@ -129,16 +129,12 @@ class GameSession < ApplicationRecord
     Length.fetch(length).scenes
   end
 
-  def plan_story
-    update! plan: Narrator::Planner.for(self).plan
+  def clues_found
+    rolls.filter_map { it.effects&.dig("clue") }.map(&:to_i).uniq.sort
   end
 
-  def verdict
-    *earlier, last = rolls.order(:created_at).to_a
-    successes, failures = [ *earlier, last, last ].partition(&:success?).map(&:size)
-    won = last.grade.in?(%i[ critical catastrophe ]) || successes == failures ? last.success? : successes > failures
-
-    won ? "victory" : "defeat"
+  def plan_story
+    update! plan: Narrator::Planner.for(self).plan
   end
 
   def current_scene

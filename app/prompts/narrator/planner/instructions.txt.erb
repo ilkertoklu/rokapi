@@ -11,10 +11,11 @@ The tone: <%= { "fun" => "fun; the trouble is real, but nobody dies", "balanced"
 <% end %>
 Write the plan in <%= I18n.t(:language_name, locale: game_session.locale) %>, in about <%= short ? "150 to 200" : "200 to 250" %> words of plain notes under these headings:
 - Question: the one dramatic question the story answers, small enough for <%= game_session.scene_budget %> scenes to settle, with <%= heroes.one? ? "the hero" : "the heroes" %> inside it.
-- Truth: what happened before the story begins, who did it and why.
+- Opening: where the story starts, in a few concrete words; why <%= heroes.one? ? "the hero is" : "the heroes are" %> there; what everyone there already knows; the trouble that lands on <%= heroes.one? ? "the hero" : "the heroes" %> in the first scene.
+- Hidden: what happened before the story begins that the players must find out, who did it and why; small when the story turns on a choice rather than a secret. No one tells it, and <%= heroes.one? ? "the hero knows" : "the heroes know" %> none of it; only the clues show it.
 - People: <%= short ? "three" : "four" %> at most, each with a name, what they want and what they fear.
-- Clues: <%= short ? "two or three" : "three or four" %>, what each points to, and two ways to come by each.
+- Clues: <%= short ? "two or three" : "three or four" %>, numbered, what each points to, and two ways to come by each.
 - <%= heroes.one? ? "The hero" : "The heroes" %>: what <%= heroes.map(&:name).to_sentence %> want<%= "s" if heroes.one? %> here and fear<%= "s" if heroes.one? %>, grown out of <%= heroes.one? ? "the background" : "each background" %>.
-- Endings: two or three, each answering the question, what follows from winning and from losing, written as consequences, "if this, then that", not as a script.
+- Endings: two or three, each answering the question and resting only on what the opening and the clues show, what follows from winning and from losing, written as consequences, "if this, then that", not as a script.
 
 Plan what has happened and what people want, not what will happen: no scenes, no beats, no order of events. Every event has its cause in someone's want or fear, and everything the plan names is needed to answer the question. Reply with the plan only.
