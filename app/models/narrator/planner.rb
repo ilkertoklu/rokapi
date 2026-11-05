@@ -36,6 +36,6 @@ class Narrator::Planner < Narrator::Offstage
     end
 
     def rewrite_cue(problems)
-      "A reader found these problems in the plan:\n#{problems.map { "- #{it}" }.join("\n")}\nWrite the whole plan again with them fixed, and reply with the plan only."
+      "A reader found these problems in the plan:\n#{problems.map { "- #{it}" }.join("\n")}\nWrite the whole plan again with them fixed by cutting or simplifying, adding no new people, objects or past events, and reply with the plan only."
     end
 end

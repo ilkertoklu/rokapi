@@ -32,7 +32,7 @@ class Narrator::PlannerTest < ActiveSupport::TestCase
 
     rewrite = requests.third["prompt"]
     assert rewrite.start_with?("<conversation_so_far>\n<user>\nWrite the plan.\n</user>\n<assistant>\nQuestion: Will the hero find the lost child")
-    assert rewrite.end_with?("A reader found these problems in the plan:\n- The mother has no reason to beg for a search.\nWrite the whole plan again with them fixed, and reply with the plan only.")
+    assert rewrite.end_with?("A reader found these problems in the plan:\n- The mother has no reason to beg for a search.\nWrite the whole plan again with them fixed by cutting or simplifying, adding no new people, objects or past events, and reply with the plan only.")
     assert_equal 4, requests.size
   end
 
