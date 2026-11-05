@@ -210,6 +210,18 @@ class GameSessionTest < ActiveSupport::TestCase
     assert_equal [ host, deniz, sevval, host, deniz, sevval, host ], room.scenes.chronological.map(&:active_player)
   end
 
+  test "the clues found are the ones the rolls handed over, each once and in order" do
+    game_session = game_sessions(:ilker_solo)
+
+    [ 3, nil, "1", 3 ].each.with_index(1) do |clue, position|
+      scene = game_session.scenes.create!(position: position, active_player: game_session.host, state: :played)
+      roll = scene.choices.create!(label: "Press on", stat: "strength", modifier: 0, target: 11).create_roll!(player: game_session.host, value: 15)
+      roll.resolve resolution: "You press on.", effects: { "clue" => clue }.compact
+    end
+
+    assert_equal [ 1, 3 ], game_session.clues_found
+  end
+
   test "solo play stays with the host every scene" do
     game_session = game_sessions(:ilker_without_character)
     players(:ilker_without_character_host).ready_up(character_attributes)

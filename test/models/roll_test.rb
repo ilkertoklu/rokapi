@@ -173,6 +173,17 @@ class RollTest < ActiveSupport::TestCase
     assert_equal "frayed", Item.find_by!(name: "Rope").description
   end
 
+  test "a roll keeps the clue its reply names" do
+    found = roll_with(value: 15, target: 12)
+    found.resolve resolution: "Mara's shawl hangs on the lighthouse door.", effects: { "clue" => 2 }
+
+    missed = roll_with(value: 15, target: 12)
+    missed.resolve resolution: "The beach is empty.", effects: {}
+
+    assert_equal 2, found.reload.effects["clue"]
+    assert_not missed.reload.effects.key?("clue")
+  end
+
   private
     def roll_with(value:, target:, modifier: 0)
       choice = @scene.choices.create! label: "Try it", stat: "strength", modifier: modifier,
