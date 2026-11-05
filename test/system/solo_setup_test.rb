@@ -14,7 +14,9 @@ class SoloSetupTest < ApplicationSystemTestCase
     click_on "Start a new adventure"
     click_on "Solo"
     click_on "Draw again"
-    assert_text "Surprise"
+    execute_script "document.querySelector('.hand').scrollTo({ left: 10000 })"
+    assert_selector ".fate-card--face-down:has(:checked)", text: "Surprise"
+    assert_selector ".hand__dot--face-down.hand__dot--current"
     click_on "Create your character"
 
     choose "Mage", allow_label_click: true
@@ -35,6 +37,7 @@ class SoloSetupTest < ApplicationSystemTestCase
     assert_text "The narrator is getting ready"
 
     character = users(:sevval).game_sessions.sole.player_for(users(:sevval)).character
+    assert character.game_session.surprise?
     assert_equal "mage", character.klass
     assert_equal 18, character.stats["intelligence"]
   end

@@ -1,5 +1,6 @@
 @layer components {
   fieldset.choices {
+    min-inline-size: 0;
     border: 0;
     margin: 0;
     padding: 0;
@@ -13,7 +14,7 @@
     }
   }
 
-  fieldset.choices legend:has(.points-left) {
+  fieldset.choices legend:has(.points-left, .redraw) {
     display: flex;
     justify-content: space-between;
     inline-size: 100%;

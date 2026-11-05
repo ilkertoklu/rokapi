@@ -180,11 +180,138 @@
   }
 
   .redraw {
-    align-self: center;
-    padding: .5rem 1rem;
+    margin-block: -.625rem;
+    padding: .625rem 0 .625rem 1rem;
     color: var(--color-accent-bright);
-    font: 600 .875rem var(--font-ui);
+    font: 600 .8125rem var(--font-ui);
     text-decoration: none;
+  }
+
+  .hand {
+    display: flex;
+    gap: .75rem;
+    margin-inline: calc(-1 * var(--screen-gutter));
+    padding-inline: var(--screen-gutter);
+    scroll-padding-inline: var(--screen-gutter);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .fate-card {
+    position: relative;
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    gap: .375rem;
+    inline-size: calc(100% - 2.75rem);
+    min-block-size: 9rem;
+    padding: 1.125rem 1.25rem 1rem;
+    background-color: var(--color-surface-sunken);
+    border: 1px solid var(--color-line-soft);
+    border-radius: 18px;
+    scroll-snap-align: start;
+    opacity: .45;
+    cursor: pointer;
+    transition: opacity .3s, background-color .3s, border-color .3s;
+
+    input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+    }
+
+    &:has(:checked) {
+      opacity: 1;
+      background-color: var(--color-surface-raised);
+      border-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
+    }
+
+    &:has(:focus-visible) {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+    }
+  }
+
+  .fate-card__place {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--color-ink);
+  }
+
+  .fate-card__trouble {
+    font-size: .875rem;
+    line-height: 1.45;
+    color: var(--color-ink-muted);
+  }
+
+  .fate-card__figure {
+    margin-block-start: auto;
+    padding-block-start: .375rem;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: .875rem;
+    color: var(--color-ink-soft);
+  }
+
+  .fate-card--face-down {
+    --lattice: color-mix(in srgb, var(--color-accent) 7%, transparent);
+
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-image:
+      repeating-linear-gradient(45deg, var(--lattice) 0 1px, transparent 1px 12px),
+      repeating-linear-gradient(-45deg, var(--lattice) 0 1px, transparent 1px 12px);
+    box-shadow: inset 0 0 0 7px var(--color-bg), inset 0 0 0 8px var(--lattice);
+
+    &:has(:checked) {
+      --lattice: color-mix(in srgb, var(--color-accent) 16%, transparent);
+    }
+
+    .fate-card__trouble {
+      max-inline-size: 15rem;
+    }
+  }
+
+  .hand__dots {
+    display: flex;
+    justify-content: center;
+    gap: .5rem;
+  }
+
+  .hand__dot {
+    inline-size: 6px;
+    block-size: 6px;
+    border-radius: 50%;
+    background: var(--color-dot-past);
+    transition: background-color .3s, box-shadow .3s;
+  }
+
+  .hand__dot--current {
+    background: var(--color-accent-dim);
+  }
+
+  .hand__dot--face-down {
+    background: none;
+    box-shadow: inset 0 0 0 1.5px var(--color-dot-past);
+  }
+
+  .hand__dot--face-down.hand__dot--current {
+    box-shadow: inset 0 0 0 1.5px var(--color-accent-dim);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hand {
+      scroll-behavior: auto;
+    }
   }
 
   .profile {

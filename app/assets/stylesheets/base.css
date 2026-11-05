@@ -8,6 +8,8 @@
   }
 
   .screen {
+    --screen-gutter: clamp(1.25rem, 6vw, 2rem);
+
     position: relative;
     max-inline-size: 26rem;
     margin-inline: auto;
@@ -17,7 +19,7 @@
     justify-content: flex-start;
     gap: 1.25rem;
     padding: calc(1.5rem + env(safe-area-inset-top))
-             clamp(1.25rem, 6vw, 2rem)
+             var(--screen-gutter)
              calc(1.5rem + env(safe-area-inset-bottom));
   }
 

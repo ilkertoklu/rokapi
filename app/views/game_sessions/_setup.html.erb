@@ -2,29 +2,32 @@
 <%= form_with url: url, scope: :game_session, class: "flow" do |form| %>
   <%= render "back", to: back, title: title %>
 
-  <fieldset class="choices" aria-label="<%= t(".quest") %>">
-    <% cards.each do |card| %>
-      <label class="pick">
-        <%= form.radio_button :card, card.key, checked: card == cards.first %>
-        <span class="pick__body">
-          <span class="pick__title"><%= card.place.text %></span>
-          <span class="pick__text"><%= card.trouble.text %></span>
-          <span class="pick__text"><%= card.figure.text %></span>
-        </span>
-        <span class="pick__mark"></span>
+  <fieldset class="choices" data-controller="hand">
+    <legend><%= t(".quest") %> <%= link_to t(".draw_again"), request.path, class: "redraw", data: { turbo_action: "replace" } %></legend>
+
+    <div class="hand" data-hand-target="deck">
+      <% cards.each do |card| %>
+        <label class="fate-card" data-hand-target="card">
+          <%= form.radio_button :card, card.key, checked: card == cards.first, data: { action: "hand#bring" } %>
+          <span class="fate-card__place"><%= card.place.text %></span>
+          <span class="fate-card__trouble"><%= card.trouble.text %></span>
+          <span class="fate-card__figure"><%= card.figure.text %></span>
+        </label>
+      <% end %>
+
+      <label class="fate-card fate-card--face-down" data-hand-target="card">
+        <%= form.radio_button :card, "", checked: false, data: { action: "hand#bring" } %>
+        <span class="fate-card__place"><%= t(".surprise") %></span>
+        <span class="fate-card__trouble"><%= t(".surprise_text") %></span>
       </label>
-    <% end %>
+    </div>
 
-    <%= link_to t(".draw_again"), request.path, class: "redraw", data: { turbo_action: "replace" } %>
-
-    <label class="pick">
-      <%= form.radio_button :card, "", checked: false %>
-      <span class="pick__body">
-        <span class="pick__title"><%= t(".surprise") %></span>
-        <span class="pick__text"><%= t(".surprise_text") %></span>
-      </span>
-      <span class="pick__mark"></span>
-    </label>
+    <div class="hand__dots" aria-hidden="true">
+      <% cards.each do %>
+        <span class="hand__dot" data-hand-target="dot"></span>
+      <% end %>
+      <span class="hand__dot hand__dot--face-down" data-hand-target="dot"></span>
+    </div>
   </fieldset>
 
   <fieldset class="choices">

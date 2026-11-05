@@ -15,7 +15,7 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
 
     get new_game_sessions_solo_path
     assert_select "input[type=radio][name=?]", "game_session[card]", 4
-    assert_select ".pick__title", text: "Surprise"
+    assert_select ".fate-card--face-down .fate-card__place", text: "Surprise"
     assert_select "a.redraw[href=?]", new_game_sessions_solo_path, text: "Draw again"
 
     post game_sessions_solo_path, params: {
