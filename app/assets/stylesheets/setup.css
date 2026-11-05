@@ -180,11 +180,17 @@
   }
 
   .redraw {
-    margin-block: -.625rem;
-    padding: .625rem 0 .625rem 1rem;
-    color: var(--color-accent-bright);
-    font: 600 .8125rem var(--font-ui);
-    text-decoration: none;
+    display: grid;
+    inline-size: 44px;
+    block-size: 44px;
+    margin-block: -12px;
+    margin-inline-end: -13px;
+    padding: 13px;
+    color: var(--color-accent-dim);
+
+    &:active {
+      color: var(--color-accent-bright);
+    }
   }
 
   .hand {
@@ -436,6 +442,10 @@
     .pick:not(.pick--disabled):hover,
     .resume:hover {
       border-color: var(--color-accent);
+    }
+
+    .redraw:hover {
+      color: var(--color-accent-bright);
     }
   }
 

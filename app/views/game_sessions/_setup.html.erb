@@ -3,7 +3,12 @@
   <%= render "back", to: back, title: title %>
 
   <fieldset class="choices" data-controller="hand">
-    <legend><%= t(".quest") %> <%= link_to t(".draw_again"), request.path, class: "redraw", data: { turbo_action: "replace" } %></legend>
+    <legend>
+      <%= t(".quest") %>
+      <%= link_to request.path, class: "redraw", title: t(".draw_again"), aria: { label: t(".draw_again") }, data: { turbo_action: "replace" } do %>
+        <%= render "glyph", name: "shuffle" %>
+      <% end %>
+    </legend>
 
     <div class="hand" data-hand-target="deck">
       <% cards.each do |card| %>

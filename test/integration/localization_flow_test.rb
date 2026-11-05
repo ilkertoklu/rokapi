@@ -55,7 +55,7 @@ class LocalizationFlowTest < ActionDispatch::IntegrationTest
     patch locale_path, params: { locale: "tr" }
 
     get new_game_sessions_solo_path
-    assert_select ".redraw", text: "Yeniden çek"
+    assert_select ".redraw[aria-label=?]", "Yeniden çek"
     assert_select ".segment span", text: "Karanlık"
 
     post game_sessions_solo_path, params: { game_session: { card: "fishing_village missing_child weather_reader", tone: "dark", length: "short" } }
