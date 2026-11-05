@@ -29,7 +29,7 @@ Every call is logged with its cost. A finished game knows exactly what it cost t
 
 ## Running it locally
 
-- Ruby 4.0.1, then `bin/setup`.
+- Ruby 4.0.9, then `bin/setup`.
 - The narrator needs an OpenAI key in the credentials as `openai.api_key`.
 - Login is by email with a one-time code; in development the mail is written to `tmp/mails/`.
 - `bin/rokapi` plays the game against a running server, one UI step per command (`bin/rokapi help`).
