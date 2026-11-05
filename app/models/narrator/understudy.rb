@@ -7,22 +7,26 @@ class Narrator::Understudy < RubyLLM::Provider
     def complete(messages, **, &)
       content = +""
 
-      Open3.popen2(Rails.configuration.x.narrator_command) do |stdin, stdout, process|
+      Open3.popen2(environment, Rails.configuration.x.narrator_command) do |stdin, stdout, process|
         stdin.write request(messages).to_json
         stdin.close
 
         stdout.each_line do |line|
           content << line
-          yield RubyLLM::Chunk.new(role: :assistant, content: line, model_id: MODEL) if block_given?
+          yield RubyLLM::Chunk.new(role: :assistant, content: line, model_id: model.id) if block_given?
         end
 
         raise RubyLLM::ServerError, "#{Rails.configuration.x.narrator_command} exited with #{process.value.exitstatus}" unless process.value.success?
       end
 
-      RubyLLM::Message.new(role: :assistant, content: content, model: MODEL, cost: RubyLLM::Cost.new(total: 0))
+      RubyLLM::Message.new(role: :assistant, content: content, model: model.id, cost: RubyLLM::Cost.new(total: 0))
     end
 
     private
+      def environment
+        model.id == MODEL ? {} : { "NARRATOR_MODEL" => model.id }
+      end
+
       def request(messages)
         system, conversation = messages.partition { |message| message.role == :system }
 
