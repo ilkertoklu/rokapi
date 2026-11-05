@@ -141,13 +141,14 @@ class NarratorTest < ActiveSupport::TestCase
     assert_not @game_session.reload.finished?
   end
 
-  test "the last roll tells the ending the dice decided" do
+  test "the last roll leaves the ending to the story and hands over no clue" do
     roll = play_the_last_scene
 
     request = stub_understudy(ENDING_RESPONSE.sub("victory", "defeat")) { roll.narrate }.sole
 
     assert_includes request["prompt"], "\nIn scene 7 of 7, the story's last scene, Ilker chose "
-    assert request["prompt"].end_with?(%(\nThis is the last roll, and the story ends with it, in defeat: 0 of the 0 rolls before it succeeded. Tell what this roll does, then how the story ends. The ending is only what the choices and rolls bring about: no one, Ilker included, makes a move in it that those did not set up. The block adds "outcome": "defeat".\n))
+    assert_not_includes request["prompt"], "Show the clue plainly"
+    assert request["prompt"].end_with?(%(\nThis is the last roll, and the story ends with it: 0 of the 0 rolls before it succeeded. Victory or defeat is the story's to decide: weigh what the heroes found and did, this roll included, against the plan's endings, and give the ending they have earned. Tell what this roll does, then how the story ends, with only what the story has shown: what the heroes never found stays unsaid, and no one explains it. A roll that succeeds here gets the heroes what they reached for; a defeat comes from what they failed to find or do, plainly. The ending is only what the choices and rolls bring about: no one, Ilker included, makes a move in it that those did not set up. The block adds "outcome": "victory" or "defeat".\n))
   end
 
   test "the scene and the roll in the middle of the story say so" do
@@ -487,17 +488,46 @@ class NarratorTest < ActiveSupport::TestCase
     assert @game_session.reload.finished?
   end
 
-  test "the ending is the one the dice decided" do
+  test "the ending is the one the story earned, whatever the last die" do
     roll = play_the_last_scene
 
-    stub_understudy(*rewrites_of(ENDING_RESPONSE)) do
+    stub_understudy(ENDING_RESPONSE) { roll.narrate }
+
+    assert_not roll.success?
+    assert @game_session.reload.outcome_victory?
+  end
+
+  test "a last roll that leaves the ending untold is rewritten with the reason" do
+    roll = play_the_last_scene
+
+    told, rewritten = stub_understudy(OUTCOME_RESPONSE, ENDING_RESPONSE.sub("victory", "defeat")) { roll.narrate }
+
+    assert_not_includes told["prompt"], "Your last reply was rejected"
+    assert_includes rewritten["prompt"], %(Your last reply was rejected: the story ends with this roll: tell the ending the story has earned and add "outcome": "victory" or "defeat" to the block.)
+    assert @game_session.reload.outcome_defeat?
+  end
+
+  test "a last roll that ends in neither victory nor defeat is given up after the rewrites" do
+    roll = play_the_last_scene
+
+    stub_understudy(*rewrites_of(ENDING_RESPONSE.sub("victory", "stalemate"))) do
       error = assert_raises(Narrator::MalformedResponse) { roll.narrate }
-      assert_equal %(the story ends with this roll, in defeat: tell the ending and add "outcome": "defeat" to the block), error.message
+      assert_equal %(the story ends with this roll: tell the ending the story has earned and add "outcome": "victory" or "defeat" to the block), error.message
     end
+
+    assert_nil roll.reload.resolution
     assert_not @game_session.reload.finished?
+  end
 
-    stub_understudy(ENDING_RESPONSE.sub("victory", "defeat")) { roll.narrate }
+  test "a last roll that takes the hero's last health ends in defeat, whatever the story says" do
+    characters(:ilker_hero).update! hp: 3
+    roll = play_the_last_scene
 
+    told, rewritten = stub_understudy(ENDING_RESPONSE.sub("{", '{"hp": -4, '), ENDING_RESPONSE.sub("{", '{"hp": -4, ').sub("victory", "defeat")) { roll.narrate }
+
+    assert_includes told["prompt"], "This is the last roll"
+    assert_includes rewritten["prompt"], %(Your last reply was rejected: the story ends with this roll, in defeat: tell the ending and add "outcome": "defeat" to the block.)
+    assert_equal 0, characters(:ilker_hero).reload.hp
     assert @game_session.reload.outcome_defeat?
   end
 
