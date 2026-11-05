@@ -229,19 +229,19 @@ tr:
       riders_coming:
         text: Akıncılar görüldü; yeni aya kadar burada olurlar
       stolen_seal:
-        text: Barışı ayakta tutan mühür çalındı ve elçiler yarın geliyor
-      broken_oath:
-        text: Bir ant bozuldu; öbür taraf hesap sormaya geliyor
+        text: Barış antlaşmasına basılacak mühür çalındı ve elçiler yarın imzaya geliyor
+      broken_truce:
+        text: Dün gece biri birbirine düşman iki aile arasındaki barışı bozdu ve iki taraf da silahlanıyor
       called_debt:
         text: Eski bir borç istendi; hafta dolmadan ödenmesi gerek
-      sleeping_sickness:
-        text: Bir hastalık insanları uykuya yatırıyor ve uyanan olmuyor
+      fever:
+        text: Ateşli bir hastalık yayılıyor ve ona iyi gelen ot tükendi
       missing_healer:
         text: Ateşli hastalığın başladığı gece tek şifacı ortadan kayboldu
-      dead_fire:
-        text: Hiç sönmemesi gereken ateş söndü ve kimse yeniden yakamıyor
-      dark_wards:
-        text: Eski koruma taşları dün gece karardı ve içeri bir şey girdi bile
+      unlit_beacon:
+        text: Dün gece işaret ateşi yakılmadı ve karanlıkta yolda olanlar geri dönmedi
+      set_fire:
+        text: Bu hafta biri iki yangın çıkardı; sıradaki bir cana mal olabilir
       beast_returns:
         text: Yıllar önce kovulan bir canavar geri döndü ve her gece biraz daha yaklaşıyor
       kidnapped:
@@ -253,9 +253,9 @@ tr:
       empty_strongbox:
         text: Vergi tahsildarı üç gün sonra geliyor ve sandık boş
       witch_bargain:
-        text: Bir cadıyla yapılan pazarlığın vadesi dolunayda doluyor
+        text: Zor bir kışta burayı kurtaran cadı, dolunayda kendisine söz verileni almaya geliyor
       lost_messenger:
-        text: Bir uyarı getiren ulak hiç gelmedi
+        text: Yardım istemeye giden ulak hiç varmadı ve yardımın gelip gelmeyeceğini kimse bilmiyor
       false_accusation:
         text: Biri, işlemediğine yemin ettiği bir suç yüzünden şafakta sürgün edilecek
       rival_claim:
@@ -292,7 +292,7 @@ tr:
       hermit:
         text: Herkesten uzakta tek başına yaşayan, rahat bırakılmak isteyen biri
       hiding_apprentice:
-        text: Bir şeyi kırıp saklayan çırak bir büyücü
+        text: Ustasının bir eşyasını kırıp saklayan bir çırak
       lonely_moneylender:
         text: Sevilmek isteyen bir tefeci
       unknown_bard:

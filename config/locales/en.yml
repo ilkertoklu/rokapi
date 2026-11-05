@@ -210,19 +210,19 @@ en:
       riders_coming:
         text: Raiders were sighted, and they will be here by the new moon
       stolen_seal:
-        text: The seal that keeps the peace was stolen, and the envoys arrive tomorrow
-      broken_oath:
-        text: A sworn oath was broken, and the other side is coming to settle it
+        text: The seal the peace treaty must bear was stolen, and the envoys arrive tomorrow to sign it
+      broken_truce:
+        text: Someone broke the truce between two feuding families last night, and both sides are arming
       called_debt:
         text: An old debt has been called in, and it must be paid within the week
-      sleeping_sickness:
-        text: A sickness puts people to sleep, and they do not wake
+      fever:
+        text: A fever is spreading, and the herb that eases it has run out
       missing_healer:
         text: The only healer vanished the night a fever broke out
-      dead_fire:
-        text: The fire that must never go out has gone out, and no one can light it again
-      dark_wards:
-        text: The old warding stones went dark last night, and something has already come through
+      unlit_beacon:
+        text: The signal fire was not lit last night, and those out in the dark have not come back
+      set_fire:
+        text: Someone has set two fires this week, and the next may cost a life
       beast_returns:
         text: A beast driven off years ago is back, and it comes closer every night
       kidnapped:
@@ -234,9 +234,9 @@ en:
       empty_strongbox:
         text: The tax collector arrives in three days, and the strongbox is empty
       witch_bargain:
-        text: A bargain struck with a witch comes due at the full moon
+        text: The witch who saved this place in a hard winter comes at the full moon for what she was promised
       lost_messenger:
-        text: A messenger carrying a warning never arrived
+        text: The messenger sent for help never arrived, and no one knows whether help is coming
       false_accusation:
         text: Someone will be banished at dawn for a crime they swear they did not commit
       rival_claim:
@@ -273,7 +273,7 @@ en:
       hermit:
         text: A loner who lives apart and wants to be left alone
       hiding_apprentice:
-        text: An apprentice mage who broke something and hid it
+        text: "An apprentice who broke something of the master's and hid it"
       lonely_moneylender:
         text: A moneylender who wants to be liked
       unknown_bard:
