@@ -326,6 +326,22 @@ tr:
         text: biri, suçu üstlensin diye bir yabancının gelmesini ayarladı
       two_culprits:
         text: iki suçlu var ve ikisi de birbirinden habersiz
+      one_of_two:
+        text: kurtarılması gereken iki şey var, vakit ancak birine yeter
+      dear_price:
+        text: tek çare, kimsenin gözden çıkaramayacağı bir şeye mal oluyor
+      friend_opposed:
+        text: kahramanın sevdiği biri karşı tarafta ve haklı bir sebebi var
+      fixer_runs:
+        text: işi düzeltebilecek tek kişi kaçıyor ve bulunmak istemiyor
+      abandon_place:
+        text: orası elden gitti; ancak insanları kurtarılabilir
+      cause_must_help:
+        text: derdi ancak ona sebep olan çözebilir
+      break_the_rule:
+        text: işi düzeltmek için herkesin kutsal bildiği bir kuralı çiğnemek gerek
+      second_chance:
+        text: herkesin suçladığı kişi yaptığını düzeltmek istiyor ama kimse ona fırsat vermiyor
 
   player:
     departed: Ayrılan oyuncu

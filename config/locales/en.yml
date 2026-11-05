@@ -307,6 +307,22 @@ en:
         text: someone arranged for an outsider to come and take the blame
       two_culprits:
         text: there are two culprits, and neither knows of the other
+      one_of_two:
+        text: there are two to save, and time for only one
+      dear_price:
+        text: the only cure costs something no one can bear to lose
+      friend_opposed:
+        text: someone dear to the hero stands on the other side, for a good reason
+      fixer_runs:
+        text: the one who can put it right is on the run and does not want to be found
+      abandon_place:
+        text: the place is lost; only its people can still be saved
+      cause_must_help:
+        text: only the one who caused it can undo it
+      break_the_rule:
+        text: setting it right means breaking a rule everyone holds sacred
+      second_chance:
+        text: the one everyone blames wants to make amends, and no one will let them
 
   player:
     departed: Departed player
