@@ -418,7 +418,7 @@ module Rokapi
           scene["choices"].each_with_index do |choice, index|
             say "  #{index + 1}) [#{choice["stat"]} #{format("%+d", choice["modifier"])} | #{choice["difficulty"]}, target #{choice["target"]}] #{choice["label"]}"
           end
-          next_step "choose 1|2|3#{usable_hint(game)}"
+          next_step "choose #{(1..scene["choices"].size).to_a.join("|")}#{usable_hint(game)}"
         when scene["state"] == "rolling"
           say_choice scene
           next_step "roll#{usable_hint(game)}"
