@@ -35,7 +35,8 @@
 
 <div class="stage__footer">
   <% if roll.nil? %>
-    <%= button_to t(".roll"), game_session_roll_path(game_session), class: "btn btn--primary" %>
+    <%= button_to t(".roll"), game_session_roll_path(game_session), class: "btn btn--primary",
+          data: { controller: "hotkey", action: "keydown.enter@document->hotkey#click" } %>
   <% elsif roll.stalled? %>
     <%= render "game_sessions/stalled", game_session: game_session,
           hint: t(".stalled") %>
