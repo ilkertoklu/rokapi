@@ -41,6 +41,16 @@
     padding: .75rem 1.375rem;
   }
 
+  @media (min-width: 64rem) {
+    .party {
+      position: sticky;
+      inset-block-start: var(--location-size);
+      z-index: 3;
+      padding-inline: 2.5rem;
+      background: var(--color-bg);
+    }
+  }
+
   .party__turn {
     flex: 1;
     font-family: var(--font-display);

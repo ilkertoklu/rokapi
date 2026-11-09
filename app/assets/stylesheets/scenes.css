@@ -503,6 +503,74 @@
     }
   }
 
+  @media (min-width: 64rem) {
+    .screen:has(.game) {
+      --screen-width: 70rem;
+    }
+
+    .game {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 25rem;
+      grid-template-rows: minmax(0, 1fr);
+    }
+
+    .stage {
+      --location-size: 5.25rem;
+
+      padding-block-start: 0;
+      overflow-y: auto;
+    }
+
+    .stage:has(.dice, .outcome) {
+      justify-content: safe center;
+
+      :is(.dice, .outcome) {
+        flex: none;
+        padding-block: 2rem 1rem;
+      }
+    }
+
+    .location {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: 3;
+      block-size: var(--location-size);
+      padding: .4rem 2.5rem 0;
+      background: var(--color-bg);
+    }
+
+    .narration {
+      flex: none;
+      overflow: visible;
+      padding: 1.5rem 2.5rem 2rem;
+      mask-image: none;
+    }
+
+    .narration__body {
+      font-size: 1.1875rem;
+    }
+
+    .action-panel {
+      margin: 0 2.5rem 2.5rem;
+      padding: 1.25rem;
+      border: 1px solid color-mix(in srgb, var(--color-accent) 28%, transparent);
+      border-radius: 22px;
+      box-shadow: none;
+    }
+
+    .action-panel__handle {
+      pointer-events: none;
+
+      .grip {
+        display: none;
+      }
+    }
+
+    .character-button {
+      display: none;
+    }
+  }
+
   @media (any-hover: hover) {
     .choice:hover,
     .character-button:hover {
