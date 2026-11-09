@@ -327,6 +327,14 @@
     z-index: 5;
   }
 
+  @media (min-width: 48rem) {
+    .profile {
+      position: fixed;
+      inset-block-start: 1.5rem;
+      inset-inline-end: 2rem;
+    }
+  }
+
   .profile__badge {
     display: flex;
     align-items: center;

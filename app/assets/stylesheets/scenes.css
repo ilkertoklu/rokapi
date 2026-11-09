@@ -11,9 +11,9 @@
     margin: .75rem 1rem 0;
   }
 
-  @media (min-width: 48rem) and (min-height: 48rem) {
+  @media (min-width: 48rem) {
     .screen:has(.game) {
-      block-size: min(52rem, 100dvh - 3rem);
+      --screen-width: 40rem;
     }
   }
 
@@ -48,6 +48,13 @@
     flex-direction: column;
     gap: var(--footer-gap);
     padding: .9rem 1.5rem calc(.9rem + env(safe-area-inset-bottom));
+  }
+
+  @media (min-width: 48rem) {
+    .stage__footer {
+      align-self: center;
+      inline-size: min(100%, 29rem);
+    }
   }
 
   .stalled {

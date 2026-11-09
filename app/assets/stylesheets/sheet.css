@@ -5,12 +5,6 @@
     z-index: 10;
   }
 
-  @media (min-width: 48rem) and (min-height: 48rem) {
-    .sheet {
-      position: absolute;
-    }
-  }
-
   .sheet__scrim {
     position: absolute;
     inset: 0;
@@ -24,7 +18,7 @@
     position: absolute;
     inset-inline: 0;
     inset-block: 7.5rem 0;
-    max-inline-size: 26rem;
+    max-inline-size: var(--screen-width);
     margin-inline: auto;
     padding: .9rem 1.5rem calc(1rem + env(safe-area-inset-bottom));
     overflow-y: auto;
