@@ -7,68 +7,68 @@ export default class extends Controller {
   static classes = [ "raised" ]
 
   connect() {
-    this.render()
+    this.#render()
   }
 
   increment(event) {
-    if (this.canRaise(event.params.key)) this.adjust(event.params.key, +1)
+    if (this.#canRaise(event.params.key)) this.#adjust(event.params.key, +1)
   }
 
   decrement(event) {
-    if (this.canLower(event.params.key)) this.adjust(event.params.key, -1)
+    if (this.#canLower(event.params.key)) this.#adjust(event.params.key, -1)
   }
 
   rebase(event) {
     this.klassValue = event.params.klass
-    this.valueTargets.forEach(input => input.value = this.base(input.dataset.key))
-    this.render()
+    this.valueTargets.forEach(input => input.value = this.#base(input.dataset.key))
+    this.#render()
   }
 
-  adjust(key, delta) {
-    const input = this.input(key)
+  #adjust(key, delta) {
+    const input = this.#input(key)
     input.value = parseInt(input.value) + delta
-    this.render()
+    this.#render()
   }
 
-  canRaise(key) {
-    return this.remaining() > 0 && this.value(key) < this.capValue
+  #canRaise(key) {
+    return this.#remaining() > 0 && this.#value(key) < this.capValue
   }
 
-  canLower(key) {
-    return this.value(key) > this.base(key)
+  #canLower(key) {
+    return this.#value(key) > this.#base(key)
   }
 
-  input(key) {
+  #input(key) {
     return this.valueTargets.find(el => el.dataset.key === key)
   }
 
-  value(key) {
-    return parseInt(this.input(key).value)
+  #value(key) {
+    return parseInt(this.#input(key).value)
   }
 
-  base(key) {
+  #base(key) {
     return this.basesValue[this.klassValue][key]
   }
 
-  remaining() {
+  #remaining() {
     return this.freeValue - this.valueTargets.reduce(
-      (spent, input) => spent + parseInt(input.value) - this.base(input.dataset.key), 0
+      (spent, input) => spent + parseInt(input.value) - this.#base(input.dataset.key), 0
     )
   }
 
-  pointsLeft(remaining) {
+  #pointsLeft(remaining) {
     return pluralize(this.pointsLeftValue, remaining)
   }
 
-  render() {
-    const remaining = this.remaining()
-    this.remainingTarget.textContent = this.pointsLeft(remaining)
+  #render() {
+    const remaining = this.#remaining()
+    this.remainingTarget.textContent = this.#pointsLeft(remaining)
     this.valueTargets.forEach(input => {
-      input.classList.toggle(this.raisedClass, this.canLower(input.dataset.key))
+      input.classList.toggle(this.raisedClass, this.#canLower(input.dataset.key))
     })
-    this.incrementTargets.forEach(button => button.disabled = !this.canRaise(button.dataset.statsKeyParam))
-    this.decrementTargets.forEach(button => button.disabled = !this.canLower(button.dataset.statsKeyParam))
+    this.incrementTargets.forEach(button => button.disabled = !this.#canRaise(button.dataset.statsKeyParam))
+    this.decrementTargets.forEach(button => button.disabled = !this.#canLower(button.dataset.statsKeyParam))
     this.submitTarget.disabled = remaining !== 0
-    this.labelTarget.textContent = remaining === 0 ? this.readyValue : `${this.readyValue} · ${this.pointsLeft(remaining)}`
+    this.labelTarget.textContent = remaining === 0 ? this.readyValue : `${this.readyValue} · ${this.#pointsLeft(remaining)}`
   }
 }

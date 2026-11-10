@@ -38,20 +38,10 @@ export default class extends Controller {
     if (this.#swiped && event.detail) {
       this.#swiped = false
     } else if (this.element.open) {
-      this.close()
+      this.#close()
     } else {
-      this.open()
+      this.#open()
     }
-  }
-
-  open() {
-    this.element.open = true
-    slide(this.element, { translate: [ `0 ${this.bodyTarget.offsetHeight}px`, "0 0" ] })
-  }
-
-  async close() {
-    await slide(this.element, { translate: [ "0 0", `0 ${this.bodyTarget.offsetHeight}px` ] })
-    this.element.open = false
   }
 
   grab(event) {
@@ -71,13 +61,23 @@ export default class extends Controller {
 
     if (Math.abs(rise) >= SWIPE_DISTANCE && Math.abs(rise) > drift) {
       this.#swiped = true
-      if (rise > 0 && !this.element.open) this.open()
-      if (rise < 0 && this.element.open) this.close()
+      if (rise > 0 && !this.element.open) this.#open()
+      if (rise < 0 && this.element.open) this.#close()
     }
   }
 
   letGo() {
     this.#grab = null
+  }
+
+  #open() {
+    this.element.open = true
+    slide(this.element, { translate: [ `0 ${this.bodyTarget.offsetHeight}px`, "0 0" ] })
+  }
+
+  async #close() {
+    await slide(this.element, { translate: [ "0 0", `0 ${this.bodyTarget.offsetHeight}px` ] })
+    this.element.open = false
   }
 
   get #isPinnedOpen() {

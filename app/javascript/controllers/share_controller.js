@@ -4,13 +4,16 @@ export default class extends Controller {
   static targets = [ "label" ]
   static values = { text: String, copied: String }
 
+  #idleLabel
+  #timer
+
   connect() {
-    this.idleLabel = this.labelTarget.textContent
+    this.#idleLabel = this.labelTarget.textContent
     this.offer()
   }
 
   disconnect() {
-    clearTimeout(this.timer)
+    clearTimeout(this.#timer)
   }
 
   offer() {
@@ -26,12 +29,12 @@ export default class extends Controller {
   }
 
   copy() {
-    navigator.clipboard?.writeText(this.textValue).then(() => this.confirm()).catch(() => {})
+    navigator.clipboard?.writeText(this.textValue).then(() => this.#confirm()).catch(() => {})
   }
 
-  confirm() {
-    clearTimeout(this.timer)
+  #confirm() {
+    clearTimeout(this.#timer)
     this.labelTarget.textContent = this.copiedValue
-    this.timer = setTimeout(() => this.labelTarget.textContent = this.idleLabel, 2000)
+    this.#timer = setTimeout(() => this.labelTarget.textContent = this.#idleLabel, 2000)
   }
 }
