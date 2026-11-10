@@ -62,14 +62,6 @@ class ItemTest < ActiveSupport::TestCase
     assert_includes @character.items.carried, items(:longsword)
   end
 
-  test "healing covers only carried items that restore hp" do
-    assert_includes @character.items.healing, @potion
-    assert_not_includes @character.items.healing, items(:longsword)
-
-    @potion.use
-    assert_empty @character.items.healing
-  end
-
   test "summary speaks the narrator's language" do
     assert_equal "Healing potion (instant: +7 health, 1 use)", @potion.summary
     assert_equal "Longsword", items(:longsword).summary

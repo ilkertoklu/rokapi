@@ -11,7 +11,6 @@ class Item < ApplicationRecord
 
   scope :carried, -> { where(uses_left: nil).or(where(uses_left: 1..)) }
   scope :usable, -> { instant.where(uses_left: 1..) }
-  scope :healing, -> { usable.where(hp_effect: 1..) }
   scope :used_since, ->(time) { where(used_at: time..) }
 
   def usable?

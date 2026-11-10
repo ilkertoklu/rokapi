@@ -67,14 +67,6 @@ class Character < ApplicationRecord
     hp - before
   end
 
-  def sturdy?
-    hp_percentage > 60
-  end
-
-  def wounded?
-    hp.positive? && hp_percentage <= 33
-  end
-
   def status_modifier
     status_effects.sum(:modifier)
   end
