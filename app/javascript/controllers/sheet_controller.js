@@ -12,6 +12,7 @@ export default class extends Controller {
   #dragged = false
 
   open() {
+    this.sheetTarget.role = "dialog"
     this.sheetTarget.showModal()
     this.#glide(this.#height, 0)
   }
@@ -27,15 +28,16 @@ export default class extends Controller {
   }
 
   keepOpen(event) {
-    if (event.detail.attributeName === "open") event.preventDefault()
+    if ([ "open", "role" ].includes(event.detail.attributeName)) event.preventDefault()
   }
 
-  returnFocus() {
-    if (this.#focusIsLost && this.hasStageOutlet) this.stageOutlet.focus()
+  closed() {
+    this.sheetTarget.role = "region"
+    this.#returnFocus()
   }
 
   sheetTargetDisconnected() {
-    this.returnFocus()
+    this.#returnFocus()
   }
 
   grab(event) {
@@ -81,6 +83,10 @@ export default class extends Controller {
       event.stopPropagation()
     }
     this.#dragged = false
+  }
+
+  #returnFocus() {
+    if (this.#focusIsLost && this.hasStageOutlet) this.stageOutlet.focus()
   }
 
   #canDragFrom(event) {

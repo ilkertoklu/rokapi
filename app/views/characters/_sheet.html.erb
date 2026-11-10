@@ -1,6 +1,6 @@
 <%# locals: (character:) -%>
-<dialog id="character_sheet" class="sheet" aria-labelledby="character_sheet_name"
-        data-sheet-target="sheet" data-action="close->sheet#returnFocus cancel->sheet#dismiss click->sheet#ignoreClickAfterDrag:capture turbo:before-morph-attribute->sheet#keepOpen:self">
+<dialog id="character_sheet" class="sheet" role="region" aria-labelledby="character_sheet_name"
+        data-sheet-target="sheet" data-action="close->sheet#closed cancel->sheet#dismiss click->sheet#ignoreClickAfterDrag:capture turbo:before-morph-attribute->sheet#keepOpen:self">
   <button class="sheet__scrim" tabindex="-1" data-sheet-target="scrim" data-action="sheet#close" aria-label="<%= t(".close") %>"></button>
 
   <div class="sheet__panel" data-sheet-target="panel"

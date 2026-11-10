@@ -12,6 +12,10 @@ class CharacterSheetTest < ApplicationSystemTestCase
     visit game_session_path(@game_session)
   end
 
+  teardown do
+    page.current_window.resize_to 430, 932
+  end
+
   test "the sheet keeps the keyboard until Esc hands it back to My character" do
     open_sheet_from_the_keyboard
 
@@ -99,7 +103,27 @@ class CharacterSheetTest < ApplicationSystemTestCase
     assert_no_selector ".sheet:modal"
   end
 
+  test "the sheet reads as a region beside the story and as a dialog over it" do
+    name = characters(:ilker_hero).name
+    page.current_window.resize_to 1440, 900
+    assert_sheet_reads_as "region", name
+
+    page.current_window.resize_to 430, 932
+    open_sheet_by_tapping
+    assert_sheet_reads_as "dialog", name
+
+    find(".sheet__handle").click
+    assert_no_selector ".sheet:modal"
+    page.current_window.resize_to 1440, 900
+    assert_sheet_reads_as "region", name
+  end
+
   private
+    def assert_sheet_reads_as(role, name)
+      sheet = find(".sheet").native
+      assert_equal [ role, name ], [ sheet.aria_role, sheet.accessible_name ]
+    end
+
     def open_sheet_by_tapping
       find(".action-panel__handle").click unless has_button?("My character", wait: 0)
       click_on "My character"
