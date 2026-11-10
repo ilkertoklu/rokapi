@@ -16,7 +16,7 @@
     <div class="hand" data-hand-target="deck">
       <% cards.each do |card| %>
         <label class="fate-card" data-hand-target="card">
-          <%= form.radio_button :card, card.key, checked: card == cards.first, data: { action: "hand#bring" } %>
+          <%= form.radio_button :card, card.key, checked: card == cards.first, class: "visually-hidden", data: { action: "hand#bring" } %>
           <span class="fate-card__place"><%= card.place.text %></span>
           <span class="fate-card__trouble"><%= card.trouble.text %></span>
           <span class="fate-card__figure"><%= card.figure.text %></span>
@@ -24,7 +24,7 @@
       <% end %>
 
       <label class="fate-card fate-card--face-down" data-hand-target="card">
-        <%= form.radio_button :card, "", checked: false, data: { action: "hand#bring" } %>
+        <%= form.radio_button :card, "", checked: false, class: "visually-hidden", data: { action: "hand#bring" } %>
         <span class="fate-card__place"><%= t(".surprise") %></span>
         <span class="fate-card__trouble"><%= t(".surprise_text") %></span>
       </label>
@@ -43,7 +43,7 @@
     <div class="segmented">
       <% GameSession::Tone.all.each do |tone| %>
         <label class="segment">
-          <%= form.radio_button :tone, tone.key, checked: tone.key == "balanced" %>
+          <%= form.radio_button :tone, tone.key, checked: tone.key == "balanced", class: "visually-hidden" %>
           <span><%= tone.label %></span>
         </label>
       <% end %>
@@ -55,7 +55,7 @@
     <div class="segmented">
       <% GameSession::Length.all.each do |length| %>
         <label class="segment">
-          <%= form.radio_button :length, length.key, checked: length.key == "medium" %>
+          <%= form.radio_button :length, length.key, checked: length.key == "medium", class: "visually-hidden" %>
           <span><%= length.label %><small><%= length.estimate %></small></span>
         </label>
       <% end %>

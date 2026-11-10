@@ -5,7 +5,7 @@
     <% options.each do |option| %>
       <label class="chip">
         <% data = rebase ? { action: "choices#show stats#rebase", stats_klass_param: option.key } : { action: "choices#show" } %>
-        <%= form.radio_button attribute, option.key, data: data %>
+        <%= form.radio_button attribute, option.key, class: "visually-hidden", data: data %>
         <span><%= option.label %></span>
       </label>
     <% end %>

@@ -7,11 +7,6 @@
     display: flex;
     flex-direction: column;
     gap: .6rem;
-
-    input[type="radio"] {
-      position: absolute;
-      opacity: 0;
-    }
   }
 
   fieldset.choices legend:has(.points-left, .redraw) {

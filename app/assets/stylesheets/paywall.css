@@ -10,11 +10,6 @@
     }
   }
 
-  .plan-option__input {
-    position: absolute;
-    opacity: 0;
-  }
-
   .plan-option {
     position: relative;
     display: flex;

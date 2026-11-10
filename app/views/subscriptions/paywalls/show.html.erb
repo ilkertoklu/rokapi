@@ -8,7 +8,7 @@
 
   <%= purchasekit_paywall customer_id: @customer.id, success_path: subscriptions_welcome_path, class: "paywall" do |paywall| %>
     <% Plan.paid.each do |plan| %>
-      <%= paywall.plan_option product: plan.store_product, selected: plan.popular? && plan != Current.user.monthly_plan, input_class: "plan-option__input", class: "plan-option" do %>
+      <%= paywall.plan_option product: plan.store_product, selected: plan.popular? && plan != Current.user.monthly_plan, input_class: "plan-option__input visually-hidden", class: "plan-option" do %>
         <%= render "subscriptions/paywalls/plan", plan: plan, price: paywall.price { "…" } %>
       <% end %>
     <% end %>

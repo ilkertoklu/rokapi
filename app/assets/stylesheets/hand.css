@@ -47,11 +47,6 @@
     cursor: pointer;
     transition: opacity .3s, background-color .3s, border-color .3s;
 
-    input[type="radio"] {
-      position: absolute;
-      opacity: 0;
-    }
-
     &:has(:checked) {
       opacity: 1;
       background-color: var(--color-surface-raised);
