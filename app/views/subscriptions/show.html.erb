@@ -6,3 +6,9 @@
 <div class="plan-overview">
   <%= render "subscription", subscription: @subscription %>
 </div>
+
+<% if hotwire_native_app? %>
+  <%= purchasekit_paywall customer_id: Current.user.payment_processor.id, class: "restore" do |paywall| %>
+    <%= paywall.restore t(".restore"), url: subscriptions_restoration_path, class: "btn btn--ghost" %>
+  <% end %>
+<% end %>

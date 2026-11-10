@@ -21,6 +21,15 @@ class SubscriptionFlowTest < ActionDispatch::IntegrationTest
     assert_select ".status-pill", count: 0
   end
 
+  test "the apps restore purchases from the subscription, not the profile" do
+    get my_profile_path, headers: { "User-Agent" => IOS }
+    assert_select "form#purchasekit_paywall", count: 0
+
+    get subscription_path, headers: { "User-Agent" => IOS }
+    assert_select "form#purchasekit_paywall", count: 1
+    assert_select "form#purchasekit_paywall button", text: "Restore purchases"
+  end
+
   test "a subscriber manages the plan in the store" do
     subscribe @user, "premium", period: Time.zone.local(2026, 7, 3)...Time.zone.local(2026, 8, 3)
 

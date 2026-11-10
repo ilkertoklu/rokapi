@@ -705,6 +705,7 @@ en:
   subscriptions:
     show:
       title: My subscription
+      restore: Restore purchases
     subscription:
       renews: "Monthly · %{date}"
       ends: "Ends %{date}"
@@ -715,7 +716,6 @@ en:
       cancel_note: If you cancel, you move to the free plan at the end of the period; your stories stay.
       ending_note: Your subscription ends %{date}; then you move to the free plan and your stories stay.
       upgrade: Upgrade your plan
-      restore: Restore purchases
     paywalls:
       show:
         title: Choose your plan

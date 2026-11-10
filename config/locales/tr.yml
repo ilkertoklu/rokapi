@@ -724,6 +724,7 @@ tr:
   subscriptions:
     show:
       title: Aboneliğim
+      restore: Satın alımları geri yükle
     subscription:
       renews: "Aylık · %{date}"
       ends: "%{date} tarihinde sona erer"
@@ -734,7 +735,6 @@ tr:
       cancel_note: İptal edersen dönem sonunda ücretsiz plana geçersin; hikâyelerin kalır.
       ending_note: Aboneliğin %{date} tarihinde sona erer; sonra ücretsiz plana geçersin, hikâyelerin kalır.
       upgrade: Planını yükselt
-      restore: Satın alımları geri yükle
     paywalls:
       show:
         title: Planını seç
