@@ -141,7 +141,7 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
       end
 
       stub_understudy(*replies) do
-        perform_enqueued_jobs { @room.start(by: players(:ilker_room_host)) }
+        perform_enqueued_jobs { @room.start }
       end
     end
 

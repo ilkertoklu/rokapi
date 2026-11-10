@@ -100,8 +100,10 @@ class LobbyFlowTest < ActionDispatch::IntegrationTest
     sign_in_as users(:deniz)
 
     post game_session_start_path(@room)
-    assert_redirected_to game_session_path(@room)
-    assert_equal "Only the host can start, once everyone is ready.", flash[:alert]
+    assert_response :forbidden
+
+    post game_session_start_path(@room, format: :json)
+    assert_response :forbidden
     assert_not @room.reload.started?
   end
 
@@ -110,6 +112,8 @@ class LobbyFlowTest < ActionDispatch::IntegrationTest
     sign_in_as users(:ilker)
 
     post game_session_start_path(@room)
+    assert_redirected_to game_session_path(@room)
+    assert_equal "Only the host can start, once everyone is ready.", flash[:alert]
     assert_not @room.reload.started?
   end
 

@@ -245,19 +245,18 @@ class GameSessionTest < ActiveSupport::TestCase
     assert_not room.reload.started?
   end
 
-  test "only the host starts a room, and only once everyone is ready" do
+  test "a room starts only once everyone is ready" do
     room = game_sessions(:ilker_room)
     players(:ilker_room_host).ready_up(character_attributes)
 
     assert_not room.everyone_ready?
-    assert_raises(GameSession::NotReady) { room.start(by: players(:ilker_room_host)) }
-
-    players(:deniz_room_guest).ready_up(character_attributes)
-    assert_raises(GameSession::NotReady) { room.start(by: players(:deniz_room_guest)) }
+    assert_raises(GameSession::NotReady) { room.start }
     assert_not room.reload.started?
 
+    players(:deniz_room_guest).ready_up(character_attributes)
+
     assert_enqueued_with job: Scene::NarrateJob do
-      room.start(by: players(:ilker_room_host))
+      room.start
     end
     assert room.reload.started?
     assert_equal players(:ilker_room_host), room.scenes.sole.active_player
@@ -268,7 +267,7 @@ class GameSessionTest < ActiveSupport::TestCase
     sevval = room.join(users(:sevval))
     room.players.each { it.ready_up(character_attributes) }
 
-    room.start(by: players(:ilker_room_host))
+    room.start
     (room.scene_budget - 1).times { room.advance }
 
     host, deniz = players(:ilker_room_host), players(:deniz_room_guest)
@@ -280,7 +279,7 @@ class GameSessionTest < ActiveSupport::TestCase
     sevval = room.join(users(:sevval))
     room.players.each { it.ready_up(character_attributes) }
 
-    room.start(by: players(:ilker_room_host))
+    room.start
     room.advance
     players(:deniz_room_guest).character.update! hp: 0
     3.times { room.advance }

@@ -50,9 +50,9 @@ class GameSession < ApplicationRecord
     started_at.present?
   end
 
-  def start(by:)
+  def start
     with_lock do
-      raise NotReady unless by == host && everyone_ready?
+      raise NotReady unless everyone_ready?
       begin_play unless started?
     end
   end

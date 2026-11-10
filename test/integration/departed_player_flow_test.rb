@@ -10,7 +10,7 @@ class DepartedPlayerFlowTest < ActionDispatch::IntegrationTest
   test "a guest who played a turn leaves the story as a departed player" do
     sevval = @room.join(users(:sevval))
     @room.players.each { it.ready_up(warrior) }
-    @room.start(by: players(:ilker_room_host))
+    @room.start
     @room.advance
     deniz = players(:deniz_room_guest)
     play_turn_of deniz
@@ -49,7 +49,7 @@ class DepartedPlayerFlowTest < ActionDispatch::IntegrationTest
 
   test "a rematch leaves departed players behind" do
     @room.players.each { it.ready_up(warrior) }
-    @room.start(by: players(:ilker_room_host))
+    @room.start
     @room.finish
     players(:deniz_room_guest).depart
 

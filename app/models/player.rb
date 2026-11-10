@@ -21,6 +21,10 @@ class Player < ApplicationRecord
     user.nil?
   end
 
+  def host?
+    user_id == game_session.creator_id
+  end
+
   def fallen?
     character.present? && !character.hp.positive?
   end

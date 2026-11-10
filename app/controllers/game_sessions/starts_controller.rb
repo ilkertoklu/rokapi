@@ -1,8 +1,10 @@
 class GameSessions::StartsController < ApplicationController
   include GameSessionScoped
 
+  before_action :ensure_host
+
   def create
-    @game_session.start(by: @player)
+    @game_session.start
 
     respond_to do |format|
       format.html { redirect_to_game_session }
@@ -14,4 +16,9 @@ class GameSessions::StartsController < ApplicationController
       format.json { render json: { error: t(".not_ready") }, status: :unprocessable_entity }
     end
   end
+
+  private
+    def ensure_host
+      head :forbidden unless @player.host?
+    end
 end
