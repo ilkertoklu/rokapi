@@ -14,7 +14,7 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
     assert_includes first_scene["system"], "\n- Deniz: "
     assert_includes first_scene["system"], 'Speak to the one whose turn it is as "you" and call the others by name'
     assert_equal <<~CUE, first_scene["prompt"]
-      Scene 1 of 7, the story's first half, Ilker's turn. This is the opening, as the plan's opening has it: show where Ilker is and why, who is there and who they are, and end on the trouble landing on Ilker, so the reader knows what is at stake. Reveal nothing of what the plan hides: the people there believe what the plan says is believed, and no one's look or manner gives the hidden part away.
+      Scene 1 of 7, the story's first half, Ilker's turn. This is the opening, as the plan's opening has it: show where Ilker is and why, and the one or two people the plan's opening has Ilker meet, saying who they are, and end on the trouble landing on Ilker, so the reader knows what is at stake. Reveal nothing of what the plan hides: the people there believe what the plan says is believed, and no one's look or manner gives the hidden part away.
       Ilker, human warrior (background: soldier): 31/31 health; carries Longsword, Round shield; no statuses.
       In the scene with Ilker: Deniz, human warrior (background: soldier), 31/31 health.
     CUE

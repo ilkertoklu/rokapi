@@ -846,7 +846,7 @@ class NarratorTest < ActiveSupport::TestCase
 
   private
     def opening
-      "Scene 1 of 7, the story's first half, Ilker's turn. This is the opening, as the plan's opening has it: show where Ilker is and why, who is there and who they are, and end on the trouble landing on Ilker, so the reader knows what is at stake. Reveal nothing of what the plan hides: the people there believe what the plan says is believed, and no one's look or manner gives the hidden part away.\n#{sheet}"
+      "Scene 1 of 7, the story's first half, Ilker's turn. This is the opening, as the plan's opening has it: show where Ilker is and why, and the one or two people the plan's opening has Ilker meet, saying who they are, and end on the trouble landing on Ilker, so the reader knows what is at stake. Reveal nothing of what the plan hides: the people there believe what the plan says is believed, and no one's look or manner gives the hidden part away.\n#{sheet}"
     end
 
     def sheet(hp: 31)
