@@ -546,7 +546,13 @@
     }
 
     .stage:has(.dice, .outcome) {
-      justify-content: safe center;
+      > :first-child {
+        margin-block-start: auto;
+      }
+
+      > :last-child {
+        margin-block-end: auto;
+      }
 
       :is(.dice, .outcome) {
         flex: none;
