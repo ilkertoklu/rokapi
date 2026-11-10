@@ -14,6 +14,7 @@ class SoloSetupTest < ApplicationSystemTestCase
     click_on "Start a new adventure"
     click_on "Solo"
     click_on "Draw again"
+    assert_no_selector "html[aria-busy]"
     execute_script "document.querySelector('.hand').scrollTo({ left: 10000 })"
     assert_selector ".fate-card--face-down:has(:checked)", text: "Surprise"
     assert_selector ".hand__dot--face-down.hand__dot--current"
