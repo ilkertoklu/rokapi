@@ -1,6 +1,6 @@
 class My::AdventuresController < ApplicationController
   def index
-    @adventures = Current.user.game_sessions.finished.order(ended_at: :desc).includes(players: :character)
+    @adventures = Current.user.game_sessions.recently_finished_first.includes(players: :character)
   end
 
   def show

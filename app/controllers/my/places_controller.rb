@@ -5,7 +5,7 @@ class My::PlacesController < ApplicationController
   end
 
   def show
-    @adventures = Current.user.game_sessions.finished.where(place: params[:id]).order(ended_at: :desc).includes(players: :character)
+    @adventures = Current.user.game_sessions.recently_finished_first.where(place: params[:id]).includes(players: :character)
     raise ActiveRecord::RecordNotFound if @adventures.load.none?
 
     @place = GameSession::Place.fetch(params[:id])

@@ -24,6 +24,7 @@ class GameSession < ApplicationRecord
 
   scope :ongoing, -> { where(ended_at: nil) }
   scope :finished, -> { where.not(ended_at: nil) }
+  scope :recently_finished_first, -> { finished.order(ended_at: :desc) }
   scope :unstarted, -> { where(started_at: nil) }
   scope :latest, -> { order(created_at: :desc).limit(LATEST) }
 
