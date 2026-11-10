@@ -1,28 +1,36 @@
 @layer components {
   .sheet {
-    display: none;
     position: fixed;
     inset: 0;
-    z-index: 10;
-  }
+    inline-size: auto;
+    max-inline-size: none;
+    block-size: auto;
+    max-block-size: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: none;
+    border: 0;
+    color: inherit;
 
-  .sheet--open {
-    display: block;
+    &::backdrop {
+      background: none;
+    }
   }
 
   @media (min-width: 64rem) {
-    .sheet {
+    .sheet:not(:modal) {
       display: block;
       position: static;
       overflow-y: auto;
       border-inline-start: 1px solid var(--color-line-soft);
     }
 
-    .sheet :is(.sheet__scrim, .sheet__handle) {
+    .sheet:not(:modal) :is(.sheet__scrim, .sheet__handle) {
       display: none;
     }
 
-    .sheet .sheet__panel {
+    .sheet:not(:modal) .sheet__panel {
       position: static;
       display: flex;
       flex-direction: column;

@@ -7,7 +7,7 @@
   <% content_for :screen, "screen--wide" %>
   <%= render "game_sessions/lobby", game_session: @game_session, player: @player %>
 <% else %>
-  <div class="game" data-controller="sheet" data-sheet-open-class="sheet--open" data-action="keydown.esc@document->sheet#close">
+  <div class="game" data-controller="sheet">
     <%= render "game_sessions/stage", game_session: @game_session, player: @player %>
 
     <%= render "characters/sheet", character: @character %>

@@ -1,13 +1,13 @@
 <%# locals: (character:) -%>
-<div id="character_sheet" class="sheet" data-sheet-target="sheet">
-  <button class="sheet__scrim" data-action="sheet#close" aria-label="<%= t(".close") %>"></button>
+<dialog id="character_sheet" class="sheet" aria-labelledby="character_sheet_name" data-sheet-target="sheet">
+  <button class="sheet__scrim" tabindex="-1" data-action="sheet#close" aria-label="<%= t(".close") %>"></button>
 
   <div class="sheet__panel">
-    <button class="sheet__handle" data-action="sheet#close" aria-label="<%= t(".close") %>"><span class="grip"></span></button>
+    <button class="sheet__handle" autofocus data-action="sheet#close" aria-label="<%= t(".close") %>"><span class="grip"></span></button>
 
     <header class="sheet__header">
       <span class="avatar"><%= character.initial %></span>
-      <strong><%= character.name %></strong>
+      <strong id="character_sheet_name"><%= character.name %></strong>
       <em><%= character.summary %></em>
     </header>
 
@@ -72,4 +72,4 @@
 
     <%= link_to t(".back_home"), root_path, class: "btn btn--ghost" %>
   </div>
-</div>
+</dialog>

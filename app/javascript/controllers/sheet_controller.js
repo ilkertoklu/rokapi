@@ -2,13 +2,12 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [ "sheet" ]
-  static classes = [ "open" ]
 
   open() {
-    this.sheetTarget.classList.add(this.openClass)
+    this.sheetTarget.showModal()
   }
 
   close() {
-    this.sheetTarget.classList.remove(this.openClass)
+    this.sheetTarget.close()
   }
 }
