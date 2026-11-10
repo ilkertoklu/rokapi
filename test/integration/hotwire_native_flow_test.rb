@@ -32,6 +32,15 @@ class HotwireNativeFlowTest < ActionDispatch::IntegrationTest
     assert_equal "clear_all", properties_for(rules, "/")["presentation"]
   end
 
+  test "the game turns pull to refresh off so its panels can be dragged down" do
+    get hotwire_native_path_configuration_path(format: :json)
+    rules = response.parsed_body["rules"]
+
+    assert_equal false, properties_for(rules, "/game_sessions/7")["pull_to_refresh_enabled"]
+    assert_equal true, properties_for(rules, "/my/profile")["pull_to_refresh_enabled"]
+    assert_equal false, properties_for(rules, "/game_sessions/7/character/new")["pull_to_refresh_enabled"]
+  end
+
   test "the apps put the page title in the native bar and drop the web back control" do
     sign_in_as users(:sevval)
 

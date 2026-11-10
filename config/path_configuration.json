@@ -10,6 +10,12 @@
       }
     },
     {
+      "patterns": ["^/game_sessions/\\d+$"],
+      "properties": {
+        "pull_to_refresh_enabled": false
+      }
+    },
+    {
       "patterns": ["/new$"],
       "properties": {
         "context": "modal",
