@@ -34,7 +34,7 @@ class Narrator < RubyLLM::Agent
       check_scene(*told(reply.content))
     end
 
-    write_scene scene, prose, data
+    scene.write narration: prose, effects: data
   end
 
   def narrate_outcome(roll)
@@ -105,17 +105,5 @@ class Narrator < RubyLLM::Agent
 
     def playable?(choice)
       choice.is_a?(Hash) && choice["label"].present? && Character::Stat.keys.include?(choice["stat"])
-    end
-
-    def write_scene(scene, prose, data)
-      ApplicationRecord.transaction do
-        game_session.update! title: data["adventure"] if scene.first? && data["adventure"].present?
-        scene.write narration: prose, effects: data, title: data["title"].presence, location: data["location"].presence, state: :choosing
-
-        data["choices"].each do |choice|
-          scene.choices.create! label: choice["label"], stat: choice["stat"], modifier: scene.active_player.character.bonus_for(choice["stat"]),
-            target: Choice.target_for(choice["difficulty"])
-        end
-      end
     end
 end

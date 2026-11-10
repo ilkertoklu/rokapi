@@ -16,10 +16,13 @@ class Scene < ApplicationRecord
 
   after_save_commit -> { broadcast_refresh_to game_session }
 
-  def write(narration:, effects:, **attributes)
+  def write(narration:, effects:)
     transaction do
-      update! narration: narration, effects: recorded(effects.to_h), stalled_at: nil, **attributes
+      game_session.update! title: effects["adventure"] if first? && effects["adventure"].present?
+      update! narration: narration, effects: recorded(effects.to_h), title: effects["title"].presence, location: effects["location"].presence,
+        state: :choosing, stalled_at: nil
       apply_effects
+      Array(effects["choices"]).each { |choice| offer choice }
     end
   end
 
@@ -108,6 +111,10 @@ class Scene < ApplicationRecord
   end
 
   private
+    def offer(choice)
+      choices.create! label: choice["label"], stat: choice["stat"], modifier: character.bonus_for(choice["stat"]), target: Choice.target_for(choice["difficulty"])
+    end
+
     def recorded(effects)
       bounded(effects).merge({ "clue" => clue_shown }.compact)
     end
