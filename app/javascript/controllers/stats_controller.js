@@ -4,6 +4,7 @@ import { pluralize } from "helpers/pluralize"
 export default class extends Controller {
   static targets = [ "value", "increment", "decrement", "remaining", "submit", "label" ]
   static values = { free: Number, cap: Number, bases: Object, klass: String, ready: String, pointsLeft: Object }
+  static classes = [ "raised" ]
 
   connect() {
     this.render()
@@ -63,7 +64,7 @@ export default class extends Controller {
     const remaining = this.remaining()
     this.remainingTarget.textContent = this.pointsLeft(remaining)
     this.valueTargets.forEach(input => {
-      input.classList.toggle("stat-row__value--raised", this.canLower(input.dataset.key))
+      input.classList.toggle(this.raisedClass, this.canLower(input.dataset.key))
     })
     this.incrementTargets.forEach(button => button.disabled = !this.canRaise(button.dataset.statsKeyParam))
     this.decrementTargets.forEach(button => button.disabled = !this.canLower(button.dataset.statsKeyParam))

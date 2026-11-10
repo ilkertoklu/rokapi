@@ -1,7 +1,8 @@
 <% content_for :title, "#{t(".title")} · Rokapi" %>
 
 <%= tag.div class: [ "flow", ("code-entry--rejected" if @rejection) ], data: { controller: "code", code_length_value: GameSession::CODE_LENGTH, code_verify_value: t(".submit"),
-      code_digits_left_value: t(".digits_left").to_json, code_rejected_value: (@code if @rejection) } do %>
+      code_digits_left_value: t(".digits_left").to_json, code_rejected_value: (@code if @rejection),
+      code_current_class: "code__cell--current", code_rejected_class: "code-entry--rejected" } do %>
   <%= render "back", to: root_path, title: t(".title") %>
 
   <% if @rejection %>

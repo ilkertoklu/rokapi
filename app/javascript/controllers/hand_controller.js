@@ -2,6 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = [ "deck", "card", "dot" ]
+  static classes = [ "current" ]
 
   connect() {
     this.observer = new IntersectionObserver(entries => {
@@ -28,6 +29,6 @@ export default class extends Controller {
   }
 
   #markCurrentDot() {
-    this.dotTargets.forEach((dot, index) => dot.classList.toggle("hand__dot--current", this.cardTargets[index].control.checked))
+    this.dotTargets.forEach((dot, index) => dot.classList.toggle(this.currentClass, this.cardTargets[index].control.checked))
   }
 }

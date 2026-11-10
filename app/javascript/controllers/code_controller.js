@@ -4,6 +4,7 @@ import { pluralize } from "helpers/pluralize"
 export default class extends Controller {
   static targets = [ "input", "cell", "submit" ]
   static values = { length: Number, verify: String, digitsLeft: Object, rejected: String }
+  static classes = [ "current", "rejected" ]
 
   connect() {
     this.update()
@@ -16,12 +17,12 @@ export default class extends Controller {
 
     this.cellTargets.forEach((cell, index) => {
       cell.textContent = code[index] ?? ""
-      cell.classList.toggle("code__cell--current", index === current)
+      cell.classList.toggle(this.currentClass, index === current)
     })
 
     this.submitTarget.disabled = remaining > 0
     this.submitTarget.value = remaining > 0 ? `${this.verifyValue} · ${pluralize(this.digitsLeftValue, remaining)}` : this.verifyValue
-    this.element.classList.toggle("code-entry--rejected", this.rejectedValue !== "" && code === this.rejectedValue)
+    if (this.hasRejectedClass) this.element.classList.toggle(this.rejectedClass, this.rejectedValue !== "" && code === this.rejectedValue)
   }
 
   clear() {
