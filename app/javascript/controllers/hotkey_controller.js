@@ -9,7 +9,12 @@ export default class extends Controller {
   }
 
   get #isClickable() {
-    return this.element.checkVisibility() && !this.element.disabled
+    return this.element.checkVisibility() && !this.element.disabled && !this.#isBehindModal
+  }
+
+  get #isBehindModal() {
+    const modal = document.querySelector("dialog:modal")
+    return modal && !modal.contains(this.element)
   }
 
   #shouldIgnore(event) {

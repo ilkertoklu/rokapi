@@ -4,6 +4,7 @@
 <%= render "game_sessions/connection" %>
 
 <% if @game_session.lobby? %>
+  <% content_for :screen, "screen--wide" %>
   <%= render "game_sessions/lobby", game_session: @game_session, player: @player %>
 <% else %>
   <div class="game" data-controller="sheet" data-sheet-open-class="sheet--open" data-action="keydown.esc@document->sheet#close">

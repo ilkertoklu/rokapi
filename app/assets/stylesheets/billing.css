@@ -355,4 +355,16 @@
   .receipt__accent {
     color: var(--color-accent-bright);
   }
+
+  @media (min-width: 64rem) {
+    .paywall {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+
+      > .note {
+        grid-column: 1 / -1;
+      }
+    }
+  }
 }

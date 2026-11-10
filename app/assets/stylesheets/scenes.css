@@ -567,7 +567,16 @@
       font-size: 1.1875rem;
     }
 
+    .narration ~ .stage__footer {
+      position: sticky;
+      inset-block-end: 0;
+      margin-block-start: auto;
+      background: linear-gradient(to top, var(--color-bg) 70%, transparent);
+    }
+
     .action-panel {
+      --action-panel-pinned: open;
+
       margin: 0 2.5rem 2.5rem;
       padding: 1.25rem;
       border: 1px solid color-mix(in srgb, var(--color-accent) 28%, transparent);

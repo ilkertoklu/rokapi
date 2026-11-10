@@ -12,6 +12,14 @@ class HotwireNativeFlowTest < ActionDispatch::IntegrationTest
     assert_no_match "max-age=31536000", response.headers["Cache-Control"].to_s
   end
 
+  test "the apps bring their own navigation instead of the top bar" do
+    get welcome_path
+    assert_select ".topbar a", text: "Rokapi"
+
+    get welcome_path, headers: { "User-Agent" => IOS }
+    assert_select ".topbar", count: 0
+  end
+
   test "setup screens open as modals and the home screen clears the stack" do
     get hotwire_native_path_configuration_path(format: :json)
     rules = response.parsed_body["rules"]

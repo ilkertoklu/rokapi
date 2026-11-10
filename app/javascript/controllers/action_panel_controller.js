@@ -1,9 +1,16 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static values = { openFrom: String }
+  static targets = [ "handle" ]
 
   connect() {
-    this.element.open = window.matchMedia(`(min-width: ${this.openFromValue})`).matches
+    if (this.#isPinnedOpen) {
+      this.element.open = true
+      this.handleTarget.tabIndex = -1
+    }
+  }
+
+  get #isPinnedOpen() {
+    return getComputedStyle(this.element).getPropertyValue("--action-panel-pinned").trim() === "open"
   }
 }

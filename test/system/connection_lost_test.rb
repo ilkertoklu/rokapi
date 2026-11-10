@@ -50,17 +50,24 @@ class ConnectionLostTest < ApplicationSystemTestCase
     assert_no_selector "dialog.connection[open]"
   end
 
-  private
-    def sign_in_as(user)
-      visit new_login_code_path
-      fill_in "Email", with: user.email
-      click_on "Send code"
-      assert_text "We sent a one-time"
-      fill_in "code", with: user.login_codes.sole.code
-      click_on "Verify"
-      assert_text "Roll the dice"
-    end
+  test "the keyboard does not play behind the lost connection" do
+    scene = @game_session.scenes.create! position: 2, active_player: players(:ilker_solo_host), state: :choosing,
+      title: "Blizzard Pass", location: "The pass", narration: "Snow swallows the road."
+    scene.choices.create! label: "Push on through the snow", stat: "constitution", target: 12
 
+    sign_in_as users(:ilker)
+    visit game_session_path(@game_session)
+    find(".action-panel__handle").click
+    assert_button "Push on through the snow"
+
+    drop_connection
+    assert_selector "dialog.connection[open]", wait: 5
+    send_keys "1"
+    sleep 1
+    assert scene.reload.choosing?
+  end
+
+  private
     def drop_connection
       on_cable_connection "close({ allowReconnect: false })"
     end

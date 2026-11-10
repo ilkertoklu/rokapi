@@ -31,7 +31,7 @@
       </header>
     <% end %>
 
-    <main class="screen">
+    <%= tag.main class: [ "screen", content_for(:screen) ] do %>
       <% if alert %>
         <p class="flash flash--alert"><%= alert %></p>
       <% end %>
@@ -40,6 +40,6 @@
       <% end %>
 
       <%= yield %>
-    </main>
+    <% end %>
   <% end %>
 </html>

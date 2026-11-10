@@ -1,8 +1,10 @@
 <%# locals: (url:, back:, title:, submit:, cards:) -%>
-<%= form_with url: url, scope: :game_session, class: "flow" do |form| %>
+<% content_for :screen, "screen--wide" %>
+
+<%= form_with url: url, scope: :game_session, class: "flow flow--columns" do |form| %>
   <%= render "back", to: back, title: title %>
 
-  <fieldset class="choices" data-controller="hand">
+  <fieldset class="choices flow__wide" data-controller="hand">
     <legend>
       <%= t(".quest") %>
       <%= link_to request.path, class: "redraw", title: t(".draw_again"), aria: { label: t(".draw_again") }, data: { turbo_action: "replace" } do %>

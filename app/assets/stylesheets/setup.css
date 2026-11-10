@@ -486,4 +486,116 @@
       stroke-width: 2;
     }
   }
+
+  @media (min-width: 64rem) {
+    .page-head {
+      display: flex;
+      gap: 1rem;
+      margin: 0 0 .5rem;
+
+      h1 {
+        font-size: 1.625rem;
+        text-align: start;
+      }
+    }
+
+    .screen:has(.brand--hero) {
+      --screen-width: 40rem;
+
+      min-block-size: 0;
+      gap: 3rem;
+      margin-block-end: 6rem;
+
+      .brand h1 {
+        font-size: 4.5rem;
+      }
+
+      .stack {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .btn {
+        flex: 0 1 15rem;
+        display: grid;
+        place-content: center;
+      }
+
+      .resume {
+        flex: none;
+        inline-size: min(100%, 30.75rem);
+      }
+    }
+
+    .stack:has(> .pick--large) {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+
+      .pick {
+        align-items: flex-start;
+        min-block-size: 8rem;
+        padding: 1.5rem;
+      }
+    }
+
+    .flow--columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.75rem 2.5rem;
+
+      > .page-head,
+      > .flow__wide {
+        grid-column: 1 / -1;
+      }
+
+      > .flow__aside {
+        grid-column: 2;
+        grid-row: 2 / span 3;
+        align-content: start;
+      }
+    }
+
+    .screen--wide .sticky-footer {
+      position: static;
+      grid-column: 1 / -1;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 1.25rem;
+      padding-block: .75rem 0;
+      background: none;
+
+      .btn {
+        inline-size: auto;
+        min-inline-size: 16rem;
+      }
+    }
+
+    .hand {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+      margin-inline: 0;
+      padding-inline: 0;
+      overflow: visible;
+    }
+
+    .fate-card {
+      inline-size: auto;
+      min-block-size: 12rem;
+      opacity: .7;
+    }
+
+    .hand__dots {
+      display: none;
+    }
+
+    @media (any-hover: hover) {
+      .fate-card:hover {
+        opacity: 1;
+      }
+    }
+  }
 }

@@ -256,4 +256,18 @@
       animation: none;
     }
   }
+
+  @media (min-width: 64rem) {
+    .lobby {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto 1fr auto;
+      gap: 1.25rem 2.5rem;
+
+      > section:not(.lobby-quest) {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+      }
+    }
+  }
 }

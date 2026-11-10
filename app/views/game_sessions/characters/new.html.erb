@@ -1,6 +1,7 @@
 <% content_for :title, "#{t(".title")} · Rokapi" %>
+<% content_for :screen, "screen--wide" %>
 
-<%= form_with model: @character, url: game_session_character_path(@game_session), class: "flow",
+<%= form_with model: @character, url: game_session_character_path(@game_session), class: "flow flow--columns",
       data: { controller: "stats", stats_free_value: Character::FREE_POINTS, stats_cap_value: Character::STAT_CAP,
               stats_klass_value: @character.klass, stats_bases_value: Character::Klass.base_stats_by_key.to_json,
               stats_ready_value: t(".ready"), stats_points_left_value: t(".points_left").to_json } do |form| %>
@@ -16,7 +17,7 @@
   <%= render "choice_fieldset", form: form, legend: t(".background"), attribute: :background,
         options: Character::Background.all, selected: @character.background %>
 
-  <fieldset class="choices">
+  <fieldset class="choices flow__aside">
     <legend><%= t(".abilities") %> <span class="points-left" data-stats-target="remaining"></span></legend>
 
     <%= form.fields_for :stats do |stats| %>
