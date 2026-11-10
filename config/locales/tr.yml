@@ -757,6 +757,7 @@ tr:
   sessions:
     new:
       title: Tek kullanımlık kod
+      code: Giriş kodu
       sent_html: "%{length} haneli kodu <strong>%{email}</strong> adresine gönderdik."
       verify: Doğrula
       digits_left:

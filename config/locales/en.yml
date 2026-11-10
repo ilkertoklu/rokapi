@@ -738,6 +738,7 @@ en:
   sessions:
     new:
       title: One-time code
+      code: Login code
       sent_html: We sent a one-time %{length}-digit code to <strong>%{email}</strong>.
       verify: Verify
       digits_left:

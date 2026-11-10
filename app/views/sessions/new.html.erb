@@ -8,7 +8,7 @@
 
   <%= form_with url: session_path, class: "code-form" do |form| %>
     <div class="code">
-      <%= form.text_field :code, class: "code__input",
+      <%= form.text_field :code, class: "code__input", aria: { label: t(".code") },
             inputmode: "numeric", pattern: "[0-9]*", maxlength: LoginCode::CODE_LENGTH,
             autocomplete: "one-time-code", required: true, autofocus: true,
             data: { code_target: "input", action: "input->code#update" } %>

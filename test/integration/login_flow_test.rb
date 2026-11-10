@@ -5,6 +5,9 @@ class LoginFlowTest < ActionDispatch::IntegrationTest
     post login_codes_path, params: { email: users(:ilker).email }
     assert_redirected_to new_session_path
 
+    get new_session_path
+    assert_select "input[name=code][aria-label=?]", "Login code"
+
     post session_path, params: { code: LoginCode.last.code }
     assert_redirected_to root_url
 
