@@ -2,7 +2,7 @@ module GameSession::Clues
   extend ActiveSupport::Concern
 
   def clues_found
-    (scenes + rolls).filter_map { Integer(it.effects&.dig("clue"), exception: false) }.select(&:positive?).uniq.sort
+    (scenes.pluck(:effects) + rolls.pluck(:effects)).filter_map { Integer(it&.dig("clue"), exception: false) }.select(&:positive?).uniq.sort
   end
 
   def clues_left
@@ -10,7 +10,11 @@ module GameSession::Clues
   end
 
   def next_clue
-    (1..clue_count).find { clues_found.exclude?(it) }
+    clues_unfound.first
+  end
+
+  def clues_unfound
+    (1..clue_count).to_a - clues_found
   end
 
   def marks

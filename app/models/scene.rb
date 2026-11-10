@@ -53,6 +53,10 @@ class Scene < ApplicationRecord
     !first? && !last? && game_session.clues_left >= game_session.scene_budget - position
   end
 
+  def clue_in_reach
+    game_session.clues_unfound.drop(clue_overdue? ? 1 : 0).first unless last?
+  end
+
   def conclude(outcome)
     update! finale: true
     game_session.update! outcome: outcome
@@ -112,7 +116,7 @@ class Scene < ApplicationRecord
     end
 
     def offer(choice)
-      choices.create! label: choice["label"], stat: choice["stat"], modifier: character.bonus_for(choice["stat"]), target: Choice.target_for(choice["difficulty"])
+      choices.create! label: choice["label"], stat: choice["stat"], modifier: character.bonus_for(choice["stat"]), target: Choice.target_for(choice["difficulty"]), clue: choice["clue"] == true
     end
 
     def recorded(effects)

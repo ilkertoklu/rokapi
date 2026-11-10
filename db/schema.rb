@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_06_090000) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_11_090000) do
   create_table "characters", force: :cascade do |t|
     t.string "background", null: false
     t.datetime "created_at", null: false
@@ -33,6 +33,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_06_090000) do
     t.string "stat", null: false
     t.integer "target", null: false
     t.datetime "updated_at", null: false
+    t.boolean "clue", default: false, null: false
     t.index ["scene_id"], name: "index_choices_on_chosen_scene", unique: true, where: "chosen_at IS NOT NULL"
     t.index ["scene_id"], name: "index_choices_on_scene_id"
   end

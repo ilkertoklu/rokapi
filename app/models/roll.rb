@@ -90,7 +90,7 @@ class Roll < ApplicationRecord
   end
 
   def clue_won
-    game_session.next_clue if success? && !scene.last?
+    game_session.next_clue if success? && choice.clue? && !scene.last?
   end
 
   def life_at_stake?

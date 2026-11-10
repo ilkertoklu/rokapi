@@ -201,6 +201,16 @@ class RollTest < ActiveSupport::TestCase
     assert_equal 2, later.reload.effects["clue"]
   end
 
+  test "a success wins no clue on a choice that does not lead to one" do
+    game_sessions(:ilker_solo).update! plan: CLUES_PLAN
+
+    aside = roll_with(value: 15, target: 12, clue: false)
+    aside.resolve resolution: "You pull Mara's boy out of the surf.", effects: { "clue" => 1 }
+
+    assert_not aside.reload.effects.key?("clue")
+    assert_equal 1, roll_with(value: 15, target: 12).clue_won
+  end
+
   test "a roll wins no clue from a plan that numbers none, nor in the last scene" do
     unnumbered = roll_with(value: 15, target: 12)
     unnumbered.resolve resolution: "The beach is empty.", effects: { "clue" => 1 }
@@ -224,9 +234,9 @@ class RollTest < ActiveSupport::TestCase
   end
 
   private
-    def roll_with(value:, target:, modifier: 0)
+    def roll_with(value:, target:, modifier: 0, clue: true)
       choice = @scene.choices.create! label: "Try it", stat: "strength", modifier: modifier,
-        target: target
+        target: target, clue: clue
       choice.create_roll! player: players(:ilker_solo_host), value: value, status_modifier: 0
     end
 end

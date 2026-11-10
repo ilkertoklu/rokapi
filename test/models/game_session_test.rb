@@ -441,7 +441,7 @@ class GameSessionTest < ActiveSupport::TestCase
 
     def roll_in(game_session, position:, value: 15)
       scene = game_session.scenes.create!(position: position, active_player: game_session.host, state: :played)
-      scene.choices.create!(label: "Press on", stat: "strength", modifier: 0, target: 11).create_roll!(player: game_session.host, value: value)
+      scene.choices.create!(label: "Press on", stat: "strength", modifier: 0, target: 11, clue: true).create_roll!(player: game_session.host, value: value)
     end
 
     def create_room

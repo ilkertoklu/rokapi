@@ -7,7 +7,7 @@ module LlmStubbing
     ```json
     {"title": "The Old Inn", "location": "Whitebend",
      "choices": [
-       {"label": "Read the dusty ledger", "stat": "intelligence", "difficulty": 10},
+       {"label": "Read the dusty ledger", "stat": "intelligence", "difficulty": 10, "clue": true},
        {"label": "Force the drawer open", "stat": "strength", "difficulty": 14},
        {"label": "Listen at the stable in silence", "stat": "wisdom", "difficulty": 12}
      ]}

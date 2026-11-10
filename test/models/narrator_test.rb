@@ -136,7 +136,7 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
 
     assert_equal :solid, roll.grade
-    assert_includes request["prompt"], %(margin +4. It works. What it wins stays won to the end. It also hands Ilker clue 1 of the plan (none found so far): show it plainly, as this attempt would come by it. Add "mark" to the block: one short sentence in English naming what this roll changed for good. Keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left.\n)
+    assert_includes request["prompt"], %(margin +4. It works. What it wins stays won to the end. It also hands Ilker clue 1 of the plan (none found so far): show it plainly, as this attempt comes by it. Add "mark" to the block: one short sentence in English naming what this roll changed for good. Keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left.\n)
   end
 
   test "a failure before the last hands over no clue and costs something lasting" do
@@ -149,7 +149,21 @@ class NarratorTest < ActiveSupport::TestCase
     assert_includes request["prompt"], "margin -9. It does not work, and Ilker pays with something that stays lost unless a later roll wins it back"
     assert_includes request["prompt"], %(no clue is handed over. The story moves on from there, not back for a second try. Add "mark")
     assert_not_includes request["prompt"], "It also hands Ilker clue"
-    assert_not_includes request["prompt"], %("clue":)
+    assert_not_includes request["prompt"].split("</conversation_so_far>").last, %("clue":)
+  end
+
+  test "a success on a choice that leads to no clue wins only what it reached for" do
+    @game_session.update! plan: CLUES_PLAN
+    stub_understudy(SCENE_RESPONSE) { narrate }
+    aside = @game_session.current_scene.choices.find_by!(label: "Force the drawer open")
+    aside.choose
+    roll = with_die(15) { @game_session.current_scene.roll_dice(by: @game_session.host) }
+
+    request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
+
+    assert roll.success?
+    assert_includes request["prompt"], %(It works. What it wins stays won to the end. It wins no clue: what the plan hides stays hidden. Add "mark")
+    assert_empty @game_session.reload.clues_found
   end
 
   test "a success wins no clue from a plan that numbers none" do
@@ -172,8 +186,8 @@ class NarratorTest < ActiveSupport::TestCase
     outcome = stub_understudy(OUTCOME_RESPONSE) { later.narrate }.sole
 
     assert_equal [ 1 ], @game_session.clues_found
-    assert_includes scene["prompt"], "\n\nScene 2 of 7, the story's first half, Ilker's turn. Pick up where the last outcome stopped, without retelling it, and keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left. Clues found so far: 1. The heroes do only"
-    assert_includes outcome["prompt"], %(It also hands Ilker clue 2 of the plan (found so far: 1): show it plainly, as this attempt would come by it.)
+    assert_includes scene["prompt"], "\n\nScene 2 of 7, the story's first half, Ilker's turn. Pick up where the last outcome stopped, without retelling it, and keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left. Clues found so far: 1. The heroes do only what the players chose: where the way forks, the fork goes into the choices, and what a way not taken would have won does not turn up by itself. At least one choice is a way to come by clue 2, one of the two the plan gives or one as likely from where Ilker stands, and adds \"clue\": true to its entry in the block; a success on it wins the clue, and a success on any other choice wins only what it reaches for.\n"
+    assert_includes outcome["prompt"], %(It also hands Ilker clue 2 of the plan (found so far: 1): show it plainly, as this attempt comes by it.)
   end
 
   test "what a roll changed for good is kept and named in every later scene and roll" do
@@ -197,6 +211,7 @@ class NarratorTest < ActiveSupport::TestCase
     scene = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
     assert_includes scene["prompt"], "No clue found yet. The story cannot wait for clue 1 any longer: the trouble moves on by itself in this scene, taking something the plan puts at stake, and what it does shows that clue plainly. The heroes do only"
+    assert_includes scene["prompt"], "At least one choice is a way to come by clue 2,"
     assert_equal 1, @game_session.current_scene.effects["clue"]
     assert_equal [ 1 ], @game_session.reload.clues_found
 
@@ -245,7 +260,7 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(ENDING_RESPONSE.sub("victory", "defeat")) { roll.narrate }.sole
 
     assert_includes request["prompt"], "\nIn scene 7 of 7, the story's last scene, Ilker chose "
-    assert_no_match(/"clue"|"mark"|no clue is handed over/, request["prompt"])
+    assert_no_match(/"clue"|"mark"|no clue is handed over/, request["prompt"].split("</conversation_so_far>").last)
     assert request["prompt"].end_with?(%(\nThis is the last roll, and the story ends with it. So far Ilker tried "Read the dusty ledger" (failed). Victory or defeat is the story's to decide: weigh what the heroes found and did, this roll as one among the rest, against the plan's endings, and give the ending they have earned. Tell what this roll does, then how the story ends, with only what the story has shown: the ending rests on why it all happened, as the clues showed it; what the heroes never found stays unsaid, and no one explains it. A roll that succeeds here gets the heroes what they reached for; one that fails costs them something, but does not undo what the rolls before it won. The heroes settle the question with what they did, and make no move the players did not choose; the others go on as they want and fear, and no one steps in to win or lose it for them. Tell it as scenes the hero sees and hears, to the last line: the reckoning happens on the page, not in a summary, and no one says what the story meant. The block adds "outcome": "victory" or "defeat".\n))
   end
 
@@ -470,7 +485,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     assert_includes request["system"], "Tell the story in English"
     assert_equal <<~GAME, request["system"][/^The story's plan .*?\n(?=\nBe the game master)/m]
-      The story's plan is below, and only you know it. Add the detail it leaves out, but never go against it. The players know only what the story has shown them, and their heroes know no more: bring in every person, place and past event plainly, saying who or what it is, before anyone leans on it. As the story opens, everyone believes what the plan says is believed; tell it that way. What the plan hides comes out only through its clues, and a successful roll wins a clue, in the plan's order: I tell you which one it brings. A clue is shown plainly enough that the players can tell what it points to, as the hero finds it and in your own words: the plan's notes are for you, and a clue not yet found is not hinted at. In the second half the clues turn the story, and by the end the players know the whole of it. A roll truly changes something: what a success wins stays won to the end, what a failure loses stays lost unless a later roll wins it back, and the ending is built on them. Invent only the detail that colours a scene, never a new secret, danger, object or power the plan does not hold, and nothing the ending turns on that the players have not already seen.
+      The story's plan is below, and only you know it. Add the detail it leaves out, but never go against it. The players know only what the story has shown them, and their heroes know no more: bring in every person, place and past event plainly, saying who or what it is, before anyone leans on it. As the story opens, everyone believes what the plan says is believed; tell it that way. What the plan hides comes out only through its clues, and a clue is won, in the plan's order, by a successful roll on a choice that leads to it: I tell you when. A clue is shown plainly enough that the players can tell what it points to, as the hero finds it and in your own words: the plan's notes are for you, and a clue not yet found is not hinted at. In the second half the clues turn the story, and by the end the players know the whole of it. A roll truly changes something: what a success wins stays won to the end, what a failure loses stays lost unless a later roll wins it back, and the ending is built on them. Invent only the detail that colours a scene, never a new secret, danger, object or power the plan does not hold, and nothing the ending turns on that the players have not already seen.
 
       Mara hid her son in the lighthouse to keep him from the press gang, then begged the village to search for him.
 
