@@ -710,6 +710,10 @@ tr:
       refills: "· %{date} yenilenir"
       exhausted: Aylık kullanımın bitti. %{date} %100'e döner; kodla bir odaya katılmak yine ücretsiz.
 
+  pwa:
+    manifest:
+      description: Zarları at, hikâyeni yaz.
+
   rolls:
     dice:
       difficulty: Zorluk

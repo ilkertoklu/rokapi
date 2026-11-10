@@ -691,6 +691,10 @@ en:
       refills: "· refills on %{date}"
       exhausted: Your monthly usage is spent. It is back to 100% on %{date}; joining a room with a code stays free.
 
+  pwa:
+    manifest:
+      description: Roll the dice, write your story.
+
   rolls:
     dice:
       difficulty: Difficulty
