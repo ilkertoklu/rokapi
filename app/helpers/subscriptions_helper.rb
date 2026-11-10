@@ -13,7 +13,7 @@ module SubscriptionsHelper
   end
 
   def subscription_ending?(subscription)
-    subscription.status == "canceled"
+    subscription.status.inquiry.canceled?
   end
 
   def subscription_status(subscription)

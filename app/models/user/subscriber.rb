@@ -24,6 +24,6 @@ module User::Subscriber
 
   private
     def paid_through?(subscription)
-      subscription.status == "canceled" && (subscription.ends_at || subscription.current_period_end)&.future?
+      subscription.status.inquiry.canceled? && (subscription.ends_at || subscription.current_period_end)&.future?
     end
 end
