@@ -52,6 +52,13 @@ class UserTest < ActiveSupport::TestCase
     assert_equal "Robin", user.name
   end
 
+  test "complete_profile needs a name" do
+    user = users(:incomplete)
+
+    assert_not user.complete_profile(name: "   ", terms: "1")
+    assert_not user.reload.profile_complete?
+  end
+
   test "complete_profile records no acceptance the terms did not get" do
     user = users(:incomplete)
 

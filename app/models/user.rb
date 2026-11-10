@@ -17,7 +17,7 @@ class User < ApplicationRecord
 
   validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
   validates :terms, acceptance: { allow_nil: false }, on: :signup
-  validates :name, presence: true, on: :settings
+  validates :name, presence: true, on: %i[ signup settings ]
 
   def send_login_code
     login_codes.delete_all

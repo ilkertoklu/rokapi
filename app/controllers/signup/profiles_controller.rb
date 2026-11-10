@@ -8,7 +8,7 @@ class Signup::ProfilesController < ApplicationController
     if Current.user.complete_profile(name: profile_params[:name], terms: profile_params[:terms])
       redirect_to signup_welcome_path
     else
-      redirect_to new_signup_profile_path, alert: t(".terms_required")
+      redirect_to new_signup_profile_path, alert: t(Current.user.errors.include?(:name) ? ".name_required" : ".terms_required")
     end
   end
 

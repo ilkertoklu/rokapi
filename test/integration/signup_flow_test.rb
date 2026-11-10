@@ -47,6 +47,16 @@ class SignupFlowTest < ActionDispatch::IntegrationTest
 
     post signup_profile_path, params: { user: { name: "Robin", terms: "0" } }
     assert_redirected_to new_signup_profile_path
+    assert_equal "You need to accept the terms to continue.", flash[:alert]
+    assert_not users(:incomplete).reload.profile_complete?
+  end
+
+  test "profile completion requires a name" do
+    sign_in_as users(:incomplete)
+
+    post signup_profile_path, params: { user: { name: "   ", terms: "1" } }
+    assert_redirected_to new_signup_profile_path
+    assert_equal "You need to enter your name to continue.", flash[:alert]
     assert_not users(:incomplete).reload.profile_complete?
   end
 

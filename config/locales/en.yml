@@ -755,6 +755,7 @@ en:
         terms_html: I agree to the <a href="#">Terms of Use</a> and the <a href="#">Privacy Policy</a>.
         submit: Get started
       create:
+        name_required: You need to enter your name to continue.
         terms_required: You need to accept the terms to continue.
     welcomes:
       show:

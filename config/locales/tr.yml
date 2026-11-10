@@ -774,6 +774,7 @@ tr:
         terms_html: <a href="#">Kullanım Koşulları</a> ve <a href="#">Gizlilik Politikası</a>'nı kabul ediyorum.
         submit: Başla
       create:
+        name_required: Devam etmek için adını yazmalısın.
         terms_required: Devam etmek için koşulları kabul etmelisin.
     welcomes:
       show:
