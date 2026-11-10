@@ -5,7 +5,7 @@
 
   <div class="sheet__panel" data-sheet-target="panel"
        data-action="pointerdown->sheet#grab pointermove->sheet#drag pointerup->sheet#release pointercancel->sheet#release touchmove->sheet#holdPage:!passive">
-    <button class="sheet__handle" autofocus data-action="sheet#close" aria-label="<%= t(".close") %>"><span class="grip"></span></button>
+    <button class="sheet__handle" autofocus data-sheet-target="handle" data-action="sheet#close" aria-label="<%= t(".close") %>"><span class="grip"></span></button>
 
     <header class="sheet__header">
       <span class="avatar"><%= character.initial %></span>

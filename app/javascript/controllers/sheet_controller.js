@@ -5,7 +5,7 @@ const CLOSING_SHARE = 1 / 3
 const CLOSING_SPEED = 0.5
 
 export default class extends Controller {
-  static targets = [ "sheet", "scrim", "panel" ]
+  static targets = [ "sheet", "scrim", "panel", "handle" ]
   static outlets = [ "stage" ]
 
   #drag = null
@@ -90,7 +90,7 @@ export default class extends Controller {
   }
 
   #canDragFrom(event) {
-    return event.target.closest(".sheet__handle") || (event.pointerType !== "mouse" && this.panelTarget.scrollTop <= 0)
+    return this.handleTarget.contains(event.target) || (event.pointerType !== "mouse" && this.panelTarget.scrollTop <= 0)
   }
 
   #decide(event) {
