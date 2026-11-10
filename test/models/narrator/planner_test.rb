@@ -26,7 +26,7 @@ class Narrator::PlannerTest < ActiveSupport::TestCase
     assert_not_includes planner["system"], "latest stories"
 
     GameSession.create!(creator: users(:ilker), card: "lighthouse_rock called_debt hiding_apprentice",
-      plan: "**Question:** Will the debt be paid?\n\n**Opening:** A storm.\n\n**Hidden:** The keeper slept and the light went out.")
+      plan: "**Question:** Will the debt be paid?\n\n**Opening:** A storm.\n\n**Believed:** The sea took the light.\n\n**Hidden:** The keeper slept and the light went out.\n\n**People:**\n- Edda")
     planner, _ = stub_understudy(*PLANNING) { Narrator::Planner.for(@game_session).plan }
     assert_includes planner["system"], "The players' latest stories hid these pasts:\n- The keeper slept and the light went out.\nTell a story unlike them.\n\nWrite the plan"
   end

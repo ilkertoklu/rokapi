@@ -100,9 +100,11 @@ class GameSessionTest < ActiveSupport::TestCase
   end
 
   test "the latest pasts are what the creator's latest plans hid, newest first" do
-    [ "The smith fouled the well.", "Mara hid her son.", "The keeper slept and the light went out." ].each do |hidden|
+    GameSession.create!(creator: users(:sevval), card: "lighthouse_rock called_debt hiding_apprentice",
+      plan: "**Question:** Will the debt be paid?\n\n**Opening:** A storm.\n\n**Hidden:** The smith fouled the well.\nNobody knows.\n\n**People:**\n- Edda")
+    [ "Mara hid her son.", "The keeper slept and the light went out." ].each do |hidden|
       GameSession.create!(creator: users(:sevval), card: "lighthouse_rock called_debt hiding_apprentice",
-        plan: "**Question:** Will the debt be paid?\n\n**Opening:** A storm.\n\n**Hidden:** #{hidden}\nNobody knows.\n\n**People:**\n- Edda")
+        plan: "**Question:** Will the debt be paid?\n\n**Opening:** A storm.\n\n**Believed:** The sea took the light.\n\n**Hidden:** #{hidden}\nNobody knows.\n\n**People:**\n- Edda\n\n**Clues:**\n1. A cold lamp.")
     end
     GameSession.create!(creator: users(:ilker), card: "lighthouse_rock called_debt hiding_apprentice", plan: "**Question:** ?\n\n**Opening:** .\n\n**Hidden:** Someone else's.")
     game_session = GameSession.create!(creator: users(:sevval), card: "lighthouse_rock called_debt hiding_apprentice")

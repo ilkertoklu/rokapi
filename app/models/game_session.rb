@@ -152,7 +152,7 @@ class GameSession < ApplicationRecord
   end
 
   def latest_pasts
-    latest_plans.filter_map { it.split(/\n\s*\n/).third&.sub(/\A[^:\n]*:\**/, "")&.squish.presence }
+    latest_plans.filter_map { hidden_past_in(it) }
   end
 
   def plan_story
@@ -207,6 +207,11 @@ class GameSession < ApplicationRecord
 
     def latest_plans
       creator ? creator.created_game_sessions.excluding(self).where.not(plan: nil).latest.pluck(:plan) : []
+    end
+
+    def hidden_past_in(plan)
+      hidden, _people = plan.split(/\n\s*\n/).each_cons(2).find { |_, following| following.match?(/^- /) }
+      hidden&.sub(/\A[^:\n]*:\**/, "")&.squish.presence
     end
 
     def draw_twist
