@@ -16,7 +16,7 @@
       <dt><%= t(".bonus") %></dt>
       <dd class="dice__bonus">
         <%= choice.stat_label %> <%= choice.stat_value %>
-        <span class="arrow">→</span>
+        <span class="arrow" aria-hidden="true">→</span>
         <span class="modifier"><%= signed_number(choice.modifier) %></span>
       </dd>
     </div>
@@ -25,7 +25,7 @@
         <dt><%= t(".status") %></dt>
         <dd class="dice__bonus">
           <%= status.name %>
-          <span class="arrow">→</span>
+          <span class="arrow" aria-hidden="true">→</span>
           <%= tag.span signed_number(status.modifier), class: [ "modifier", "modifier--negative": status.modifier.negative? ] %>
         </dd>
       </div>

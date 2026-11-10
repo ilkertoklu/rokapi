@@ -7,7 +7,7 @@
     <div class="vitals__row">
       <span class="vitals__label"><%= render "glyph", name: "heart" %> <%= t(".health") %></span>
       <span class="vitals__count">
-        <%= character.hp - restored %> <span>→</span> <%= character.hp %> <span>/ <%= character.max_hp %></span>
+        <%= character.hp - restored %> <span aria-hidden="true">→</span> <%= character.hp %> <span>/ <%= character.max_hp %></span>
       </span>
     </div>
     <div class="vitals__track">

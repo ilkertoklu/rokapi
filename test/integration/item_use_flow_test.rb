@@ -16,6 +16,8 @@ class ItemUseFlowTest < ActionDispatch::IntegrationTest
 
     assert_select ".character-button__hint", text: "1 item ready"
     assert_select ".inventory__name", text: "Healing potion"
+    assert_select ".inventory__count[aria-hidden=true]", text: "×1"
+    assert_select ".inventory__row .visually-hidden", text: "1 use left"
     assert_select ".inventory__badge", text: "Quest item"
     assert_select ".statuses", count: 0
   end

@@ -413,6 +413,9 @@ en:
       instant: Instant · %{effect} Health
       passive: Passive · %{description}
       quest_item: Quest item
+      uses_left:
+        one: "%{count} use left"
+        other: "%{count} uses left"
       use: Use
       abilities: Abilities
       back_home: Back to home

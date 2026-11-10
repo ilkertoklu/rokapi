@@ -432,6 +432,9 @@ tr:
       instant: Anında · %{effect} Can
       passive: Pasif · %{description}
       quest_item: Görev eşyası
+      uses_left:
+        one: "%{count} kullanım kaldı"
+        other: "%{count} kullanım kaldı"
       use: Kullan
       abilities: Temel özellikler
       back_home: Ana ekrana dön
