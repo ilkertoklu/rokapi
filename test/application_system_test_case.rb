@@ -35,12 +35,16 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
 
     def tab_to(selector, **options)
       assert_selector selector, visible: :all, **options
-      send_keys :tab
+      press :tab
       first_stop = page.active_element
 
       until has_selector?("#{selector}:focus", visible: :all, wait: 0, **options)
-        send_keys :tab
+        press :tab
         flunk "Tabbed past #{selector}" if page.active_element == first_stop
       end
+    end
+
+    def press(key)
+      page.driver.browser.action.send_keys(key).perform
     end
 end

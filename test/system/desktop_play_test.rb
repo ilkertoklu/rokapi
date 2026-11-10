@@ -126,7 +126,7 @@ class DesktopPlayTest < ApplicationSystemTestCase
     tab_to "button[aria-label='Raise Wisdom']"
     2.times { send_keys :enter }
     assert_selector "button[aria-keyshortcuts=Enter]:not(:disabled)", text: "I'm ready"
-    send_keys :enter
+    press :enter
     assert_text "The narrator is getting ready"
 
     game_session = users(:ilker).game_sessions.order(:id).last
