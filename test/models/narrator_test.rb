@@ -4,6 +4,15 @@ require "turbo/broadcastable/test_helper"
 class NarratorTest < ActiveSupport::TestCase
   include Turbo::Broadcastable::TestHelper
 
+  CLUES_PLAN = <<~PLAN
+    Hidden: Mara hid her son in the lighthouse to keep him from the press gang.
+
+    Clues:
+    1. Mara's shawl hangs on the lighthouse door.
+    2. The boy's boots stand dry under the stairs.
+    3. The press gang's list carries the boy's name.
+  PLAN
+
   setup do
     @game_session = game_sessions(:ilker_solo)
     @game_session.advance
@@ -104,7 +113,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert request["prompt"].end_with?(<<~CUE)
 
 
-      In scene 1 of 7, the story's first half, Ilker chose "#{roll.choice.label}": die 2, modifier #{format("%+d", roll.modifier)}, statuses +0, total #{roll.total} against #{roll.target}. #{roll.grade_label}, margin #{format("%+d", roll.margin)}. It does not work, and that costs something within the plan: time, someone's trust or health. The story still moves on, not in a new direction and not back for a second try: if a clue is left, Ilker comes by it anyway, late or at that cost (none found so far). Show the clue plainly and add "clue": its number to the block. Keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left.
+      In scene 1 of 7, the story's first half, Ilker chose "#{roll.choice.label}": die 2, modifier #{format("%+d", roll.modifier)}, statuses +0, total #{roll.total} against #{roll.target}. #{roll.grade_label}, margin #{format("%+d", roll.margin)}. It does not work, and Ilker pays with something that stays lost unless a later roll wins it back: one of the things the plan puts at stake, someone's trust or a way now closed. A hurt alone is not the price, no one steps in to help and nothing turns up by luck. Ilker learns nothing of what the plan hides from it: no clue is handed over. The story moves on from there, not back for a second try. Add "mark" to the block: one short sentence in English naming what this roll changed for good. Keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left.
       Used since the scene began, already applied: Healing potion (+7 health).
       Ilker now: 31/31 health; carries Longsword, Inn ledger (quest item); no statuses.
       Tell only what this roll does, in a paragraph or two, and stop there: the next scene comes in my next message.
@@ -117,30 +126,96 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
 
     assert_equal :narrow, roll.grade
-    assert_includes request["prompt"], "margin +0. It works, but not for free: it costs Ilker something on the way. It hands Ilker a clue"
+    assert_includes request["prompt"], %(margin +0. It works, but not for free: it costs Ilker something on the way. What it wins stays won to the end. Add "mark")
   end
 
-  test "a roll before the last hands over a clue the story has not found yet" do
+  test "a success before the last wins the plan's next clue in order" do
+    @game_session.update! plan: CLUES_PLAN
     roll = play_first_scene(die: 15)
 
     request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
 
     assert_equal :solid, roll.grade
-    assert_includes request["prompt"], %(margin +4. It hands Ilker a clue from the plan not found yet, if one is left (none found so far). Show the clue plainly and add "clue": its number to the block. Keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left.\n)
+    assert_includes request["prompt"], %(margin +4. It works. What it wins stays won to the end. It also hands Ilker clue 1 of the plan (none found so far): show it plainly, as this attempt would come by it. Add "mark" to the block: one short sentence in English naming what this roll changed for good. Keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left.\n)
+  end
+
+  test "a failure before the last hands over no clue and costs something lasting" do
+    @game_session.update! plan: CLUES_PLAN
+    roll = play_first_scene
+
+    request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
+
+    assert_not roll.success?
+    assert_includes request["prompt"], "margin -9. It does not work, and Ilker pays with something that stays lost unless a later roll wins it back"
+    assert_includes request["prompt"], %(no clue is handed over. The story moves on from there, not back for a second try. Add "mark")
+    assert_not_includes request["prompt"], "It also hands Ilker clue"
+    assert_not_includes request["prompt"], %("clue":)
+  end
+
+  test "a success wins no clue from a plan that numbers none" do
+    roll = play_first_scene(die: 15)
+
+    request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
+
+    assert_includes request["prompt"], %(margin +4. It works. What it wins stays won to the end. Add "mark")
+    assert_not_includes request["prompt"], "It also hands Ilker clue"
   end
 
   test "the clues found so far are named in every later scene and roll" do
-    roll = play_first_scene
-    stub_understudy(OUTCOME_RESPONSE.sub('{"hp": -4}', '{"hp": -4, "clue": 2}')) { roll.narrate }
+    @game_session.update! plan: CLUES_PLAN
+    roll = play_first_scene(die: 15)
+    resolve roll
     roll.acknowledge
 
     scene = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
     later = with_die(15) { choose_and_roll @game_session.current_scene }
     outcome = stub_understudy(OUTCOME_RESPONSE) { later.narrate }.sole
 
-    assert_equal [ 2 ], @game_session.clues_found
-    assert_includes scene["prompt"], "\n\nScene 2 of 7, the story's first half, Ilker's turn. Pick up where the last outcome stopped, without retelling it, and keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left. Clues found so far: 2. The heroes do only"
-    assert_includes outcome["prompt"], "It hands Ilker a clue from the plan not found yet, if one is left (found so far: 2)."
+    assert_equal [ 1 ], @game_session.clues_found
+    assert_includes scene["prompt"], "\n\nScene 2 of 7, the story's first half, Ilker's turn. Pick up where the last outcome stopped, without retelling it, and keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left. Clues found so far: 1. The heroes do only"
+    assert_includes outcome["prompt"], %(It also hands Ilker clue 2 of the plan (found so far: 1): show it plainly, as this attempt would come by it.)
+  end
+
+  test "what a roll changed for good is kept and named in every later scene and roll" do
+    roll = play_first_scene(die: 15)
+    stub_understudy(OUTCOME_RESPONSE.sub('{"hp": -4}', '{"mark": "The innkeeper trusts Ilker with the ledger."}')) { roll.narrate }
+    roll.acknowledge
+
+    scene = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
+    later = choose_and_roll @game_session.current_scene
+    outcome = stub_understudy(OUTCOME_RESPONSE) { later.narrate }.sole
+
+    assert_equal [ "The innkeeper trusts Ilker with the ledger." ], @game_session.marks
+    assert_includes scene["prompt"], "No clue found yet. What the rolls have changed so far, and it stays so: The innkeeper trusts Ilker with the ledger. The heroes do only"
+    assert_includes outcome["prompt"], "how much time is left.\nWhat the rolls have changed so far, and it stays so: The innkeeper trusts Ilker with the ledger.\nIlker now: "
+  end
+
+  test "a clue the rolls are too late to win is shown by the trouble itself and counts as found" do
+    @game_session.update! plan: CLUES_PLAN
+    @game_session.current_scene.update! position: 4
+
+    scene = stub_understudy(SCENE_RESPONSE) { narrate }.sole
+
+    assert_includes scene["prompt"], "No clue found yet. The story cannot wait for clue 1 any longer: the trouble moves on by itself in this scene, taking something the plan puts at stake, and what it does shows that clue plainly. The heroes do only"
+    assert_equal 1, @game_session.current_scene.effects["clue"]
+    assert_equal [ 1 ], @game_session.reload.clues_found
+
+    roll = with_die(15) { choose_and_roll @game_session.current_scene }
+    outcome = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
+
+    assert_includes outcome["prompt"], "It also hands Ilker clue 2 of the plan (found so far: 1)"
+    assert_equal [ 1, 2 ], @game_session.reload.clues_found
+  end
+
+  test "a scene with rolls enough left to win the clues waits for them" do
+    @game_session.update! plan: CLUES_PLAN
+    @game_session.current_scene.update! position: 3
+
+    scene = stub_understudy(SCENE_RESPONSE) { narrate }.sole
+
+    assert_not_includes scene["prompt"], "The story cannot wait"
+    assert_not @game_session.current_scene.effects.key?("clue")
+    assert_empty @game_session.reload.clues_found
   end
 
   test "the roll before the last scene leaves the ending to it" do
@@ -158,7 +233,7 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
     assert request["prompt"].start_with?("Scene 7 of 7, the story's last scene, Ilker's turn.")
-    assert_includes request["prompt"], "the fork goes into the choices. Bring the story to the moment that decides it: the roll on the choice made here ends it.\n"
+    assert_includes request["prompt"], "the fork goes into the choices, and what a way not taken would have won does not turn up by itself. Bring the story to the moment that decides it: the roll on the choice made here ends it.\n"
     assert @game_session.current_scene.choosing?
     assert_equal 3, @game_session.current_scene.choices.count
     assert_not @game_session.reload.finished?
@@ -170,8 +245,26 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(ENDING_RESPONSE.sub("victory", "defeat")) { roll.narrate }.sole
 
     assert_includes request["prompt"], "\nIn scene 7 of 7, the story's last scene, Ilker chose "
-    assert_not_includes request["prompt"], "Show the clue plainly"
-    assert request["prompt"].end_with?(%(\nThis is the last roll, and the story ends with it. So far Ilker tried "Read the dusty ledger" (failed). Victory or defeat is the story's to decide: weigh what the heroes found and did, this roll as one among the rest, against the plan's endings, and give the ending they have earned. Tell what this roll does, then how the story ends, with only what the story has shown: the ending rests on why it all happened, as the clues showed it; what the heroes never found stays unsaid, and no one explains it. A roll that succeeds here gets the heroes what they reached for; one that fails costs them something, but does not undo what the rolls before it won. The heroes settle the question with what they did, and make no move the players did not choose; the others go on as they want and fear, and no one steps in to win or lose it for them. The block adds "outcome": "victory" or "defeat".\n))
+    assert_no_match(/"clue"|"mark"|no clue is handed over/, request["prompt"])
+    assert request["prompt"].end_with?(%(\nThis is the last roll, and the story ends with it. So far Ilker tried "Read the dusty ledger" (failed). Victory or defeat is the story's to decide: weigh what the heroes found and did, this roll as one among the rest, against the plan's endings, and give the ending they have earned. Tell what this roll does, then how the story ends, with only what the story has shown: the ending rests on why it all happened, as the clues showed it; what the heroes never found stays unsaid, and no one explains it. A roll that succeeds here gets the heroes what they reached for; one that fails costs them something, but does not undo what the rolls before it won. The heroes settle the question with what they did, and make no move the players did not choose; the others go on as they want and fear, and no one steps in to win or lose it for them. Tell it as scenes the hero sees and hears, to the last line: the reckoning happens on the page, not in a summary, and no one says what the story meant. The block adds "outcome": "victory" or "defeat".\n))
+  end
+
+  test "the ending shows what the rolls changed" do
+    @game_session.update! plan: CLUES_PLAN
+    earlier = play_first_scene(die: 15)
+    stub_understudy(OUTCOME_RESPONSE.sub('{"hp": -4}', '{"mark": "The innkeeper trusts Ilker with the ledger."}')) { earlier.narrate }
+    earlier.acknowledge
+    @game_session.current_scene.update! position: @game_session.scene_budget
+    stub_understudy(SECOND_SCENE_RESPONSE) { narrate }
+    roll = with_die(15) { choose_and_roll @game_session.current_scene }
+
+    request = stub_understudy(ENDING_RESPONSE) { roll.narrate }.sole
+    cue = request["prompt"].split("</conversation_so_far>").last
+
+    assert roll.success?
+    assert_includes cue, "SUCCESS, margin +4. Keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left.\nWhat the rolls have changed so far, and it stays so: The innkeeper trusts Ilker with the ledger.\n"
+    assert_includes cue, "but does not undo what the rolls before it won. Everything the rolls changed shows in the ending: what was won is there to be used and people act on it, what was lost and never won back is missing. The heroes settle the question"
+    assert_no_match(/"clue"|"mark"/, cue)
   end
 
   test "the scene and the roll in the middle of the story say so" do
@@ -193,7 +286,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
 
-    assert request["prompt"].include?("\n\nScene 2 of 7, the story's first half, Ilker's turn. Pick up where the last outcome stopped, without retelling it, and keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left. No clue found yet. The heroes do only what the players chose: where the way forks, the fork goes into the choices.\nIlker, human warrior (background: soldier): ")
+    assert request["prompt"].include?("\n\nScene 2 of 7, the story's first half, Ilker's turn. Pick up where the last outcome stopped, without retelling it, and keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left. No clue found yet. The heroes do only what the players chose: where the way forks, the fork goes into the choices, and what a way not taken would have won does not turn up by itself.\nIlker, human warrior (background: soldier): ")
   end
 
   test "statuses weigh on the roll and wear off with it" do
@@ -214,6 +307,15 @@ class NarratorTest < ActiveSupport::TestCase
 
     assert_includes request["prompt"], "statuses -2, total #{roll.total}"
     assert_empty character.status_effects.reload, "a one-turn status must not outlive its roll"
+  end
+
+  test "a choice's difficulty word sets the target to roll against" do
+    worded = SCENE_RESPONSE.sub('"difficulty": 10', '"difficulty": "easy"').sub('"difficulty": 14', '"difficulty": "hard"').sub('"difficulty": 12', '"difficulty": "medium"')
+
+    stub_understudy(worded) { narrate }
+
+    assert_equal [ 7, 13, 10 ], @game_session.current_scene.choices.order(:id).pluck(:target)
+    assert_equal %w[easy hard medium], @game_session.current_scene.choices.order(:id).map(&:difficulty)
   end
 
   test "choices may share a stat, number two, and have their difficulty kept in range" do
@@ -348,7 +450,7 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
 
     assert_equal 2 * 8, request["prompt"].scan(/^<(user|assistant)>$/).size
-    assert request["prompt"].include?("\n\nScene 5 of 7, the story's second half, Ilker's turn. Pick up where the last outcome stopped, without retelling it, and keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left. No clue found yet. The heroes do only what the players chose: where the way forks, the fork goes into the choices.\nIlker, human warrior (background: soldier): ")
+    assert request["prompt"].include?("\n\nScene 5 of 7, the story's second half, Ilker's turn. Pick up where the last outcome stopped, without retelling it, and keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left. No clue found yet. The heroes do only what the players chose: where the way forks, the fork goes into the choices, and what a way not taken would have won does not turn up by itself.\nIlker, human warrior (background: soldier): ")
   end
 
   test "a turn the provider never answered is answered on the next attempt" do
@@ -368,7 +470,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     assert_includes request["system"], "Tell the story in English"
     assert_equal <<~GAME, request["system"][/^The story's plan .*?\n(?=\nBe the game master)/m]
-      The story's plan is below, and only you know it. Add the detail it leaves out, but never go against it. The players know only what the story has shown them, and their heroes know no more: bring in every person, place and past event plainly, saying who or what it is, before anyone leans on it. What the plan hides comes out through its clues: every roll hands the players one they have not found, a success freely and a failure late or at a cost, shown plainly enough that they can tell what it points to, as the hero finds it and in your own words: the plan's notes are for you, and a clue not yet found is not hinted at. In the second half the clues turn the story, and by the end the players know the whole of it. What a success wins stays won. Invent only the detail that colours a scene, never a new secret, danger, object or power the plan does not hold, and nothing the ending turns on that the players have not already seen.
+      The story's plan is below, and only you know it. Add the detail it leaves out, but never go against it. The players know only what the story has shown them, and their heroes know no more: bring in every person, place and past event plainly, saying who or what it is, before anyone leans on it. As the story opens, everyone believes what the plan says is believed; tell it that way. What the plan hides comes out only through its clues, and a successful roll wins a clue, in the plan's order: I tell you which one it brings. A clue is shown plainly enough that the players can tell what it points to, as the hero finds it and in your own words: the plan's notes are for you, and a clue not yet found is not hinted at. In the second half the clues turn the story, and by the end the players know the whole of it. A roll truly changes something: what a success wins stays won to the end, what a failure loses stays lost unless a later roll wins it back, and the ending is built on them. Invent only the detail that colours a scene, never a new secret, danger, object or power the plan does not hold, and nothing the ending turns on that the players have not already seen.
 
       Mara hid her son in the lighthouse to keep him from the press gang, then begged the village to search for him.
 
@@ -436,6 +538,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     assert_includes request["prompt"], %(So far Ilker tried "Read the dusty ledger" (failed); Deniz tried nothing. Victory or defeat)
     assert_includes request["prompt"], %(The heroes settle the question with what they did, each with a part in it, and make no move the players did not choose;)
+    assert_includes request["prompt"], "Tell it as scenes the heroes see and hear, to the last line"
   end
 
   test "a roll that leaves the hero standing before the last scene does not end the story" do
@@ -656,7 +759,7 @@ class NarratorTest < ActiveSupport::TestCase
 
   private
     def opening
-      "Scene 1 of 7, the story's first half, Ilker's turn. This is the opening, as the plan's opening has it: show where Ilker is and why, who is there and who they are, and end on the trouble landing on Ilker, so the reader knows what is at stake. Reveal nothing of what the plan hides.\n#{sheet}"
+      "Scene 1 of 7, the story's first half, Ilker's turn. This is the opening, as the plan's opening has it: show where Ilker is and why, who is there and who they are, and end on the trouble landing on Ilker, so the reader knows what is at stake. Reveal nothing of what the plan hides: the people there believe what the plan says is believed, and no one's look or manner gives the hidden part away.\n#{sheet}"
     end
 
     def sheet(hp: 31)

@@ -73,7 +73,7 @@ class Roll < ApplicationRecord
     transaction do
       ending = ending_with(effects)
 
-      update! resolution: resolution, effects: bounded(effects.to_h).merge(effects.to_h.slice("clue"))
+      update! resolution: resolution, effects: bounded(effects.to_h).merge(effects.to_h.slice("mark"), { "clue" => clue_won }.compact)
       character.status_effects.each(&:tick)
       apply_effects
       scene.conclude ending if ending
@@ -86,6 +86,10 @@ class Roll < ApplicationRecord
     elsif scene.last?
       effects.to_h["outcome"].presence_in(%w[ victory defeat ])
     end
+  end
+
+  def clue_won
+    scene.game_session.next_clue if success? && !scene.last?
   end
 
   def life_at_stake?

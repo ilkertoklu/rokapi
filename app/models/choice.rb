@@ -1,5 +1,6 @@
 class Choice < ApplicationRecord
-  DIFFICULTY = 8..19
+  DIFFICULTY = 5..19
+  TARGETS = { "easy" => 7, "medium" => 10, "hard" => 13 }.freeze
 
   belongs_to :scene
 
@@ -7,14 +8,18 @@ class Choice < ApplicationRecord
 
   normalizes :target, with: ->(target) { target.clamp(DIFFICULTY) }
 
+  def self.target_for(difficulty)
+    TARGETS.fetch(difficulty.to_s.strip.downcase) { Integer(difficulty, exception: false) || TARGETS.fetch("medium") }
+  end
+
   scope :chosen, -> { where.not(chosen_at: nil) }
 
   def stat_value
     scene.active_player.character.stats.fetch(stat)
   end
 
-  def easy? = target <= 11
-  def hard? = target >= 16
+  def easy? = target < TARGETS.fetch("medium")
+  def hard? = target >= TARGETS.fetch("hard")
 
   def difficulty
     case

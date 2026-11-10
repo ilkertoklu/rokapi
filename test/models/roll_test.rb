@@ -1,6 +1,8 @@
 require "test_helper"
 
 class RollTest < ActiveSupport::TestCase
+  CLUES_PLAN = "Clues:\n1. Mara's shawl hangs on the lighthouse door.\n2. The boy's boots stand dry.\n3. The press gang's list carries his name."
+
   setup do
     @scene = game_sessions(:ilker_solo).scenes.create! position: 1,
       active_player: players(:ilker_solo_host), state: :choosing, title: "Trial"
@@ -173,15 +175,43 @@ class RollTest < ActiveSupport::TestCase
     assert_equal "frayed", Item.find_by!(name: "Rope").description
   end
 
-  test "a roll keeps the clue its reply names" do
+  test "a roll records the clue its success won, whatever the reply says" do
+    game_sessions(:ilker_solo).update! plan: CLUES_PLAN
+
     found = roll_with(value: 15, target: 12)
-    found.resolve resolution: "Mara's shawl hangs on the lighthouse door.", effects: { "clue" => 2 }
+    found.resolve resolution: "Mara's shawl hangs on the lighthouse door.", effects: { "clue" => 3 }
 
-    missed = roll_with(value: 15, target: 12)
-    missed.resolve resolution: "The beach is empty.", effects: {}
+    missed = roll_with(value: 5, target: 12)
+    missed.resolve resolution: "The beach is empty.", effects: { "clue" => 2 }
 
-    assert_equal 2, found.reload.effects["clue"]
+    later = roll_with(value: 15, target: 12)
+    later.resolve resolution: "The boots under the stairs are dry.", effects: {}
+
+    assert_equal 1, found.reload.effects["clue"]
     assert_not missed.reload.effects.key?("clue")
+    assert_equal 2, later.reload.effects["clue"]
+  end
+
+  test "a roll wins no clue from a plan that numbers none, nor in the last scene" do
+    unnumbered = roll_with(value: 15, target: 12)
+    unnumbered.resolve resolution: "The beach is empty.", effects: { "clue" => 1 }
+
+    game_sessions(:ilker_solo).update! plan: CLUES_PLAN
+    @scene.update! position: game_sessions(:ilker_solo).scene_budget
+
+    assert_not unnumbered.reload.effects.key?("clue")
+    assert_nil roll_with(value: 15, target: 12).clue_won
+  end
+
+  test "a roll keeps what its reply says it changed for good" do
+    marked = roll_with(value: 15, target: 12)
+    marked.resolve resolution: "The keeper hands you the lamp room key.", effects: { "mark" => "The keeper trusts Ilker with the lamp room." }
+
+    unmarked = roll_with(value: 15, target: 12)
+    unmarked.resolve resolution: "The beach is empty.", effects: {}
+
+    assert_equal "The keeper trusts Ilker with the lamp room.", marked.reload.effects["mark"]
+    assert_not unmarked.reload.effects.key?("mark")
   end
 
   private

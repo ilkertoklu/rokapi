@@ -273,16 +273,97 @@ class GameSessionTest < ActiveSupport::TestCase
     assert_equal [ host, deniz, sevval, host, deniz, sevval, host ], room.scenes.chronological.map(&:active_player)
   end
 
-  test "the clues found are the numbered ones the rolls handed over, each once and in order" do
+  test "the clues found are the ones the successes won, in the plan's order" do
     game_session = game_sessions(:ilker_solo)
+    game_session.update! plan: "Clues:\n1. Mara's shawl hangs on the lighthouse door.\n2. The boy's boots stand dry.\n3. The press gang's list carries his name."
 
-    [ 3, nil, "1", "the boot", 3 ].each.with_index(1) do |clue, position|
-      scene = game_session.scenes.create!(position: position, active_player: game_session.host, state: :played)
-      roll = scene.choices.create!(label: "Press on", stat: "strength", modifier: 0, target: 11).create_roll!(player: game_session.host, value: 15)
-      roll.resolve resolution: "You press on.", effects: { "clue" => clue }.compact
+    [ 15, 2, 15 ].each.with_index(1) do |die, position|
+      roll_in(game_session, position: position, value: die).resolve resolution: "You press on.", effects: {}
     end
 
-    assert_equal [ 1, 3 ], game_session.clues_found
+    assert_equal [ 1, 2 ], game_session.reload.clues_found
+  end
+
+  test "the clues found leave out what is not a clue's number, and count each once" do
+    game_session = game_sessions(:ilker_solo)
+
+    [ 3, nil, "1", "the boot", 0, 3 ].each.with_index(1) do |clue, position|
+      roll_in(game_session, position: position).update! effects: { "clue" => clue }.compact
+    end
+
+    assert_equal [ 1, 3 ], game_session.reload.clues_found
+  end
+
+  test "the next clue is the first of the plan's numbered ones not found yet" do
+    game_session = game_sessions(:ilker_solo)
+    game_session.update! plan: "Hidden: Mara hid her son.\n\nClues:\n1. Mara's shawl hangs on the lighthouse door.\n2) The boy's boots stand dry.\n- 3. The press gang's list carries his name."
+
+    assert_equal 1, game_session.next_clue
+    assert_equal 3, game_session.clues_left
+
+    roll_in(game_session, position: 1).resolve resolution: "You press on.", effects: {}
+    game_session.reload
+
+    assert_equal 2, game_session.next_clue
+    assert_equal 2, game_session.clues_left
+
+    roll_in(game_session, position: 2, value: 2).resolve resolution: "You slip.", effects: {}
+    game_session.reload
+
+    assert_equal 2, game_session.next_clue
+    assert_equal 2, game_session.clues_left
+
+    roll_in(game_session, position: 3).resolve resolution: "You press on.", effects: {}
+    roll_in(game_session, position: 4).resolve resolution: "You press on.", effects: {}
+    game_session.reload
+
+    assert_nil game_session.next_clue
+    assert_equal 0, game_session.clues_left
+  end
+
+  test "a plan without numbered clues has no next clue and none left" do
+    game_session = game_sessions(:ilker_solo)
+
+    assert_nil game_session.next_clue
+    assert_equal 0, game_session.clues_left
+
+    roll_in(game_session, position: 1).resolve resolution: "You press on.", effects: {}
+    game_session.reload
+
+    assert_nil game_session.next_clue
+    assert_equal 0, game_session.clues_left
+
+    game_session.update! plan: nil
+
+    assert_nil game_session.next_clue
+    assert_equal 0, game_session.clues_left
+  end
+
+  test "a clue is overdue once the scenes left are no more than the clues left, and the scene that shows it counts it as found" do
+    game_session = game_sessions(:ilker_solo)
+    game_session.update! plan: "Clues:\n1. Mara's shawl hangs on the lighthouse door.\n2. The boy's boots stand dry.\n3. The press gang's list carries his name."
+    scenes = (1..game_session.scene_budget).index_with { game_session.scenes.create!(position: it, active_player: game_session.host) }
+
+    assert_equal [ 4, 5, 6 ], scenes.select { |_, scene| scene.clue_overdue? }.keys
+
+    scenes[3].write narration: "The tide is still out.", effects: {}
+    scenes[4].write narration: "The press gang rows in.", effects: {}
+
+    assert_not scenes[3].effects.key?("clue")
+    assert_equal 1, scenes[4].effects["clue"]
+    assert_equal [ 1 ], game_session.reload.clues_found
+    assert_equal 2, game_session.next_clue
+    assert_equal 2, game_session.clues_left
+  end
+
+  test "the marks are what the rolls changed for good, in the order they were rolled" do
+    game_session = game_sessions(:ilker_solo)
+
+    [ "The keeper trusts Ilker.", nil, "", "The boat is gone." ].each.with_index(1) do |mark, position|
+      roll_in(game_session, position: position).resolve resolution: "You press on.", effects: { "mark" => mark }.compact
+    end
+
+    assert_equal [ "The keeper trusts Ilker.", "The boat is gone." ], game_session.reload.marks
   end
 
   test "solo play stays with the host every scene" do
@@ -335,6 +416,11 @@ class GameSessionTest < ActiveSupport::TestCase
         room.players.each { it.ready_up(character_attributes) }
         room.update! started_at: 1.hour.ago, ended_at: Time.current
       end
+    end
+
+    def roll_in(game_session, position:, value: 15)
+      scene = game_session.scenes.create!(position: position, active_player: game_session.host, state: :played)
+      scene.choices.create!(label: "Press on", stat: "strength", modifier: 0, target: 11).create_roll!(player: game_session.host, value: value)
     end
 
     def create_room

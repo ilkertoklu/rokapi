@@ -22,9 +22,26 @@ class ChoiceTest < ActiveSupport::TestCase
   end
 
   test "the target label follows the target" do
-    assert_equal "easy", Choice.new(target: 10).difficulty
+    assert_equal "easy", Choice.new(target: 9).difficulty
+    assert_equal "medium", Choice.new(target: 10).difficulty
     assert_equal "medium", Choice.new(target: 12).difficulty
-    assert_equal "hard", Choice.new(target: 16).difficulty
+    assert_equal "hard", Choice.new(target: 13).difficulty
+  end
+
+  test "a difficulty word names its target, and a number is its own" do
+    assert_equal [ 7, 10, 13 ], %w[easy medium hard].map { Choice.target_for it }
+    assert_equal %w[easy medium hard], %w[easy medium hard].map { Choice.new(target: Choice.target_for(it)).difficulty }
+    assert_equal 14, Choice.target_for(14)
+    assert_equal 12, Choice.target_for("12")
+  end
+
+  test "a difficulty word is read whatever its case and spacing, and an unknown one is medium" do
+    assert_equal [ 7, 10, 13 ], [ "Easy", "MEDIUM", " hard\n" ].map { Choice.target_for it }
+    assert_equal [ 10, 10, 10, 10 ], [ "moderate", "", nil, "12 or so" ].map { Choice.target_for it }
+  end
+
+  test "a target is kept within the range a hero can roll" do
+    assert_equal [ 5, 19 ], [ 2, 25 ].map { Choice.new(target: it).target }
   end
 
   test "the dice are rolled once, on the chosen choice of a rolling scene" do

@@ -18,7 +18,7 @@ class Scene < ApplicationRecord
 
   def write(narration:, effects:, **attributes)
     transaction do
-      update! narration: narration, effects: bounded(effects.to_h), **attributes
+      update! narration: narration, effects: bounded(effects.to_h).merge({ "clue" => (game_session.next_clue if clue_overdue?) }.compact), **attributes
       apply_effects
     end
   end
@@ -48,6 +48,10 @@ class Scene < ApplicationRecord
 
   def last?
     position >= game_session.scene_budget
+  end
+
+  def clue_overdue?
+    !first? && !last? && game_session.clues_left >= game_session.scene_budget - position
   end
 
   def conclude(outcome)

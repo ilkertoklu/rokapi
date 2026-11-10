@@ -114,7 +114,7 @@ class Narrator < RubyLLM::Agent
 
         data["choices"].each do |choice|
           scene.choices.create! label: choice["label"], stat: choice["stat"], modifier: scene.active_player.character.bonus_for(choice["stat"]),
-            target: choice["difficulty"].to_i
+            target: Choice.target_for(choice["difficulty"])
         end
       end
     end
