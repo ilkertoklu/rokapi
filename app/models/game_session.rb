@@ -158,6 +158,10 @@ class GameSession < ApplicationRecord
     ended_at - started_at
   end
 
+  def new_place_for?(user)
+    finished? && user.game_sessions.finished.where(place: place, ended_at: ...ended_at).none?
+  end
+
   def resume_narration
     if (stalled = stalled_narration)
       stalled.resume_narration

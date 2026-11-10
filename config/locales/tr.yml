@@ -441,6 +441,7 @@ tr:
       copied: Kopyalandı
       share_summary: Özeti paylaş
       back_home: Ana ekrana dön
+      new_place_html: "Yeni bir yer: %{place}"
     opening:
       narrator: Anlatıcı
       getting_ready: Anlatıcı hazırlanıyor

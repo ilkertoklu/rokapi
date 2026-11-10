@@ -2,6 +2,9 @@
 <%= render "game_sessions/ending", game_session: game_session %>
 
 <div class="stage__footer">
+  <% if game_session.new_place_for?(Current.user) %>
+    <p class="finale__new-place"><%= t(".new_place_html", place: link_to(game_session.card.place.text, my_place_path(game_session.place))) %></p>
+  <% end %>
   <% if game_session.multiplayer? %>
     <%= button_to t(".new_adventure"), game_session_rematch_path(game_session), class: "btn btn--primary" %>
   <% else %>

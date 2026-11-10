@@ -99,6 +99,33 @@ class PlacesFlowTest < ActionDispatch::IntegrationTest
     assert_select ".place--unseen", count: 20
   end
 
+  test "the finale names a place seen for the first time, once" do
+    @solo.update! place: "lighthouse_rock"
+    sign_in_as users(:ilker)
+
+    get game_session_path(@solo)
+    assert_select ".finale__new-place", text: "A new place: A lighthouse on a rock out at sea"
+    assert_select ".finale__new-place a[href=?]", my_place_path("lighthouse_rock")
+
+    get my_adventure_path(@solo)
+    assert_select ".finale__outcome", text: "Victory"
+    assert_select ".finale__new-place", count: 0
+
+    @solo.update! place: "salt_caves", ended_at: Time.current
+    get game_session_path(@solo)
+    assert_select ".finale__outcome", text: "Victory"
+    assert_select ".finale__new-place", count: 0
+  end
+
+  test "the finale says the place is new in the player's own language" do
+    @solo.update! place: "lighthouse_rock"
+    sign_in_as users(:ilker)
+    patch locale_path, params: { locale: "tr" }
+
+    get game_session_path(@solo)
+    assert_select ".finale__new-place", text: "Yeni bir yer: Açık denizde, bir kayanın üstünde bir fener"
+  end
+
   test "the places take as many queries however many are seen" do
     sign_in_as users(:ilker)
     get my_places_path

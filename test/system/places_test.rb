@@ -33,4 +33,16 @@ class PlacesTest < ApplicationSystemTestCase
     assert_selector ".adventure__scene", count: 2
     assert_text "What came of climb the broken stair."
   end
+
+  test "the finale of a game in a fourth place says it is new" do
+    game_sessions(:ilker_solo).update! place: "lighthouse_rock"
+    sign_in_as users(:ilker)
+
+    visit game_session_path(game_sessions(:ilker_solo))
+    assert_selector ".finale__outcome", text: "VICTORY"
+    assert_selector ".finale__new-place", text: "A new place: A lighthouse on a rock out at sea"
+
+    click_on "A lighthouse on a rock out at sea"
+    assert_selector ".place-story__name", text: "A lighthouse on a rock out at sea"
+  end
 end

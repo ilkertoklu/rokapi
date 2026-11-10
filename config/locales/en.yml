@@ -422,6 +422,7 @@ en:
       copied: Copied
       share_summary: Share summary
       back_home: Back to home
+      new_place_html: "A new place: %{place}"
     opening:
       narrator: Narrator
       getting_ready: The narrator is getting ready
