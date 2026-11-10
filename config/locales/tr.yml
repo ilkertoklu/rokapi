@@ -388,6 +388,8 @@ tr:
       tagline_html: Zarları at, hikâyeni yaz.<br>Her oturum yeni bir macera.
     locales:
       label: Dil
+    profile_badge:
+      label: Profil
 
   characters:
     sheet:
@@ -540,14 +542,9 @@ tr:
 
   home:
     show:
-      profile: Profil
       resume: Maceraya devam et
       start: Yeni macera kur
       join: Kod ile katıl
-
-  layouts:
-    application:
-      profile: Profil
 
   login_code_mailer:
     code:

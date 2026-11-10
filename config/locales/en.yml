@@ -369,6 +369,8 @@ en:
       tagline_html: Roll the dice, write your story.<br>Every session a new adventure.
     locales:
       label: Language
+    profile_badge:
+      label: Profile
 
   characters:
     sheet:
@@ -521,14 +523,9 @@ en:
 
   home:
     show:
-      profile: Profile
       resume: Resume adventure
       start: Start a new adventure
       join: Join with a code
-
-  layouts:
-    application:
-      profile: Profile
 
   login_code_mailer:
     code:
