@@ -219,6 +219,13 @@
     }
   }
 
+  @media (min-width: 48rem) {
+    .dice ~ .stage__footer {
+      padding-inline: 0;
+      inline-size: 20rem;
+    }
+  }
+
   .outcome--success::before {
     background: radial-gradient(circle, color-mix(in srgb, var(--color-positive) 18%, transparent), transparent 65%);
   }
