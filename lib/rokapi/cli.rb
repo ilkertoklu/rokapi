@@ -132,6 +132,37 @@ module Rokapi
       say_footer game
     end
 
+    desc "adventures", "List your finished adventures, newest first"
+    def adventures
+      shelf = fetch("/my/adventures.json")
+      return puts(JSON.pretty_generate(shelf)) if options[:json]
+      return say("No finished adventures yet.") if shelf.empty?
+
+      shelf.each do |adventure|
+        say "#{adventure["id"]} — #{adventure["title"]} · #{adventure["outcome"]} · #{adventure["ended_at"].to_s[0, 10]} · #{adventure["hero"]}"
+      end
+      next_step "adventure ID"
+    end
+
+    desc "adventure [ID]", "Read a finished adventure from its first scene to its closing (defaults to the last game started)"
+    def adventure(id = nil)
+      id ||= options[:game] || client.game_id || raise(Thor::Error, "Pick an adventure: bin/rokapi adventures")
+      adventure = fetch("/my/adventures/#{id}.json")
+      return puts(JSON.pretty_generate(adventure)) if options[:json]
+
+      say "#{adventure["title"]} · #{adventure["hero"]}"
+      adventure["scenes"].each do |scene|
+        say_scene adventure, scene
+        next unless (choice = scene["choice"])
+
+        say "\n>>> CHOICE#{" by #{choice["by"]}" if adventure["multiplayer"]}: #{choice["label"]} [#{choice["stat"]} #{format("%+d", choice["modifier"])} | #{choice["difficulty"]}, target #{choice["target"]}]"
+        say_roll scene["roll"], ending: scene["finale"] if scene["roll"]
+      end
+
+      say "\n*** #{adventure["outcome"].to_s.upcase} ***"
+      say "PARTY: #{adventure["party"].map { |player| "#{player["name"]}#{" (fallen)" unless player["alive"]}" }.join(", ")}" if adventure["multiplayer"]
+    end
+
     desc "choose NUMBER", "Pick one of the scene's choices"
     def choose(number)
       choice = current_scene(game)["choices"][number.to_i - 1] || raise(Thor::Error, "No choice #{number}; pick 1, 2 or 3.")
