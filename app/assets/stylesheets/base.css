@@ -92,6 +92,10 @@
     }
   }
 
+  .wordmark {
+    font-feature-settings: "locl" 0;
+  }
+
   .hint {
     color: var(--color-ink-faint);
     font-size: .9rem;

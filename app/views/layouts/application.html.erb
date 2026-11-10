@@ -24,7 +24,7 @@
   <%= tag.body class: ("hotwire-native" if hotwire_native_app?) do %>
     <% unless hotwire_native_app? %>
       <header class="topbar">
-        <%= link_to "Rokapi", root_path, class: "topbar__brand" %>
+        <%= link_to "Rokapi", root_path, class: "topbar__brand wordmark" %>
         <% if authenticated? %>
           <%= link_to Current.user.initial, my_profile_path, class: "profile__badge", aria: { label: t(".profile") } %>
         <% end %>
