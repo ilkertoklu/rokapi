@@ -60,6 +60,8 @@ group :development do
 
   # Live reload for HTML, CSS and Stimulus controllers [https://github.com/hotwired/spark]
   gem "hotwire-spark"
+
+  gem "rack-mini-profiler"
 end
 
 group :test do
