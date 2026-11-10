@@ -1,7 +1,7 @@
 module LobbyHelper
   def lobby_meta(game_session)
     t("game_sessions.lobby.meta", players: game_session.max_players,
-      estimate: game_session.length_estimate, tone: game_session.tone_label.downcase)
+      estimate: game_session.length_estimate, tone: lowercase(game_session.tone_label))
   end
 
   def lobby_player_line(player, you:)
