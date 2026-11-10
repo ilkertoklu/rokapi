@@ -16,9 +16,13 @@ export default class extends Controller {
   share() {
     if (navigator.share) {
       navigator.share({ text: this.textValue }).catch(() => {})
-    } else if (navigator.clipboard) {
-      navigator.clipboard.writeText(this.textValue).then(() => this.confirm()).catch(() => {})
+    } else {
+      this.copy()
     }
+  }
+
+  copy() {
+    navigator.clipboard?.writeText(this.textValue).then(() => this.confirm()).catch(() => {})
   }
 
   confirm() {

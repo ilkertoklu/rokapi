@@ -496,7 +496,6 @@ tr:
       code: Oda kodu
       copy: Oda kodunu kopyala
       copied: Kopyalandı
-      share: "Rokapi odama %{code} koduyla katıl: %{url}"
       quest: Görev
       meta: "%{players} oyuncu · %{estimate} · %{tone} ton"
       players: Oyuncular

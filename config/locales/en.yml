@@ -477,7 +477,6 @@ en:
       code: Room code
       copy: Copy the room code
       copied: Copied
-      share: "Join my Rokapi room with the code %{code}: %{url}"
       quest: Quest
       meta: "%{players} players · %{estimate} · %{tone} tone"
       players: Players
