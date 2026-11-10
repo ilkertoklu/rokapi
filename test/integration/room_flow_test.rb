@@ -121,6 +121,10 @@ class RoomFlowTest < ActionDispatch::IntegrationTest
   test "creating and joining as JSON" do
     sign_in_as users(:sevval)
 
+    get new_game_sessions_multi_path, as: :json
+    assert_equal 3, response.parsed_body["cards"].size
+    assert_equal %w[ fun balanced dark ], response.parsed_body["tones"].pluck("key")
+
     post game_sessions_multi_path(format: :json), params: { game_session: { card: "fishing_village missing_child weather_reader", tone: "balanced", length: "short" } }, as: :json
     assert_response :created
     room = GameSession.find(response.parsed_body["id"])
