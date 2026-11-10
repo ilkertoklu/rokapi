@@ -539,6 +539,22 @@ class NarratorTest < ActiveSupport::TestCase
     assert_empty next_scene.companions, "the fallen hero is no longer in the scene"
   end
 
+  test "the solo brief ends the story on the hero's last health, a party's brief lets a hero fall and the story go on" do
+    solo = { "en" => %(\nThe roll that ends the story, the last scene's or one that takes a hero's last health, tells what it does and then the ending the story has earned; its block adds "outcome": "victory" or "defeat".\n\nEvery block),
+             "tr" => %(\nHikâyeyi bitiren zarın sonucu, son sahnenin zarı da olsa bir kahramanın son canını alan zar da olsa, önce zarın getirdiğini, sonra hikâyenin hak ettiği sonu anlatır; bloğuna "outcome": "victory" ya da "defeat" eklenir.\n\nHer blok) }
+    party = { "en" => %(A hero who loses their last health before then falls and takes no more turns, and the story goes on with the others; that roll's block has no outcome.\n\nEvery block),
+              "tr" => %(Ondan önce son canını yitiren kahraman düşer ve bir daha sıra almaz, hikâye öbürleriyle sürer; o zarın bloğunda outcome olmaz.\n\nHer blok) }
+
+    solo.each { |locale, line| assert_includes RubyLLM.render_prompt("narrator/instructions.#{locale}", game: @game_session), line }
+
+    players(:deniz_solo_host).update! game_session: @game_session
+    party.each do |locale, line|
+      brief = RubyLLM.render_prompt("narrator/instructions.#{locale}", game: @game_session)
+      assert_includes brief, line
+      assert_not_includes brief, solo.fetch(locale)
+    end
+  end
+
   test "the last hero standing who falls ends the party's story in defeat" do
     players(:deniz_solo_host).update! game_session: @game_session
     characters(:deniz_hero).update! hp: 0
