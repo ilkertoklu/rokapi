@@ -33,10 +33,6 @@ class Scene < ApplicationRecord
     broadcast_narration
   end
 
-  def broadcast_narration
-    broadcast_update_to game_session, target: :scene_narration, partial: "scenes/narration"
-  end
-
   def turn_of?(player)
     active_player == player
   end
@@ -111,6 +107,10 @@ class Scene < ApplicationRecord
   end
 
   private
+    def broadcast_narration
+      broadcast_update_to game_session, target: :scene_narration, partial: "scenes/narration"
+    end
+
     def offer(choice)
       choices.create! label: choice["label"], stat: choice["stat"], modifier: character.bonus_for(choice["stat"]), target: Choice.target_for(choice["difficulty"])
     end

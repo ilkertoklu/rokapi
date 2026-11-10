@@ -18,9 +18,6 @@ class Choice < ApplicationRecord
     scene.active_player.character.stats.fetch(stat)
   end
 
-  def easy? = target < TARGETS.fetch("medium")
-  def hard? = target >= TARGETS.fetch("hard")
-
   def difficulty
     case
     when easy? then "easy"
@@ -49,4 +46,8 @@ class Choice < ApplicationRecord
   def roll_dice(by:)
     create_roll! player: by, value: rand(1..Roll::DIE), status_modifier: by.character.status_modifier
   end
+
+  private
+    def easy? = target < TARGETS.fetch("medium")
+    def hard? = target >= TARGETS.fetch("hard")
 end
