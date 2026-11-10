@@ -205,7 +205,7 @@ class GameSession < ApplicationRecord
         host
       else
         party = players.in_join_order.to_a
-        party.rotate(party.index(previous) + 1).find { |player| !player.departed? }
+        party.rotate(party.index(previous) + 1).find(&:standing?)
       end
     end
 end

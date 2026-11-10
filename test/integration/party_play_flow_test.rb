@@ -86,6 +86,41 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
     assert_response :no_content
   end
 
+  test "a hero who falls mid-story leaves the turns to the others, and the finale shows the fallen" do
+    start_with(SCENE_RESPONSE)
+    players(:ilker_room_host).character.update! hp: 3
+
+    sign_in_as users(:ilker)
+    post game_session_choice_selection_path(@room, @room.current_scene.choices.first), as: :json
+    stub_understudy(OUTCOME_RESPONSE) do
+      with_die(2) { perform_enqueued_jobs { post game_session_roll_path(@room), as: :json } }
+    end
+
+    get game_session_path(@room), as: :json
+    game = response.parsed_body
+    assert_nil game["outcome"]
+    assert_equal [ [ "Ilker", false ], [ "Deniz", true ] ], game["party"].map { it.values_at("name", "alive") }
+
+    second_scene = stub_understudy(SECOND_SCENE_RESPONSE) do
+      perform_enqueued_jobs { post game_session_acknowledgement_path(@room), as: :json }
+    end.sole
+    assert_not_includes second_scene["prompt"], "In the scene with Deniz"
+    assert_equal players(:deniz_room_guest), @room.current_scene.active_player
+
+    @room.current_scene.update! position: @room.scene_budget
+    sign_in_as users(:deniz)
+    post game_session_choice_selection_path(@room, @room.current_scene.choices.first), as: :json
+    stub_understudy(ENDING_RESPONSE) do
+      with_die(2) { perform_enqueued_jobs { post game_session_roll_path(@room), as: :json } }
+    end
+
+    get game_session_path(@room)
+    assert_select ".finale__outcome", text: "Victory"
+    assert_select ".highlights div", text: /1\s*Alive/
+    assert_select ".roster__member--fallen", text: /Ilker/
+    assert_select ".roster__member:not(.roster__member--fallen)", text: /Deniz/
+  end
+
   test "solo play shows no party" do
     sign_in_as users(:ilker)
     game_sessions(:ilker_solo).advance

@@ -39,7 +39,7 @@ class Scene < ApplicationRecord
   end
 
   def companions
-    game_session.party.reject { turn_of?(it) || it.departed? }
+    game_session.party.select { !turn_of?(it) && it.standing? }
   end
 
   def first?

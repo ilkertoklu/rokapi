@@ -21,6 +21,14 @@ class Player < ApplicationRecord
     user.nil?
   end
 
+  def fallen?
+    character.present? && !character.hp.positive?
+  end
+
+  def standing?
+    !departed? && !fallen?
+  end
+
   def depart
     game_session.started? ? update!(user: nil) : destroy!
   end

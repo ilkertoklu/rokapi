@@ -520,6 +520,62 @@ class NarratorTest < ActiveSupport::TestCase
     assert @game_session.outcome_defeat?
   end
 
+  test "a roll that takes a party hero's last health leaves the hero fallen and the story going on" do
+    players(:deniz_solo_host).update! game_session: @game_session
+    characters(:ilker_hero).update! hp: 3
+    roll = play_first_scene
+
+    told, rewritten = stub_understudy(OUTCOME_RESPONSE.sub('{"hp": -4}', '{"hp": -4, "outcome": "defeat"}'), OUTCOME_RESPONSE) { roll.narrate }
+
+    assert_includes told["prompt"], %(\nThis roll can take the last of Ilker's health. If it does, Ilker falls and takes no more turns, and the story goes on with the others: tell how, and leave "outcome" out of the block. Either way, tell only what this roll does, in a paragraph or two, and stop there: the next scene comes in my next message.\n)
+    assert_includes rewritten["prompt"], "Your last reply was rejected: the story goes on after this roll, so the block has no outcome."
+    assert_equal 0, characters(:ilker_hero).reload.hp
+    assert_not @game_session.reload.finished?
+    assert_not @game_session.current_scene.finale?
+
+    roll.acknowledge
+    next_scene = @game_session.current_scene
+    assert_equal players(:deniz_solo_host), next_scene.active_player
+    assert_empty next_scene.companions, "the fallen hero is no longer in the scene"
+  end
+
+  test "the last hero standing who falls ends the party's story in defeat" do
+    players(:deniz_solo_host).update! game_session: @game_session
+    characters(:deniz_hero).update! hp: 0
+    characters(:ilker_hero).update! hp: 3
+    roll = play_first_scene
+
+    told = stub_understudy(OUTCOME_RESPONSE.sub('{"hp": -4}', '{"hp": -4, "outcome": "defeat"}')) { roll.narrate }.sole
+
+    assert_includes told["prompt"], %(\nThis roll can take the last of Ilker's health. If it does, Ilker falls and the story ends here in defeat: tell how)
+    assert @game_session.reload.outcome_defeat?
+  end
+
+  test "a party's last roll decides the story even when it takes the roller's last health" do
+    players(:deniz_solo_host).update! game_session: @game_session
+    characters(:ilker_hero).update! hp: 3
+    roll = play_the_last_scene
+
+    stub_understudy(ENDING_RESPONSE.sub("{", '{"hp": -4, ')) { roll.narrate }
+
+    assert_equal 0, characters(:ilker_hero).reload.hp
+    assert @game_session.reload.outcome_victory?
+  end
+
+  test "a party's ending weighs what a fallen hero tried" do
+    players(:deniz_solo_host).update! game_session: @game_session
+    play_and_continue
+    characters(:ilker_hero).update! hp: 0
+    @game_session.current_scene.update! position: @game_session.scene_budget
+    stub_understudy(SCENE_RESPONSE) { narrate }
+    roll = with_die(2) { choose_and_roll @game_session.current_scene }
+
+    request = stub_understudy(ENDING_RESPONSE) { roll.narrate }.sole
+
+    assert_includes request["prompt"], %(So far Ilker tried "Read the dusty ledger" (failed); Deniz tried "Read the dusty ledger" (failed). Victory or defeat)
+    assert_not_includes request["prompt"], "In the scene with Deniz"
+  end
+
   test "a party's scene puts the rest of the party beside the hero, but not those who left" do
     players(:deniz_solo_host).update! game_session: @game_session
     @game_session.players.create!(user: users(:sevval)).create_character! characters(:deniz_hero).attributes.slice("race", "klass", "background", "stats")

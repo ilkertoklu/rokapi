@@ -275,6 +275,20 @@ class GameSessionTest < ActiveSupport::TestCase
     assert_equal [ host, deniz, sevval, host, deniz, sevval, host ], room.scenes.chronological.map(&:active_player)
   end
 
+  test "turns pass over a fallen hero" do
+    room = game_sessions(:ilker_room)
+    sevval = room.join(users(:sevval))
+    room.players.each { it.ready_up(character_attributes) }
+
+    room.start(by: players(:ilker_room_host))
+    room.advance
+    players(:deniz_room_guest).character.update! hp: 0
+    3.times { room.advance }
+
+    host, deniz = players(:ilker_room_host), players(:deniz_room_guest)
+    assert_equal [ host, deniz, sevval, host, sevval ], room.scenes.chronological.map(&:active_player)
+  end
+
   test "the clues found are the ones the successes won, in the plan's order" do
     game_session = game_sessions(:ilker_solo)
     game_session.update! plan: "Clues:\n1. Mara's shawl hangs on the lighthouse door.\n2. The boy's boots stand dry.\n3. The press gang's list carries his name."

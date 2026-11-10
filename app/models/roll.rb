@@ -82,7 +82,7 @@ class Roll < ApplicationRecord
   end
 
   def ending_with(effects)
-    if character.hp + bounded(effects.to_h)["hp"] <= 0
+    if falls?(effects) && last_hero_standing?
       "defeat"
     elsif scene.last?
       effects.to_h["outcome"].presence_in(%w[ victory defeat ])
@@ -97,7 +97,15 @@ class Roll < ApplicationRecord
     character.hp + health_floor <= 0
   end
 
+  def last_hero_standing?
+    game_session.party.excluding(player).none?(&:standing?)
+  end
+
   private
+    def falls?(effects)
+      character.hp + bounded(effects.to_h)["hp"] <= 0
+    end
+
     def recorded(effects)
       bounded(effects).merge(effects.slice("mark"), { "clue" => clue_won }.compact)
     end
