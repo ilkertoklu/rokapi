@@ -4,8 +4,8 @@ class Character < ApplicationRecord
 
   belongs_to :player
 
-  has_many :items, dependent: :delete_all
-  has_many :status_effects, dependent: :delete_all
+  has_many :items, -> { order(:id) }, dependent: :delete_all
+  has_many :status_effects, -> { order(:id) }, dependent: :delete_all
 
   delegate :game_session, :user, :name, :initial, to: :player
 

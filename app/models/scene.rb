@@ -6,7 +6,7 @@ class Scene < ApplicationRecord
   belongs_to :game_session, touch: true
   belongs_to :active_player, class_name: "Player"
 
-  has_many :choices, dependent: :destroy
+  has_many :choices, -> { order(:id) }, dependent: :destroy
   has_one :chosen_choice, -> { chosen }, class_name: "Choice"
   has_one :roll, through: :chosen_choice
 
