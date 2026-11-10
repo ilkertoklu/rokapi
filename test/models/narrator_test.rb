@@ -210,7 +210,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     scene = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
-    assert_includes scene["prompt"], "No clue found yet. The story cannot wait for clue 1 any longer: the trouble moves on by itself in this scene, taking something the plan puts at stake, and what it does shows that clue plainly. The heroes do only"
+    assert_includes scene["prompt"], "No clue found yet. The story cannot wait for clue 1 any longer: the trouble moves on in this scene: someone in it acts on what they want or fear and takes something the plan puts at stake, and what they do shows that clue plainly, with no mishap or chance behind it. The heroes do only"
     assert_includes scene["prompt"], "At least one choice is a way to come by clue 2,"
     assert_equal 1, @game_session.current_scene.effects["clue"]
     assert_equal [ 1 ], @game_session.reload.clues_found
