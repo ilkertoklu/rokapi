@@ -35,6 +35,9 @@
 
       > .btn {
         margin-block-start: auto;
+        color: var(--color-ink-faint);
+        font-size: .9375rem;
+        font-weight: 600;
       }
     }
 
