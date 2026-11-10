@@ -4,7 +4,11 @@ export default class extends Controller {
   static values = { step: String }
 
   stepValueChanged() {
-    if (this.#focusIsLost) this.element.focus({ preventScroll: true })
+    if (this.#focusIsLost) this.focus()
+  }
+
+  focus() {
+    this.element.focus({ preventScroll: true })
   }
 
   get #focusIsLost() {

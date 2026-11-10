@@ -39,6 +39,17 @@ class CharacterSheetTest < ApplicationSystemTestCase
     assert_selector ".sheet:modal .sheet__handle:focus"
   end
 
+  test "using an item hands the focus to its result" do
+    characters(:ilker_hero).update! hp: 20
+    open_sheet_from_the_keyboard
+
+    tab_to ".inventory__use"
+    send_keys :enter
+    assert_text "+7 Health"
+    assert_no_selector ".sheet:modal"
+    assert_selector ".stage:focus"
+  end
+
   private
     def open_sheet_from_the_keyboard
       tab_to ".action-panel__handle"
