@@ -15,6 +15,27 @@ class ChoicesPanelTest < ApplicationSystemTestCase
     page.current_window.resize_to 430, 932
   end
 
+  test "a swipe up on the handle opens the choices and a swipe down closes them" do
+    visit game_session_path(@game_session)
+    assert_no_button "Force the cellar door"
+
+    swipe ".action-panel__handle", down: -200
+    assert_button "Force the cellar door"
+
+    swipe ".action-panel__handle", down: 50
+    assert_no_button "Force the cellar door"
+  end
+
+  test "a tap on the handle still opens and closes the choices" do
+    visit game_session_path(@game_session)
+
+    find(".action-panel__handle").click
+    assert_button "Force the cellar door"
+
+    find(".action-panel__handle").click
+    assert_no_button "Force the cellar door"
+  end
+
   test "a refresh leaves the opened choices open" do
     visit game_session_path(@game_session)
     find(".action-panel__handle").click

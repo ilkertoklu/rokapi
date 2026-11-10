@@ -6,12 +6,13 @@
 
 <details id="choices" class="action-panel" data-controller="action-panel"
          data-action="turbo:before-morph-attribute->action-panel#keepOpen:self turbo:morph-element->action-panel#pin:self resize@window->action-panel#pin">
-  <summary class="action-panel__handle" data-action-panel-target="handle">
+  <summary class="action-panel__handle" data-action-panel-target="handle"
+           data-action="click->action-panel#toggle pointerdown->action-panel#grab pointerup->action-panel#release pointercancel->action-panel#letGo">
     <span class="grip"></span>
     <span class="action-panel__prompt overline"><%= t(".your_turn") %></span>
   </summary>
 
-  <div class="action-panel__body">
+  <div class="action-panel__body" data-action-panel-target="body">
     <% scene.choices.each.with_index(1) do |choice, number| %>
       <%= button_to game_session_choice_selection_path(scene.game_session, choice), class: "choice",
             aria: { keyshortcuts: number }, data: { controller: "hotkey", action: "keydown.#{number}@document->hotkey#click" } do %>

@@ -18,6 +18,8 @@
   }
 
   .game {
+    --panel-slide: .25s;
+
     position: relative;
     display: flex;
     flex-direction: column;
@@ -36,6 +38,10 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .game {
+      --panel-slide: 0s;
+    }
+
     .stage {
       --roll: 0s;
     }
@@ -286,6 +292,7 @@
     margin-block-end: .85rem;
     cursor: pointer;
     list-style: none;
+    touch-action: none;
 
     &::-webkit-details-marker {
       display: none;

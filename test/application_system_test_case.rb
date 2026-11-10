@@ -15,4 +15,21 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
       click_on "Verify"
       assert_text "Roll the dice"
     end
+
+    def swipe(selector, down:, steps: 8, step_duration: 0.05)
+      assert_panels_at_rest
+      action = page.driver.browser.action
+      action.add_pointer_input(:touch, "finger")
+      action.move_to(find(selector).native, device: "finger", duration: 0).pointer_down(device: "finger")
+      steps.times { action.move_by(0, down / steps, device: "finger", duration: step_duration) }
+      action.pointer_up(device: "finger").perform
+      action.release_actions
+    end
+
+    def assert_panels_at_rest
+      page.document.synchronize do
+        sliding = evaluate_script("document.getAnimations().some(animation => !(animation instanceof CSSAnimation))")
+        raise Capybara::ExpectationNotMet, "A panel is still sliding" if sliding
+      end
+    end
 end
