@@ -5,7 +5,7 @@
     <p><%= [ scene.location, scene.counter ].compact_blank.join(" · ") %></p>
   </div>
 
-  <ol class="progress" aria-label="<%= scene.counter %>">
+  <ol class="progress" aria-hidden="true">
     <% (1..scene.game_session.scene_budget).each do |position| %>
       <li class="progress__dot progress__dot--<%= progress_at(scene, position) %>"></li>
     <% end %>
