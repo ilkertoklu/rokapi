@@ -27,6 +27,7 @@
       display: flex;
       flex-direction: column;
       min-block-size: 100%;
+      max-block-size: none;
       padding: 1.25rem 1.75rem 1.5rem;
       overflow: visible;
       background: none;
@@ -66,6 +67,13 @@
     background: var(--color-surface-sunken);
     border-radius: 32px 32px 0 0;
     box-shadow: 0 -24px 50px -10px rgba(0, 0, 0, .6);
+  }
+
+  @media (min-width: 48rem) {
+    .sheet__panel {
+      inset-block-start: auto;
+      max-block-size: calc(100% - min(7.5rem, 15dvh));
+    }
   }
 
   .sheet__handle {
