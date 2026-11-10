@@ -65,7 +65,7 @@ class LocalizationFlowTest < ActionDispatch::IntegrationTest
     follow_redirect!
     assert_select ".page-head h1", text: "Karakterini oluştur"
     assert_select ".chip span", text: "Savaşçı"
-    assert_select ".stat-row__label", text: "Güç"
+    assert_select "label.stat-row__label[for=character_stats_strength]", text: "Güç"
     assert_select "[data-stats-ready-value=?]", "Hazırım"
   end
 

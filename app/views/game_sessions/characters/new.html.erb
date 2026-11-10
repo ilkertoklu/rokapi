@@ -24,7 +24,7 @@
     <%= form.fields_for :stats do |stats| %>
       <% Character::Stat.all.each do |stat| %>
         <div class="stat-row">
-          <span class="stat-row__label"><%= stat.label %></span>
+          <%= stats.label stat.key, stat.label, class: "stat-row__label" %>
           <%= tag.button "−", type: "button", class: "stepper", aria: { label: t(".lower", stat: stat.label) },
                 data: { stats_target: "decrement", action: "stats#decrement", stats_key_param: stat.key } %>
           <%= stats.number_field stat.key, value: @character.stats[stat.key], readonly: true, data: { stats_target: "value", key: stat.key } %>
