@@ -3,6 +3,6 @@
   <%= tag.span class: [ "ember", "ember--pulsing": scene.narrator_writing? ], aria: { hidden: true } %>
   <%= t(".name") %>
 </p>
-<%= tag.div id: "scene_narration", class: [ "narration__body", "narration__body--writing": scene.narrator_writing? ] do %>
+<%= tag.div id: dom_id(scene, :narration), class: [ "narration__body", "narration__body--writing": scene.narrator_writing? ] do %>
   <%= render "scenes/narration", scene: scene %>
 <% end %>

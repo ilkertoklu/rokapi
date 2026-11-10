@@ -2,7 +2,7 @@ require "test_helper"
 require "turbo/broadcastable/test_helper"
 
 class NarratorTest < ActiveSupport::TestCase
-  include Turbo::Broadcastable::TestHelper
+  include ActionView::RecordIdentifier, Turbo::Broadcastable::TestHelper
 
   CLUES_PLAN = <<~PLAN
     Hidden: Mara hid her son in the lighthouse to keep him from the press gang.
@@ -42,7 +42,7 @@ class NarratorTest < ActiveSupport::TestCase
       stub_understudy(SCENE_RESPONSE) { narrate }
     end
 
-    assert_equal "scene_narration", streams.first["target"], "the first words reach the screen before any refresh"
+    assert_equal dom_id(@game_session.current_scene, :narration), streams.first["target"], "the first words reach the screen before any refresh"
     assert_equal "refresh", streams.last["action"], "the title and the choices arrive with a final refresh"
   end
 
@@ -60,7 +60,7 @@ class NarratorTest < ActiveSupport::TestCase
       assert_equal 1, writes.size, "the narration is written once, when the reply is complete"
       assert_equal SCENE_RESPONSE.split("```").first.strip, scene.reload.narration
 
-      narrations = streams.select { |stream| stream["target"] == "scene_narration" }.map { |stream| [ stream["action"], stream.at("template").text ] }
+      narrations = streams.select { |stream| stream["target"] == dom_id(scene, :narration) }.map { |stream| [ stream["action"], stream.at("template").text ] }
       assert_operator narrations.size, :>, 1
       assert_equal [ "update" ], narrations.map(&:first).uniq,
         "a morph refresh mid-stream would drop appended chunks; updates are idempotent"

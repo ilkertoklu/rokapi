@@ -116,7 +116,7 @@ class Scene < ApplicationRecord
 
   private
     def broadcast_narration
-      broadcast_update_to game_session, target: :scene_narration, partial: "scenes/narration"
+      broadcast_update_to game_session, target: [ self, :narration ], partial: "scenes/narration"
     end
 
     def offer(choice)
