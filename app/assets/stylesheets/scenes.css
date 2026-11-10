@@ -537,6 +537,17 @@
       --screen-width: 70rem;
     }
 
+    @media (min-width: 72rem) {
+      body:has(.game) {
+        background: color-mix(in srgb, var(--color-bg) 55%, black);
+      }
+
+      .screen:has(.game) {
+        background: var(--color-bg);
+        border-inline: 1px solid var(--color-line-soft);
+      }
+    }
+
     .game {
       display: grid;
       grid-template-columns: minmax(0, 1fr) 25rem;
