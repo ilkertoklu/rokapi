@@ -18,7 +18,7 @@
             aria: { keyshortcuts: number }, data: { controller: "hotkey", action: "keydown.#{number}@document->hotkey#click" } do %>
         <kbd class="key" aria-hidden="true"><%= number %></kbd>
         <span class="choice__label"><%= choice.label %></span>
-        <span class="stat-chip"><%= choice.stat_label %> <%= format("%+d", choice.modifier) %></span>
+        <span class="stat-chip"><%= choice.stat_label %> <%= signed_number(choice.modifier) %></span>
       <% end %>
     <% end %>
 

@@ -17,7 +17,7 @@
       <dd class="dice__bonus">
         <%= choice.stat_label %> <%= choice.stat_value %>
         <span class="arrow">→</span>
-        <span class="modifier"><%= format("%+d", choice.modifier) %></span>
+        <span class="modifier"><%= signed_number(choice.modifier) %></span>
       </dd>
     </div>
     <% character.status_effects.each do |status| %>
@@ -26,7 +26,7 @@
         <dd class="dice__bonus">
           <%= status.name %>
           <span class="arrow">→</span>
-          <%= tag.span format("%+d", status.modifier), class: [ "modifier", "modifier--negative": status.modifier.negative? ] %>
+          <%= tag.span signed_number(status.modifier), class: [ "modifier", "modifier--negative": status.modifier.negative? ] %>
         </dd>
       </div>
     <% end %>

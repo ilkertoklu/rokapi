@@ -3,8 +3,8 @@
   <%= render "rolls/die", roll: roll %>
 
   <p class="outcome__math">
-    <%= roll.value %> <span><%= format("%+d", roll.modifier) %> <%= lowercase(roll.choice.stat_label) %></span>
-    <% if roll.status_modifier.nonzero? %><span><%= format("%+d", roll.status_modifier) %> <%= t(".statuses") %></span><% end %>
+    <%= roll.value %> <span><%= signed_number(roll.modifier) %> <%= lowercase(roll.choice.stat_label) %></span>
+    <% if roll.status_modifier.nonzero? %><span><%= signed_number(roll.status_modifier) %> <%= t(".statuses") %></span><% end %>
     = <strong><%= roll.total %></strong> · <%= t(".target", target: roll.target) %> · <%= roll.choice.difficulty_label %>
   </p>
 
@@ -13,7 +13,7 @@
   <%= simple_format roll.resolution, class: "outcome__resolution" %>
 
   <% if roll.hp_change.nonzero? %>
-    <p class="outcome__effect"><%= render "glyph", name: "heart" %> <%= t(".health_change", change: format("%+d", roll.hp_change)) %></p>
+    <p class="outcome__effect"><%= render "glyph", name: "heart" %> <%= t(".health_change", change: signed_number(roll.hp_change)) %></p>
   <% end %>
 
   <% roll.items_gained.each do |gain| %>

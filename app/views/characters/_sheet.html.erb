@@ -31,7 +31,7 @@
             <span class="statuses__dot <%= status.positive? ? "statuses__dot--positive" : "statuses__dot--negative" %>"></span>
             <span class="statuses__name"><%= status.name %></span>
             <span class="statuses__duration"><%= status.duration_label %></span>
-            <span class="statuses__chip <%= status.positive? ? "statuses__chip--positive" : "statuses__chip--negative" %>"><%= t(".roll_modifier", modifier: format("%+d", status.modifier)) %></span>
+            <span class="statuses__chip <%= status.positive? ? "statuses__chip--positive" : "statuses__chip--negative" %>"><%= t(".roll_modifier", modifier: signed_number(status.modifier)) %></span>
           </li>
         <% end %>
       </ul>
@@ -46,7 +46,7 @@
             <span class="inventory__body">
               <span class="inventory__name"><%= item.name %></span>
               <% if item.instant? %>
-                <span class="inventory__meta"><%= t(".instant", effect: format("%+d", item.hp_effect)) %></span>
+                <span class="inventory__meta"><%= t(".instant", effect: signed_number(item.hp_effect)) %></span>
               <% elsif item.description.present? %>
                 <span class="inventory__meta"><%= item.passive? ? t(".passive", description: item.description) : item.description %></span>
               <% end %>
@@ -67,7 +67,7 @@
       <% Character::Stat.all.each do |stat| %>
         <div>
           <dt><%= stat.label %></dt>
-          <dd><%= character.stats[stat.key] %> <span><%= format("%+d", character.bonus_for(stat.key)) %></span></dd>
+          <dd><%= character.stats[stat.key] %> <span><%= signed_number(character.bonus_for(stat.key)) %></span></dd>
         </div>
       <% end %>
     </dl>

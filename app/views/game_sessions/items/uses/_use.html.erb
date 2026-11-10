@@ -1,7 +1,7 @@
 <%# locals: (game_session:, item:, restored:) -%>
 <% character = item.character %>
 <div class="outcome outcome--restored">
-  <p class="outcome__verdict"><%= t(".health_change", change: format("%+d", restored)) %></p>
+  <p class="outcome__verdict"><%= t(".health_change", change: signed_number(restored)) %></p>
 
   <div class="outcome__vitals">
     <div class="vitals__row">
