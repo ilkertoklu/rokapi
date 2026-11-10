@@ -5,12 +5,16 @@ export default class extends Controller {
   static values = { text: String, copied: String }
 
   connect() {
-    this.element.hidden = !(navigator.share || navigator.clipboard)
     this.idleLabel = this.labelTarget.textContent
+    this.offer()
   }
 
   disconnect() {
     clearTimeout(this.timer)
+  }
+
+  offer() {
+    this.element.hidden = !(navigator.share || navigator.clipboard)
   }
 
   share() {

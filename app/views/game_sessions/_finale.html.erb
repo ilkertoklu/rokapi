@@ -14,7 +14,7 @@
     <%= link_to t(".new_adventure"), new_game_session_path, class: "btn btn--primary" %>
   <% end %>
   <%= tag.button class: "btn btn--secondary",
-        data: { controller: "share", action: "share#share", share_text_value: finale_share_text(game_session), share_copied_value: t(".copied") } do %>
+        data: { controller: "share", action: "share#share turbo:morph-element->share#offer:self", share_text_value: finale_share_text(game_session), share_copied_value: t(".copied") } do %>
     <%= render "glyph", name: "share" %>
     <span data-share-target="label"><%= t(".share_summary") %></span>
   <% end %>

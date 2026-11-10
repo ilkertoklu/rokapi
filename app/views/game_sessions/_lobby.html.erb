@@ -3,7 +3,7 @@
   <div class="room-code">
     <span class="overline room-code__label"><%= t(".code") %></span>
     <span class="room-code__digits"><%= game_session.code %></span>
-    <%= tag.span class: "room-code__share", data: { controller: "share", share_copied_value: t(".copied"),
+    <%= tag.span class: "room-code__share", data: { controller: "share", action: "turbo:morph-element->share#offer:self", share_copied_value: t(".copied"),
           share_text_value: game_session.code } do %>
       <button type="button" class="room-code__copy" data-action="share#copy" aria-label="<%= t(".copy") %>"><%= render "glyph", name: "copy" %></button>
       <span class="room-code__copied" data-share-target="label" aria-live="polite"></span>
