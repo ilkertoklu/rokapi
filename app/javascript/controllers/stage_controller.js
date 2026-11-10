@@ -4,14 +4,14 @@ export default class extends Controller {
   static values = { step: String }
 
   stepValueChanged() {
-    if (this.#focusIsLost) this.focus()
+    if (this.#mayTakeFocus) this.focus()
   }
 
   focus() {
     this.element.focus({ preventScroll: true })
   }
 
-  get #focusIsLost() {
+  get #mayTakeFocus() {
     return document.activeElement === document.body || this.element.contains(document.activeElement)
   }
 }
