@@ -125,7 +125,9 @@ class CharacterSheetTest < ApplicationSystemTestCase
     end
 
     def open_sheet_by_tapping
+      assert_panels_at_rest
       find(".action-panel__handle").click unless has_button?("My character", wait: 0)
+      assert_panels_at_rest
       click_on "My character"
       assert_selector ".sheet:modal"
       assert_panels_at_rest
