@@ -191,13 +191,6 @@ class DesktopPlayTest < ApplicationSystemTestCase
   end
 
   private
-    def tab_to(selector, **options)
-      page.document.synchronize do
-        send_keys :tab
-        raise Capybara::ExpectationNotMet, "Tabbed past #{selector}" unless has_selector?("#{selector}:focus", visible: :all, wait: 0, **options)
-      end
-    end
-
     def assert_story_scrolled_past(offset)
       page.document.synchronize do
         evaluate_script("document.querySelector('.stage').scrollTop").tap do |scrolled|
