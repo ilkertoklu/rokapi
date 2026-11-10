@@ -6,7 +6,9 @@
 <article class="adventure">
   <p class="adventure__summary"><%= adventure_summary(@adventure) %></p>
 
-  <%= render partial: "my/adventures/scene", collection: @scenes, locals: { party: (@adventure.party.to_a if @adventure.multiplayer?) } %>
+  <% party = @adventure.party.to_a if @adventure.multiplayer? %>
+  <%= render partial: "my/adventures/scene", collection: @scenes, locals: { party: party },
+        cached: ->(scene) { [ I18n.locale, scene, scene.chosen_choice&.roll, *party&.map(&:user) ] } %>
 
   <%= render "game_sessions/ending", game_session: @adventure, titled: false %>
 </article>

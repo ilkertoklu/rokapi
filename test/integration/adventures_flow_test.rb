@@ -117,6 +117,22 @@ class AdventuresFlowTest < ActionDispatch::IntegrationTest
     assert_select ".finale__outcome", text: "Zafer"
   end
 
+  test "a finished adventure's cached scenes follow the reader's language and the players' names" do
+    with_collection_caching do
+      sign_in_as users(:ilker)
+      get my_adventure_path(@room)
+      assert_select ".adventure__scene .finale__move", text: /Hail the ferryman\s+I\s+Ilker\s+SUCCESS/
+
+      users(:ilker).update! name: "Ilk"
+      get my_adventure_path(@room)
+      assert_select ".adventure__scene .finale__move", text: /Hail the ferryman\s+I\s+Ilk\s+SUCCESS/
+
+      patch locale_path, params: { locale: "tr" }
+      get my_adventure_path(@room)
+      assert_select ".adventure__scene .finale__move", text: /Hail the ferryman\s+I\s+Ilk\s+BAŞARI/
+    end
+  end
+
   test "reading an adventure takes as many queries however long it is" do
     sign_in_as users(:ilker)
     get my_adventure_path(@room)
@@ -170,6 +186,14 @@ class AdventuresFlowTest < ActionDispatch::IntegrationTest
   end
 
   private
+    def with_collection_caching
+      store = ActionView::PartialRenderer.collection_cache
+      ActionView::PartialRenderer.collection_cache = ActiveSupport::Cache::MemoryStore.new
+      yield
+    ensure
+      ActionView::PartialRenderer.collection_cache = store
+    end
+
     def count_queries(&block)
       count = 0
       counter = ->(*, payload) { count += 1 unless payload[:name].in?([ "SCHEMA", "TRANSACTION" ]) }
