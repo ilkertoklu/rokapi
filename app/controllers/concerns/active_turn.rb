@@ -12,7 +12,7 @@ module ActiveTurn
     def ensure_active_turn
       @scene = @game_session.current_scene
 
-      head :forbidden unless @scene && @scene.active_player == @player
+      head :forbidden unless @scene&.turn_of?(@player)
     end
 
     def refuse_move
