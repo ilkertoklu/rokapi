@@ -13,11 +13,7 @@
   </div>
 
   <% if roll %>
-    <%= tag.p class: [ "finale__move", roll.success? ? "finale__move--success" : "finale__move--failure" ] do %>
-      <%= player_avatar roll.player, "avatar--tiny" if game_session.multiplayer? %>
-      <em><%= roll.choice.label %></em>
-      <strong><%= outcome_verdict(roll) %></strong>
-    <% end %>
+    <%= render "rolls/move", roll: roll, party: party %>
   <% end %>
 
   <div class="finale__closing">

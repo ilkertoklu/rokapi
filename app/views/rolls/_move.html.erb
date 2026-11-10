@@ -1,0 +1,10 @@
+<%# locals: (roll:, party: nil) -%>
+<%= tag.p class: [ "finale__move", roll.success? ? "finale__move--success" : "finale__move--failure" ] do %>
+  <em><%= roll.choice.label %></em>
+  <% if party %>
+    <% actor = party.find { it.id == roll.player_id } %>
+    <%= player_avatar actor, "avatar--tiny", seat: party.index(actor), hidden: true %>
+    <span class="adventure__actor"><%= actor.name %></span>
+  <% end %>
+  <strong><%= outcome_verdict(roll) %></strong>
+<% end %>

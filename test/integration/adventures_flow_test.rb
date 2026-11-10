@@ -65,7 +65,7 @@ class AdventuresFlowTest < ActionDispatch::IntegrationTest
     assert_select ".adventure__scene .finale__move", text: /Hail the ferryman\s+I\s+Ilker\s+SUCCESS/
     assert_select ".adventure__scene .avatar--seat-0[title=?]", "Ilker"
     assert_select ".finale__outcome", text: "Defeat"
-    assert_select ".finale__move", text: /Ring the drowned bell\s+CRITICAL SUCCESS!/
+    assert_select ".finale__move", text: /Ring the drowned bell\s+D\s+Deniz\s+CRITICAL SUCCESS!/
     assert_select ".roster__member", count: 2
   end
 
