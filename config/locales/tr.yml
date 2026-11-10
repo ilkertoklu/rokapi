@@ -539,6 +539,7 @@ tr:
       quest: Görev
       meta: "%{players} oyuncu · %{estimate} · %{tone} ton"
       players: Oyuncular
+      seats: "%{max} oyuncudan %{count}"
       you: SEN
       host: HOST
       no_character_yet: Karakterini henüz oluşturmadın

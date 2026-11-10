@@ -26,7 +26,8 @@
   <section>
     <header class="lobby-players__head">
       <h2 class="overline"><%= t(".players") %></h2>
-      <span><%= party.size %> / <%= game_session.max_players %></span>
+      <span aria-hidden="true"><%= party.size %> / <%= game_session.max_players %></span>
+      <span class="visually-hidden"><%= t(".seats", count: party.size, max: game_session.max_players) %></span>
     </header>
 
     <ol class="lobby-players">

@@ -19,6 +19,7 @@ class LobbyFlowTest < ActionDispatch::IntegrationTest
     assert_select ".lobby-quest p", text: "An old weather-reader who pleases no one"
     assert_select ".lobby-quest__meta", text: "5 players · ~15 min · balanced tone"
     assert_select ".lobby-players__head span", text: "2 / 5"
+    assert_select ".lobby-players__head .visually-hidden", text: "2 of 5 players"
 
     assert_select ".lobby-player:nth-child(1).lobby-player--ready" do
       assert_select ".lobby-player__name", text: /Ilker\s+· HOST/

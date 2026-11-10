@@ -520,6 +520,7 @@ en:
       quest: Quest
       meta: "%{players} players · %{estimate} · %{tone} tone"
       players: Players
+      seats: "%{count} of %{max} players"
       you: YOU
       host: HOST
       no_character_yet: You have not created your character yet
