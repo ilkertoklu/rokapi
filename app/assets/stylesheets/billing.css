@@ -388,5 +388,18 @@
         padding-block: .625rem;
       }
     }
+
+    .plan-overview:not(:has(.menu-row)) {
+      grid-template-columns: 1fr;
+
+      .subscription-actions {
+        align-items: flex-end;
+      }
+
+      .btn--primary {
+        inline-size: auto;
+        min-inline-size: 16rem;
+      }
+    }
   }
 }
