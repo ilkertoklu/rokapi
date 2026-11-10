@@ -540,9 +540,7 @@
       gap: 1rem;
 
       .pick {
-        align-items: flex-start;
-        min-block-size: 8rem;
-        padding: 1.5rem;
+        padding: 1.25rem 1.5rem;
       }
     }
 
