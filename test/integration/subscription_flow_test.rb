@@ -21,9 +21,19 @@ class SubscriptionFlowTest < ActionDispatch::IntegrationTest
     assert_select ".status-pill", count: 0
   end
 
+  test "the profile loads the subscription only once it shows" do
+    get my_profile_path
+    assert_select "turbo-frame#subscription[src=?][loading=lazy][target=_top]", subscription_path
+    assert_select ".subscription, .usage", count: 0
+
+    get subscription_path, headers: { "Turbo-Frame" => "subscription" }
+    assert_select "turbo-frame#subscription[target=_top] .usage"
+  end
+
   test "the apps restore purchases from the subscription, not the profile" do
     get my_profile_path, headers: { "User-Agent" => IOS }
     assert_select "form#purchasekit_paywall", count: 0
+    assert_select "turbo-frame", count: 0
 
     get subscription_path, headers: { "User-Agent" => IOS }
     assert_select "form#purchasekit_paywall", count: 1

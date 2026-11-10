@@ -3,9 +3,9 @@
 
 <%= render "back", to: my_profile_path, title: t(".title") %>
 
-<div class="plan-overview">
+<%= turbo_frame_tag :subscription, class: "plan-overview", target: "_top" do %>
   <%= render "subscription", subscription: @subscription %>
-</div>
+<% end %>
 
 <% if hotwire_native_app? %>
   <%= purchasekit_paywall customer_id: Current.user.payment_processor.id, class: "restore" do |paywall| %>

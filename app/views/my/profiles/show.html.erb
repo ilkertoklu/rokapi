@@ -21,10 +21,12 @@
     <span class="menu-row__chevron"><%= render "glyph", name: "forward" %></span>
   <% end %>
 
-  <section class="account__subscription">
-    <h2 class="field-label"><%= t(".subscription") %></h2>
-    <%= render "subscriptions/subscription", subscription: Current.user.subscription %>
-  </section>
+  <% unless hotwire_native_app? %>
+    <section class="account__subscription">
+      <h2 class="field-label"><%= t(".subscription") %></h2>
+      <%= turbo_frame_tag :subscription, src: subscription_path, loading: :lazy, refresh: :morph, target: "_top" %>
+    </section>
+  <% end %>
 
   <%= link_to my_settings_path, class: "menu-row" do %>
     <span class="menu-row__icon"><%= render "glyph", name: "sliders" %></span>
