@@ -1,41 +1,49 @@
 <% content_for :title, "#{t(".title")} · Rokapi" %>
+<% content_for :screen, "screen--medium" %>
 
-<%= render "back", to: root_path, title: t(".title") %>
+<div class="account">
+  <%= render "back", to: root_path, title: t(".title") %>
 
-<div class="identity">
-  <span class="identity__avatar"><%= Current.user.initial %></span>
-  <div>
-    <strong class="identity__name"><%= Current.user.name %></strong>
-    <span class="identity__email"><%= Current.user.email %></span>
+  <div class="identity">
+    <span class="identity__avatar"><%= Current.user.initial %></span>
+    <div>
+      <strong class="identity__name"><%= Current.user.name %></strong>
+      <span class="identity__email"><%= Current.user.email %></span>
+    </div>
   </div>
+
+  <%= link_to subscription_path, class: "menu-row menu-row--featured account__subscription-link" do %>
+    <span class="menu-row__icon"><%= render "glyph", name: "flame" %></span>
+    <span class="menu-row__body">
+      <span class="menu-row__title"><%= t(".subscription") %></span>
+      <span class="menu-row__text"><%= t(".subscription_text") %></span>
+    </span>
+    <span class="menu-row__chevron"><%= render "glyph", name: "forward" %></span>
+  <% end %>
+
+  <section class="account__subscription">
+    <h2 class="field-label"><%= t(".subscription") %></h2>
+    <%= render "subscriptions/subscription", subscription: Current.user.subscription %>
+  </section>
+
+  <%= link_to my_settings_path, class: "menu-row" do %>
+    <span class="menu-row__icon"><%= render "glyph", name: "sliders" %></span>
+    <span class="menu-row__body">
+      <span class="menu-row__title"><%= t(".settings") %></span>
+      <span class="menu-row__text"><%= t(".settings_text") %></span>
+    </span>
+    <span class="menu-row__chevron"><%= render "glyph", name: "forward" %></span>
+  <% end %>
+
+  <section>
+    <h2 class="field-label"><%= t(".language") %></h2>
+    <div class="segmented">
+      <% I18n.available_locales.each do |locale| %>
+        <%= button_to t("language_name", locale: locale), locale_path, method: :patch, params: { locale: locale },
+              class: "segment", lang: locale, aria: { current: locale == I18n.locale } %>
+      <% end %>
+    </div>
+  </section>
+
+  <%= button_to t(".sign_out"), session_path, method: :delete, class: "btn btn--secondary", form_class: "account__sign-out" %>
 </div>
-
-<%= link_to subscription_path, class: "menu-row menu-row--featured" do %>
-  <span class="menu-row__icon"><%= render "glyph", name: "flame" %></span>
-  <span class="menu-row__body">
-    <span class="menu-row__title"><%= t(".subscription") %></span>
-    <span class="menu-row__text"><%= t(".subscription_text") %></span>
-  </span>
-  <span class="menu-row__chevron"><%= render "glyph", name: "forward" %></span>
-<% end %>
-
-<%= link_to my_settings_path, class: "menu-row" do %>
-  <span class="menu-row__icon"><%= render "glyph", name: "sliders" %></span>
-  <span class="menu-row__body">
-    <span class="menu-row__title"><%= t(".settings") %></span>
-    <span class="menu-row__text"><%= t(".settings_text") %></span>
-  </span>
-  <span class="menu-row__chevron"><%= render "glyph", name: "forward" %></span>
-<% end %>
-
-<section>
-  <h2 class="field-label"><%= t(".language") %></h2>
-  <div class="segmented">
-    <% I18n.available_locales.each do |locale| %>
-      <%= button_to t("language_name", locale: locale), locale_path, method: :patch, params: { locale: locale },
-            class: "segment", lang: locale, aria: { current: locale == I18n.locale } %>
-    <% end %>
-  </div>
-</section>
-
-<%= button_to t(".sign_out"), session_path, method: :delete, class: "btn btn--secondary" %>

@@ -724,6 +724,7 @@ tr:
   subscriptions:
     show:
       title: Aboneliğim
+    subscription:
       renews: "Aylık · %{date}"
       ends: "%{date} tarihinde sona erer"
       active: Aktif

@@ -705,6 +705,7 @@ en:
   subscriptions:
     show:
       title: My subscription
+    subscription:
       renews: "Monthly · %{date}"
       ends: "Ends %{date}"
       active: Active

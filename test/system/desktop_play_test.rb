@@ -40,4 +40,16 @@ class DesktopPlayTest < ApplicationSystemTestCase
     find(".fate-card", text: "Surprise").click
     assert_selector ".fate-card--face-down:has(:checked)"
   end
+
+  test "the profile shows the subscription beside the account" do
+    sign_in_as users(:ilker)
+    visit my_profile_path
+    assert_link "My subscription"
+    assert_no_link "Upgrade your plan"
+
+    page.current_window.resize_to 1280, 800
+    assert_no_link "My subscription"
+    assert_selector ".usage"
+    assert_link "Upgrade your plan", href: subscriptions_paywall_path
+  end
 end

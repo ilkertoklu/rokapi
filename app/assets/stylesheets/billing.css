@@ -72,6 +72,11 @@
     opacity: .75;
   }
 
+  .plan-overview,
+  .subscription-actions {
+    display: contents;
+  }
+
   .subscription {
     padding: 1.125rem 1rem 1rem;
     background: var(--color-surface-sunken);
@@ -364,6 +369,23 @@
 
       > .note {
         grid-column: 1 / -1;
+      }
+    }
+
+    .plan-overview {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem 2.5rem;
+      align-items: start;
+    }
+
+    .subscription-actions {
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+
+      .btn--ghost {
+        padding-block: .625rem;
       }
     }
   }

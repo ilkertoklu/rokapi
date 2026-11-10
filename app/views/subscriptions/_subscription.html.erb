@@ -1,0 +1,56 @@
+<%# locals: (subscription:) -%>
+<% plan = Current.user.monthly_plan %>
+<section class="subscription">
+  <header class="subscription__plan">
+    <span class="subscription__icon"><%= render "glyph", name: "flame" %></span>
+    <div class="subscription__body">
+      <strong class="subscription__name"><%= plan.name %></strong>
+      <span class="subscription__terms">
+        <% if subscription.nil? %>
+          <%= plan.adventures %>
+        <% elsif subscription_ending?(subscription) %>
+          <%= t(".ends", date: subscription_renewal(subscription)) %>
+        <% else %>
+          <%= t(".renews", date: subscription_renewal(subscription)) %>
+        <% end %>
+      </span>
+    </div>
+    <% if subscription %>
+      <%= tag.span class: [ "status-pill", "status-pill--ending": subscription_ending?(subscription) ] do %>
+        <%= subscription_ending?(subscription) ? t(".ending") : t(".active") %>
+      <% end %>
+    <% end %>
+  </header>
+
+  <%= render "plans/usage", user: Current.user %>
+</section>
+
+<div class="subscription-actions">
+  <% if subscription %>
+    <%= link_to manage_subscription_url(subscription), class: "menu-row" do %>
+      <span class="menu-row__icon"><%= render "glyph", name: "swap" %></span>
+      <span class="menu-row__body">
+        <span class="menu-row__title"><%= t(".change") %></span>
+        <span class="menu-row__text"><%= Plan.paid.map(&:name).join(" · ") %></span>
+      </span>
+      <span class="menu-row__chevron"><%= render "glyph", name: "forward" %></span>
+    <% end %>
+
+    <% unless subscription_ending?(subscription) %>
+      <%= link_to t(".cancel"), manage_subscription_url(subscription), class: "btn btn--ghost" %>
+    <% end %>
+
+    <p class="note">
+      <%= render "glyph", name: "info" %>
+      <span><%= subscription_ending?(subscription) ? t(".ending_note", date: subscription_renewal(subscription)) : t(".cancel_note") %></span>
+    </p>
+  <% else %>
+    <%= link_to t(".upgrade"), subscriptions_paywall_path, class: "btn btn--primary" %>
+  <% end %>
+
+  <% if hotwire_native_app? %>
+    <%= purchasekit_paywall customer_id: Current.user.payment_processor.id, class: "restore" do |paywall| %>
+      <%= paywall.restore t(".restore"), url: subscriptions_restoration_path, class: "btn btn--ghost" %>
+    <% end %>
+  <% end %>
+</div>
