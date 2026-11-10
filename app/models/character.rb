@@ -29,6 +29,10 @@ class Character < ApplicationRecord
     traits.map(&:label).join(" · ")
   end
 
+  def race_and_klass
+    [ Race.fetch(race), Klass.fetch(klass) ].map(&:label).join(" · ")
+  end
+
   def traits
     [ Race.fetch(race), Klass.fetch(klass), Background.fetch(background) ]
   end

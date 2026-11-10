@@ -122,6 +122,10 @@ class CharacterTest < ActiveSupport::TestCase
     assert_equal 0, character.usable_item_count
   end
 
+  test "race and class name the character in short" do
+    assert_equal "Human · Warrior", characters(:ilker_hero).race_and_klass
+  end
+
   test "rejects unknown options" do
     character = build_character(@base.merge("strength" => 20), race: "orc")
     assert_not character.valid?

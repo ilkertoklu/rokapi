@@ -73,6 +73,18 @@ class GameSession < ApplicationRecord
     Length.fetch(length).scenes
   end
 
+  def tone_label
+    Tone.fetch(tone).label
+  end
+
+  def length_label
+    Length.fetch(length).label
+  end
+
+  def length_estimate
+    Length.fetch(length).estimate
+  end
+
   def cost
     RubyLLM::Cost.aggregate(conversations.includes(:ruby_llm_usages).map(&:cost))
   end

@@ -7,6 +7,11 @@ class ChoiceTest < ActiveSupport::TestCase
     @choice = @scene.choices.create! label: "Force the drawer open", stat: "strength", modifier: 3, target: 14
   end
 
+  test "the stat is named in the page language" do
+    assert_equal "Strength", @choice.stat_label
+    I18n.with_locale(:tr) { assert_equal "Güç", @choice.stat_label }
+  end
+
   test "choose marks the choice and moves the scene to rolling" do
     @choice.choose
 

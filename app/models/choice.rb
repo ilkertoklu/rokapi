@@ -30,6 +30,10 @@ class Choice < ApplicationRecord
     I18n.t(difficulty, scope: "choice.difficulties")
   end
 
+  def stat_label
+    Character::Stat.fetch(stat).label
+  end
+
   def chosen?
     chosen_at.present?
   end

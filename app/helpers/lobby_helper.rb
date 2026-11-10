@@ -1,13 +1,12 @@
 module LobbyHelper
   def lobby_meta(game_session)
     t("game_sessions.lobby.meta", players: game_session.max_players,
-      estimate: GameSession::Length.fetch(game_session.length).estimate,
-      tone: GameSession::Tone.fetch(game_session.tone).label.downcase)
+      estimate: game_session.length_estimate, tone: game_session.tone_label.downcase)
   end
 
   def lobby_player_line(player, you:)
     if player.character
-      [ Character::Race.fetch(player.character.race).label, Character::Klass.fetch(player.character.klass).label ].join(" · ")
+      player.character.race_and_klass
     elsif you
       t("game_sessions.lobby.no_character_yet")
     elsif !player.host? && player.created_at.after?(1.minute.ago)

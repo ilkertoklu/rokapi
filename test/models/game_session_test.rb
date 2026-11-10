@@ -24,6 +24,12 @@ class GameSessionTest < ActiveSupport::TestCase
     assert_equal "Surprise adventure", GameSession.new(surprise: true).title
   end
 
+  test "tone and length are named in the page language" do
+    game_session = GameSession.new(tone: "dark", length: "long")
+
+    assert_equal [ "Dark", "Long", "~60 min" ], [ game_session.tone_label, game_session.length_label, game_session.length_estimate ]
+  end
+
   test "a picked card is played as it was shown, with a twist drawn on the server" do
     game_session = GameSession.create!(creator: users(:ilker), card: "salt_caves lost_messenger old_captain")
 

@@ -1,10 +1,9 @@
 <%# locals: (scene:) -%>
 <% game_session = scene.game_session %>
-<% length = GameSession::Length.fetch(game_session.length) %>
 <header class="location">
   <div class="location__place">
     <h1><%= game_session.title %></h1>
-    <p><%= GameSession::Tone.fetch(game_session.tone).label %> · <%= length.label %> · <%= length.estimate %></p>
+    <p><%= game_session.tone_label %> · <%= game_session.length_label %> · <%= game_session.length_estimate %></p>
   </div>
 </header>
 
