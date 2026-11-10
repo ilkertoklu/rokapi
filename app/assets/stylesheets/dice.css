@@ -377,10 +377,12 @@
     }
 
     .outcome__resolution {
+      align-self: center;
       max-inline-size: 280px;
       margin-block-start: 1.25rem;
       font-size: 1rem;
       line-height: 1.6;
+      text-align: center;
     }
   }
 
@@ -388,6 +390,23 @@
     inline-size: 100%;
     max-inline-size: 300px;
     margin-block-start: 1.5rem;
+  }
+
+  @media (min-width: 64rem) {
+    .outcome {
+      padding-inline: 2.5rem;
+    }
+
+    .outcome__resolution {
+      align-self: stretch;
+      font-size: 1.1875rem;
+      line-height: 1.72;
+      text-align: start;
+    }
+
+    .outcome__resolution + .outcome__resolution {
+      margin-block-start: .875rem;
+    }
   }
 
   @keyframes dice-roll {

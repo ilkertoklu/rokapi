@@ -576,8 +576,17 @@
       mask-image: none;
     }
 
-    .narration__body {
+    .narration__body,
+    .finale__closing {
       font-size: 1.1875rem;
+    }
+
+    .finale {
+      padding-inline: 2.5rem;
+    }
+
+    .finale__closing {
+      text-align: start;
     }
 
     .narration ~ .stage__footer {
