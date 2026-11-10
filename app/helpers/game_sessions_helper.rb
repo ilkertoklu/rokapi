@@ -26,7 +26,7 @@ module GameSessionsHelper
   def resume_summary(game_session)
     scene = game_session.current_scene
 
-    [ scene&.title.presence || game_session.title, scene&.location,
+    [ scene&.heading || game_session.title, scene&.location,
       l(game_session.updated_at, format: :resume) ].compact_blank.join(" · ")
   end
 end

@@ -1,7 +1,7 @@
 <%# locals: (scene:) -%>
 <header class="location">
   <div class="location__place">
-    <h1><%= scene.title.presence || scene.game_session.title %></h1>
+    <h1><%= scene.heading %></h1>
     <p><%= [ scene.location, scene.counter ].compact_blank.join(" · ") %></p>
   </div>
 

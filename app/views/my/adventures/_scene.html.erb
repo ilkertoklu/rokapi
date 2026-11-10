@@ -3,7 +3,7 @@
 <section class="adventure__scene">
   <header>
     <p class="adventure__place"><%= [ scene.counter, scene.location ].compact_blank.join(" · ") %></p>
-    <h2><%= scene.title.presence || scene.game_session.title %></h2>
+    <h2><%= scene.heading %></h2>
   </header>
 
   <% unless scene.finale? && roll.nil? %>

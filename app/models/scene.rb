@@ -33,6 +33,10 @@ class Scene < ApplicationRecord
     broadcast_narration
   end
 
+  def heading
+    title.presence || game_session.title
+  end
+
   def turn_of?(player)
     active_player == player
   end
