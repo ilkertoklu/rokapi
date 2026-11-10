@@ -546,6 +546,10 @@ tr:
       start: Yeni macera kur
       join: Kod ile katıl
 
+  layouts:
+    application:
+      profile: Profil
+
   login_code_mailer:
     code:
       subject: "Rokapi kodun: %{code}"

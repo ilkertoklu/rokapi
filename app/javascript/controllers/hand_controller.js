@@ -5,7 +5,9 @@ export default class extends Controller {
 
   connect() {
     this.observer = new IntersectionObserver(entries => {
-      entries.filter(entry => entry.isIntersecting).forEach(entry => entry.target.control.checked = true)
+      if (this.#isScrollable) {
+        entries.filter(entry => entry.isIntersecting).forEach(entry => entry.target.control.checked = true)
+      }
       this.#markCurrentDot()
     }, { root: this.deckTarget, threshold: .9 })
 
@@ -19,6 +21,10 @@ export default class extends Controller {
   bring({ target }) {
     target.closest("label").scrollIntoView({ block: "nearest", inline: "nearest" })
     this.#markCurrentDot()
+  }
+
+  get #isScrollable() {
+    return this.deckTarget.scrollWidth > this.deckTarget.clientWidth
   }
 
   #markCurrentDot() {
