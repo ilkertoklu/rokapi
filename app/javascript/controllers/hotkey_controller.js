@@ -9,7 +9,11 @@ export default class extends Controller {
   }
 
   get #isClickable() {
-    return this.element.checkVisibility() && !this.element.disabled && !this.#isBehindModal
+    return this.#isRendered && !this.element.disabled && !this.#isBehindModal
+  }
+
+  get #isRendered() {
+    return this.element.checkVisibility?.() ?? this.element.getClientRects().length > 0
   }
 
   get #isBehindModal() {
