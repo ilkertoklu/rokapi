@@ -16,7 +16,7 @@ module GameSessionsHelper
 
   def finale_share_text(game_session)
     outcome = t(game_session.outcome, scope: "game_session.outcomes")
-    highlights = [ game_session.title, duration_label(game_session.duration), t("game_session.rolls", count: game_session.rolls.count) ].join(" · ")
+    highlights = [ game_session.title, duration_label(game_session.duration), t("game_session.rolls", count: game_session.dice_rolled) ].join(" · ")
 
     party = t("game_session.party", names: game_session.party.map(&:name).join(", ")) if game_session.multiplayer?
 

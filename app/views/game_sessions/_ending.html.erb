@@ -1,7 +1,7 @@
 <%# locals: (game_session:, titled: true) -%>
 <% finale = game_session.current_scene %>
 <% roll = finale.roll %>
-<% survivors = game_session.survivors if game_session.multiplayer? %>
+<% party = game_session.party.to_a if game_session.multiplayer? %>
 
 <div class="finale">
   <div class="finale__crest">
@@ -32,12 +32,12 @@
       <span><%= t(".duration") %></span>
     </div>
     <div>
-      <strong><%= game_session.rolls.count %></strong>
+      <strong><%= game_session.dice_rolled %></strong>
       <span><%= t(".dice_rolled") %></span>
     </div>
     <% if game_session.multiplayer? %>
       <div>
-        <strong><%= survivors.size %></strong>
+        <strong><%= party.reject(&:fallen?).size %></strong>
         <span><%= t(".alive") %></span>
       </div>
     <% end %>
@@ -45,8 +45,8 @@
 
   <% if game_session.multiplayer? %>
     <ul class="roster">
-      <% game_session.party.each_with_index do |player, seat| %>
-        <%= tag.li class: [ "roster__member", "roster__member--fallen": !survivors.include?(player) ] do %>
+      <% party.each_with_index do |player, seat| %>
+        <%= tag.li class: [ "roster__member", "roster__member--fallen": player.fallen? ] do %>
           <%= player_avatar player, seat: seat, hidden: true %>
           <span><%= player.name %></span>
         <% end %>

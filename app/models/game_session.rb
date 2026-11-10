@@ -65,8 +65,8 @@ class GameSession < ApplicationRecord
     scenes.create!(position: scenes.maximum(:position).to_i + 1, active_player: next_active_player).narrate_later
   end
 
-  def survivors
-    party.select { |player| player.character&.hp&.positive? }
+  def dice_rolled
+    @dice_rolled ||= rolls.count
   end
 
   def scene_budget

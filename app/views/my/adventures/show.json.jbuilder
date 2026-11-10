@@ -21,9 +21,8 @@ json.scenes @scenes do |scene|
   end
 end
 
-survivors = @adventure.survivors
 json.party @adventure.party do |player|
   json.name player.name
   json.summary player.character&.summary
-  json.alive survivors.include?(player)
+  json.alive !player.fallen?
 end

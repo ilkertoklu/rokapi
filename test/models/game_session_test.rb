@@ -424,11 +424,19 @@ class GameSessionTest < ActiveSupport::TestCase
     assert_equal users(:deniz), first.host.user
   end
 
-  test "survivors are the players whose characters still stand" do
+  test "a fallen player is one whose character has no health left" do
     room = finished_room
     players(:deniz_room_guest).character.update! hp: 0
 
-    assert_equal [ players(:ilker_room_host) ], room.survivors
+    assert_equal [ false, true ], room.party.map(&:fallen?)
+  end
+
+  test "dice rolled counts every roll of the adventure" do
+    game_session = game_sessions(:ilker_solo)
+    roll_in game_session, position: 1
+    roll_in game_session, position: 2
+
+    assert_equal 2, game_session.dice_rolled
   end
 
   private

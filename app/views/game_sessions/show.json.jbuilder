@@ -35,10 +35,9 @@ end
 
 json.scenes @game_session.scenes.chronological, partial: "scenes/scene", as: :scene
 
-survivors = @game_session.survivors
 json.party @game_session.party do |player|
   json.name player.name
   json.summary player.character&.summary
   json.you player == @player
-  json.alive survivors.include?(player)
+  json.alive !player.fallen?
 end
