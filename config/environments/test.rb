@@ -54,4 +54,7 @@ Rails.application.configure do
   config.active_record.encryption.primary_key = "test-primary-key"
   config.active_record.encryption.deterministic_key = "test-deterministic-key"
   config.active_record.encryption.key_derivation_salt = "test-key-derivation-salt"
+
+  config.mission_control.jobs.http_basic_auth_user = "dev"
+  config.mission_control.jobs.http_basic_auth_password = "secret"
 end

@@ -73,3 +73,5 @@ gem "ruby_llm", "~> 2.1"
 # In-app subscriptions through the App Store and Google Play [https://purchasekit.com]
 gem "pay", "~> 12.3"
 gem "purchasekit", "~> 0.9"
+
+gem "mission_control-jobs", "~> 1.3"

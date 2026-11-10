@@ -80,4 +80,7 @@ Rails.application.configure do
   # config.generators.apply_rubocop_autocorrect_after_generate!
 
   config.x.narrator_command = ENV["NARRATOR_COMMAND"].presence
+
+  config.mission_control.jobs.http_basic_auth_user = "dev"
+  config.mission_control.jobs.http_basic_auth_password = "secret"
 end

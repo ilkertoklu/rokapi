@@ -24,6 +24,8 @@ module Rokapi
     config.i18n.available_locales = %i[ en tr ]
     config.i18n.default_locale = :en
 
+    config.mission_control.jobs.base_controller_class = "ActionController::Base"
+
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
   end

@@ -57,6 +57,7 @@ Rails.application.routes.draw do
   end
 
   mount PurchaseKit::Engine, at: "/purchasekit"
+  mount MissionControl::Jobs::Engine, at: "/jobs"
 
   namespace :hotwire_native do
     resource :path_configuration, only: :show
