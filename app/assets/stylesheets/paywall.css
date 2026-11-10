@@ -28,8 +28,8 @@
   }
 
   .plan-option__input:focus-visible + .plan-option {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
+    outline: var(--focus-ring-size) solid var(--focus-ring-color);
+    outline-offset: var(--focus-ring-offset);
   }
 
   .plan-option__input:disabled + .plan-option {
