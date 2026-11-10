@@ -1,5 +1,5 @@
 <%# locals: (roll:, game_session:) -%>
-<div class="outcome outcome--<%= roll.success? ? "success" : "failure" %>">
+<%= tag.div class: [ "outcome", roll.success? ? "outcome--success" : "outcome--failure" ] do %>
   <%= render "rolls/die", roll: roll %>
 
   <p class="outcome__math">
@@ -30,7 +30,7 @@
       <span class="outcome__gain-name"><%= status["name"] %></span>
     <% end %>
   <% end %>
-</div>
+<% end %>
 
 <div class="stage__footer">
   <%= button_to game_session_acknowledgement_path(game_session), class: "btn btn--primary",
