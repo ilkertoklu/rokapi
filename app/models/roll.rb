@@ -74,7 +74,7 @@ class Roll < ApplicationRecord
     transaction do
       ending = ending_with(effects)
 
-      update! resolution: resolution, effects: recorded(effects.to_h)
+      update! resolution: resolution, effects: recorded(effects.to_h), stalled_at: nil
       character.status_effects.each(&:tick)
       apply_effects
       scene.conclude ending if ending

@@ -50,6 +50,15 @@ class RollTest < ActiveSupport::TestCase
     assert_equal [ "Soaked Through" ], roll.statuses_gained.pluck("name")
   end
 
+  test "an outcome that lands after a stall is no longer stalled" do
+    roll = roll_with(value: 15, target: 12)
+    roll.stall_narration
+
+    roll.resolve resolution: "The door gives.", effects: {}
+
+    assert_not roll.reload.stalled?
+  end
+
   test "health follows the grade" do
     success = roll_with(value: 20, target: 12)
     success.resolve resolution: "You fly through.", effects: { "hp" => -4 }

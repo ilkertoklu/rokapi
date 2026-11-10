@@ -50,6 +50,16 @@ class Scene::NarrateJobTest < ActiveJob::TestCase
     assert @game_session.current_scene.stalled?
   end
 
+  test "a stalled scene retried once the narrator is back is no longer stalled" do
+    @scene.stall_narration
+
+    stub_understudy(SCENE_RESPONSE) { Scene::NarrateJob.new(@scene).perform_now }
+
+    assert @scene.reload.choosing?
+    assert_not @scene.stalled?
+    assert_nil @game_session.stalled_narration
+  end
+
   test "a narration queued for a game its host deleted is dropped quietly" do
     @scene.narrate_later
     users(:ilker).destroy!

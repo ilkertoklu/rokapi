@@ -18,7 +18,7 @@ class Scene < ApplicationRecord
 
   def write(narration:, effects:, **attributes)
     transaction do
-      update! narration: narration, effects: recorded(effects.to_h), **attributes
+      update! narration: narration, effects: recorded(effects.to_h), stalled_at: nil, **attributes
       apply_effects
     end
   end
