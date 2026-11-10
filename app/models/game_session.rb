@@ -1,19 +1,11 @@
 class GameSession < ApplicationRecord
-  class NotFound < StandardError; end
-  class Full < StandardError; end
   class NotReady < StandardError; end
 
-  include Clues, Planned
-
-  PARTY_SIZE = 5
-  CODE_LENGTH = 4
-  JOINABLE_FOR = 24.hours
-  LATEST = 5
-
   belongs_to :creator, class_name: "User", default: -> { Current.user }
-  belongs_to :rematch_of, class_name: "GameSession", optional: true
 
-  has_one :rematch, class_name: "GameSession", foreign_key: :rematch_of_id, inverse_of: :rematch_of
+  include Clues, Dealt, Joinable, Planned, Rematchable
+
+  LATEST = 5
 
   has_many :scenes, dependent: :destroy
   has_many :choices, through: :scenes
@@ -28,41 +20,14 @@ class GameSession < ApplicationRecord
 
   attribute :locale, default: -> { I18n.locale }
 
-  validates :place, inclusion: { in: Place.keys }, on: :create
-  validates :trouble, inclusion: { in: Trouble.keys }, on: :create
-  validates :figure, inclusion: { in: Figure.keys }, on: :create
-  validates :twist, inclusion: { in: Twist.keys }, on: :create
   validates :locale, inclusion: { in: I18n.available_locales.map(&:to_s) }
-  validates :max_players, inclusion: { in: [ 1, PARTY_SIZE ] }
 
   scope :ongoing, -> { where(ended_at: nil) }
   scope :finished, -> { where.not(ended_at: nil) }
   scope :unstarted, -> { where(started_at: nil) }
-  scope :rooms, -> { where.not(code: nil) }
   scope :latest, -> { order(created_at: :desc).limit(LATEST) }
 
-  before_validation :deal_card, on: :create, unless: :place?
-  before_validation :draw_twist, on: :create, unless: :twist?
-  before_create :assign_code, if: -> { max_players > 1 }
   after_create -> { players.create!(user: creator) }
-  after_create_commit -> { rematch_of.broadcast_refresh }, if: :rematch_of
-
-  def self.open_for_join(code)
-    rooms.unstarted.where(created_at: JOINABLE_FOR.ago..).find_by(code: code) || raise(NotFound)
-  end
-
-  def title
-    super.presence || (surprise? ? I18n.t("game_session.surprise_title") : card.place.text)
-  end
-
-  def card
-    Card.new(place: Place.fetch(place), trouble: Trouble.fetch(trouble), figure: Figure.fetch(figure))
-  end
-
-  def card=(key)
-    self.surprise = key.blank?
-    self.place, self.trouble, self.figure = key.to_s.split
-  end
 
   def player_for(user)
     players.find_by(user: user)
@@ -74,24 +39,6 @@ class GameSession < ApplicationRecord
 
   def party
     players.in_join_order.includes(:user, :character)
-  end
-
-  def multiplayer?
-    code.present?
-  end
-
-  def lobby?
-    multiplayer? && !started?
-  end
-
-  def full?
-    players.count >= max_players
-  end
-
-  def join(user)
-    with_lock do
-      player_for(user) || enroll(user)
-    end
   end
 
   def everyone_ready?
@@ -115,14 +62,6 @@ class GameSession < ApplicationRecord
 
   def advance
     scenes.create!(position: scenes.maximum(:position).to_i + 1, active_player: next_active_player).narrate_later
-  end
-
-  def start_rematch(by:)
-    with_lock do
-      rematch || create_rematch!(creator: by, surprise: surprise, tone: tone, length: length, locale: locale, max_players: max_players).tap do |room|
-        party.reject(&:departed?).each { |player| room.players.create!(user: player.user) unless player.user == by }
-      end
-    end
   end
 
   def survivors
@@ -158,10 +97,6 @@ class GameSession < ApplicationRecord
     ended_at - started_at
   end
 
-  def new_place_for?(user)
-    finished? && user.game_sessions.finished.where(place: place, ended_at: ...ended_at).none?
-  end
-
   def resume_narration
     if (stalled = stalled_narration)
       stalled.resume_narration
@@ -171,28 +106,6 @@ class GameSession < ApplicationRecord
   end
 
   private
-    def deal_card
-      self.place, self.trouble, self.figure = Card.deal(1, to: creator).first.keys
-    end
-
-    def draw_twist
-      self.twist = Trouble[trouble]&.twists&.sample
-    end
-
-    def assign_code
-      self.code = loop do
-        candidate = SecureRandom.random_number(10**CODE_LENGTH).to_s.rjust(CODE_LENGTH, "0")
-        break candidate unless GameSession.unstarted.exists?(code: candidate)
-      end
-    end
-
-    def enroll(user)
-      raise NotFound if started?
-      raise Full if full?
-
-      players.create!(user: user)
-    end
-
     def begin_play
       update! started_at: Time.current
       advance
