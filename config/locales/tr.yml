@@ -578,6 +578,19 @@ tr:
         title: Maceralarım
         empty: Bitirdiğin maceralar yeniden okuman için burada saklanır.
         start: Yeni macera kur
+    places:
+      index:
+        title: Gördüğüm yerler
+        tally_html: "%{total} yerden %{seen}"
+        hint: Yeni bir yerde bir macera bitirdiğinde adı burada belirir.
+        unseen: Henüz görülmedi
+        adventures:
+          one: "%{count} macera"
+          other: "%{count} macera"
+      show:
+        troubles: Karşılaştığın dertler
+        figures: Tanıştığın kişiler
+        adventures: Burada geçen maceralar
     accounts:
       confirmation_word: SİL
       show:
@@ -627,6 +640,8 @@ tr:
         settings_text: İsim ve e-posta
         adventures: Maceralarım
         adventures_text: Bitirdiğin hikâyeler, yeniden okumak için
+        places: Gördüğüm yerler
+        places_text: Gezdiğin yerler ve henüz görmediklerin
         language: Dil
         sign_out: Çıkış yap
     settings:

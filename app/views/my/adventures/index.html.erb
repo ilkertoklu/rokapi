@@ -5,18 +5,7 @@
 
 <% if @adventures.present? %>
   <ul class="shelf">
-    <% @adventures.each do |adventure| %>
-      <li>
-        <%= link_to my_adventure_path(adventure), class: "menu-row shelf__adventure" do %>
-          <span class="menu-row__body">
-            <%= tag.span t(adventure.outcome, scope: "game_session.outcomes"), class: [ "shelf__outcome", "shelf__outcome--#{adventure.outcome}", "overline" ] %>
-            <span class="shelf__title"><%= adventure.title %></span>
-            <span class="menu-row__text"><%= adventure_summary(adventure) %></span>
-          </span>
-          <span class="menu-row__chevron"><%= render "glyph", name: "forward" %></span>
-        <% end %>
-      </li>
-    <% end %>
+    <%= render partial: "my/adventures/adventure", collection: @adventures %>
   </ul>
 <% else %>
   <p class="hint"><%= t(".empty") %></p>

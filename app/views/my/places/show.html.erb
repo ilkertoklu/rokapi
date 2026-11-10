@@ -1,0 +1,33 @@
+<% content_for :title, "#{@place.text} · Rokapi" %>
+<% content_for :screen, "screen--medium" %>
+
+<%= render "back", to: my_places_path, title: t("my.places.index.title") %>
+
+<article class="place-story">
+  <h2 class="place-story__name"><%= @place.text %></h2>
+
+  <section>
+    <h3 class="field-label"><%= t(".troubles") %></h3>
+    <ul class="place-story__troubles">
+      <% @troubles.each do |trouble| %>
+        <li><%= trouble.text %></li>
+      <% end %>
+    </ul>
+  </section>
+
+  <section>
+    <h3 class="field-label"><%= t(".figures") %></h3>
+    <ul class="place-story__figures">
+      <% @figures.each do |figure| %>
+        <li><%= figure.text %></li>
+      <% end %>
+    </ul>
+  </section>
+
+  <section>
+    <h3 class="field-label"><%= t(".adventures") %></h3>
+    <ul class="shelf">
+      <%= render partial: "my/adventures/adventure", collection: @adventures %>
+    </ul>
+  </section>
+</article>

@@ -559,6 +559,19 @@ en:
         title: My adventures
         empty: Adventures you finish are kept here to read again.
         start: Start a new adventure
+    places:
+      index:
+        title: Places seen
+        tally_html: "%{seen} of %{total}"
+        hint: Finish an adventure somewhere new and it is named here.
+        unseen: Not seen yet
+        adventures:
+          one: "%{count} adventure"
+          other: "%{count} adventures"
+      show:
+        troubles: Troubles you faced
+        figures: People you met
+        adventures: Adventures played here
     accounts:
       confirmation_word: DELETE
       show:
@@ -608,6 +621,8 @@ en:
         settings_text: Name and email
         adventures: My adventures
         adventures_text: Finished stories to read again
+        places: Places seen
+        places_text: Where you have been, and what is left
         language: Language
         sign_out: Sign out
     settings:

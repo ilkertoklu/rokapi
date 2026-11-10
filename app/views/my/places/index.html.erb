@@ -1,0 +1,28 @@
+<% content_for :title, "#{t(".title")} · Rokapi" %>
+<% content_for :screen, "screen--medium" %>
+
+<%= render "back", to: my_profile_path, title: t(".title") %>
+
+<div class="atlas">
+  <p class="atlas__tally"><%= t(".tally_html", seen: tag.strong(@adventure_counts.size), total: @places.size) %></p>
+  <% if @adventure_counts.size < @places.size %>
+    <p class="hint"><%= t(".hint") %></p>
+  <% end %>
+</div>
+
+<ul class="places">
+  <% @places.each do |place| %>
+    <% if (count = @adventure_counts[place.key]) %>
+      <li>
+        <%= link_to my_place_path(place.key), class: "place" do %>
+          <span class="place__name"><%= place.text %></span>
+          <span class="place__count"><%= t(".adventures", count: count) %></span>
+        <% end %>
+      </li>
+    <% else %>
+      <li class="place place--unseen" title="<%= t(".unseen") %>">
+        <span class="place__name"><%= t(".unseen") %></span>
+      </li>
+    <% end %>
+  <% end %>
+</ul>
