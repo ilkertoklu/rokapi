@@ -8,11 +8,11 @@ class Choice < ApplicationRecord
 
   normalizes :target, with: ->(target) { target.clamp(DIFFICULTY) }
 
+  scope :chosen, -> { where.not(chosen_at: nil) }
+
   def self.target_for(difficulty)
     TARGETS.fetch(difficulty.to_s.strip.downcase) { Integer(difficulty, exception: false) || TARGETS.fetch("medium") }
   end
-
-  scope :chosen, -> { where.not(chosen_at: nil) }
 
   def stat_value
     scene.active_player.character.stats.fetch(stat)
