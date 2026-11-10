@@ -21,4 +21,15 @@ class BadgesTest < ApplicationSystemTestCase
       assert_text "Won the finale on a natural 20."
     end
   end
+
+  test "the finale names the new badge and leads to it on the profile" do
+    sign_in_as users(:ilker)
+
+    visit game_session_path(game_sessions(:ilker_solo))
+    assert_selector ".finale__outcome", text: "VICTORY"
+    assert_selector ".finale__new-badges", text: "A new badge: A 20 at the end"
+
+    click_on "A 20 at the end"
+    assert_selector ".badges .badge", text: "A 20 at the end"
+  end
 end

@@ -67,6 +67,69 @@ class BadgesFlowTest < ActionDispatch::IntegrationTest
     assert_select ".badge", count: 5
   end
 
+  test "the finale names a badge earned for the first time, once" do
+    tell_adventure @solo, title: "The Lighthouse Boy", turns: [ [ @host, "The Inn", "Read the ledger", 4 ], [ @host, "The Stair", "Climb the broken stair", 20 ] ]
+    sign_in_as users(:ilker)
+
+    get game_session_path(@solo)
+    assert_select ".finale__new-badges", text: "A new badge: A 20 at the end"
+    assert_select ".finale__new-badges a[href=?]", my_profile_path(anchor: "badges")
+
+    get my_adventure_path(@solo)
+    assert_select ".finale__outcome", text: "Victory"
+    assert_select ".finale__new-badges", count: 0
+
+    again = GameSession.create!(creator: users(:ilker), place: "salt_caves", trouble: "fever", figure: "hermit")
+    ready_warrior again.host
+    tell_adventure again, title: "Again", turns: [ [ again.host, "The Cave", "Climb", 4 ], [ again.host, "The Pit", "Leap", 20 ] ]
+
+    get game_session_path(again)
+    assert_select ".finale__outcome", text: "Victory"
+    assert_select ".finale__new-badges", count: 0
+
+    get my_profile_path
+    assert_select ".badge", count: 1
+  end
+
+  test "the finale names several badges in one line, in the player's own language" do
+    @solo.update! surprise: true
+    tell_adventure @solo, title: "The Lighthouse Boy", turns: [ [ @host, "The Stair", "Climb the broken stair", 20 ] ]
+    sign_in_as users(:ilker)
+
+    get game_session_path(@solo)
+    assert_select ".finale__new-badges", text: "New badges: A 20 at the end, Surprise, Every roll"
+
+    patch locale_path, params: { locale: "tr" }
+    get game_session_path(@solo)
+    assert_select ".finale__new-badges", text: "Yeni rozetler: Sonda 20, Sürpriz, Her zar tuttu"
+  end
+
+  test "a party's finale names each player's own badges" do
+    room = game_sessions(:ilker_room)
+    host, guest = players(:ilker_room_host), players(:deniz_room_guest)
+    [ host, guest ].each { ready_warrior it }
+    guest.character.update! hp: 1
+    tell_adventure room, title: "The Drowned Bell", turns: [ [ guest, "The Quay", "Hail the ferryman", 14 ], [ host, "The Belfry", "Ring the drowned bell", 20 ] ]
+
+    sign_in_as users(:ilker)
+    get game_session_path(room)
+    assert_select ".finale__new-badges", text: "New badges: A 20 at the end, Every roll"
+
+    sign_in_as users(:deniz)
+    get game_session_path(room)
+    assert_select ".finale__new-badges", text: "New badges: One health left, Every roll"
+  end
+
+  test "an adventure that earns nothing new says nothing" do
+    tell_adventure @solo, title: "The Lighthouse Boy", outcome: "defeat", turns: [ [ @host, "The Inn", "Read the ledger", 4 ] ]
+    sign_in_as users(:ilker)
+
+    get game_session_path(@solo)
+
+    assert_select ".finale__outcome", text: "Defeat"
+    assert_select ".finale__new-badges", count: 0
+  end
+
   private
     def count_queries(&block)
       count = 0

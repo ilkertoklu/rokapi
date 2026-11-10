@@ -474,6 +474,9 @@ tr:
       share_summary: Özeti paylaş
       back_home: Ana ekrana dön
       new_place_html: "Yeni bir mekân: %{place}"
+      new_badges_html:
+        one: "Yeni bir rozet: %{badges}"
+        other: "Yeni rozetler: %{badges}"
     opening:
       narrator: Anlatıcı
       getting_ready: Anlatıcı hazırlanıyor

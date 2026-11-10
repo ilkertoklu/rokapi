@@ -49,4 +49,19 @@
     line-height: 1.4;
     color: var(--color-ink-soft);
   }
+
+  .finale__new-badges {
+    margin: 0 0 .25rem;
+    color: var(--color-ink-soft);
+    font-size: .8125rem;
+    text-align: center;
+
+    a {
+      color: var(--color-accent-bright);
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: .9375rem;
+      text-decoration: none;
+    }
+  }
 }

@@ -5,6 +5,9 @@
   <% if game_session.new_place_for?(Current.user) %>
     <p class="finale__new-place"><%= t(".new_place_html", place: link_to(game_session.card.place.text, my_place_path(game_session.place))) %></p>
   <% end %>
+  <% if (badges = Current.user.badges.first_earned_in(game_session)).any? %>
+    <p class="finale__new-badges"><%= t(".new_badges_html", count: badges.size, badges: link_to(badges.map(&:name).join(", "), my_profile_path(anchor: "badges"))) %></p>
+  <% end %>
   <% if game_session.multiplayer? %>
     <%= button_to t(".new_adventure"), game_session_rematch_path(game_session), class: "btn btn--primary" %>
   <% else %>

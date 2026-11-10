@@ -455,6 +455,9 @@ en:
       share_summary: Share summary
       back_home: Back to home
       new_place_html: "A new place: %{place}"
+      new_badges_html:
+        one: "A new badge: %{badges}"
+        other: "New badges: %{badges}"
     opening:
       narrator: Narrator
       getting_ready: The narrator is getting ready
