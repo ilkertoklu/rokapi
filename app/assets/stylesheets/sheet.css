@@ -62,6 +62,7 @@
     border: 0;
     background: rgba(8, 6, 4, .85);
     cursor: pointer;
+    touch-action: none;
   }
 
   .sheet__panel {
@@ -72,6 +73,7 @@
     margin-inline: auto;
     padding: .9rem 1.5rem calc(1rem + env(safe-area-inset-bottom));
     overflow-y: auto;
+    overscroll-behavior: contain;
     background: var(--color-surface-sunken);
     border-radius: 32px 32px 0 0;
     box-shadow: 0 -24px 50px -10px rgba(0, 0, 0, .6);
@@ -93,6 +95,7 @@
     background: none;
     border: 0;
     cursor: pointer;
+    touch-action: none;
 
     .grip {
       margin-block-start: 9px;

@@ -1,9 +1,10 @@
 <%# locals: (character:) -%>
 <dialog id="character_sheet" class="sheet" aria-labelledby="character_sheet_name"
-        data-sheet-target="sheet" data-action="close->sheet#returnFocus turbo:before-morph-attribute->sheet#keepOpen:self">
-  <button class="sheet__scrim" tabindex="-1" data-action="sheet#close" aria-label="<%= t(".close") %>"></button>
+        data-sheet-target="sheet" data-action="close->sheet#returnFocus cancel->sheet#dismiss click->sheet#ignoreClickAfterDrag:capture turbo:before-morph-attribute->sheet#keepOpen:self">
+  <button class="sheet__scrim" tabindex="-1" data-sheet-target="scrim" data-action="sheet#close" aria-label="<%= t(".close") %>"></button>
 
-  <div class="sheet__panel">
+  <div class="sheet__panel" data-sheet-target="panel"
+       data-action="pointerdown->sheet#grab pointermove->sheet#drag pointerup->sheet#release pointercancel->sheet#release touchmove->sheet#holdPage:!passive">
     <button class="sheet__handle" autofocus data-action="sheet#close" aria-label="<%= t(".close") %>"><span class="grip"></span></button>
 
     <header class="sheet__header">
