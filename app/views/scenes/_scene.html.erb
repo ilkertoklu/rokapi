@@ -7,10 +7,7 @@
 <% end %>
 
 <div class="narration">
-  <p class="scene__speaker"><span class="ember <%= "ember--pulsing" if scene.narrator_writing? %>"></span> <%= t(".narrator") %></p>
-  <%= tag.div id: "scene_narration", class: [ "narration__body", "narration__body--writing": scene.narrator_writing? ] do %>
-    <%= render "scenes/narration", scene: scene %>
-  <% end %>
+  <%= render "scenes/narrator", scene: scene %>
 
   <% if party %>
     <%= render "scenes/feed", scene: scene %>

@@ -459,7 +459,6 @@ en:
         one: "A new badge: %{badges}"
         other: "New badges: %{badges}"
     opening:
-      narrator: Narrator
       getting_ready: The narrator is getting ready
     stalled:
       try_again: Try again
@@ -724,11 +723,12 @@ en:
     feed:
       added_to_inventory: Added to inventory
       found_by: "%{item} · found by %{name}"
+    narrator:
+      name: Narrator
     party:
       others: Next up
       turn_of: "%{name} turn"
     scene:
-      narrator: Narrator
       writing: The narrator is writing the scene
     watch:
       deciding: "%{name} is deciding"

@@ -478,7 +478,6 @@ tr:
         one: "Yeni bir rozet: %{badges}"
         other: "Yeni rozetler: %{badges}"
     opening:
-      narrator: Anlatıcı
       getting_ready: Anlatıcı hazırlanıyor
     stalled:
       try_again: Yeniden dene
@@ -743,11 +742,12 @@ tr:
     feed:
       added_to_inventory: Envantere eklendi
       found_by: "%{item} · %{name} buldu"
+    narrator:
+      name: Anlatıcı
     party:
       others: Sıradakiler
       turn_of: "%{name} sırası"
     scene:
-      narrator: Anlatıcı
       writing: Anlatıcı sahneyi yazıyor
     watch:
       deciding: "%{name} karar veriyor"

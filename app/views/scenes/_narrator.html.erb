@@ -1,0 +1,8 @@
+<%# locals: (scene:) -%>
+<p class="scene__speaker">
+  <%= tag.span class: [ "ember", "ember--pulsing": scene.narrator_writing? ], aria: { hidden: true } %>
+  <%= t(".name") %>
+</p>
+<%= tag.div id: "scene_narration", class: [ "narration__body", "narration__body--writing": scene.narrator_writing? ] do %>
+  <%= render "scenes/narration", scene: scene %>
+<% end %>
