@@ -33,6 +33,38 @@ en:
       adventures: 50+ adventures a month
       perk: About 2.5× Premium, for long campaigns and busy hosts
 
+  badge:
+    natural_twenty_finale:
+      name: A 20 at the end
+      description: Won the finale on a natural 20.
+    last_health:
+      name: One health left
+      description: Won an adventure with 1 health left.
+    whole_party:
+      name: All five standing
+      description: Finished with a party of five and every hero standing.
+    surprise:
+      name: Surprise
+      description: Finished a surprise adventure.
+    won_back:
+      name: Won back
+      description: Won in a place where you were once defeated.
+    no_items:
+      name: No items
+      description: Won a long adventure without using an item.
+    two_twenties:
+      name: Two 20s
+      description: Rolled two natural 20s in one adventure.
+    every_roll:
+      name: Every roll
+      description: Every roll of an adventure succeeded.
+    natural_one_finale:
+      name: A 1 at the end
+      description: Lost the finale on a natural 1.
+    fallen_hero:
+      name: One fell
+      description: A hero fell on the way and the party still won.
+
   character:
     race:
       human:
@@ -614,6 +646,8 @@ en:
         dice_rolled: Dice rolled
         party_adventures: With a party
         favorite_klass: Played most
+      badges:
+        title: Badges
       show:
         title: Profile
         subscription: My subscription

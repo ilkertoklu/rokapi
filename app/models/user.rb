@@ -54,4 +54,8 @@ class User < ApplicationRecord
   def record
     Record.new(self)
   end
+
+  def badges
+    Badges.new(self)
+  end
 end

@@ -82,7 +82,7 @@ class RecordFlowTest < ActionDispatch::IntegrationTest
 
     assert_equal two, count_queries { get my_profile_path }
     assert_select ".record__figure", text: /5\s+Adventures/
-    assert_equal empty + 2, two
+    assert_equal empty + 5, two
   end
 
   private

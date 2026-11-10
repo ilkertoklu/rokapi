@@ -1,0 +1,13 @@
+<%# locals: (badges:) -%>
+<section class="badges" id="badges">
+  <h2 class="field-label"><%= t(".title") %></h2>
+
+  <ul class="badges__list">
+    <% badges.each do |badge| %>
+      <li class="badge">
+        <strong class="badge__name"><%= badge.name %></strong>
+        <span class="badge__description"><%= badge.description %></span>
+      </li>
+    <% end %>
+  </ul>
+</section>

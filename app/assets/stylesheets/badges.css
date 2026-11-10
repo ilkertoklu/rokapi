@@ -1,0 +1,52 @@
+@layer components {
+  .badges .field-label {
+    margin-block-end: .625rem;
+  }
+
+  .badges__list {
+    display: grid;
+    gap: 1px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    list-style: none;
+    background: var(--color-line-soft);
+    border: 1px solid var(--color-line-soft);
+    border-radius: var(--radius-card);
+  }
+
+  .badge {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: .75rem;
+    align-items: baseline;
+    padding: .75rem .875rem;
+    background: var(--color-surface-sunken);
+
+    &::before {
+      content: "";
+      grid-row: 1;
+      inline-size: 6px;
+      block-size: 6px;
+      border-radius: 50%;
+      background: var(--color-accent);
+      box-shadow: 0 0 8px 1px color-mix(in srgb, var(--color-accent) 45%, transparent);
+      align-self: center;
+    }
+  }
+
+  .badge__name {
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--color-ink);
+  }
+
+  .badge__description {
+    grid-column: 2;
+    font-size: .8125rem;
+    line-height: 1.4;
+    color: var(--color-ink-soft);
+  }
+}

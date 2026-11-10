@@ -52,6 +52,38 @@ tr:
       adventures: Her ay ≈ 50+ macera
       perk: Premium'un ~2.5 katı; uzun kampanyalar ve yoğun host'lar için
 
+  badge:
+    natural_twenty_finale:
+      name: Sonda 20
+      description: Finali zarda 20 gelerek kazandın.
+    last_health:
+      name: Son can
+      description: Bir macerayı 1 canın kalmışken kazandın.
+    whole_party:
+      name: Beşi de ayakta
+      description: Beş kişilik ekiple, kimse düşmeden bitirdin.
+    surprise:
+      name: Sürpriz
+      description: Sürpriz bir macerayı bitirdin.
+    won_back:
+      name: Rövanş
+      description: Bir zamanlar yenildiğin yerde kazandın.
+    no_items:
+      name: Eşyasız
+      description: Uzun bir macerayı hiç eşya kullanmadan kazandın.
+    two_twenties:
+      name: İki kez 20
+      description: Bir macerada iki kez zarda 20 attın.
+    every_roll:
+      name: Her zar tuttu
+      description: Bir maceranın bütün zarları başarılı oldu.
+    natural_one_finale:
+      name: Sonda 1
+      description: Finali zarda 1 gelerek kaybettin.
+    fallen_hero:
+      name: Biri düştü
+      description: Yolda bir kahraman düştü, ekip yine de kazandı.
+
   character:
     race:
       human:
@@ -633,6 +665,8 @@ tr:
         dice_rolled: Zar atıldı
         party_adventures: Ekiple
         favorite_klass: Favori sınıf
+      badges:
+        title: Rozetler
       show:
         title: Profil
         subscription: Aboneliğim
