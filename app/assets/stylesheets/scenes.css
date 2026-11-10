@@ -655,12 +655,12 @@
       }
     }
 
-    .action-panel__handle {
-      pointer-events: none;
+    .action-panel__handle .grip {
+      display: none;
+    }
 
-      .grip {
-        display: none;
-      }
+    .action-panel[open] .action-panel__handle {
+      pointer-events: none;
     }
   }
 
