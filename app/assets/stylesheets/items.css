@@ -56,12 +56,12 @@
   }
 
   .statuses__chip--positive {
-    background: color-mix(in srgb, var(--color-positive) 14%, transparent);
+    background: color-mix(in oklch, var(--color-positive) 14%, transparent);
     color: var(--color-positive-bright);
   }
 
   .statuses__chip--negative {
-    background: color-mix(in srgb, var(--color-negative) 12%, transparent);
+    background: color-mix(in oklch, var(--color-negative) 12%, transparent);
     color: var(--color-negative-bright);
   }
 
@@ -84,7 +84,7 @@
   }
 
   .inventory__row--quest {
-    border: 1px dashed color-mix(in srgb, var(--color-accent) 30%, transparent);
+    border: 1px dashed color-mix(in oklch, var(--color-accent) 30%, transparent);
   }
 
   .inventory__icon {
@@ -138,7 +138,7 @@
 
   .inventory__badge {
     padding: .18rem .5rem;
-    border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+    border: 1px solid var(--color-accent-line);
     border-radius: 6px;
     font-size: .75rem;
     font-weight: 700;
@@ -156,8 +156,8 @@
   .inventory__use {
     min-block-size: 44px;
     padding: 0 1rem;
-    background: color-mix(in srgb, var(--color-accent) 12%, transparent);
-    border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+    background: color-mix(in oklch, var(--color-accent) 12%, transparent);
+    border: 1px solid var(--color-accent-line);
     border-radius: 11px;
     color: var(--color-accent);
     font-family: var(--font-ui);

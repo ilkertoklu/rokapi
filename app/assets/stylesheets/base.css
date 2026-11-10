@@ -51,7 +51,7 @@
       background: var(--color-bg);
       border: 1px solid var(--color-line-soft);
       border-radius: 28px;
-      box-shadow: 0 30px 70px -30px rgba(0, 0, 0, .8);
+      box-shadow: var(--shadow-screen);
     }
 
     .screen--medium {
@@ -139,7 +139,7 @@
   }
 
   .flash--notice {
-    background: color-mix(in srgb, var(--color-positive) 16%, transparent);
+    background: color-mix(in oklch, var(--color-positive) 16%, transparent);
     color: var(--color-positive);
   }
 }

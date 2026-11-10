@@ -1,7 +1,7 @@
 @layer components {
   .brand--spent {
     &.brand--hero::before {
-      background: radial-gradient(circle, color-mix(in srgb, var(--color-accent) 12%, transparent), transparent 65%);
+      background: radial-gradient(circle, color-mix(in oklch, var(--color-accent) 12%, transparent), transparent 65%);
       animation: none;
     }
 
@@ -9,7 +9,7 @@
       inline-size: 12px;
       block-size: 12px;
       background: var(--color-ink-dim);
-      box-shadow: 0 0 16px 3px color-mix(in srgb, var(--color-ink-dim) 50%, transparent);
+      box-shadow: 0 0 16px 3px color-mix(in oklch, var(--color-ink-dim) 50%, transparent);
       animation: ember-pulse 3s ease-in-out infinite;
     }
   }
@@ -80,7 +80,7 @@
   .subscription {
     padding: 1.125rem 1rem 1rem;
     background: var(--color-surface-sunken);
-    border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+    border: 1px solid var(--color-accent-line);
     border-radius: 20px;
 
     .usage {
@@ -135,7 +135,7 @@
     gap: .375rem;
     padding: .3rem .7rem;
     border-radius: var(--radius-pill);
-    background: color-mix(in srgb, var(--color-positive) 14%, transparent);
+    background: color-mix(in oklch, var(--color-positive) 14%, transparent);
     color: var(--color-positive-bright);
     font-size: .75rem;
     font-weight: 700;
@@ -150,12 +150,12 @@
   }
 
   .status-pill--ending {
-    background: color-mix(in srgb, var(--color-ink) 8%, transparent);
+    background: color-mix(in oklch, var(--color-ink) 8%, transparent);
     color: var(--color-ink-soft);
   }
 
   .menu-row--featured {
-    border-color: color-mix(in srgb, var(--color-accent) 35%, transparent);
+    border-color: var(--color-accent-line);
 
     .menu-row__icon {
       background: var(--color-accent-soft);
@@ -192,7 +192,7 @@
   }
 
   .plan-option__input:checked + .plan-option {
-    background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+    background: color-mix(in oklch, var(--color-accent) 10%, transparent);
     border-color: var(--color-accent);
   }
 
@@ -215,7 +215,7 @@
     inline-size: 20px;
     block-size: 20px;
     flex: none;
-    border: 2px solid color-mix(in srgb, var(--color-ink) 16%, transparent);
+    border: 2px solid color-mix(in oklch, var(--color-ink) 16%, transparent);
     border-radius: 50%;
   }
 
@@ -237,7 +237,7 @@
   .plan-option__badge {
     padding: .2rem .6rem;
     border-radius: var(--radius-pill);
-    background: color-mix(in srgb, var(--color-ink) 10%, transparent);
+    background: color-mix(in oklch, var(--color-ink) 10%, transparent);
     color: var(--color-ink-soft);
     font-size: .6875rem;
     font-weight: 700;
@@ -309,8 +309,8 @@
     block-size: 76px;
     margin-inline: auto;
     border-radius: 50%;
-    background: color-mix(in srgb, var(--color-positive) 16%, transparent);
-    border: 1px solid color-mix(in srgb, var(--color-positive) 40%, transparent);
+    background: color-mix(in oklch, var(--color-positive) 16%, transparent);
+    border: 1px solid color-mix(in oklch, var(--color-positive) 40%, transparent);
     color: var(--color-positive-bright);
 
     .glyph {

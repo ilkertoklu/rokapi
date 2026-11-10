@@ -4,10 +4,10 @@
     align-items: center;
     gap: .8125rem;
     padding: .8125rem .9375rem;
-    background: color-mix(in srgb, var(--color-negative) 8%, var(--color-surface-raised));
-    border: 1px solid color-mix(in srgb, var(--color-negative) 40%, transparent);
+    background: color-mix(in oklch, var(--color-negative) 9%, var(--color-surface-raised));
+    border: 1px solid color-mix(in oklch, var(--color-negative) 40%, transparent);
     border-radius: 15px;
-    box-shadow: 0 18px 44px -10px rgba(0, 0, 0, .75), 0 4px 14px rgba(0, 0, 0, .4);
+    box-shadow: var(--shadow-float);
 
     > .glyph {
       inline-size: 30px;
@@ -43,8 +43,8 @@
     }
 
     .code__cell {
-      background: color-mix(in srgb, var(--color-negative) 9%, var(--color-bg));
-      border-color: color-mix(in srgb, var(--color-negative) 50%, transparent);
+      background: color-mix(in oklch, var(--color-negative) 11%, var(--color-bg));
+      border-color: color-mix(in oklch, var(--color-negative) 50%, transparent);
     }
 
     [data-code-target="submit"] {

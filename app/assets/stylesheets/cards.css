@@ -38,7 +38,7 @@
     margin-block-start: 1.875rem;
     padding: 1.125rem 1.125rem 1rem;
     background: var(--color-surface-sunken);
-    border: 1px solid color-mix(in srgb, var(--color-accent) 30%, transparent);
+    border: 1px solid color-mix(in oklch, var(--color-accent) 30%, transparent);
     border-radius: 20px;
     text-align: start;
 

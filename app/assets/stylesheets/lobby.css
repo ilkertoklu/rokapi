@@ -129,7 +129,7 @@
 
   .lobby-player {
     --seat-color: var(--color-accent-bright);
-    --seat-tint: color-mix(in srgb, var(--color-accent) 16%, transparent);
+    --seat-tint: var(--color-accent-soft);
     --status-color: var(--color-ink-dim);
 
     display: flex;
@@ -141,23 +141,23 @@
   }
 
   .lobby-player--seat-2 {
-    --seat-color: #A6C089;
-    --seat-tint: rgba(143, 168, 118, .16);
+    --seat-color: var(--color-seat-1-bright);
+    --seat-tint: color-mix(in oklch, var(--color-seat-1) 16%, transparent);
   }
 
   .lobby-player--seat-3 {
-    --seat-color: #92ADC9;
-    --seat-tint: rgba(110, 138, 168, .18);
+    --seat-color: var(--color-seat-2-bright);
+    --seat-tint: color-mix(in oklch, var(--color-seat-2) 18%, transparent);
   }
 
   .lobby-player--seat-4 {
-    --seat-color: #C79CBC;
-    --seat-tint: rgba(176, 127, 160, .18);
+    --seat-color: var(--color-seat-3-bright);
+    --seat-tint: color-mix(in oklch, var(--color-seat-3) 18%, transparent);
   }
 
   .lobby-player--seat-5 {
-    --seat-color: #D9BC7A;
-    --seat-tint: rgba(212, 180, 106, .16);
+    --seat-color: var(--color-seat-4-bright);
+    --seat-tint: color-mix(in oklch, var(--color-seat-4) 16%, transparent);
   }
 
   .lobby-player__avatar {

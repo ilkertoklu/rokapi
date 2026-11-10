@@ -1,12 +1,12 @@
 @layer components {
-  .avatar--seat-0 { --seat: var(--color-accent); --seat-ink: var(--color-accent-bright); }
-  .avatar--seat-1 { --seat: var(--color-positive); --seat-ink: var(--color-positive-bright); }
-  .avatar--seat-2 { --seat: #6E8AA8; --seat-ink: #92ADC9; }
-  .avatar--seat-3 { --seat: #B07FA0; --seat-ink: #C79CBC; }
-  .avatar--seat-4 { --seat: #D4B46A; --seat-ink: #D9BC7A; }
+  .avatar--seat-0 { --seat: var(--color-seat-0); --seat-ink: var(--color-seat-0-bright); }
+  .avatar--seat-1 { --seat: var(--color-seat-1); --seat-ink: var(--color-seat-1-bright); }
+  .avatar--seat-2 { --seat: var(--color-seat-2); --seat-ink: var(--color-seat-2-bright); }
+  .avatar--seat-3 { --seat: var(--color-seat-3); --seat-ink: var(--color-seat-3-bright); }
+  .avatar--seat-4 { --seat: var(--color-seat-4); --seat-ink: var(--color-seat-4-bright); }
 
   .avatar[class*="avatar--seat-"] {
-    background: color-mix(in srgb, var(--seat) 18%, transparent);
+    background: color-mix(in oklch, var(--seat) 18%, transparent);
     color: var(--seat-ink);
     font-size: .9375rem;
   }
@@ -18,7 +18,7 @@
   }
 
   .avatar--active {
-    box-shadow: 0 0 0 2px var(--seat), 0 0 0 6px color-mix(in srgb, var(--seat) 13%, transparent);
+    box-shadow: 0 0 0 2px var(--seat), 0 0 0 6px color-mix(in oklch, var(--seat) 13%, transparent);
   }
 
   .avatar.avatar--small {
@@ -76,7 +76,7 @@
 
     .avatar--you {
       opacity: 1;
-      box-shadow: 0 0 0 1.5px color-mix(in srgb, var(--seat) 40%, transparent);
+      box-shadow: 0 0 0 1.5px color-mix(in oklch, var(--seat) 40%, transparent);
     }
   }
 
@@ -122,8 +122,8 @@
     gap: .625rem;
     padding: .625rem .8rem;
     border-radius: var(--radius-control);
-    background: color-mix(in srgb, var(--color-positive) 10%, transparent);
-    border: 1px solid color-mix(in srgb, var(--color-positive) 25%, transparent);
+    background: color-mix(in oklch, var(--color-positive) 10%, transparent);
+    border: 1px solid color-mix(in oklch, var(--color-positive) 25%, transparent);
 
     .overline {
       color: var(--color-positive);
@@ -145,7 +145,7 @@
     inline-size: 30px;
     block-size: 30px;
     border-radius: 8px;
-    background: color-mix(in srgb, var(--color-positive) 16%, transparent);
+    background: color-mix(in oklch, var(--color-positive) 16%, transparent);
     color: var(--color-positive-bright);
 
     .glyph {

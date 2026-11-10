@@ -30,7 +30,7 @@
       block-size: 6px;
       border-radius: 50%;
       background: var(--color-accent);
-      box-shadow: 0 0 8px 1px color-mix(in srgb, var(--color-accent) 45%, transparent);
+      box-shadow: 0 0 8px 1px color-mix(in oklch, var(--color-accent) 45%, transparent);
       align-self: center;
     }
   }

@@ -69,8 +69,8 @@
     flex-direction: column;
     gap: .6rem;
     padding: .85rem;
-    background: color-mix(in srgb, var(--color-negative) 8%, transparent);
-    border: 1px dashed color-mix(in srgb, var(--color-negative) 35%, transparent);
+    background: color-mix(in oklch, var(--color-negative) 8%, transparent);
+    border: 1px dashed color-mix(in oklch, var(--color-negative) 35%, transparent);
     border-radius: var(--radius-control);
     text-align: center;
   }
@@ -142,7 +142,7 @@
     inline-size: 9px;
     block-size: 9px;
     background: var(--color-accent);
-    box-shadow: 0 0 8px color-mix(in srgb, var(--color-accent) 70%, transparent);
+    box-shadow: 0 0 8px var(--color-accent-glow);
   }
 
   .avatar {
@@ -166,7 +166,7 @@
     min-block-size: 0;
     overflow-y: auto;
     padding: .9rem 1.5rem 1.5rem;
-    mask-image: linear-gradient(to bottom, #000 calc(100% - 2.5rem), transparent);
+    mask-image: linear-gradient(to bottom, black calc(100% - 2.5rem), transparent);
   }
 
   .scene__speaker {
@@ -197,7 +197,7 @@
     inline-size: 16px;
     block-size: 16px;
     margin: 0 auto 1.125rem;
-    box-shadow: 0 0 26px 6px color-mix(in srgb, var(--color-accent) 70%, transparent);
+    box-shadow: 0 0 26px 6px var(--color-accent-glow);
   }
 
   .ember--greeting {
@@ -205,7 +205,7 @@
     inline-size: 14px;
     block-size: 14px;
     margin: 0 auto 1.25rem;
-    box-shadow: 0 0 22px 4px color-mix(in srgb, var(--color-accent) 70%, transparent);
+    box-shadow: 0 0 22px 4px var(--color-accent-glow);
   }
 
   .narration__body,
@@ -280,7 +280,7 @@
     background: var(--color-surface-raised);
     border-radius: 30px 30px 0 0;
     border-block-start: 2px solid var(--color-accent);
-    box-shadow: 0 -18px 40px -8px color-mix(in srgb, var(--color-accent) 28%, transparent);
+    box-shadow: 0 -18px 40px -8px color-mix(in oklch, var(--color-accent) 28%, transparent);
   }
 
   .choices-cue {
@@ -305,7 +305,7 @@
     block-size: 4px;
     margin-inline: auto;
     border-radius: 3px;
-    background: color-mix(in srgb, var(--color-ink) 22%, transparent);
+    background: color-mix(in oklch, var(--color-ink) 22%, transparent);
   }
 
   .action-panel__handle .grip {
@@ -347,7 +347,7 @@
     inline-size: 100%;
     padding: .95rem 1.05rem;
     background: var(--color-surface-lifted);
-    border: 1px solid color-mix(in srgb, var(--color-accent) 28%, transparent);
+    border: 1px solid color-mix(in oklch, var(--color-accent) 28%, transparent);
     border-radius: 15px;
     color: var(--color-ink);
     font: inherit;
@@ -379,7 +379,7 @@
 
   .btn .key {
     margin-inline-start: .5rem;
-    border-color: color-mix(in srgb, currentColor 45%, transparent);
+    border-color: color-mix(in oklch, currentColor 45%, transparent);
     color: inherit;
     vertical-align: .1em;
   }
@@ -393,7 +393,7 @@
   .stat-chip {
     flex: none;
     padding: .25rem .5rem;
-    border: 1px solid color-mix(in srgb, var(--color-accent) 40%, transparent);
+    border: 1px solid color-mix(in oklch, var(--color-accent) 40%, transparent);
     border-radius: 7px;
     color: var(--color-accent-bright);
     font-size: .75rem;
@@ -409,7 +409,7 @@
     inline-size: 100%;
     padding: .8rem 1rem;
     background: var(--color-surface-sunken);
-    border: 1px dashed color-mix(in srgb, var(--color-accent) 35%, transparent);
+    border: 1px dashed var(--color-accent-line);
     border-radius: 15px;
     color: var(--color-ink-muted);
     font: inherit;
@@ -455,7 +455,7 @@
       inline-size: 360px;
       block-size: 360px;
       border-radius: 50%;
-      background: radial-gradient(circle, color-mix(in srgb, var(--color-accent) 26%, transparent), transparent 62%);
+      background: radial-gradient(circle, color-mix(in oklch, var(--color-accent) 26%, transparent), transparent 62%);
       animation: ember-pulse 6s ease-in-out infinite;
       pointer-events: none;
     }
@@ -621,7 +621,7 @@
 
       margin: 0 2.5rem 2.5rem;
       padding: 0 1.25rem 1.25rem;
-      border: 1px solid color-mix(in srgb, var(--color-accent) 28%, transparent);
+      border: 1px solid color-mix(in oklch, var(--color-accent) 28%, transparent);
       border-radius: 22px;
       box-shadow: none;
     }
@@ -647,7 +647,7 @@
       margin: 0 2.5rem calc(-1 * var(--cue-size));
       padding-block-start: 1.25rem;
       background: var(--color-surface-raised);
-      border: 1px solid color-mix(in srgb, var(--color-accent) 28%, transparent);
+      border: 1px solid color-mix(in oklch, var(--color-accent) 28%, transparent);
       border-block-end: 0;
       border-radius: 22px 22px 0 0;
       color: var(--color-accent);
@@ -703,7 +703,7 @@
 
     @media (min-width: 72rem) {
       body:has(.game) {
-        background: color-mix(in srgb, var(--color-bg) 55%, black);
+        background: var(--color-backdrop);
       }
 
       .screen:has(.game) {

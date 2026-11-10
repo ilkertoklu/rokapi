@@ -112,7 +112,7 @@
       flex: none;
       margin: 0;
       background: var(--color-surface);
-      border: 1.5px solid color-mix(in srgb, var(--color-ink) 22%, transparent);
+      border: 1.5px solid color-mix(in oklch, var(--color-ink) 22%, transparent);
       border-radius: 8px;
       cursor: pointer;
 
@@ -130,7 +130,7 @@
     a {
       color: var(--color-ink);
       text-decoration: none;
-      border-block-end: 1px solid color-mix(in srgb, var(--color-ink) 35%, transparent);
+      border-block-end: 1px solid color-mix(in oklch, var(--color-ink) 35%, transparent);
     }
   }
 

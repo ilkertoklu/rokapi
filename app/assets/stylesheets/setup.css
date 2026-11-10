@@ -13,12 +13,10 @@
     inline-size: 44px;
     block-size: 44px;
     padding: 12px;
-    background: color-mix(in srgb, white 8%, transparent);
+    background: var(--color-glass);
     border: .5px solid var(--color-glass-line);
     border-radius: 50%;
-    box-shadow:
-      inset 0 1px 0 color-mix(in srgb, white 14%, transparent),
-      0 6px 18px -6px rgba(0, 0, 0, .6);
+    box-shadow: var(--glass-shadow), var(--shadow-control);
     backdrop-filter: var(--glass-blur);
     color: var(--color-ink);
 
@@ -66,7 +64,7 @@
       inline-size: 280px;
       block-size: 280px;
       border-radius: 50%;
-      background: radial-gradient(circle, color-mix(in srgb, var(--color-accent) 22%, transparent), transparent 65%);
+      background: radial-gradient(circle, color-mix(in oklch, var(--color-accent) 22%, transparent), transparent 65%);
       animation: ember-pulse 5s ease-in-out infinite;
       pointer-events: none;
     }
@@ -114,7 +112,7 @@
     }
 
     &:has(:checked) {
-      background: color-mix(in srgb, var(--color-accent) 10%, transparent);
+      background: color-mix(in oklch, var(--color-accent) 10%, transparent);
       border-color: var(--color-accent);
     }
 
@@ -169,7 +167,7 @@
     inline-size: var(--pick-mark);
     block-size: var(--pick-mark);
     flex: none;
-    border: 2px solid color-mix(in srgb, var(--color-ink) 16%, transparent);
+    border: 2px solid color-mix(in oklch, var(--color-ink) 16%, transparent);
     border-radius: 50%;
   }
 
@@ -235,7 +233,7 @@
     &:has(:checked) {
       opacity: 1;
       background-color: var(--color-surface-raised);
-      border-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
+      border-color: color-mix(in oklch, var(--color-accent) 55%, transparent);
     }
 
     &:has(:focus-visible) {
@@ -268,7 +266,7 @@
   }
 
   .fate-card--face-down {
-    --lattice: color-mix(in srgb, var(--color-accent) 7%, transparent);
+    --lattice: color-mix(in oklch, var(--color-accent) 7%, transparent);
 
     align-items: center;
     justify-content: center;
@@ -279,7 +277,7 @@
     box-shadow: inset 0 0 0 7px var(--color-bg), inset 0 0 0 8px var(--lattice);
 
     &:has(:checked) {
-      --lattice: color-mix(in srgb, var(--color-accent) 16%, transparent);
+      --lattice: var(--color-accent-soft);
     }
 
     .fate-card__trouble {
@@ -342,8 +340,8 @@
     inline-size: 44px;
     block-size: 44px;
     padding: 0;
-    background: color-mix(in srgb, var(--color-accent) 14%, transparent);
-    border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+    background: color-mix(in oklch, var(--color-accent) 14%, transparent);
+    border: 1px solid var(--color-accent-line);
     border-radius: 50%;
     color: var(--color-accent-bright);
     font: inherit;
@@ -369,8 +367,8 @@
     inline-size: 58px;
     block-size: 58px;
     flex: none;
-    background: color-mix(in srgb, var(--color-accent) 16%, transparent);
-    border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+    background: var(--color-accent-soft);
+    border: 1px solid var(--color-accent-line);
     border-radius: 50%;
     color: var(--color-accent-bright);
     font-family: var(--font-display);
@@ -425,7 +423,7 @@
     .ember {
       inline-size: 14px;
       block-size: 14px;
-      box-shadow: 0 0 22px 4px color-mix(in srgb, var(--color-accent) 70%, transparent);
+      box-shadow: 0 0 22px 4px var(--color-accent-glow);
     }
 
     > span {
@@ -440,7 +438,7 @@
     gap: .8125rem;
     padding: .8125rem 1rem;
     background: var(--color-surface-raised);
-    border: 1px solid color-mix(in srgb, var(--color-accent) 35%, transparent);
+    border: 1px solid var(--color-accent-line);
     border-radius: 22px;
     color: inherit;
     text-decoration: none;
