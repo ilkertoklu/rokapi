@@ -10,6 +10,7 @@ class Roll < ApplicationRecord
   has_one :scene, through: :choice
 
   delegate :modifier, :target, to: :choice
+  delegate :game_session, to: :scene
 
   before_create { self.success = total >= target }
 
