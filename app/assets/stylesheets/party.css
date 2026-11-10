@@ -48,6 +48,10 @@
       z-index: 3;
       padding-inline: 2.5rem;
       background: var(--color-bg);
+
+      @media (max-height: 36rem) {
+        position: static;
+      }
     }
   }
 

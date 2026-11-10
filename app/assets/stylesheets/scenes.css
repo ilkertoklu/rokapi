@@ -563,6 +563,10 @@
       block-size: var(--location-size);
       padding: .4rem 2.5rem 0;
       background: var(--color-bg);
+
+      @media (max-height: 36rem) {
+        position: static;
+      }
     }
 
     .narration {
