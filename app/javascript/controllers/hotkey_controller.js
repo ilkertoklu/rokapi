@@ -22,7 +22,7 @@ export default class extends Controller {
   }
 
   #shouldIgnore(event) {
-    return event.repeat || event.target.closest("input, select, textarea, [contenteditable]") || this.#activatesFocused(event)
+    return event.repeat || event.target.closest("input:not([type=radio], [type=checkbox]), select, textarea, [contenteditable]") || this.#activatesFocused(event)
   }
 
   #activatesFocused(event) {

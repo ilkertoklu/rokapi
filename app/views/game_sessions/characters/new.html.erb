@@ -35,6 +35,9 @@
   </fieldset>
 
   <div class="sticky-footer">
-    <%= form.submit t(".ready"), class: "btn btn--primary", data: { stats_target: "submit" } %>
+    <%= form.button class: "btn btn--primary", aria: { keyshortcuts: "Enter" },
+          data: { stats_target: "submit", controller: "hotkey", action: "keydown.enter@document->hotkey#click" } do %>
+      <span data-stats-target="label"><%= t(".ready") %></span> <kbd class="key" aria-hidden="true">↵</kbd>
+    <% end %>
   </div>
 <% end %>

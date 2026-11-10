@@ -90,6 +90,55 @@ class DesktopPlayTest < ApplicationSystemTestCase
     assert_selector ".choice:focus", text: "Climb down to the cellar"
   end
 
+  test "starting an adventure from the keyboard" do
+    sign_in_as users(:ilker)
+    page.current_window.resize_to 1440, 900
+
+    tab_to "a", text: "Start a new adventure"
+    send_keys :enter
+    tab_to "a", text: "Solo"
+    send_keys :enter
+
+    tab_to ".fate-card input"
+    send_keys :right
+    assert_selector ".fate-card:nth-child(2) input:focus:checked", visible: :hidden
+    assert_button "Create your character", text: "↵"
+    send_keys :enter
+
+    tab_to ".chip input[value=warrior]"
+    send_keys :right
+    assert_selector ".chip input[value=ranger]:focus:checked", visible: :hidden
+    tab_to "button[aria-label='Raise Agility']"
+    4.times { send_keys :enter }
+    tab_to "button[aria-label='Raise Wisdom']"
+    2.times { send_keys :enter }
+    assert_button "I'm ready", text: "↵", disabled: false
+    send_keys :enter
+    assert_text "The narrator is getting ready"
+
+    game_session = users(:ilker).game_sessions.order(:id).last
+    assert_equal "ranger", game_session.players.sole.character.klass
+    scene = game_session.scenes.sole
+    scene.choices.create! label: "Slip past the harbour guards", stat: "agility", target: 10
+    scene.update! state: :choosing, title: "The Docks", narration: "Gulls wheel over the harbour."
+    assert_text "Gulls wheel over the harbour."
+
+    send_keys "1"
+    assert_selector ".dice__prompt", text: "Slip past the harbour guards"
+    send_keys :enter
+    assert_text "The narrator is resolving the roll"
+
+    scene.reload.roll.resolve resolution: "The guards never look up.", effects: {}
+    assert_text "The guards never look up."
+    send_keys :enter
+    assert_no_text "The guards never look up."
+
+    next_scene = game_session.scenes.last
+    next_scene.choices.create! label: "Board the smuggler's boat", stat: "agility", target: 10
+    next_scene.update! state: :choosing, title: "The Pier", narration: "A lantern swings at the end of the pier."
+    assert_text "A lantern swings at the end of the pier."
+  end
+
   test "a step leaves the focus where the player moved it" do
     @scene.choices.first.choose
     @scene.roll_dice by: players(:ilker_solo_host)
@@ -129,6 +178,13 @@ class DesktopPlayTest < ApplicationSystemTestCase
   end
 
   private
+    def tab_to(selector, **options)
+      page.document.synchronize do
+        send_keys :tab
+        raise Capybara::ExpectationNotMet, "Tabbed past #{selector}" unless has_selector?("#{selector}:focus", visible: :all, wait: 0, **options)
+      end
+    end
+
     def assert_story_scrolled_past(offset)
       page.document.synchronize do
         evaluate_script("document.querySelector('.stage').scrollTop").tap do |scrolled|
