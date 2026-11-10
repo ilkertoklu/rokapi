@@ -29,6 +29,14 @@ class ItemTest < ActiveSupport::TestCase
     assert_raises(Item::Unusable) { items(:longsword).use }
   end
 
+  test "a fallen hero cannot drink their way back up" do
+    @character.update! hp: 0
+
+    assert_raises(Item::Unusable) { @potion.use }
+    assert_equal 0, @character.reload.hp
+    assert_equal 1, @potion.reload.uses_left
+  end
+
   test "a stale copy cannot double-spend the last use" do
     @character.update! hp: 10
     stale = Item.find(@potion.id)

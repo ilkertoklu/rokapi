@@ -20,6 +20,7 @@ class Item < ApplicationRecord
 
   def use
     transaction do
+      raise Unusable if character.player.fallen?
       raise Unusable if self.class.usable.where(id: id).update_all([ "uses_left = uses_left - 1, used_at = ?", Time.current ]).zero?
 
       reload
