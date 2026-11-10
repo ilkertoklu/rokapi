@@ -10,16 +10,16 @@ export default class extends Controller {
     this.#render()
   }
 
-  increment(event) {
-    if (this.#canRaise(event.params.key)) this.#adjust(event.params.key, +1)
+  increment({ params: { key } }) {
+    if (this.#canRaise(key)) this.#adjust(key, +1)
   }
 
-  decrement(event) {
-    if (this.#canLower(event.params.key)) this.#adjust(event.params.key, -1)
+  decrement({ params: { key } }) {
+    if (this.#canLower(key)) this.#adjust(key, -1)
   }
 
-  rebase(event) {
-    this.klassValue = event.params.klass
+  rebase({ params: { klass } }) {
+    this.klassValue = klass
     this.valueTargets.forEach(input => input.value = this.#base(input.dataset.key))
     this.#render()
   }
@@ -63,11 +63,12 @@ export default class extends Controller {
   #render() {
     const remaining = this.#remaining()
     this.remainingTarget.textContent = this.#pointsLeft(remaining)
-    this.valueTargets.forEach(input => {
-      input.classList.toggle(this.raisedClass, this.#canLower(input.dataset.key))
+    this.valueTargets.forEach((input, row) => {
+      const key = input.dataset.key
+      input.classList.toggle(this.raisedClass, this.#canLower(key))
+      this.incrementTargets[row].disabled = !this.#canRaise(key)
+      this.decrementTargets[row].disabled = !this.#canLower(key)
     })
-    this.incrementTargets.forEach(button => button.disabled = !this.#canRaise(button.dataset.statsKeyParam))
-    this.decrementTargets.forEach(button => button.disabled = !this.#canLower(button.dataset.statsKeyParam))
     this.submitTarget.disabled = remaining !== 0
     this.labelTarget.textContent = remaining === 0 ? this.readyValue : `${this.readyValue} · ${this.#pointsLeft(remaining)}`
   }
