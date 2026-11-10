@@ -1,6 +1,6 @@
 class HotwireNative::PathConfigurationsController < ApplicationController
   allow_unauthenticated_access
-  skip_before_action :ensure_profile_complete
+  allow_incomplete_profile
 
   def show
     render json: Rails.root.join("config/path_configuration.json").read

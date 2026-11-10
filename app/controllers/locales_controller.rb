@@ -1,6 +1,6 @@
 class LocalesController < ApplicationController
   allow_unauthenticated_access
-  skip_before_action :ensure_profile_complete
+  allow_incomplete_profile
 
   def update
     locale = params.expect(:locale)

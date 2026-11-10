@@ -2,7 +2,7 @@ class SessionsController < ApplicationController
   include PendingLogin
 
   require_unauthenticated_access except: :destroy
-  skip_before_action :ensure_profile_complete
+  allow_incomplete_profile
   before_action :ensure_pending_email, only: %i[new create]
   rate_limit to: 10, within: 15.minutes, only: :create, by: -> { pending_email.to_s },
     with: -> { redirect_to new_session_path, alert: t(".rate_limited") }

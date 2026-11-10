@@ -1,5 +1,5 @@
 class Signup::ProfilesController < ApplicationController
-  skip_before_action :ensure_profile_complete
+  allow_incomplete_profile
 
   def new
   end

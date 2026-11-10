@@ -1,6 +1,6 @@
 class EmailConfirmationsController < ApplicationController
   allow_unauthenticated_access
-  skip_before_action :ensure_profile_complete
+  allow_incomplete_profile
   before_action :set_user
 
   def show
