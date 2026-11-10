@@ -391,6 +391,12 @@ class GameSessionTest < ActiveSupport::TestCase
     assert_equal [ players(:ilker_without_character_host) ], game_session.scenes.map(&:active_player).uniq
   end
 
+  test "only a finished party game can be played again" do
+    assert_not game_sessions(:ilker_room).rematchable?
+    assert_not game_sessions(:ilker_solo).tap(&:finish).rematchable?
+    assert finished_room.rematchable?
+  end
+
   test "a rematch opens a fresh lobby with the same party and settings" do
     room = finished_room
     sevval = room.players.create!(user: users(:sevval))

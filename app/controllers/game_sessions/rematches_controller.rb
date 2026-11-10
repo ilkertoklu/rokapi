@@ -1,7 +1,7 @@
 class GameSessions::RematchesController < ApplicationController
   include GameSessionScoped
 
-  before_action :ensure_finished_party, :ensure_rematch_allowance
+  before_action :ensure_rematchable, :ensure_rematch_allowance
 
   def create
     rematch = @game_session.start_rematch(by: Current.user)
@@ -13,8 +13,8 @@ class GameSessions::RematchesController < ApplicationController
   end
 
   private
-    def ensure_finished_party
-      unless @game_session.multiplayer? && @game_session.finished?
+    def ensure_rematchable
+      unless @game_session.rematchable?
         respond_to do |format|
           format.html { redirect_to_game_session }
           format.json { head :conflict }

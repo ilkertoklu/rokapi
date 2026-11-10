@@ -8,6 +8,10 @@ module GameSession::Rematchable
     after_create_commit -> { rematch_of.broadcast_refresh }, if: :rematch_of
   end
 
+  def rematchable?
+    multiplayer? && finished?
+  end
+
   def start_rematch(by:)
     with_lock do
       rematch || create_rematch!(creator: by, surprise: surprise, tone: tone, length: length, locale: locale, max_players: max_players).tap do |room|
