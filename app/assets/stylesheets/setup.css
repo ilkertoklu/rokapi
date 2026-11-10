@@ -511,20 +511,24 @@
       }
 
       .stack {
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: minmax(15rem, auto);
+        align-self: center;
+        max-inline-size: 100%;
+
+        &:has(> .btn + .btn) {
+          grid-template-columns: repeat(2, minmax(15rem, 1fr));
+        }
       }
 
       .btn {
-        flex: 0 1 15rem;
         display: grid;
         place-content: center;
+        padding-inline: 1.75rem;
       }
 
       .resume {
-        flex: none;
-        inline-size: min(100%, 30.75rem);
+        grid-column: 1 / -1;
       }
     }
 
