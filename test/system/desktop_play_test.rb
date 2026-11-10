@@ -102,7 +102,7 @@ class DesktopPlayTest < ApplicationSystemTestCase
     tab_to ".fate-card input"
     send_keys :right
     assert_selector ".fate-card:nth-child(2) input:focus:checked", visible: :hidden
-    assert_button "Create your character", text: "↵"
+    assert_selector "button[aria-keyshortcuts=Enter]", text: "Create your character"
     send_keys :enter
 
     tab_to ".chip input[value=warrior]"
@@ -112,7 +112,7 @@ class DesktopPlayTest < ApplicationSystemTestCase
     4.times { send_keys :enter }
     tab_to "button[aria-label='Raise Wisdom']"
     2.times { send_keys :enter }
-    assert_button "I'm ready", text: "↵", disabled: false
+    assert_selector "button[aria-keyshortcuts=Enter]:not(:disabled)", text: "I'm ready"
     send_keys :enter
     assert_text "The narrator is getting ready"
 
