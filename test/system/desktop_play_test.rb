@@ -29,6 +29,20 @@ class DesktopPlayTest < ApplicationSystemTestCase
     assert_button "Roll the die"
   end
 
+  test "a long scene points down to the choices waiting below it" do
+    @scene.update! narration: Array.new(20, "Rain hammers the inn's shutters while the cellar door groans below.").join("\n\n")
+    sign_in_as users(:ilker)
+    page.current_window.resize_to 1440, 900
+    visit game_session_path(@game_session)
+
+    assert_button "Listen at the door", obscured: true
+    assert_link "Your turn", obscured: false
+
+    click_on "Your turn"
+    assert_button "Listen at the door", obscured: false
+    assert_link "Your turn", obscured: true
+  end
+
   test "menus sit in a panel under the top bar" do
     sign_in_as users(:ilker)
     page.current_window.resize_to 1280, 800
