@@ -73,7 +73,7 @@ class Roll < ApplicationRecord
     transaction do
       ending = ending_with(effects)
 
-      update! resolution: resolution, effects: bounded(effects.to_h).merge(effects.to_h.slice("mark"), { "clue" => clue_won }.compact)
+      update! resolution: resolution, effects: recorded(effects.to_h)
       character.status_effects.each(&:tick)
       apply_effects
       scene.conclude ending if ending
@@ -97,6 +97,10 @@ class Roll < ApplicationRecord
   end
 
   private
+    def recorded(effects)
+      bounded(effects).merge(effects.slice("mark"), { "clue" => clue_won }.compact)
+    end
+
     def success_grade
       case
       when value == DIE then :critical
