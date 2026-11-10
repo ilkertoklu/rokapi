@@ -15,48 +15,22 @@
   }
 
   .profile__badge {
+    --avatar-size: 44px;
+    --avatar-font-size: 1rem;
+
     display: flex;
-    align-items: center;
-    justify-content: center;
-    inline-size: 44px;
-    block-size: 44px;
-    padding: 0;
-    background: color-mix(in oklch, var(--color-accent) 14%, transparent);
-    border: 1px solid var(--color-accent-line);
     border-radius: 50%;
-    color: var(--color-accent-bright);
-    font: inherit;
-    font-family: var(--font-display);
-    font-weight: 600;
-    font-size-adjust: cap-height .71;
-    text-transform: uppercase;
     text-decoration: none;
-    cursor: pointer;
   }
 
   .identity {
+    --avatar-size: 58px;
+    --avatar-font-size: 1.45rem;
+
     display: flex;
     align-items: center;
     gap: .95rem;
     margin-block: .5rem;
-  }
-
-  .identity__avatar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    inline-size: 58px;
-    block-size: 58px;
-    flex: none;
-    background: var(--color-accent-soft);
-    border: 1px solid var(--color-accent-line);
-    border-radius: 50%;
-    color: var(--color-accent-bright);
-    font-family: var(--font-display);
-    font-size: 1.45rem;
-    font-weight: 600;
-    font-size-adjust: cap-height .71;
-    text-transform: uppercase;
   }
 
   .identity__name {

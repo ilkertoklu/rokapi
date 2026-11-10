@@ -104,17 +104,14 @@
   }
 
   .sheet__header {
+    --avatar-size: 34px;
+    --avatar-font-size: .95rem;
+
     display: flex;
     align-items: center;
     flex-wrap: wrap;
     gap: .6rem;
     margin-block-end: 1.2rem;
-
-    .avatar {
-      inline-size: 34px;
-      block-size: 34px;
-      font-size: .95rem;
-    }
 
     strong {
       font-family: var(--font-display);

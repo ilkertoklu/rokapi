@@ -8,7 +8,7 @@
     <button class="sheet__handle" autofocus data-sheet-target="handle" data-action="sheet#close" aria-label="<%= t(".close") %>"><span class="grip"></span></button>
 
     <header class="sheet__header">
-      <span class="avatar"><%= character.initial %></span>
+      <%= avatar_tag character, hidden: true %>
       <strong id="character_sheet_name"><%= character.name %></strong>
       <em><%= character.summary %></em>
     </header>

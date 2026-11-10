@@ -16,7 +16,7 @@
     <%= tag.p class: [ "finale__move", roll.success? ? "finale__move--success" : "finale__move--failure" ] do %>
       <em><%= scene.chosen_choice.label %></em>
       <% if party %>
-        <%= player_avatar scene.active_player, "avatar--tiny", seat: party.index(scene.active_player) %>
+        <%= player_avatar scene.active_player, "avatar--tiny", seat: party.index(scene.active_player), hidden: true %>
         <span class="adventure__actor"><%= scene.active_player.name %></span>
       <% end %>
       <strong><%= outcome_verdict(roll) %></strong>

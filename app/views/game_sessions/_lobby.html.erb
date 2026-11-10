@@ -29,10 +29,10 @@
     </header>
 
     <ol class="lobby-players">
-      <% game_session.players.in_join_order.includes(:user, :character).each.with_index(1) do |member, seat| %>
+      <% game_session.players.in_join_order.includes(:user, :character).each_with_index do |member, seat| %>
         <% you = member == player %>
-        <%= tag.li class: [ "lobby-player", "lobby-player--seat-#{seat}", { "lobby-player--ready": member.ready?, "lobby-player--you": you } ] do %>
-          <span class="lobby-player__avatar"><%= member.user.initial %></span>
+        <%= tag.li class: [ "lobby-player", { "lobby-player--ready": member.ready?, "lobby-player--you": you } ] do %>
+          <%= player_avatar member, seat: seat, hidden: true %>
           <span class="lobby-player__body">
             <span class="lobby-player__name">
               <%= member.user.name %>

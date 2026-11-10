@@ -20,12 +20,12 @@ class LobbyFlowTest < ActionDispatch::IntegrationTest
     assert_select ".lobby-quest__meta", text: "5 players · ~15 min · balanced tone"
     assert_select ".lobby-players__head span", text: "2 / 5"
 
-    assert_select ".lobby-player--seat-1.lobby-player--ready" do
+    assert_select ".lobby-player:nth-child(1).lobby-player--ready" do
       assert_select ".lobby-player__name", text: /Ilker\s+· HOST/
       assert_select ".lobby-player__line", text: "Human · Warrior"
       assert_select ".lobby-player__status", text: "Ready"
     end
-    assert_select ".lobby-player--seat-2.lobby-player--you" do
+    assert_select ".lobby-player:nth-child(2).lobby-player--you" do
       assert_select ".lobby-player__name", text: /Deniz\s+· YOU/
       assert_select ".lobby-player__line", text: "You have not created your character yet"
       assert_select ".lobby-player__status", text: "No character"
@@ -39,8 +39,8 @@ class LobbyFlowTest < ActionDispatch::IntegrationTest
     sign_in_as users(:ilker)
 
     get game_session_path(@room)
-    assert_select ".lobby-player--seat-2 .lobby-player__status", text: "Getting ready"
-    assert_select ".lobby-player--seat-2 .lobby-player__line", text: "choosing a character…"
+    assert_select ".lobby-player:nth-child(2) .lobby-player__status", text: "Getting ready"
+    assert_select ".lobby-player:nth-child(2) .lobby-player__line", text: "choosing a character…"
   end
 
   test "a guest who just arrived is marked as just joined, the host never is" do
@@ -50,8 +50,8 @@ class LobbyFlowTest < ActionDispatch::IntegrationTest
     room.join users(:sevval)
 
     get game_session_path(room)
-    assert_select ".lobby-player--seat-1 .lobby-player__line", text: "choosing a character…"
-    assert_select ".lobby-player--seat-2 .lobby-player__line", text: "just joined"
+    assert_select ".lobby-player:nth-child(1) .lobby-player__line", text: "choosing a character…"
+    assert_select ".lobby-player:nth-child(2) .lobby-player__line", text: "just joined"
   end
 
   test "making a character in a room returns to the lobby without starting" do

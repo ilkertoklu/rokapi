@@ -725,6 +725,7 @@ en:
       added_to_inventory: Added to inventory
       found_by: "%{item} · found by %{name}"
     party:
+      others: Next up
       turn_of: "%{name} turn"
     scene:
       narrator: Narrator

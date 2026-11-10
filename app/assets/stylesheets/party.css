@@ -42,7 +42,7 @@
 
     .avatar--you {
       opacity: 1;
-      box-shadow: 0 0 0 1.5px color-mix(in oklch, var(--seat) 40%, transparent);
+      box-shadow: 0 0 0 1.5px color-mix(in oklch, var(--avatar-color) 40%, transparent);
     }
   }
 

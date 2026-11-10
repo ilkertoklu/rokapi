@@ -1,1 +1,3 @@
-<%= link_to Current.user.initial, my_profile_path, class: "profile__badge", aria: { label: t(".label") } %>
+<%= link_to my_profile_path, class: "profile__badge", aria: { label: t(".label") } do %>
+  <%= avatar_tag Current.user, "avatar--ringed", hidden: true %>
+<% end %>

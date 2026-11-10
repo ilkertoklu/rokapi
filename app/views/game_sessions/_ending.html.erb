@@ -47,7 +47,7 @@
     <ul class="roster">
       <% game_session.party.each_with_index do |player, seat| %>
         <%= tag.li class: [ "roster__member", "roster__member--fallen": !survivors.include?(player) ] do %>
-          <%= player_avatar player, seat: seat %>
+          <%= player_avatar player, seat: seat, hidden: true %>
           <span><%= player.name %></span>
         <% end %>
       <% end %>

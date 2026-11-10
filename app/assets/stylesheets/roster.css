@@ -10,17 +10,14 @@
   }
 
   .roster__member {
+    --avatar-size: 40px;
+
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: .3125rem;
     font-size: .75rem;
     color: var(--color-ink-faint);
-
-    .avatar {
-      inline-size: 40px;
-      block-size: 40px;
-    }
   }
 
   .roster__member--fallen {

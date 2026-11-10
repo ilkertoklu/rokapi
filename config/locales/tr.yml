@@ -744,6 +744,7 @@ tr:
       added_to_inventory: Envantere eklendi
       found_by: "%{item} · %{name} buldu"
     party:
+      others: Sıradakiler
       turn_of: "%{name} sırası"
     scene:
       narrator: Anlatıcı
