@@ -361,7 +361,7 @@
     color: var(--color-accent-bright);
   }
 
-  @media (min-width: 64rem) {
+  @media (min-width: 64rem), (min-width: 48rem) and (min-height: 36rem) {
     .paywall {
       display: grid;
       grid-template-columns: repeat(3, 1fr);

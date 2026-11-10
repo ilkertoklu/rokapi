@@ -487,7 +487,7 @@
     }
   }
 
-  @media (min-width: 64rem) {
+  @media (min-width: 64rem), (min-width: 48rem) and (min-height: 36rem) {
     .page-head {
       display: flex;
       gap: 1rem;
@@ -578,10 +578,14 @@
 
     .hand {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       margin-inline: 0;
       padding-inline: 0;
       overflow: visible;
+
+      @media (min-width: 64rem) {
+        grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+      }
     }
 
     .fate-card {

@@ -3,7 +3,7 @@
     display: none;
   }
 
-  @media (min-width: 64rem) {
+  @media (min-width: 64rem), (min-width: 48rem) and (min-height: 36rem) {
     body:has(.topbar):not(:has(.game)) {
       grid-template-rows: auto 1fr;
       background: color-mix(in srgb, var(--color-bg) 55%, black);

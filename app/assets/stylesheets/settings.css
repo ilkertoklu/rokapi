@@ -351,7 +351,7 @@
     display: none;
   }
 
-  @media (min-width: 64rem) {
+  @media (min-width: 64rem), (min-width: 48rem) and (min-height: 36rem) {
     .account {
       display: grid;
       grid-template-columns: 1fr 1fr;

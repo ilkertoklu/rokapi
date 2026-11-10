@@ -130,7 +130,7 @@
     }
   }
 
-  @media (min-width: 64rem) {
+  @media (min-width: 64rem), (min-width: 48rem) and (min-height: 36rem) {
     .chips {
       display: grid;
       grid-template-columns: repeat(3, 1fr);

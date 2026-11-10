@@ -39,11 +39,12 @@
     }
   }
 
-  @media (min-width: 64rem) {
+  @media (min-width: 64rem), (min-width: 48rem) and (min-height: 36rem) {
     .screen:not(:has(.game, .brand--hero)) {
       --screen-gutter: 2.5rem;
 
       align-self: start;
+      max-inline-size: min(var(--screen-width), 100% - 4rem);
       min-block-size: 0;
       margin-block: 1.5rem 3rem;
       padding-block: 2.25rem 2.5rem;
