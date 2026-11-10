@@ -36,11 +36,5 @@
   <%= form.submit t(".submit"), class: "btn btn--primary btn--inline" %>
 <% end %>
 
-<%= link_to my_account_path, class: "menu-row menu-row--danger" do %>
-  <span class="menu-row__icon"><%= render "glyph", name: "trash" %></span>
-  <span class="menu-row__body">
-    <span class="menu-row__title"><%= t(".delete_account") %></span>
-    <span class="menu-row__text"><%= t(".delete_account_text") %></span>
-  </span>
-  <span class="menu-row__chevron"><%= render "glyph", name: "forward" %></span>
-<% end %>
+<%= render "menu_row", to: my_account_path, icon: "trash", title: t(".delete_account"),
+      text: t(".delete_account_text"), classes: "menu-row--danger" %>

@@ -27,14 +27,8 @@
 
 <div class="subscription-actions">
   <% if subscription %>
-    <%= link_to manage_subscription_url(subscription), class: "menu-row" do %>
-      <span class="menu-row__icon"><%= render "glyph", name: "swap" %></span>
-      <span class="menu-row__body">
-        <span class="menu-row__title"><%= t(".change") %></span>
-        <span class="menu-row__text"><%= Plan.paid.map(&:name).join(" · ") %></span>
-      </span>
-      <span class="menu-row__chevron"><%= render "glyph", name: "forward" %></span>
-    <% end %>
+    <%= render "menu_row", to: manage_subscription_url(subscription), icon: "swap", title: t(".change"),
+          text: Plan.paid.map(&:name).join(" · ") %>
 
     <% unless subscription_ending?(subscription) %>
       <%= link_to t(".cancel"), manage_subscription_url(subscription), class: "btn btn--ghost" %>

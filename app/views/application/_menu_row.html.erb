@@ -1,0 +1,9 @@
+<%# locals: (to:, icon:, title:, text:, classes: nil) -%>
+<%= link_to to, class: [ "menu-row", classes ] do %>
+  <span class="menu-row__icon"><%= render "glyph", name: icon %></span>
+  <span class="menu-row__body">
+    <span class="menu-row__title"><%= title %></span>
+    <span class="menu-row__text"><%= text %></span>
+  </span>
+  <span class="menu-row__chevron"><%= render "glyph", name: "forward" %></span>
+<% end %>

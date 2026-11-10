@@ -20,14 +20,8 @@
     <% end %>
   <% end %>
 
-  <%= link_to subscription_path, class: "menu-row menu-row--featured account__subscription-link" do %>
-    <span class="menu-row__icon"><%= render "glyph", name: "flame" %></span>
-    <span class="menu-row__body">
-      <span class="menu-row__title"><%= t(".subscription") %></span>
-      <span class="menu-row__text"><%= t(".subscription_text") %></span>
-    </span>
-    <span class="menu-row__chevron"><%= render "glyph", name: "forward" %></span>
-  <% end %>
+  <%= render "menu_row", to: subscription_path, icon: "flame", title: t(".subscription"),
+        text: t(".subscription_text"), classes: "menu-row--featured account__subscription-link" %>
 
   <% unless hotwire_native_app? %>
     <section class="account__subscription">
@@ -36,32 +30,11 @@
     </section>
   <% end %>
 
-  <%= link_to my_adventures_path, class: "menu-row" do %>
-    <span class="menu-row__icon"><%= render "glyph", name: "book" %></span>
-    <span class="menu-row__body">
-      <span class="menu-row__title"><%= t(".adventures") %></span>
-      <span class="menu-row__text"><%= t(".adventures_text") %></span>
-    </span>
-    <span class="menu-row__chevron"><%= render "glyph", name: "forward" %></span>
-  <% end %>
+  <%= render "menu_row", to: my_adventures_path, icon: "book", title: t(".adventures"), text: t(".adventures_text") %>
 
-  <%= link_to my_places_path, class: "menu-row" do %>
-    <span class="menu-row__icon"><%= render "glyph", name: "map" %></span>
-    <span class="menu-row__body">
-      <span class="menu-row__title"><%= t(".places") %></span>
-      <span class="menu-row__text"><%= t(".places_text") %></span>
-    </span>
-    <span class="menu-row__chevron"><%= render "glyph", name: "forward" %></span>
-  <% end %>
+  <%= render "menu_row", to: my_places_path, icon: "map", title: t(".places"), text: t(".places_text") %>
 
-  <%= link_to my_settings_path, class: "menu-row" do %>
-    <span class="menu-row__icon"><%= render "glyph", name: "sliders" %></span>
-    <span class="menu-row__body">
-      <span class="menu-row__title"><%= t(".settings") %></span>
-      <span class="menu-row__text"><%= t(".settings_text") %></span>
-    </span>
-    <span class="menu-row__chevron"><%= render "glyph", name: "forward" %></span>
-  <% end %>
+  <%= render "menu_row", to: my_settings_path, icon: "sliders", title: t(".settings"), text: t(".settings_text") %>
 
   <section>
     <h2 class="field-label"><%= t(".language") %></h2>
