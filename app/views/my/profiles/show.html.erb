@@ -12,6 +12,10 @@
     </div>
   </div>
 
+  <% if (record = Current.user.record).any? %>
+    <%= render "record", record: record %>
+  <% end %>
+
   <%= link_to subscription_path, class: "menu-row menu-row--featured account__subscription-link" do %>
     <span class="menu-row__icon"><%= render "glyph", name: "flame" %></span>
     <span class="menu-row__body">

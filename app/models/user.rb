@@ -50,4 +50,8 @@ class User < ApplicationRecord
   def initial
     name.to_s.first
   end
+
+  def record
+    Record.new(self)
+  end
 end

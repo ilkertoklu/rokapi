@@ -605,6 +605,20 @@ tr:
         validity: Bağlantı 24 saat geçerlidir. Gelmezse spam klasörünü kontrol et.
         done: Tamam
     profiles:
+      record:
+        title: Karne
+        adventures:
+          one: Macera
+          other: Macera
+        victories:
+          one: Zafer
+          other: Zafer
+        defeats:
+          one: Yenilgi
+          other: Yenilgi
+        dice_rolled: Zar atıldı
+        party_adventures: Ekiple
+        favorite_klass: Gözde sınıf
       show:
         title: Profil
         subscription: Aboneliğim

@@ -1,0 +1,33 @@
+<%# locals: (record:) -%>
+<section class="record">
+  <h2 class="field-label"><%= t(".title") %></h2>
+
+  <div class="record__figures">
+    <%= link_to my_adventures_path, class: "record__figure record__figure--shelf" do %>
+      <strong><%= record.adventures %></strong>
+      <span><%= t(".adventures", count: record.adventures) %></span>
+    <% end %>
+    <div class="record__figure">
+      <strong><%= record.victories %></strong>
+      <span><%= t(".victories", count: record.victories) %></span>
+    </div>
+    <div class="record__figure">
+      <strong><%= record.defeats %></strong>
+      <span><%= t(".defeats", count: record.defeats) %></span>
+    </div>
+    <div class="record__figure">
+      <strong><%= record.dice_rolled %></strong>
+      <span><%= t(".dice_rolled") %></span>
+    </div>
+    <div class="record__figure">
+      <strong><%= record.party_adventures %></strong>
+      <span><%= t(".party_adventures") %></span>
+    </div>
+    <% if (klass = record.favorite_klass) %>
+      <div class="record__figure record__figure--word">
+        <strong><%= klass.label %></strong>
+        <span><%= t(".favorite_klass") %></span>
+      </div>
+    <% end %>
+  </div>
+</section>

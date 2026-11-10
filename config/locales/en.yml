@@ -586,6 +586,20 @@ en:
         validity: The link is valid for 24 hours. If it does not arrive, check your spam folder.
         done: Done
     profiles:
+      record:
+        title: Record
+        adventures:
+          one: Adventure
+          other: Adventures
+        victories:
+          one: Victory
+          other: Victories
+        defeats:
+          one: Defeat
+          other: Defeats
+        dice_rolled: Dice rolled
+        party_adventures: With a party
+        favorite_klass: Played most
       show:
         title: Profile
         subscription: My subscription
