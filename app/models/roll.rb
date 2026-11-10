@@ -15,7 +15,7 @@ class Roll < ApplicationRecord
   before_create { self.success = total >= target }
 
   after_create_commit :narrate_later
-  after_update_commit -> { broadcast_refresh_to scene.game_session }
+  after_update_commit -> { broadcast_refresh_to game_session }
 
   def total
     value + modifier + status_modifier
@@ -57,13 +57,13 @@ class Roll < ApplicationRecord
     if unseen?
       transaction do
         update! acknowledged_at: Time.current
-        scene.game_session.advance
+        game_session.advance
       end
     end
   end
 
   def narrate
-    Narrator.for(scene.game_session).narrate_outcome(self)
+    Narrator.for(game_session).narrate_outcome(self)
   end
 
   def narrate_later
@@ -90,7 +90,7 @@ class Roll < ApplicationRecord
   end
 
   def clue_won
-    scene.game_session.next_clue if success? && !scene.last?
+    game_session.next_clue if success? && !scene.last?
   end
 
   def life_at_stake?
