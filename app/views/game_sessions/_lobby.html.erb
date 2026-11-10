@@ -1,4 +1,5 @@
 <%# locals: (game_session:, player:) -%>
+<% party = game_session.party.to_a %>
 <div class="lobby">
   <div class="room-code">
     <span class="overline room-code__label"><%= t(".code") %></span>
@@ -25,19 +26,19 @@
   <section>
     <header class="lobby-players__head">
       <h2 class="overline"><%= t(".players") %></h2>
-      <span><%= game_session.players.size %> / <%= game_session.max_players %></span>
+      <span><%= party.size %> / <%= game_session.max_players %></span>
     </header>
 
     <ol class="lobby-players">
-      <% game_session.players.in_join_order.includes(:user, :character).each_with_index do |member, seat| %>
+      <% party.each_with_index do |member, seat| %>
         <% you = member == player %>
         <%= tag.li class: [ "lobby-player", { "lobby-player--ready": member.ready?, "lobby-player--you": you } ] do %>
           <%= player_avatar member, seat: seat, hidden: true %>
           <span class="lobby-player__body">
             <span class="lobby-player__name">
               <%= member.user.name %>
-              <% if you || member == game_session.host %>
-                <small><% if you %>· <%= t(".you") %><% end %><% if member == game_session.host %> · <%= t(".host") %><% end %></small>
+              <% if you || member.host? %>
+                <small><% if you %>· <%= t(".you") %><% end %><% if member.host? %> · <%= t(".host") %><% end %></small>
               <% end %>
             </span>
             <span class="lobby-player__line"><%= lobby_player_line(member, you: you) %></span>
@@ -51,11 +52,11 @@
   <div class="sticky-footer stack">
     <% if !player.ready? %>
       <%= link_to t(".create_character"), new_game_session_character_path(game_session), class: "btn btn--primary btn--inline" %>
-    <% elsif player == game_session.host %>
+    <% elsif player.host? %>
       <p class="lobby__note"><%= game_session.everyone_ready? ? t(".only_you_start") : t(".wait_for_everyone") %></p>
       <%= button_to t(".start"), game_session_start_path(game_session), class: "btn btn--primary btn--inline", disabled: !game_session.everyone_ready? %>
     <% else %>
-      <p class="lobby__note"><%= t(".host_starts", host: game_session.host.user.name) %></p>
+      <p class="lobby__note"><%= t(".host_starts", host: party.find(&:host?).name) %></p>
     <% end %>
   </div>
 </div>

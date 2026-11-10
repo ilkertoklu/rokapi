@@ -15,12 +15,12 @@ json.multiplayer @game_session.multiplayer?
 json.rematch_id @game_session.rematch&.id
 json.(@game_session, :code, :max_players)
 json.lobby @game_session.lobby?
-json.host @player == @game_session.host
+json.host @player.host?
 json.everyone_ready @game_session.everyone_ready?
 
-json.players @game_session.players.in_join_order.includes(:user, :character) do |member|
+json.players @game_session.party do |member|
   json.name member.name
-  json.host member == @game_session.host
+  json.host member.host?
   json.you member == @player
   json.ready member.ready?
   json.summary member.character&.summary

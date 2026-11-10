@@ -10,7 +10,7 @@ module LobbyHelper
       [ Character::Race.fetch(player.character.race).label, Character::Klass.fetch(player.character.klass).label ].join(" · ")
     elsif you
       t("game_sessions.lobby.no_character_yet")
-    elsif player != player.game_session.host && player.created_at.after?(1.minute.ago)
+    elsif !player.host? && player.created_at.after?(1.minute.ago)
       t("game_sessions.lobby.just_joined")
     else
       t("game_sessions.lobby.choosing")
