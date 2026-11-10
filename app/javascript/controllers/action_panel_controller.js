@@ -8,9 +8,15 @@ export default class extends Controller {
 
   #grab = null
   #swiped = false
+  #sight = new IntersectionObserver(([ entry ]) => this.element.toggleAttribute("data-out-of-view", !entry.isIntersecting))
 
   connect() {
     this.pin()
+    this.#sight.observe(this.bodyTarget)
+  }
+
+  disconnect() {
+    this.#sight.disconnect()
   }
 
   pin() {
@@ -22,8 +28,8 @@ export default class extends Controller {
     }
   }
 
-  keepOpen(event) {
-    if (event.detail.attributeName === "open") event.preventDefault()
+  keepState(event) {
+    if ([ "open", "data-out-of-view" ].includes(event.detail.attributeName)) event.preventDefault()
   }
 
   toggle(event) {

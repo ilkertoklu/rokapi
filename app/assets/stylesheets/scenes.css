@@ -544,6 +544,7 @@
   @media (min-width: 48rem) {
     .stage {
       --location-size: 5.25rem;
+      --handle-size: 3.25rem;
 
       padding-block-start: env(safe-area-inset-top);
       overflow-y: auto;
@@ -619,14 +620,20 @@
       --action-panel-pinned: open;
 
       margin: 0 2.5rem 2.5rem;
-      padding: 1.25rem;
+      padding: 0 1.25rem 1.25rem;
       border: 1px solid color-mix(in srgb, var(--color-accent) 28%, transparent);
       border-radius: 22px;
       box-shadow: none;
     }
 
+    .action-panel__handle {
+      block-size: var(--handle-size);
+      margin-block-end: 0;
+      padding-block-start: 1.25rem;
+    }
+
     .choices-cue {
-      --cue-size: 4rem;
+      --cue-size: calc(1px + var(--handle-size));
 
       position: sticky;
       inset-block-end: 0;
@@ -643,9 +650,14 @@
       border: 1px solid color-mix(in srgb, var(--color-accent) 28%, transparent);
       border-block-end: 0;
       border-radius: 22px 22px 0 0;
-      box-shadow: 0 -1rem 1.5rem .25rem var(--color-bg);
       color: var(--color-accent);
       text-decoration: none;
+      transition: z-index 0s var(--panel-slide);
+
+      &::before {
+        content: "";
+        inline-size: 1rem;
+      }
 
       .overline {
         font-weight: 800;
@@ -655,12 +667,23 @@
       .glyph {
         inline-size: 1rem;
         block-size: 1rem;
+        opacity: 0;
+        transition: opacity var(--panel-slide);
       }
 
       @media (any-hover: hover) {
         &:hover {
           border-color: var(--color-accent);
         }
+      }
+    }
+
+    .choices-cue:has(+ .action-panel[data-out-of-view]) {
+      z-index: 3;
+      transition: none;
+
+      .glyph {
+        opacity: 1;
       }
     }
 

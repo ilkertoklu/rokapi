@@ -43,6 +43,19 @@ class DesktopPlayTest < ApplicationSystemTestCase
     assert_link "Your turn", obscured: true
   end
 
+  test "the choices rise under the cue instead of drawing a second edge" do
+    @scene.update! narration: Array.new(20, "Rain hammers the inn's shutters while the cellar door groans below.").join("\n\n")
+    sign_in_as users(:ilker)
+    page.current_window.resize_to 1440, 900
+    visit game_session_path(@game_session)
+
+    execute_script <<~JS
+      const stage = document.querySelector(".stage")
+      stage.scrollTop += document.querySelector(".action-panel").getBoundingClientRect().top - stage.getBoundingClientRect().bottom + 40
+    JS
+    assert_link "Your turn", obscured: false
+  end
+
   test "reading a new scene from the keyboard before the choices" do
     @scene.update! narration: Array.new(30, "Rain hammers the inn's shutters and the fire gutters low.").join("\n\n")
     sign_in_as users(:ilker)
