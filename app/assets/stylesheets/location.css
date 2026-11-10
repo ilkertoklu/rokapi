@@ -1,0 +1,79 @@
+@layer components {
+  .location {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding: .4rem 1.4rem .9rem;
+    border-block-end: 1px solid var(--color-line-soft);
+  }
+
+  .location__place {
+    min-inline-size: 0;
+  }
+
+  .location :is(h1, p) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .location h1 {
+    font-family: var(--font-display);
+    font-size: 1.125rem;
+    font-weight: 600;
+    line-height: 1.1;
+    margin: 0;
+  }
+
+  .location p {
+    margin: .15rem 0 0;
+    font-size: .75rem;
+    color: var(--color-ink-soft);
+    letter-spacing: .02em;
+  }
+
+  .progress {
+    display: flex;
+    align-items: center;
+    gap: .375rem;
+    flex: none;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .progress__dot {
+    inline-size: 7px;
+    block-size: 7px;
+    border-radius: 50%;
+    background: var(--color-dot-upcoming);
+  }
+
+  .progress__dot--past {
+    background: var(--color-dot-past);
+  }
+
+  .progress__dot--current {
+    inline-size: 9px;
+    block-size: 9px;
+    background: var(--color-accent);
+    box-shadow: 0 0 8px var(--color-accent-glow);
+  }
+
+  @media (min-width: 48rem) {
+    .location {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: 3;
+      block-size: var(--location-size);
+      padding: .4rem 2.5rem 0;
+      background: var(--color-bg);
+
+      @media (max-height: 36rem) {
+        position: static;
+      }
+    }
+  }
+}

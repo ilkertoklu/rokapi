@@ -1,0 +1,18 @@
+@layer components {
+  .flash {
+    margin: 0;
+    padding: .75rem 1rem;
+    border-radius: var(--radius-control);
+    font-size: .92rem;
+  }
+
+  .flash--alert {
+    background: var(--color-accent-soft);
+    color: var(--color-accent-bright);
+  }
+
+  .flash--notice {
+    background: color-mix(in oklch, var(--color-positive) 16%, transparent);
+    color: var(--color-positive);
+  }
+}

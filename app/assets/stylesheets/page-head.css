@@ -1,0 +1,54 @@
+@layer components {
+  .page-head {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 44px;
+    align-items: center;
+    margin: -2px -6px 0;
+  }
+
+  .page-head__back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 44px;
+    block-size: 44px;
+    padding: 12px;
+    background: var(--color-glass);
+    border: .5px solid var(--color-glass-line);
+    border-radius: 50%;
+    box-shadow: var(--glass-shadow), var(--shadow-control);
+    backdrop-filter: var(--glass-blur);
+    color: var(--color-ink);
+
+    .glyph {
+      stroke-width: 2.4;
+    }
+  }
+
+  .page-head h1 {
+    grid-column: 2;
+    margin: 0;
+    font-size: 1.25rem;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  @media (min-width: 64rem), (min-width: 48rem) and (min-height: 36rem) {
+    .page-head {
+      display: flex;
+      gap: 1rem;
+      margin: 0 0 .5rem;
+
+      h1 {
+        font-size: 1.625rem;
+        text-align: start;
+      }
+    }
+  }
+
+  .hotwire-native .page-head {
+    display: none;
+  }
+}

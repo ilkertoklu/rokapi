@@ -1,0 +1,51 @@
+@layer components {
+  .avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 38px;
+    block-size: 38px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--color-accent-soft);
+    color: var(--color-accent-bright);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size-adjust: cap-height .71;
+    text-transform: uppercase;
+  }
+
+  .avatar--seat-0 { --seat: var(--color-seat-0); --seat-ink: var(--color-seat-0-bright); }
+  .avatar--seat-1 { --seat: var(--color-seat-1); --seat-ink: var(--color-seat-1-bright); }
+  .avatar--seat-2 { --seat: var(--color-seat-2); --seat-ink: var(--color-seat-2-bright); }
+  .avatar--seat-3 { --seat: var(--color-seat-3); --seat-ink: var(--color-seat-3-bright); }
+  .avatar--seat-4 { --seat: var(--color-seat-4); --seat-ink: var(--color-seat-4-bright); }
+
+  .avatar[class*="avatar--seat-"] {
+    background: color-mix(in oklch, var(--seat) 18%, transparent);
+    color: var(--seat-ink);
+    font-size: .9375rem;
+  }
+
+  .avatar.avatar--departed {
+    background: transparent;
+    border: 1px dashed var(--color-line-strong);
+    color: var(--color-ink-dim);
+  }
+
+  .avatar--active {
+    box-shadow: 0 0 0 2px var(--seat), 0 0 0 6px color-mix(in oklch, var(--seat) 13%, transparent);
+  }
+
+  .avatar.avatar--small {
+    inline-size: 28px;
+    block-size: 28px;
+    font-size: .75rem;
+  }
+
+  .avatar.avatar--tiny {
+    inline-size: 18px;
+    block-size: 18px;
+    font-size: .6875rem;
+  }
+}

@@ -1,0 +1,35 @@
+@layer base {
+  .wordmark {
+    font-feature-settings: "locl" 0;
+  }
+
+  .lede {
+    margin: 0;
+    color: var(--color-ink-faint);
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1rem;
+  }
+
+  .hint {
+    color: var(--color-ink-faint);
+    font-size: .9rem;
+    margin: 0;
+
+    a {
+      color: var(--color-accent-bright);
+    }
+
+    strong {
+      color: var(--color-ink);
+      font-weight: 600;
+    }
+  }
+
+  .overline {
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+}

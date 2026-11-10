@@ -1,0 +1,106 @@
+@layer components {
+  .pick {
+    --pick-mark: 20px;
+    --pick-dot: 4.5px;
+
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: .8125rem;
+    padding: .8125rem .875rem;
+    background: var(--color-surface-sunken);
+    border: 1px solid var(--color-line-soft);
+    border-radius: var(--radius-card);
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+
+    input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+    }
+
+    &:has(:checked) {
+      background: color-mix(in oklch, var(--color-accent) 10%, transparent);
+      border-color: var(--color-accent);
+    }
+
+    &:has(:focus-visible) {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
+    }
+  }
+
+  .pick--large {
+    gap: .875rem;
+    padding: 1.125rem 1rem;
+    border-radius: 18px;
+
+    .pick__title {
+      font-size: 1.125rem;
+    }
+  }
+
+  .pick--disabled {
+    opacity: .45;
+    cursor: default;
+  }
+
+  .pick__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
+    min-inline-size: 0;
+  }
+
+  .pick__title {
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-ink-muted);
+  }
+
+  .pick:has(:checked) .pick__title,
+  a.pick .pick__title {
+    color: var(--color-ink);
+  }
+
+  .pick__text {
+    font-size: .75rem;
+    line-height: 1.4;
+    color: var(--color-ink-soft);
+  }
+
+  .pick__mark {
+    inline-size: var(--pick-mark);
+    block-size: var(--pick-mark);
+    flex: none;
+    border: 2px solid color-mix(in oklch, var(--color-ink) 16%, transparent);
+    border-radius: 50%;
+  }
+
+  .pick:has(:checked) .pick__mark {
+    border-color: var(--color-accent);
+    background:
+      radial-gradient(circle, var(--color-accent) calc(var(--pick-dot) - .75px), transparent var(--pick-dot));
+  }
+
+  @media (any-hover: hover) {
+    .pick:not(.pick--disabled):hover {
+      border-color: var(--color-accent);
+    }
+  }
+
+  @media (min-width: 64rem), (min-width: 48rem) and (min-height: 36rem) {
+    .stack:has(> .pick--large) {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+
+      .pick {
+        padding: 1.25rem 1.5rem;
+      }
+    }
+  }
+}

@@ -1,0 +1,80 @@
+@layer components {
+  :where(.brand) {
+    text-align: center;
+
+    h1 {
+      font-size: clamp(2.4rem, 12vw, 3.125rem);
+      font-weight: 500;
+      letter-spacing: .02em;
+    }
+
+    > p {
+      color: var(--color-ink-faint);
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 1.125rem;
+      line-height: 1.5;
+      margin: 1.25rem 0 0;
+    }
+  }
+
+  .brand--hero {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    > * {
+      position: relative;
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset-block-start: 50%;
+      inset-inline-start: 50%;
+      translate: -50% -50%;
+      inline-size: 280px;
+      block-size: 280px;
+      border-radius: 50%;
+      background: radial-gradient(circle, color-mix(in oklch, var(--color-accent) 22%, transparent), transparent 65%);
+      animation: ember-pulse 5s ease-in-out infinite;
+      pointer-events: none;
+    }
+  }
+
+  .brand--spent {
+    &.brand--hero::before {
+      background: radial-gradient(circle, color-mix(in oklch, var(--color-accent) 12%, transparent), transparent 65%);
+      animation: none;
+    }
+
+    .ember {
+      inline-size: 12px;
+      block-size: 12px;
+      background: var(--color-ink-dim);
+      box-shadow: 0 0 16px 3px color-mix(in oklch, var(--color-ink-dim) 50%, transparent);
+      animation: ember-pulse 3s ease-in-out infinite;
+    }
+  }
+
+  .dice-motif {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    margin-block-end: 1.6rem;
+
+    .ember {
+      inline-size: 14px;
+      block-size: 14px;
+      box-shadow: 0 0 22px 4px var(--color-accent-glow);
+    }
+
+    > span {
+      display: flex;
+      gap: 7px;
+    }
+  }
+}

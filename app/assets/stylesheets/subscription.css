@@ -1,0 +1,115 @@
+@layer components {
+  .plan-overview,
+  .subscription-actions {
+    display: contents;
+  }
+
+  .subscription {
+    padding: 1.125rem 1rem 1rem;
+    background: var(--color-surface-sunken);
+    border: 1px solid var(--color-accent-line);
+    border-radius: 20px;
+
+    .usage {
+      margin-block-start: 1rem;
+      padding: 1rem 0 0;
+      background: none;
+      border: 0;
+      border-block-start: 1px solid var(--color-line-soft);
+      border-radius: 0;
+    }
+  }
+
+  .subscription__plan {
+    display: flex;
+    align-items: center;
+    gap: .875rem;
+  }
+
+  .subscription__icon {
+    display: flex;
+    inline-size: 44px;
+    block-size: 44px;
+    flex: none;
+    padding: 11px;
+    background: var(--color-accent-soft);
+    border-radius: 12px;
+    color: var(--color-accent-bright);
+  }
+
+  .subscription__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: .15rem;
+    min-inline-size: 0;
+  }
+
+  .subscription__name {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+
+  .subscription__terms {
+    font-size: .75rem;
+    color: var(--color-ink-soft);
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: .375rem;
+    padding: .3rem .7rem;
+    border-radius: var(--radius-pill);
+    background: color-mix(in oklch, var(--color-positive) 14%, transparent);
+    color: var(--color-positive-bright);
+    font-size: .75rem;
+    font-weight: 700;
+
+    &::before {
+      content: "";
+      inline-size: 6px;
+      block-size: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+  }
+
+  .status-pill--ending {
+    background: color-mix(in oklch, var(--color-ink) 8%, transparent);
+    color: var(--color-ink-soft);
+  }
+
+  @media (min-width: 64rem), (min-width: 48rem) and (min-height: 36rem) {
+    .plan-overview {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem 2.5rem;
+      align-items: start;
+    }
+
+    .subscription-actions {
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+
+      .btn--ghost {
+        padding-block: .625rem;
+      }
+    }
+
+    .plan-overview:not(:has(.menu-row)) {
+      grid-template-columns: 1fr;
+
+      .subscription-actions {
+        align-items: flex-end;
+      }
+
+      .btn--primary {
+        inline-size: auto;
+        min-inline-size: 16rem;
+      }
+    }
+  }
+}

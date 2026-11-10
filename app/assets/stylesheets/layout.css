@@ -1,0 +1,110 @@
+@layer layout {
+  .screen {
+    --screen-gutter: clamp(1.25rem, 6vw, 2rem);
+    --screen-width: 26rem;
+
+    position: relative;
+    max-inline-size: var(--screen-width);
+    margin-inline: auto;
+    min-block-size: 100dvh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 1.25rem;
+    padding: calc(1.5rem + env(safe-area-inset-top))
+             var(--screen-gutter)
+             calc(1.5rem + env(safe-area-inset-bottom));
+  }
+
+  @media (min-width: 48rem) {
+    .screen {
+      --screen-width: 30rem;
+
+      inline-size: 100%;
+      min-block-size: min(46rem, 100dvh);
+    }
+  }
+
+  @media (min-width: 64rem), (min-width: 48rem) and (min-height: 36rem) {
+    .screen:not(:has(.game, .brand--hero)) {
+      --screen-gutter: 2.5rem;
+
+      align-self: start;
+      max-inline-size: min(var(--screen-width), 100% - 4rem);
+      min-block-size: 0;
+      margin-block: 1.5rem 3rem;
+      padding-block: 2.25rem 2.5rem;
+      background: var(--color-bg);
+      border: 1px solid var(--color-line-soft);
+      border-radius: 28px;
+      box-shadow: var(--shadow-screen);
+    }
+
+    .screen--medium {
+      --screen-width: 46rem;
+    }
+
+    .screen--wide {
+      --screen-width: 62rem;
+    }
+  }
+
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+  }
+
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    flex: 1;
+  }
+
+  .sticky-footer {
+    position: sticky;
+    inset-block-end: 0;
+    margin-block-start: auto;
+    padding-block: 1.5rem .75rem;
+    background: linear-gradient(to top, var(--color-bg) 62%, transparent);
+  }
+
+  @media (min-width: 64rem), (min-width: 48rem) and (min-height: 36rem) {
+    .flow--columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.75rem 2.5rem;
+
+      > .page-head,
+      > .flow__wide {
+        grid-column: 1 / -1;
+      }
+
+      > .flow__aside {
+        grid-column: 2;
+        grid-row: 2 / span 3;
+        align-content: start;
+      }
+    }
+
+    .screen--wide .sticky-footer {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 1.25rem;
+      padding-block: .75rem;
+    }
+  }
+}
+
+@layer components {
+  @media (min-width: 64rem), (min-width: 48rem) and (min-height: 36rem) {
+    .screen--wide .sticky-footer .btn {
+      inline-size: auto;
+      min-inline-size: 16rem;
+    }
+  }
+}

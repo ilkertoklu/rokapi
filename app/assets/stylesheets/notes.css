@@ -1,0 +1,31 @@
+@layer components {
+  .note {
+    display: flex;
+    align-items: flex-start;
+    gap: .5625rem;
+    margin: 0;
+    padding-inline: 2px;
+    color: var(--color-ink-soft);
+    font-size: .75rem;
+    line-height: 1.5;
+
+    .glyph {
+      inline-size: 16px;
+      block-size: 16px;
+      flex: none;
+      margin-block-start: 1px;
+      color: var(--color-ink-dim);
+      stroke-width: 1.8;
+    }
+
+    strong {
+      color: var(--color-ink-muted);
+      font-weight: 600;
+    }
+  }
+
+  .note--emphasis {
+    color: var(--color-ink-muted);
+    font-size: .875rem;
+  }
+}

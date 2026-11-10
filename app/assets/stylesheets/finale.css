@@ -1,0 +1,133 @@
+@layer components {
+  .finale {
+    position: relative;
+    flex: 1;
+    min-block-size: 0;
+    overflow-x: clip;
+    overflow-y: auto;
+    padding: 1.75rem 1.75rem 0;
+    text-align: center;
+
+    &::before {
+      content: "";
+      position: absolute;
+      inset-block-start: -40px;
+      inset-inline-start: 50%;
+      translate: -50% 0;
+      inline-size: 360px;
+      block-size: 360px;
+      border-radius: 50%;
+      background: radial-gradient(circle, color-mix(in oklch, var(--color-accent) 26%, transparent), transparent 62%);
+      animation: ember-pulse 6s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    > * {
+      position: relative;
+    }
+  }
+
+  .finale__outcome {
+    margin: 0;
+    color: var(--color-accent);
+    font-weight: 800;
+    letter-spacing: .33em;
+  }
+
+  .finale h1 {
+    margin: .7rem 0 0;
+    font-family: var(--font-display);
+    font-size: 2.375rem;
+    font-weight: 600;
+    line-height: 1.12;
+  }
+
+  .finale__move {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    margin: 1.1rem 0 0;
+    padding: .45rem .8rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-surface-sunken);
+    border: 1px solid var(--color-line-soft);
+    font-family: var(--font-display);
+    font-size: .875rem;
+    color: var(--color-ink-soft);
+
+    strong {
+      font-family: var(--font-ui);
+      font-size: .75rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+    }
+  }
+
+  .finale__move--success strong {
+    color: var(--color-positive-bright);
+  }
+
+  .finale__move--failure strong {
+    color: var(--color-negative);
+  }
+
+  .finale__closing {
+    margin: 1.35rem 0 0;
+  }
+
+  .finale hr {
+    block-size: 1px;
+    margin: 1.5rem 0;
+    border: 0;
+    background: var(--color-line);
+  }
+
+  .highlights {
+    display: flex;
+    justify-content: space-evenly;
+
+    strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 400;
+      color: var(--color-ink);
+    }
+
+    span {
+      display: block;
+      margin-block-start: .1875rem;
+      font-size: .8125rem;
+      font-weight: 600;
+      color: var(--color-ink-soft);
+    }
+  }
+
+  .finale__new-badges,
+  .finale__new-place {
+    margin: 0 0 .25rem;
+    color: var(--color-ink-soft);
+    font-size: .8125rem;
+    text-align: center;
+
+    a {
+      color: var(--color-accent-bright);
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: .9375rem;
+      text-decoration: none;
+    }
+  }
+
+  @media (min-width: 48rem) {
+    .finale {
+      flex: 1 0 auto;
+      overflow-y: visible;
+      padding-inline: 2.5rem;
+    }
+
+    .finale__closing {
+      text-align: start;
+    }
+  }
+}

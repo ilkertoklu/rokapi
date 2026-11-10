@@ -1,0 +1,135 @@
+@layer components {
+  .warning {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .875rem;
+    margin-block-start: .75rem;
+    text-align: center;
+
+    h2 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+
+    p {
+      max-inline-size: 17.5rem;
+      margin: 0;
+      color: var(--color-ink-faint);
+      font-size: .875rem;
+      line-height: 1.55;
+    }
+  }
+
+  .warning__icon {
+    display: flex;
+    inline-size: 68px;
+    block-size: 68px;
+    padding: 19px;
+    background: color-mix(in oklch, var(--color-negative) 13%, transparent);
+    border: 1px solid color-mix(in oklch, var(--color-negative) 45%, transparent);
+    border-radius: 50%;
+    color: var(--color-negative-bright);
+
+    .glyph {
+      stroke-width: 2;
+    }
+  }
+
+  .losses {
+    margin: 0;
+    padding: .25rem 1.125rem;
+    list-style: none;
+    background: var(--color-surface-sunken);
+    border: 1px solid var(--color-line-soft);
+    border-radius: 20px;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: .625rem;
+      padding-block: .75rem;
+      color: var(--color-ink-muted);
+      font-size: .875rem;
+      font-weight: 600;
+    }
+
+    li + li {
+      border-block-start: 1px solid var(--color-line-soft);
+    }
+
+    .glyph {
+      inline-size: 14px;
+      block-size: 14px;
+      flex: none;
+      color: var(--color-negative-bright);
+      stroke-width: 2.2;
+    }
+  }
+
+  input[type="text"].confirmation {
+    background: var(--color-well);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+
+    &::placeholder {
+      color: var(--color-ink-dim);
+    }
+  }
+
+  .account {
+    display: contents;
+  }
+
+  .account__subscription {
+    display: none;
+  }
+
+  @media (min-width: 64rem), (min-width: 48rem) and (min-height: 36rem) {
+    .account {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: auto auto auto auto 1fr auto;
+      gap: 1.25rem 2.5rem;
+      align-items: start;
+
+      > .page-head {
+        grid-column: 1 / -1;
+      }
+
+      > .account__subscription-link {
+        display: none;
+      }
+    }
+
+    .account__subscription {
+      grid-column: 2;
+      grid-row: 2 / span 4;
+      &,
+      turbo-frame {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .field-label {
+        margin: 0;
+      }
+    }
+
+    .account__sign-out {
+      grid-column: 1 / -1;
+      align-items: flex-end;
+      padding-block-start: 1.25rem;
+      border-block-start: 1px solid var(--color-line-soft);
+
+      .btn {
+        inline-size: auto;
+        min-inline-size: 12rem;
+      }
+    }
+  }
+}

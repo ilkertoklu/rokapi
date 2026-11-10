@@ -63,6 +63,28 @@
     opacity: 1;
   }
 
+  .btn--danger {
+    background: var(--color-negative);
+    color: var(--color-on-accent);
+
+    &:disabled {
+      background: color-mix(in oklch, var(--color-negative) 18%, transparent);
+      color: var(--color-negative-dim);
+      opacity: 1;
+    }
+  }
+
+  .btn--small {
+    padding-block: .8125rem;
+    font-size: .875rem;
+    font-weight: 600;
+  }
+
+  .btn__aside {
+    font-weight: 500;
+    opacity: .75;
+  }
+
   .resend {
     inline-size: 100%;
     padding: .5rem;

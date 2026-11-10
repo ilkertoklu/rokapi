@@ -1,0 +1,21 @@
+@layer base {
+  @keyframes ember-pulse {
+    0%, 100% {
+      opacity: .5;
+    }
+
+    50% {
+      opacity: .9;
+    }
+  }
+
+  @keyframes dots-blink {
+    0%, 100% {
+      opacity: .25;
+    }
+
+    50% {
+      opacity: 1;
+    }
+  }
+}

@@ -7,59 +7,11 @@
     line-height: 1.5;
   }
 
-  .screen {
-    --screen-gutter: clamp(1.25rem, 6vw, 2rem);
-    --screen-width: 26rem;
-
-    position: relative;
-    max-inline-size: var(--screen-width);
-    margin-inline: auto;
-    min-block-size: 100dvh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    gap: 1.25rem;
-    padding: calc(1.5rem + env(safe-area-inset-top))
-             var(--screen-gutter)
-             calc(1.5rem + env(safe-area-inset-bottom));
-  }
-
   @media (min-width: 48rem) {
     body {
       display: grid;
       place-items: center;
       min-block-size: 100dvh;
-    }
-
-    .screen {
-      --screen-width: 30rem;
-
-      inline-size: 100%;
-      min-block-size: min(46rem, 100dvh);
-    }
-  }
-
-  @media (min-width: 64rem), (min-width: 48rem) and (min-height: 36rem) {
-    .screen:not(:has(.game, .brand--hero)) {
-      --screen-gutter: 2.5rem;
-
-      align-self: start;
-      max-inline-size: min(var(--screen-width), 100% - 4rem);
-      min-block-size: 0;
-      margin-block: 1.5rem 3rem;
-      padding-block: 2.25rem 2.5rem;
-      background: var(--color-bg);
-      border: 1px solid var(--color-line-soft);
-      border-radius: 28px;
-      box-shadow: var(--shadow-screen);
-    }
-
-    .screen--medium {
-      --screen-width: 46rem;
-    }
-
-    .screen--wide {
-      --screen-width: 62rem;
     }
   }
 
@@ -75,71 +27,10 @@
     margin: 0;
   }
 
-  .brand {
-    text-align: center;
-
-    h1 {
-      font-size: clamp(2.4rem, 12vw, 3.125rem);
-      font-weight: 500;
-      letter-spacing: .02em;
-    }
-
-    > p {
-      color: var(--color-ink-faint);
-      font-family: var(--font-display);
-      font-style: italic;
-      font-size: 1.125rem;
-      line-height: 1.5;
-      margin: 1.25rem 0 0;
-    }
-  }
-
-  .wordmark {
-    font-feature-settings: "locl" 0;
-  }
-
-  .hint {
-    color: var(--color-ink-faint);
-    font-size: .9rem;
-    margin: 0;
-
-    a {
-      color: var(--color-accent-bright);
-    }
-
-    strong {
-      color: var(--color-ink);
-      font-weight: 600;
-    }
-  }
-
-  .stack {
+  form {
     display: flex;
     flex-direction: column;
-    gap: .75rem;
-  }
-
-  .overline {
-    font-size: .75rem;
-    font-weight: 700;
-    letter-spacing: .12em;
-    text-transform: uppercase;
-  }
-
-  .flash {
+    gap: 1rem;
     margin: 0;
-    padding: .75rem 1rem;
-    border-radius: var(--radius-control);
-    font-size: .92rem;
-  }
-
-  .flash--alert {
-    background: var(--color-accent-soft);
-    color: var(--color-accent-bright);
-  }
-
-  .flash--notice {
-    background: color-mix(in oklch, var(--color-positive) 16%, transparent);
-    color: var(--color-positive);
   }
 }

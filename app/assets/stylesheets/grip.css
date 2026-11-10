@@ -1,0 +1,10 @@
+@layer components {
+  .grip {
+    display: block;
+    inline-size: 42px;
+    block-size: 4px;
+    margin-inline: auto;
+    border-radius: 3px;
+    background: color-mix(in oklch, var(--color-ink) 22%, transparent);
+  }
+}

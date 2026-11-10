@@ -1,0 +1,60 @@
+@layer components {
+  .seal {
+    display: grid;
+    place-items: center;
+    inline-size: 76px;
+    block-size: 76px;
+    margin-inline: auto;
+    border-radius: 50%;
+    background: color-mix(in oklch, var(--color-positive) 16%, transparent);
+    border: 1px solid color-mix(in oklch, var(--color-positive) 40%, transparent);
+    color: var(--color-positive-bright);
+
+    .glyph {
+      inline-size: 30px;
+      block-size: 30px;
+    }
+  }
+
+  .receipt {
+    margin: auto 0 0;
+    padding: .25rem 1.125rem;
+    background: var(--color-surface-sunken);
+    border: 1px solid var(--color-line-soft);
+    border-radius: 18px;
+
+    div {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      padding-block: .875rem;
+
+      & + div {
+        border-block-start: 1px solid var(--color-line-soft);
+      }
+    }
+
+    dt {
+      font-size: .8125rem;
+      color: var(--color-ink-soft);
+    }
+
+    dd {
+      margin: 0;
+      font-size: .875rem;
+      font-weight: 700;
+      color: var(--color-ink-muted);
+    }
+  }
+
+  .receipt__plan {
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    color: var(--color-ink);
+  }
+
+  .receipt__accent {
+    color: var(--color-accent-bright);
+  }
+}

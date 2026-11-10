@@ -1,0 +1,6 @@
+@layer components {
+  .glyph {
+    inline-size: 100%;
+    block-size: 100%;
+  }
+}

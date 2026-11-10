@@ -1,0 +1,30 @@
+@layer components {
+  .ember {
+    display: inline-block;
+    inline-size: 6px;
+    block-size: 6px;
+    border-radius: 50%;
+    background: var(--color-accent);
+    flex: none;
+  }
+
+  .ember--pulsing {
+    animation: ember-pulse 1.4s ease-in-out infinite;
+  }
+
+  .ember--large {
+    display: block;
+    inline-size: 16px;
+    block-size: 16px;
+    margin: 0 auto 1.125rem;
+    box-shadow: 0 0 26px 6px var(--color-accent-glow);
+  }
+
+  .ember--greeting {
+    display: block;
+    inline-size: 14px;
+    block-size: 14px;
+    margin: 0 auto 1.25rem;
+    box-shadow: 0 0 22px 4px var(--color-accent-glow);
+  }
+}
