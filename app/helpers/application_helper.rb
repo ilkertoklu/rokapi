@@ -1,7 +1,12 @@
 module ApplicationHelper
   def document_title
-    title = content_for(:title) || "Rokapi"
-    hotwire_native_app? ? title.delete_suffix(" · Rokapi") : title
+    title = content_for(:title)
+
+    case
+    when title.blank? then "Rokapi"
+    when hotwire_native_app? then title
+    else safe_join([ title, "Rokapi" ], " · ")
+    end
   end
 
   def signed_number(number)

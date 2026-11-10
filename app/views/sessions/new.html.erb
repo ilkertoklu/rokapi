@@ -1,4 +1,4 @@
-<% content_for :title, "#{t(".title")} · Rokapi" %>
+<% content_for :title, t(".title") %>
 
 <%= tag.div class: "flow", data: { controller: "code", code_length_value: LoginCode::CODE_LENGTH, code_verify_value: t(".verify"),
       code_digits_left_value: t(".digits_left").to_json, code_current_class: "code__cell--current" } do %>

@@ -1,4 +1,4 @@
-<% content_for :title, "#{t(".title")} · Rokapi" %>
+<% content_for :title, t(".title") %>
 <% content_for :screen, "screen--wide" %>
 
 <%= form_with model: @character, url: game_session_character_path(@game_session), class: "flow flow--columns",

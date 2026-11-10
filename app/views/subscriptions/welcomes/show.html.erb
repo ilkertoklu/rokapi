@@ -1,4 +1,4 @@
-<% content_for :title, "#{t(".title")} · Rokapi" %>
+<% content_for :title, t(".title") %>
 
 <% if @subscription %>
   <% plan = Current.user.monthly_plan %>

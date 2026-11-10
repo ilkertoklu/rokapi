@@ -1,4 +1,4 @@
-<% content_for :title, "#{t(".title")} · Rokapi" %>
+<% content_for :title, t(".title") %>
 
 <%= tag.div class: [ "flow", ("code-entry--rejected" if @rejection) ], data: { controller: "code", code_length_value: GameSession::CODE_LENGTH, code_verify_value: t(".submit"),
       code_digits_left_value: t(".digits_left").to_json, code_rejected_value: (@code if @rejection),

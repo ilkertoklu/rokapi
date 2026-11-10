@@ -1,4 +1,4 @@
-<% content_for :title, "#{t(".title")} · Rokapi" %>
+<% content_for :title, t(".title") %>
 
 <%= form_with url: login_codes_path, class: "flow" do |form| %>
   <%= render "back", to: welcome_path, title: t(".title") %>

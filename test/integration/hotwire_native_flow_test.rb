@@ -61,6 +61,9 @@ class HotwireNativeFlowTest < ActionDispatch::IntegrationTest
     assert_select "title", text: "New adventure · Rokapi"
     assert_select "body.hotwire-native", count: 0
     assert_select ".page-head__back[href=?]", root_path
+
+    get root_path
+    assert_select "title", text: "Rokapi"
   end
 
   private
