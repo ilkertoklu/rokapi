@@ -67,7 +67,7 @@ tr:
       description: Sürpriz bir macerayı bitirdin.
     won_back:
       name: Rövanş
-      description: Bir zamanlar yenildiğin yerde kazandın.
+      description: Bir zamanlar yenildiğin mekânda kazandın.
     no_items:
       name: Eşyasız
       description: Uzun bir macerayı hiç eşya kullanmadan kazandın.
