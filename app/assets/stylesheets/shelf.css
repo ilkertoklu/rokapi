@@ -103,7 +103,7 @@
     color: var(--color-ink-muted);
   }
 
-  @media (min-width: 64rem) {
+  @media (min-width: 48rem) {
     .adventure {
       inline-size: min(100%, 38rem);
       align-self: center;
