@@ -67,6 +67,10 @@ class Character < ApplicationRecord
     hp - before
   end
 
+  def usable_item_count
+    items.usable.count
+  end
+
   def status_modifier
     status_effects.sum(:modifier)
   end

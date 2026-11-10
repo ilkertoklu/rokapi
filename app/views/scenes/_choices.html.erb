@@ -25,7 +25,7 @@
     <button class="character-button" data-action="sheet#open">
       <%= render "glyph", name: "person" %>
       <span><%= t(".my_character") %></span>
-      <% if (ready = scene.active_player.character.items.usable.count).positive? %>
+      <% if (ready = scene.active_player.character.usable_item_count).positive? %>
         <span class="character-button__hint"><%= t(".items_ready", count: ready) %></span>
       <% end %>
     </button>

@@ -114,6 +114,14 @@ class CharacterTest < ActiveSupport::TestCase
     assert_equal character.max_hp, character.hp
   end
 
+  test "only instant items with uses left count as ready to use" do
+    character = characters(:ilker_hero)
+    assert_equal 1, character.usable_item_count
+
+    items(:healing_potion).update! uses_left: 0
+    assert_equal 0, character.usable_item_count
+  end
+
   test "rejects unknown options" do
     character = build_character(@base.merge("strength" => 20), race: "orc")
     assert_not character.valid?
