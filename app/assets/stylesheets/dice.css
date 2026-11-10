@@ -399,7 +399,7 @@
     margin-block-start: 1.5rem;
   }
 
-  @media (min-width: 64rem) {
+  @media (min-width: 48rem) {
     .outcome {
       padding-inline: 2.5rem;
     }

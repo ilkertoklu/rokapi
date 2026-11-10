@@ -41,7 +41,7 @@
     padding: .75rem 1.375rem;
   }
 
-  @media (min-width: 64rem) {
+  @media (min-width: 48rem) {
     .party {
       position: sticky;
       inset-block-start: var(--location-size);
