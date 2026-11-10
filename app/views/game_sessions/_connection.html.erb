@@ -1,4 +1,4 @@
-<dialog class="connection" aria-labelledby="connection_title" data-controller="connection" data-action="cancel->connection#stayOpen">
+<dialog class="connection" aria-labelledby="connection_title" data-connection-target="dialog" data-action="cancel->connection#stayOpen">
   <span class="connection__icon"><%= render "glyph", name: "wifi_off" %></span>
   <h2 id="connection_title"><%= t(".title") %></h2>
   <p class="connection__status">

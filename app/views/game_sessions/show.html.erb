@@ -1,8 +1,10 @@
 <% content_for :title, "#{@game_session.title} · Rokapi" %>
 <% turbo_exempts_page_from_cache %>
 
-<%= turbo_stream_from @game_session, id: dom_id(@game_session, :stream), data: { turbo_permanent: true } %>
-<%= render "game_sessions/connection" %>
+<div data-controller="connection">
+  <%= turbo_stream_from @game_session, id: dom_id(@game_session, :stream), data: { turbo_permanent: true, connection_target: "source" } %>
+  <%= render "game_sessions/connection" %>
+</div>
 
 <% if @game_session.lobby? %>
   <% content_for :screen, "screen--wide" %>
