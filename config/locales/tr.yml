@@ -441,7 +441,7 @@ tr:
       copied: Kopyalandı
       share_summary: Özeti paylaş
       back_home: Ana ekrana dön
-      new_place_html: "Yeni bir yer: %{place}"
+      new_place_html: "Yeni bir mekân: %{place}"
     opening:
       narrator: Anlatıcı
       getting_ready: Anlatıcı hazırlanıyor
@@ -581,9 +581,9 @@ tr:
         start: Yeni macera kur
     places:
       index:
-        title: Gördüğüm yerler
-        tally_html: "%{total} yerden %{seen}"
-        hint: Yeni bir yerde bir macera bitirdiğinde adı burada belirir.
+        title: Gördüğüm mekânlar
+        tally_html: "%{total} mekândan %{seen}"
+        hint: Yeni bir mekânda bir macera bitirdiğinde adı burada belirir.
         unseen: Henüz görülmedi
         adventures:
           one: "%{count} macera"
@@ -620,7 +620,7 @@ tr:
         done: Tamam
     profiles:
       record:
-        title: Karne
+        title: Kayıt
         adventures:
           one: Macera
           other: Macera
@@ -632,7 +632,7 @@ tr:
           other: Yenilgi
         dice_rolled: Zar atıldı
         party_adventures: Ekiple
-        favorite_klass: Gözde sınıf
+        favorite_klass: Favori sınıf
       show:
         title: Profil
         subscription: Aboneliğim
@@ -641,8 +641,8 @@ tr:
         settings_text: İsim ve e-posta
         adventures: Maceralarım
         adventures_text: Bitirdiğin hikâyeler, yeniden okumak için
-        places: Gördüğüm yerler
-        places_text: Gezdiğin yerler ve henüz görmediklerin
+        places: Gördüğüm mekânlar
+        places_text: Gezdiğin mekânlar ve henüz görmediklerin
         language: Dil
         sign_out: Çıkış yap
     settings:

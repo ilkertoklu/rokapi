@@ -57,11 +57,11 @@ class RecordFlowTest < ActionDispatch::IntegrationTest
 
     get my_profile_path
 
-    assert_select ".record h2", text: "Karne"
+    assert_select ".record h2", text: "Kayıt"
     assert_select ".record__figure", text: /2\s+Macera/
     assert_select ".record__figure", text: /1\s+Zafer/
     assert_select ".record__figure", text: /3\s+Zar atıldı/
-    assert_select ".record__figure", text: /Savaşçı\s+Gözde sınıf/
+    assert_select ".record__figure", text: /Savaşçı\s+Favori sınıf/
   end
 
   test "the profile takes as many queries however many games are finished" do

@@ -123,7 +123,7 @@ class PlacesFlowTest < ActionDispatch::IntegrationTest
     patch locale_path, params: { locale: "tr" }
 
     get game_session_path(@solo)
-    assert_select ".finale__new-place", text: "Yeni bir yer: Açık denizde, bir kayanın üstünde bir fener"
+    assert_select ".finale__new-place", text: "Yeni bir mekân: Açık denizde, bir kayanın üstünde bir fener"
   end
 
   test "the places take as many queries however many are seen" do
