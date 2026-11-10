@@ -152,6 +152,24 @@ class DesktopPlayTest < ApplicationSystemTestCase
     assert_text "A lantern swings at the end of the pier."
   end
 
+  test "Enter readies the character from the stepper that spent the last point" do
+    sign_in_as users(:ilker)
+    page.current_window.resize_to 1440, 900
+    visit new_game_sessions_solo_path
+    click_on "Create your character"
+
+    choose "Ranger", allow_label_click: true
+    4.times { click_on "Raise Agility" }
+    click_on "Raise Wisdom"
+    execute_script <<~JS
+      const stepper = document.querySelector("button[aria-label='Raise Wisdom']")
+      stepper.focus()
+      stepper.click()
+      stepper.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }))
+    JS
+    assert_text "The narrator is getting ready"
+  end
+
   test "a step leaves the focus where the player moved it" do
     @scene.choices.first.choose
     @scene.roll_dice by: players(:ilker_solo_host)

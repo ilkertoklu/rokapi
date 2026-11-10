@@ -26,6 +26,6 @@ export default class extends Controller {
   }
 
   #activatesFocused(event) {
-    return event.key === "Enter" && event.target.closest("a, button, summary")
+    return event.key === "Enter" && event.target.closest("a, button:enabled, summary")
   }
 }
