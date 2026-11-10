@@ -562,15 +562,13 @@
     }
 
     .screen--wide .sticky-footer {
-      position: static;
       grid-column: 1 / -1;
       display: flex;
       flex-direction: row;
       align-items: center;
       justify-content: flex-end;
       gap: 1.25rem;
-      padding-block: .75rem 0;
-      background: none;
+      padding-block: .75rem;
 
       .btn {
         inline-size: auto;
