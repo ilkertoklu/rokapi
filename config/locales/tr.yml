@@ -554,7 +554,7 @@ tr:
       host_starts: Maceraya yalnızca %{host} başlatabilir
     starts:
       create:
-        not_ready: Maceraya yalnızca host, herkes hazır olunca başlatabilir.
+        not_ready: Macera herkes hazır olunca başlar.
     characters:
       new:
         title: Karakterini oluştur

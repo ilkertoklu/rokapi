@@ -535,7 +535,7 @@ en:
       host_starts: Only %{host} can start the adventure
     starts:
       create:
-        not_ready: Only the host can start, once everyone is ready.
+        not_ready: The adventure starts once everyone is ready.
     characters:
       new:
         title: Create your character
