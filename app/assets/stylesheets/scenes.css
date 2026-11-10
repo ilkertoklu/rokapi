@@ -599,6 +599,8 @@
     }
 
     .finale {
+      flex: 1 0 auto;
+      overflow-y: visible;
       padding-inline: 2.5rem;
     }
 
