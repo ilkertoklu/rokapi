@@ -5,4 +5,6 @@
   <%= link_to t(".sign_in"), new_login_code_path, class: "btn btn--secondary" %>
 </div>
 
-<%= render "locales" %>
+<nav class="locales" aria-label="<%= t(".language") %>">
+  <%= render "locales", option_class: "locales__option" %>
+</nav>

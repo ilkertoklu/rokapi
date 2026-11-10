@@ -39,10 +39,7 @@
   <section>
     <h2 class="field-label"><%= t(".language") %></h2>
     <div class="segmented">
-      <% I18n.available_locales.each do |locale| %>
-        <%= button_to t("language_name", locale: locale), locale_path, method: :patch, params: { locale: locale },
-              class: "segment", lang: locale, aria: { current: locale == I18n.locale } %>
-      <% end %>
+      <%= render "locales", option_class: "segment" %>
     </div>
   </section>
 

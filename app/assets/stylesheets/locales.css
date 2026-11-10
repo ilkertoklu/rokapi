@@ -14,7 +14,7 @@
     font-size: .85rem;
     cursor: pointer;
 
-    &:disabled {
+    &[aria-current="true"] {
       color: var(--color-accent-bright);
       cursor: default;
     }

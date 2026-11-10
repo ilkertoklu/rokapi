@@ -21,7 +21,7 @@ class LocalizationFlowTest < ActionDispatch::IntegrationTest
 
     get welcome_path, headers: { "Accept-Language" => "en-US,en" }
     assert_select "html[lang=tr]"
-    assert_select ".locales__option[disabled]", text: "Türkçe"
+    assert_select ".locales__option[aria-current=true]", text: "Türkçe"
   end
 
   test "an unknown language is ignored" do

@@ -400,8 +400,6 @@ en:
       back: Back
     brand:
       tagline_html: Roll the dice, write your story.<br>Every session a new adventure.
-    locales:
-      label: Language
     profile_badge:
       label: Profile
 
@@ -824,5 +822,6 @@ en:
 
   welcomes:
     show:
+      language: Language
       create_account: Create account with email
       sign_in: Sign in

@@ -1,6 +1,5 @@
-<nav class="locales" aria-label="<%= t(".label") %>">
-  <% I18n.available_locales.each do |locale| %>
-    <%= button_to t("language_name", locale: locale), locale_path, method: :patch, params: { locale: locale },
-          class: "locales__option", lang: locale, disabled: locale == I18n.locale %>
-  <% end %>
-</nav>
+<%# locals: (option_class:) -%>
+<% I18n.available_locales.each do |locale| %>
+  <%= button_to t("language_name", locale: locale), locale_path, method: :patch, params: { locale: locale },
+        class: option_class, lang: locale, aria: { current: locale == I18n.locale } %>
+<% end %>

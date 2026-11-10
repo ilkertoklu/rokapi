@@ -419,8 +419,6 @@ tr:
       back: Geri
     brand:
       tagline_html: Zarları at, hikâyeni yaz.<br>Her oturum yeni bir macera.
-    locales:
-      label: Dil
     profile_badge:
       label: Profil
 
@@ -843,5 +841,6 @@ tr:
 
   welcomes:
     show:
+      language: Dil
       create_account: E-posta ile hesap oluştur
       sign_in: Giriş yap
