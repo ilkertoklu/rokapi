@@ -1,7 +1,8 @@
 <%# locals: (game_session:, player:) -%>
 <% scene = game_session.current_scene %>
-<%= tag.div id: "game_stage", class: "stage", tabindex: -1, data: { controller: "stage", stage_step_value: dom_id(scene) } do %>
-  <% roll = scene.roll %>
+<% roll = scene.roll %>
+<%= tag.div id: "game_stage", class: "stage", tabindex: -1,
+      data: { controller: "stage", stage_step_value: [ dom_id(scene), scene.state, roll&.resolved? ].join(":") } do %>
   <% if scene.finale? %>
     <%= render "game_sessions/finale", game_session: game_session %>
   <% elsif scene.opening? %>

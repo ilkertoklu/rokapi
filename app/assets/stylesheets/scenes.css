@@ -561,6 +561,7 @@
 
       :is(.dice, .outcome) {
         flex: none;
+        overflow-y: visible;
         padding-block: 2rem 1rem;
       }
     }

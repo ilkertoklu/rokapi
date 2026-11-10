@@ -60,6 +60,50 @@ class DesktopPlayTest < ApplicationSystemTestCase
     assert_selector ".choice:focus", text: "Force the cellar door"
   end
 
+  test "playing a turn with Tab and Enter only" do
+    sign_in_as users(:ilker)
+    page.current_window.resize_to 1280, 800
+    visit game_session_path(@game_session)
+
+    send_keys :tab
+    assert_selector ".choice:focus", text: "Force the cellar door"
+    send_keys :enter
+    assert_selector ".dice__prompt", text: "Force the cellar door"
+
+    send_keys :tab
+    assert_selector "button:focus", text: "Roll the die"
+    send_keys :enter
+    assert_text "The narrator is resolving the roll"
+
+    @scene.reload.roll.resolve resolution: "The door gives way.", effects: {}
+    assert_text "The door gives way."
+    send_keys :tab
+    assert_selector "button:focus", text: "Continue"
+    send_keys :enter
+    assert_no_text "The door gives way."
+
+    next_scene = @game_session.scenes.last
+    next_scene.choices.create! label: "Climb down to the cellar", stat: "agility", target: 10
+    next_scene.update! state: :choosing, title: "The Cellar", narration: "Cold air rises from below."
+    assert_text "Cold air rises from below."
+    send_keys :tab
+    assert_selector ".choice:focus", text: "Climb down to the cellar"
+  end
+
+  test "a step leaves the focus where the player moved it" do
+    @scene.choices.first.choose
+    @scene.roll_dice by: players(:ilker_solo_host)
+    sign_in_as users(:ilker)
+    page.current_window.resize_to 1280, 800
+    visit game_session_path(@game_session)
+
+    send_keys :tab
+    assert_selector ".sheet button:focus", text: "Use"
+    @scene.roll.resolve resolution: "The door gives way.", effects: {}
+    assert_text "The door gives way."
+    assert_selector ".sheet button:focus", text: "Use"
+  end
+
   test "menus sit in a panel under the top bar" do
     sign_in_as users(:ilker)
     page.current_window.resize_to 1280, 800
