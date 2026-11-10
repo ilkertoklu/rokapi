@@ -45,6 +45,11 @@ class Scene < ApplicationRecord
     game_session.party.select { !turn_of?(it) && it.standing? }
   end
 
+  def others_in_turn_order
+    party = game_session.party.to_a
+    party.rotate(party.index(active_player) + 1).excluding(active_player)
+  end
+
   def first?
     position == 1
   end

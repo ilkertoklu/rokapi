@@ -6,7 +6,7 @@
   <span class="party__turn"><%= scene.turn_of?(viewer) ? active.name : t(".turn_of", name: genitive(active.name)) %></span>
 
   <ol class="party__others" aria-label="<%= t(".others") %>">
-    <% party.rotate(party.index(active) + 1).excluding(active).each do |player| %>
+    <% scene.others_in_turn_order.each do |player| %>
       <li><%= player_avatar player, "avatar--small", { "avatar--you": player == viewer }, seat: party.index(player) %></li>
     <% end %>
   </ol>
