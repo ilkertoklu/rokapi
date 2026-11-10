@@ -3,11 +3,12 @@ class GameSession < ApplicationRecord
   class Full < StandardError; end
   class NotReady < StandardError; end
 
+  include Clues, Planned
+
   PARTY_SIZE = 5
   CODE_LENGTH = 4
   JOINABLE_FOR = 24.hours
   LATEST = 5
-  NAMES = 8
 
   belongs_to :creator, class_name: "User", default: -> { Current.user }
   belongs_to :rematch_of, class_name: "GameSession", optional: true
@@ -131,34 +132,6 @@ class GameSession < ApplicationRecord
     Length.fetch(length).scenes
   end
 
-  def clues_found
-    (scenes + rolls).filter_map { Integer(it.effects&.dig("clue"), exception: false) }.select(&:positive?).uniq.sort
-  end
-
-  def clues_left
-    [ clue_count - clues_found.size, 0 ].max
-  end
-
-  def next_clue
-    (1..clue_count).find { clues_found.exclude?(it) }
-  end
-
-  def marks
-    rolls.sort_by(&:id).filter_map { it.effects&.dig("mark").presence }
-  end
-
-  def fresh_names
-    (I18n.t("game_session.names", locale: locale) - names_in_latest_plans - players.map(&:name)).sample(NAMES)
-  end
-
-  def latest_pasts
-    latest_plans.filter_map { hidden_past_in(it) }
-  end
-
-  def plan_story
-    update! plan: Narrator::Planner.for(self).plan
-  end
-
   def cost
     RubyLLM::Cost.aggregate(conversations.includes(:ruby_llm_usages).map(&:cost))
   end
@@ -195,23 +168,6 @@ class GameSession < ApplicationRecord
   private
     def deal_card
       self.place, self.trouble, self.figure = Card.deal(1, to: creator).first.keys
-    end
-
-    def clue_count
-      plan.to_s.scan(/^\W*(\d+)[.)]/).flatten.map(&:to_i).max.to_i
-    end
-
-    def names_in_latest_plans
-      latest_plans.join(" ").scan(/[[:alpha:]]+/).uniq
-    end
-
-    def latest_plans
-      creator ? creator.created_game_sessions.excluding(self).where.not(plan: nil).latest.pluck(:plan) : []
-    end
-
-    def hidden_past_in(plan)
-      hidden, _people = plan.split(/\n\s*\n/).each_cons(2).find { |_, following| following.match?(/^- /) }
-      hidden&.sub(/\A[^:\n]*:\**/, "")&.squish.presence
     end
 
     def draw_twist
