@@ -352,7 +352,7 @@
     }
   }
 
-  .choice__key {
+  .key {
     display: none;
     flex: none;
     inline-size: 1.5rem;
@@ -363,9 +363,16 @@
     text-align: center;
   }
 
+  .btn .key {
+    margin-inline-start: .5rem;
+    border-color: color-mix(in srgb, currentColor 45%, transparent);
+    color: inherit;
+    vertical-align: .1em;
+  }
+
   @media (min-width: 64rem) and (hover: hover) {
-    .choice__key {
-      display: block;
+    .key {
+      display: inline-block;
     }
   }
 

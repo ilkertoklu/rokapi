@@ -9,7 +9,7 @@
     <% scene.choices.each.with_index(1) do |choice, number| %>
       <%= button_to game_session_choice_selection_path(scene.game_session, choice), class: "choice",
             aria: { keyshortcuts: number }, data: { controller: "hotkey", action: "keydown.#{number}@document->hotkey#click" } do %>
-        <kbd class="choice__key" aria-hidden="true"><%= number %></kbd>
+        <kbd class="key" aria-hidden="true"><%= number %></kbd>
         <span class="choice__label"><%= choice.label %></span>
         <span class="stat-chip"><%= Character::Stat.fetch(choice.stat).label %> <%= format("%+d", choice.modifier) %></span>
       <% end %>

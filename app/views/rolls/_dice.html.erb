@@ -35,8 +35,10 @@
 
 <div class="stage__footer">
   <% if roll.nil? %>
-    <%= button_to t(".roll"), game_session_roll_path(game_session), class: "btn btn--primary",
-          data: { controller: "hotkey", action: "keydown.enter@document->hotkey#click" } %>
+    <%= button_to game_session_roll_path(game_session), class: "btn btn--primary",
+          aria: { keyshortcuts: "Enter" }, data: { controller: "hotkey", action: "keydown.enter@document->hotkey#click" } do %>
+      <%= t(".roll") %> <kbd class="key" aria-hidden="true">↵</kbd>
+    <% end %>
   <% elsif roll.stalled? %>
     <%= render "game_sessions/stalled", game_session: game_session,
           hint: t(".stalled") %>

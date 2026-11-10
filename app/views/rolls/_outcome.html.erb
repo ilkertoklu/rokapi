@@ -33,6 +33,8 @@
 </div>
 
 <div class="stage__footer">
-  <%= button_to t(".continue"), game_session_acknowledgement_path(game_session), class: "btn btn--primary",
-        data: { controller: "hotkey", action: "keydown.enter@document->hotkey#click" } %>
+  <%= button_to game_session_acknowledgement_path(game_session), class: "btn btn--primary",
+        aria: { keyshortcuts: "Enter" }, data: { controller: "hotkey", action: "keydown.enter@document->hotkey#click" } do %>
+    <%= t(".continue") %> <kbd class="key" aria-hidden="true">↵</kbd>
+  <% end %>
 </div>
