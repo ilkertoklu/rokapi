@@ -149,7 +149,9 @@
     border-radius: 50%;
     background: var(--color-accent-soft);
     color: var(--color-accent-bright);
-    font-weight: 700;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size-adjust: cap-height .71;
     text-transform: uppercase;
   }
 
