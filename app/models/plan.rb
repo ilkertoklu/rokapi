@@ -24,10 +24,6 @@ class Plan < Data.define(:key, :scenes)
     paid.find { |plan| plan.store_product_ids.include?(store_product_id) } || raise(KeyError, "No plan sells #{store_product_id}")
   end
 
-  def free?
-    self == Plan.free
-  end
-
   def popular?
     key == "premium"
   end
