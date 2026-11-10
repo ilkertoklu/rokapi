@@ -4,6 +4,7 @@ en:
   date:
     formats:
       renewal: "%B %-d"
+      played: "%b %-d, %Y"
 
   time:
     formats:
@@ -412,10 +413,11 @@ en:
       saved: Your progress is saved
       retry: Try again now
       home: Main menu
-    finale:
+    ending:
       duration: Duration
       dice_rolled: Dice rolled
       alive: Alive
+    finale:
       new_adventure: New adventure
       copied: Copied
       share_summary: Share summary
@@ -526,6 +528,7 @@ en:
       resume: Resume adventure
       start: Start a new adventure
       join: Join with a code
+      adventures: My adventures
 
   login_code_mailer:
     code:
@@ -551,6 +554,11 @@ en:
         sent: A new code is on its way.
 
   my:
+    adventures:
+      index:
+        title: My adventures
+        empty: Adventures you finish are kept here to read again.
+        start: Start a new adventure
     accounts:
       confirmation_word: DELETE
       show:
@@ -584,6 +592,8 @@ en:
         subscription_text: Plan and usage left
         settings: Settings
         settings_text: Name and email
+        adventures: My adventures
+        adventures_text: Finished stories to read again
         language: Language
         sign_out: Sign out
     settings:

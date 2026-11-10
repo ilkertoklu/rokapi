@@ -28,6 +28,15 @@
     </section>
   <% end %>
 
+  <%= link_to my_adventures_path, class: "menu-row" do %>
+    <span class="menu-row__icon"><%= render "glyph", name: "book" %></span>
+    <span class="menu-row__body">
+      <span class="menu-row__title"><%= t(".adventures") %></span>
+      <span class="menu-row__text"><%= t(".adventures_text") %></span>
+    </span>
+    <span class="menu-row__chevron"><%= render "glyph", name: "forward" %></span>
+  <% end %>
+
   <%= link_to my_settings_path, class: "menu-row" do %>
     <span class="menu-row__icon"><%= render "glyph", name: "sliders" %></span>
     <span class="menu-row__body">

@@ -36,6 +36,7 @@ class GameSession < ApplicationRecord
   validates :max_players, inclusion: { in: [ 1, PARTY_SIZE ] }
 
   scope :ongoing, -> { where(ended_at: nil) }
+  scope :finished, -> { where.not(ended_at: nil) }
   scope :unstarted, -> { where(started_at: nil) }
   scope :rooms, -> { where.not(code: nil) }
   scope :latest, -> { order(created_at: :desc).limit(LATEST) }

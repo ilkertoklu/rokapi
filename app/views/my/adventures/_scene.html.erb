@@ -1,0 +1,29 @@
+<%# locals: (scene:, party:) -%>
+<% roll = scene.chosen_choice&.roll %>
+<section class="adventure__scene">
+  <header>
+    <p class="adventure__place"><%= [ scene.counter, scene.location ].compact_blank.join(" · ") %></p>
+    <h2><%= scene.title.presence || scene.game_session.title %></h2>
+  </header>
+
+  <% unless scene.finale? && roll.nil? %>
+    <div class="narration__body">
+      <%= simple_format h(scene.narration) %>
+    </div>
+  <% end %>
+
+  <% if roll && !scene.finale? %>
+    <%= tag.p class: [ "finale__move", roll.success? ? "finale__move--success" : "finale__move--failure" ] do %>
+      <em><%= scene.chosen_choice.label %></em>
+      <% if party %>
+        <%= player_avatar scene.active_player, "avatar--tiny", seat: party.index(scene.active_player) %>
+        <span class="adventure__actor"><%= scene.active_player.name %></span>
+      <% end %>
+      <strong><%= outcome_verdict(roll) %></strong>
+    <% end %>
+
+    <div class="narration__body">
+      <%= simple_format h(roll.resolution) %>
+    </div>
+  <% end %>
+</section>

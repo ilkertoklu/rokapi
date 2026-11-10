@@ -355,7 +355,7 @@
     .account {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      grid-template-rows: auto auto auto 1fr auto;
+      grid-template-rows: auto auto auto auto 1fr auto;
       gap: 1.25rem 2.5rem;
       align-items: start;
 
@@ -370,7 +370,7 @@
 
     .account__subscription {
       grid-column: 2;
-      grid-row: 2 / span 3;
+      grid-row: 2 / span 4;
       &,
       turbo-frame {
         display: flex;

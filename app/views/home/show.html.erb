@@ -17,4 +17,8 @@
 
   <%= link_to t(".start"), new_game_session_path, class: "btn btn--primary" %>
   <%= link_to t(".join"), new_game_sessions_join_path, class: "btn btn--secondary" %>
+
+  <% if @adventures_finished %>
+    <%= link_to t(".adventures"), my_adventures_path, class: "btn btn--ghost" %>
+  <% end %>
 </div>

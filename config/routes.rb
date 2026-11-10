@@ -47,6 +47,7 @@ Rails.application.routes.draw do
     resource :settings, only: %i[show update]
     resource :email_change, only: :show
     resource :account, only: %i[show destroy]
+    resources :adventures, only: %i[index show]
   end
 
   resource :subscription, only: :show

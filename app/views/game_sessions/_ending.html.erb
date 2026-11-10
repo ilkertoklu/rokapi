@@ -1,0 +1,56 @@
+<%# locals: (game_session:, titled: true) -%>
+<% finale = game_session.current_scene %>
+<% roll = finale.roll %>
+<% survivors = game_session.survivors if game_session.multiplayer? %>
+
+<div class="finale">
+  <div class="finale__crest">
+    <span class="ember ember--large"></span>
+    <p class="finale__outcome overline"><%= t(game_session.outcome, scope: "game_session.outcomes") %></p>
+    <% if titled %>
+      <h1><%= finale.title %></h1>
+    <% end %>
+  </div>
+
+  <% if roll %>
+    <%= tag.p class: [ "finale__move", roll.success? ? "finale__move--success" : "finale__move--failure" ] do %>
+      <%= player_avatar roll.player, "avatar--tiny" if game_session.multiplayer? %>
+      <em><%= roll.choice.label %></em>
+      <strong><%= outcome_verdict(roll) %></strong>
+    <% end %>
+  <% end %>
+
+  <div class="finale__closing">
+    <%= simple_format h(finale.closing) %>
+  </div>
+
+  <hr>
+
+  <div class="highlights">
+    <div>
+      <strong><%= duration_label(game_session.duration) %></strong>
+      <span><%= t(".duration") %></span>
+    </div>
+    <div>
+      <strong><%= game_session.rolls.count %></strong>
+      <span><%= t(".dice_rolled") %></span>
+    </div>
+    <% if game_session.multiplayer? %>
+      <div>
+        <strong><%= survivors.size %></strong>
+        <span><%= t(".alive") %></span>
+      </div>
+    <% end %>
+  </div>
+
+  <% if game_session.multiplayer? %>
+    <ul class="roster">
+      <% game_session.party.each_with_index do |player, seat| %>
+        <%= tag.li class: [ "roster__member", "roster__member--fallen": !survivors.include?(player) ] do %>
+          <%= player_avatar player, seat: seat %>
+          <span><%= player.name %></span>
+        <% end %>
+      <% end %>
+    </ul>
+  <% end %>
+</div>
