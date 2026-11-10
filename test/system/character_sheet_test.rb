@@ -151,13 +151,6 @@ class CharacterSheetTest < ApplicationSystemTestCase
       action.release_actions
     end
 
-    def tab_to(selector)
-      page.document.synchronize do
-        send_keys :tab
-        raise Capybara::ExpectationNotMet, "Tabbed past #{selector}" unless has_selector?("#{selector}:focus", wait: 0)
-      end
-    end
-
     def focus_stays_in_sheet?
       evaluate_script "document.activeElement === document.body || !!document.activeElement.closest('.sheet:modal')"
     end
