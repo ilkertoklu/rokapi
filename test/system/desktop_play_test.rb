@@ -43,6 +43,23 @@ class DesktopPlayTest < ApplicationSystemTestCase
     assert_link "Your turn", obscured: true
   end
 
+  test "reading a new scene from the keyboard before the choices" do
+    @scene.update! narration: Array.new(30, "Rain hammers the inn's shutters and the fire gutters low.").join("\n\n")
+    sign_in_as users(:ilker)
+    page.current_window.resize_to 1440, 900
+    visit game_session_path(@game_session)
+
+    assert_selector ".choice", text: "Force the cellar door", obscured: true
+    send_keys :space
+    first_page = assert_story_scrolled_past 0
+    send_keys :page_down
+    assert_story_scrolled_past first_page
+    assert_no_selector ".choice:focus"
+
+    send_keys :tab
+    assert_selector ".choice:focus", text: "Force the cellar door"
+  end
+
   test "menus sit in a panel under the top bar" do
     sign_in_as users(:ilker)
     page.current_window.resize_to 1280, 800
@@ -66,4 +83,13 @@ class DesktopPlayTest < ApplicationSystemTestCase
     assert_selector ".usage"
     assert_link "Upgrade your plan", href: subscriptions_paywall_path
   end
+
+  private
+    def assert_story_scrolled_past(offset)
+      page.document.synchronize do
+        evaluate_script("document.querySelector('.stage').scrollTop").tap do |scrolled|
+          raise Capybara::ExpectationNotMet, "The story sits at #{scrolled}px" if scrolled <= offset
+        end
+      end
+    end
 end

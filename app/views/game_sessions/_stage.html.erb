@@ -1,6 +1,6 @@
 <%# locals: (game_session:, player:) -%>
-<div id="game_stage" class="stage">
-  <% scene = game_session.current_scene %>
+<% scene = game_session.current_scene %>
+<%= tag.div id: "game_stage", class: "stage", tabindex: -1, data: { controller: "stage", stage_step_value: dom_id(scene) } do %>
   <% roll = scene.roll %>
   <% if scene.finale? %>
     <%= render "game_sessions/finale", game_session: game_session %>
@@ -15,4 +15,4 @@
   <% else %>
     <%= render "scenes/scene", scene: scene, viewer: player %>
   <% end %>
-</div>
+<% end %>
