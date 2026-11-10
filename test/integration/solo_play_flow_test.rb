@@ -28,7 +28,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     post game_session_choice_selection_path(game_session, choice)
 
     get game_session_path(game_session)
-    assert_select ".dice__prompt", text: choice.label
+    assert_select "h1.dice__prompt", text: choice.label
     assert_select ".d20__value", text: "?"
     assert_select ".dice__facts dd", text: /Target #{choice.target}/
 
