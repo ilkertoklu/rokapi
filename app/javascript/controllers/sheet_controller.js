@@ -10,4 +10,8 @@ export default class extends Controller {
   close() {
     this.sheetTarget.close()
   }
+
+  keepOpen(event) {
+    if (event.detail.attributeName === "open") event.preventDefault()
+  }
 }

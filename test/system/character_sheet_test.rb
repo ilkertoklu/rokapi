@@ -31,6 +31,13 @@ class CharacterSheetTest < ApplicationSystemTestCase
     assert_selector ".character-button:focus", text: "My character"
   end
 
+  test "a refresh behind the open sheet leaves it open" do
+    open_sheet_from_the_keyboard
+
+    @scene.update! title: "The Old Inn at Dusk"
+    assert_text "The Old Inn at Dusk"
+    assert_selector ".sheet:modal .sheet__handle:focus"
+  end
 
   private
     def open_sheet_from_the_keyboard
