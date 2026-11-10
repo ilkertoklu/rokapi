@@ -124,6 +124,8 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     get game_session_path(game_session)
     assert_select ".d20__strip span:last-child", text: value.to_s,
       message: "the reel must come to rest on the value that was actually rolled"
+    assert_select ".d20__reel[aria-hidden=true]"
+    assert_select ".d20 .visually-hidden", text: "The die is rolling"
     assert_select ".d20__value", count: 0
     assert_select ".writing", text: /The narrator is resolving the roll/
     assert_select ".narration", count: 0

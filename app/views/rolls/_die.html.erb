@@ -1,5 +1,5 @@
 <%# locals: (roll:) -%>
-<div class="d20 <%= "d20--settled" if roll&.resolved? %>">
+<%= tag.div class: [ "d20", "d20--settled": roll&.resolved? ] do %>
   <div class="d20__face">
     <span class="d20__die">d20</span>
 
@@ -9,11 +9,12 @@
       <span class="d20__value"><%= roll.value %></span>
     <% else %>
       <% faces = die_reel_faces(roll) %>
-      <span class="d20__reel" aria-label="<%= t(".rolling") %>">
+      <span class="visually-hidden"><%= t(".rolling") %></span>
+      <span class="d20__reel" aria-hidden="true">
         <span class="d20__strip" style="--cells: <%= faces.size %>">
           <% faces.each do |face| %><span><%= face %></span><% end %>
         </span>
       </span>
     <% end %>
   </div>
-</div>
+<% end %>
