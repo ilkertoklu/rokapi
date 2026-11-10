@@ -72,10 +72,10 @@
       }
 
       .btn {
+        --btn-min-inline-size: 12rem;
+
         grid-column: 2;
         justify-self: end;
-        inline-size: auto;
-        min-inline-size: 12rem;
         margin: 0;
       }
     }

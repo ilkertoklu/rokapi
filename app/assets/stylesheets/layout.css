@@ -100,11 +100,3 @@
   }
 }
 
-@layer components {
-  @media (min-width: 64rem), (min-width: 48rem) and (min-height: 36rem) {
-    .screen--wide .sticky-footer .btn {
-      inline-size: auto;
-      min-inline-size: 16rem;
-    }
-  }
-}

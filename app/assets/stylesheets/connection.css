@@ -104,14 +104,16 @@
     margin-block-start: 1.625rem;
 
     .btn {
-      inline-size: auto;
-      padding: .875rem 1.75rem;
+      --btn-inline-size: auto;
+      --btn-padding-block: .875rem;
+      --btn-padding-inline: 1.75rem;
     }
 
     .btn--neutral {
-      padding: .625rem 1.25rem;
-      font-size: .875rem;
-      font-weight: 600;
+      --btn-font-size: .875rem;
+      --btn-font-weight: 600;
+      --btn-padding-block: .625rem;
+      --btn-padding-inline: 1.25rem;
     }
   }
 

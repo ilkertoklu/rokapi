@@ -127,8 +127,7 @@
       border-block-start: 1px solid var(--color-line-soft);
 
       .btn {
-        inline-size: auto;
-        min-inline-size: 12rem;
+        --btn-min-inline-size: 12rem;
       }
     }
   }

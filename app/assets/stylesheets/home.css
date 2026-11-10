@@ -75,11 +75,12 @@
       }
 
       .btn {
+        --btn-padding-inline: 1.75rem;
+
         display: flex;
         align-items: center;
         justify-content: center;
         column-gap: .3em;
-        padding-inline: 1.75rem;
       }
 
       .resume {

@@ -95,7 +95,7 @@
       gap: .75rem;
 
       .btn--ghost {
-        padding-block: .625rem;
+        --btn-padding-block: .625rem;
       }
     }
 
@@ -107,8 +107,8 @@
       }
 
       .btn--primary {
-        inline-size: auto;
-        min-inline-size: 16rem;
+        --btn-inline-size: auto;
+        --btn-min-inline-size: 16rem;
       }
     }
   }

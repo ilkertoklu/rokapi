@@ -63,7 +63,7 @@
   </fieldset>
 
   <div class="sticky-footer">
-    <%= form.button class: "btn btn--primary", aria: { keyshortcuts: "Enter" }, data: { controller: "hotkey", action: "keydown.enter@document->hotkey#click" } do %>
+    <%= form.button class: "btn btn--primary btn--inline", aria: { keyshortcuts: "Enter" }, data: { controller: "hotkey", action: "keydown.enter@document->hotkey#click" } do %>
       <%= submit %> <kbd class="key" aria-hidden="true">↵</kbd>
     <% end %>
   </div>

@@ -43,10 +43,11 @@
       box-shadow: none;
 
       > .btn {
+        --btn-color: var(--color-ink-faint);
+        --btn-font-size: .9375rem;
+        --btn-font-weight: 600;
+
         margin-block-start: auto;
-        color: var(--color-ink-faint);
-        font-size: .9375rem;
-        font-weight: 600;
       }
     }
 

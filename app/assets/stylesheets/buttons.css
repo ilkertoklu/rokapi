@@ -1,83 +1,109 @@
 @layer components {
   .btn {
+    --btn-background: transparent;
+    --btn-border-color: transparent;
+    --btn-border-width: 0;
+    --btn-color: currentColor;
+    --btn-font-size: 1.0625rem;
+    --btn-font-weight: 700;
+    --btn-inline-size: 100%;
+    --btn-padding-block: 1.125rem;
+    --btn-padding-inline: 1.25rem;
+    --btn-radius: var(--radius-pill);
+    --btn-shadow: none;
+
     display: block;
-    inline-size: 100%;
-    padding: 1.125rem 1.25rem;
-    border: 0;
-    border-radius: var(--radius-pill);
-    font: 700 1.0625rem var(--font-ui);
+    inline-size: var(--btn-inline-size);
+    min-inline-size: var(--btn-min-inline-size, auto);
+    min-block-size: 44px;
+    padding: var(--btn-padding-block) var(--btn-padding-inline);
+    background: var(--btn-background);
+    border: var(--btn-border-width) solid var(--btn-border-color);
+    border-radius: var(--btn-radius);
+    box-shadow: var(--btn-shadow);
+    color: var(--btn-color);
+    font: var(--btn-font-weight) var(--btn-font-size) var(--font-ui);
     text-align: center;
     text-decoration: none;
     cursor: pointer;
-    min-block-size: 44px;
+
+    &:disabled {
+      cursor: default;
+      opacity: var(--btn-disabled-opacity, .45);
+    }
+
+    .glyph {
+      display: inline-block;
+      inline-size: 16px;
+      block-size: 16px;
+      margin-inline-end: .4rem;
+      vertical-align: -3px;
+    }
   }
 
   .btn--primary {
-    background: var(--color-accent);
-    color: var(--color-on-accent);
-    box-shadow:
+    --btn-background: var(--color-accent);
+    --btn-color: var(--color-on-accent);
+    --btn-shadow:
       inset 0 1px 0 color-mix(in oklch, white 30%, transparent),
       0 10px 24px -12px var(--color-accent-glow);
+    --btn-disabled-opacity: 1;
+
+    &:disabled {
+      --btn-background: color-mix(in oklch, var(--color-accent) 12%, transparent);
+      --btn-border-color: color-mix(in oklch, var(--color-accent) 32%, transparent);
+      --btn-border-width: 1px;
+      --btn-color: var(--color-accent-dim);
+      --btn-shadow: none;
+    }
   }
 
   .btn--secondary {
-    padding-block: 1rem;
-    background: var(--color-glass);
-    color: var(--color-ink);
-    border: .5px solid var(--color-glass-line);
-    box-shadow: var(--glass-shadow);
+    --btn-background: var(--color-glass);
+    --btn-border-color: var(--color-glass-line);
+    --btn-border-width: .5px;
+    --btn-color: var(--color-ink);
+    --btn-font-size: .9375rem;
+    --btn-font-weight: 600;
+    --btn-padding-block: 1rem;
+    --btn-shadow: var(--glass-shadow);
+
     backdrop-filter: var(--glass-blur);
-    font-size: .9375rem;
-    font-weight: 600;
   }
 
   .btn--neutral {
-    background: color-mix(in oklch, var(--color-ink) 8%, transparent);
-    color: var(--color-ink);
-    border: 1px solid color-mix(in oklch, var(--color-ink) 20%, transparent);
+    --btn-background: color-mix(in oklch, var(--color-ink) 8%, transparent);
+    --btn-border-color: color-mix(in oklch, var(--color-ink) 20%, transparent);
+    --btn-border-width: 1px;
+    --btn-color: var(--color-ink);
   }
 
   .btn--ghost {
-    background: transparent;
-    color: var(--color-accent-bright);
-  }
-
-  .btn .glyph {
-    display: inline-block;
-    inline-size: 16px;
-    block-size: 16px;
-    margin-inline-end: .4rem;
-    vertical-align: -3px;
-  }
-
-  .btn:disabled {
-    opacity: .45;
-    cursor: default;
-  }
-
-  .btn--primary:disabled {
-    background: color-mix(in oklch, var(--color-accent) 12%, transparent);
-    border: 1px solid color-mix(in oklch, var(--color-accent) 32%, transparent);
-    box-shadow: none;
-    color: var(--color-accent-dim);
-    opacity: 1;
+    --btn-color: var(--color-accent-bright);
   }
 
   .btn--danger {
-    background: var(--color-negative);
-    color: var(--color-on-accent);
+    --btn-background: var(--color-negative);
+    --btn-color: var(--color-on-accent);
+    --btn-disabled-opacity: 1;
 
     &:disabled {
-      background: color-mix(in oklch, var(--color-negative) 18%, transparent);
-      color: var(--color-negative-dim);
-      opacity: 1;
+      --btn-background: color-mix(in oklch, var(--color-negative) 18%, transparent);
+      --btn-color: var(--color-negative-dim);
     }
   }
 
   .btn--small {
-    padding-block: .8125rem;
-    font-size: .875rem;
-    font-weight: 600;
+    --btn-font-size: .875rem;
+    --btn-font-weight: 600;
+    --btn-padding-block: .8125rem;
+  }
+
+  .btn--inline {
+    @media (min-width: 64rem), (min-width: 48rem) and (min-height: 36rem) {
+      --btn-inline-size: auto;
+      --btn-min-inline-size: 16rem;
+    }
   }
 
   .btn__aside {
