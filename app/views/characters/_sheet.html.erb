@@ -55,8 +55,10 @@
             <% if item.quest? %>
               <span class="inventory__badge"><%= t(".quest_item") %></span>
             <% elsif item.usable? %>
-              <span class="inventory__count" aria-hidden="true">×<%= item.uses_left %></span>
-              <span class="visually-hidden"><%= t(".uses_left", count: item.uses_left) %></span>
+              <span class="inventory__count">
+                <span aria-hidden="true">×<%= item.uses_left %></span>
+                <span class="visually-hidden"><%= t(".uses_left", count: item.uses_left) %></span>
+              </span>
               <%= button_to t(".use"), game_session_item_use_path(character.game_session, item), class: "inventory__use" %>
             <% end %>
           <% end %>
