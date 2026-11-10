@@ -8,6 +8,7 @@ class GameSessions::Items::UsesController < ApplicationController
     @restored = @item.use
 
     respond_to do |format|
+      format.html { redirect_to_game_session }
       format.turbo_stream
       format.json { head :no_content }
     end

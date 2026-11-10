@@ -50,6 +50,15 @@ class ItemUseFlowTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "using the potion without Turbo returns to the game" do
+    @character.update! hp: 20
+
+    post game_session_item_use_path(@game_session, items(:healing_potion))
+
+    assert_redirected_to game_session_path(@game_session)
+    assert_equal 27, @character.reload.hp
+  end
+
   test "a spent, passive or foreign item cannot be used" do
     items(:healing_potion).update! uses_left: 0
 
