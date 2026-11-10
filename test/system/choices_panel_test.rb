@@ -34,4 +34,16 @@ class ChoicesPanelTest < ApplicationSystemTestCase
     assert_text "The Old Inn at Dusk"
     assert_selector ".action-panel[open] .action-panel__handle[tabindex='-1']"
   end
+
+  test "turning the phone sideways pins the choices and turning it back hands the handle back" do
+    visit game_session_path(@game_session)
+    assert_no_button "Force the cellar door"
+
+    page.current_window.resize_to 844, 390
+    assert_selector ".action-panel[open] .action-panel__handle[tabindex='-1']"
+
+    page.current_window.resize_to 390, 844
+    assert_button "Force the cellar door"
+    assert_selector ".action-panel__handle:not([tabindex])"
+  end
 end
