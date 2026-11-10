@@ -43,6 +43,23 @@ class SoloSetupTest < ApplicationSystemTestCase
     assert_equal 18, character.stats["intelligence"]
   end
 
+  test "drawing again shows the new first card as chosen" do
+    sign_in_as users(:sevval)
+    click_on "Start a new adventure"
+    click_on "Solo"
+    assert_link "Draw again"
+    execute_script "document.querySelector('.hand').scrollTo({ left: 10000 })"
+    assert_selector ".hand__dot--face-down.hand__dot--current"
+
+    click_on "Draw again"
+    assert_selector ".fate-card:first-child:has(:checked)", obscured: false
+    assert_selector ".hand__dot:first-child.hand__dot--current"
+    assert_selector ".hand__dot--current", count: 1
+
+    execute_script "document.querySelector('.hand').scrollTo({ left: 10000 })"
+    assert_selector ".hand__dot--face-down.hand__dot--current"
+  end
+
   test "playing in Turkish from the welcome screen on" do
     visit welcome_path
     click_on "Türkçe"

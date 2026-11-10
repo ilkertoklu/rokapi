@@ -4,23 +4,31 @@ export default class extends Controller {
   static targets = [ "deck", "card", "dot" ]
   static classes = [ "current" ]
 
-  connect() {
-    this.observer = new IntersectionObserver(entries => {
-      if (this.#isScrollable) {
-        entries.filter(entry => entry.isIntersecting).forEach(entry => entry.target.control.checked = true)
-      }
-      this.#markCurrentDot()
-    }, { root: this.deckTarget, threshold: .9 })
+  #sight = new IntersectionObserver(entries => {
+    if (this.#isScrollable) {
+      entries.filter(entry => entry.isIntersecting).forEach(entry => entry.target.control.checked = true)
+    }
+    this.#markCurrentDot()
+  }, { root: this.deckTarget, threshold: .9 })
 
-    this.cardTargets.forEach(card => this.observer.observe(card))
+  cardTargetConnected(card) {
+    this.#sight.observe(card)
   }
 
-  disconnect() {
-    this.observer.disconnect()
+  cardTargetDisconnected(card) {
+    this.#sight.unobserve(card)
   }
 
   bring({ target }) {
-    target.closest("label").scrollIntoView({ block: "nearest", inline: "nearest" })
+    this.#show(target.closest("label"))
+  }
+
+  restore() {
+    this.#show(this.cardTargets.find(card => card.control.checked))
+  }
+
+  #show(card) {
+    card?.scrollIntoView({ block: "nearest", inline: "nearest" })
     this.#markCurrentDot()
   }
 
