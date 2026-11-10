@@ -62,12 +62,21 @@ class ConnectionLostTest < ApplicationSystemTestCase
 
     drop_connection
     assert_selector "dialog.connection[open]", wait: 5
+    record_submissions
     send_keys "1"
-    sleep 1
+    assert_empty submissions
     assert scene.reload.choosing?
   end
 
   private
+    def record_submissions
+      execute_script "window.submissions = []; addEventListener('submit', event => submissions.push(event.target.action), { capture: true })"
+    end
+
+    def submissions
+      evaluate_script "window.submissions"
+    end
+
     def drop_connection
       on_cable_connection "close({ allowReconnect: false })"
     end
