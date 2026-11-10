@@ -21,7 +21,7 @@ class SubscriptionWebhookFlowTest < ActionDispatch::IntegrationTest
       assert_equal Plan.free, @user.monthly_plan
 
       deliver "subscription.created", status: "active"
-      assert_equal Plan.fetch("premium"), @user.monthly_plan
+      assert_equal Plan.fetch("premium"), @user.reload.monthly_plan
       assert_equal 100, @user.usage_left_percentage
       assert_equal @period.end, @user.usage_refills_at
     end
@@ -29,14 +29,14 @@ class SubscriptionWebhookFlowTest < ActionDispatch::IntegrationTest
     travel_to Time.zone.local(2026, 7, 20) do
       deliver "subscription.canceled", status: "canceled"
       assert_equal "canceled", @user.pay_subscriptions.sole.status
-      assert_equal Plan.fetch("premium"), @user.monthly_plan, "a cancelled subscription runs to the end of its period"
+      assert_equal Plan.fetch("premium"), @user.reload.monthly_plan, "a cancelled subscription runs to the end of its period"
     end
 
     travel_to Time.zone.local(2026, 8, 3, 9, 1) do
-      assert_equal Plan.free, @user.monthly_plan
+      assert_equal Plan.free, @user.reload.monthly_plan
 
       deliver "subscription.expired", status: "expired"
-      assert_equal Plan.free, @user.monthly_plan
+      assert_equal Plan.free, @user.reload.monthly_plan
     end
   end
 
@@ -46,7 +46,7 @@ class SubscriptionWebhookFlowTest < ActionDispatch::IntegrationTest
     travel_to Time.zone.local(2026, 8, 3, 9, 1) do
       deliver "subscription.updated", status: "active", period: Time.zone.local(2026, 8, 3, 9)...Time.zone.local(2026, 9, 3, 9)
 
-      assert_equal Plan.fetch("premium"), @user.monthly_plan
+      assert_equal Plan.fetch("premium"), @user.reload.monthly_plan
       assert_equal Time.zone.local(2026, 9, 3, 9), @user.usage_refills_at
     end
   end

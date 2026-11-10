@@ -8,11 +8,18 @@ module User::Subscriber
   end
 
   def subscription
-    pay_subscriptions.order(created_at: :desc).find { |subscription| subscription.active? || paid_through?(subscription) }
+    return @subscription if defined?(@subscription)
+
+    @subscription = pay_subscriptions.order(created_at: :desc).find { |subscription| subscription.active? || paid_through?(subscription) }
   end
 
   def subscribed?
     subscription.present?
+  end
+
+  def reload(*)
+    remove_instance_variable :@subscription if defined?(@subscription)
+    super
   end
 
   private

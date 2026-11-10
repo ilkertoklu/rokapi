@@ -99,7 +99,7 @@ class User::AllowanceTest < ActiveSupport::TestCase
       assert user.out_of_usage?
 
       subscribe user, "premium", period: Time.current...1.month.from_now
-      assert_equal 100, user.usage_left_percentage
+      assert_equal 100, user.reload.usage_left_percentage
       assert_equal Time.zone.local(2026, 3, 3, 9), user.usage_refills_at
     end
   end
@@ -111,7 +111,7 @@ class User::AllowanceTest < ActiveSupport::TestCase
     assert_equal Plan.fetch("max"), user.monthly_plan
 
     travel 21.days do
-      assert_equal Plan.free, user.monthly_plan
+      assert_equal Plan.free, user.reload.monthly_plan
     end
   end
 
