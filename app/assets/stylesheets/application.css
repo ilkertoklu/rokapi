@@ -1,6 +1,8 @@
 @layer reset, base, components;
 
 :root {
+  color-scheme: dark;
+
   --color-bg: #15120E;
   --color-surface: #1F1A14;
   --color-surface-raised: #241D14;
