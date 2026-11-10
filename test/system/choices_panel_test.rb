@@ -32,6 +32,7 @@ class ChoicesPanelTest < ApplicationSystemTestCase
     find(".action-panel__handle").click
     assert_button "Force the cellar door"
 
+    assert_panels_at_rest
     find(".action-panel__handle").click
     assert_no_button "Force the cellar door"
   end
