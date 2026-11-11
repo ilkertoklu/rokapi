@@ -83,18 +83,12 @@
   }
 
   .fate-card--face-down {
-    --lattice: color-mix(in oklch, var(--color-accent) 7%, transparent);
-
     align-items: center;
     justify-content: center;
     text-align: center;
-    background-image:
-      repeating-linear-gradient(45deg, var(--lattice) 0 1px, transparent 1px 12px),
-      repeating-linear-gradient(-45deg, var(--lattice) 0 1px, transparent 1px 12px);
-    box-shadow: inset 0 0 0 7px var(--color-bg), inset 0 0 0 8px var(--lattice);
 
     &:has(:checked) {
-      --lattice: var(--color-accent-soft);
+      --lattice-color: var(--color-accent-soft);
     }
 
     .fate-card__trouble {

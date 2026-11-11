@@ -1,0 +1,13 @@
+@layer components {
+  .lattice {
+    --lattice-color: color-mix(in oklch, var(--color-accent) 7%, transparent);
+    --lattice-inset: 6px;
+
+    background-image:
+      repeating-linear-gradient(45deg, var(--lattice-color) 0 1px, transparent 1px 12px),
+      repeating-linear-gradient(-45deg, var(--lattice-color) 0 1px, transparent 1px 12px);
+    box-shadow:
+      inset 0 0 0 var(--lattice-inset) var(--color-bg),
+      inset 0 0 0 calc(var(--lattice-inset) + 1px) var(--lattice-color);
+  }
+}

@@ -23,7 +23,7 @@
         </label>
       <% end %>
 
-      <label class="fate-card fate-card--face-down" data-hand-target="card">
+      <label class="fate-card fate-card--face-down lattice" data-hand-target="card">
         <%= form.radio_button :card, "", checked: false, class: "visually-hidden", data: { action: "hand#bring" } %>
         <span class="fate-card__place"><%= t(".surprise") %></span>
         <span class="fate-card__trouble"><%= t(".surprise_text") %></span>
