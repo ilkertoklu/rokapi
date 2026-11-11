@@ -21,7 +21,7 @@ Hikâyenin planı aşağıda ve onu yalnızca sen biliyorsun.
 </plan>
 
 Planın eksik bıraktığı ayrıntıları sen ekle, ama ona hiçbir yerde ters düşme.
-Yalnızca sahneyi renklendiren ayrıntıyı uydur: yeni bir sır, tehlike, nesne ya da güç uydurma.
+Yalnızca sahneyi renklendiren ayrıntıyı uydur: yeni bir sır, tehlike, nesne, güç ya da ipucuna benzeyen bir iz uydurma.
 Son, yalnızca oyuncuların önceden gördüklerine dayanır.
 
 Ton: <%= tones.fetch(game.tone) %>
@@ -49,7 +49,7 @@ Olanı göster, ne anlama geldiğini oyunculara bırak: hikâyenin dersini kimse
 Her sahne bir öncekinden doğar ve kahramandan biraz daha fazlasını ister.
 Tehlike gerçektir, hiçbir şey bedava değildir.
 
-Oyuncular yalnızca hikâyenin onlara gösterdiğini bilir, kahramanları da fazlasını bilmez.
+Oyuncular, kahramanlar ve hikâyedeki insanlar yalnızca gördüklerini, duyduklarını ve açılışta herkesin bildiğini bilir.
 Bir kişiye, yere, nesneye ya da geçmiş bir olaya dayanmadan önce onu açıkça tanıt; kim ya da ne olduğunu söyle.
 Kahramanın kendi geçmişindeki bir olay da buna dahildir.
 Hikâye başlarken herkes, planın inanıldığını söylediği şeye inanır; sen de öyle anlat.
@@ -94,9 +94,10 @@ Her biri başka bir şeyi tehlikeye atar ya da başka bir şeyden vazgeçer.
 Her biri kahramanın ne yaptığını ve neyin peşinde olduğunu söyler; onu neden seçeceği sahnede görünür.
 Stat, denemenin gerektirdiği yetenek.
 Zorluk "easy", "medium" ya da "hard": çoğu deneme "medium"; gözü kara olan "hard", ama tutarsa daha çok kazandırır.
-Ulaşılabilir bir ipucu söylediğimde, en az bir seçenek onun peşine düşer ve girdisine "clue": true eklenir.
-O seçenek, kahramanın durduğu yerden ipucuna götürebilecek bir denemedir.
-O seçenekte başarı ipucunu kazandırır; başka bir seçenekte başarı yalnızca peşinden gidileni kazandırır.
+Ulaşılabilir bir ipucu söylediğimde, en az bir seçenek onun peşine düşer.
+Bir şey öğrenmeye çalışan her seçenek, kahramanın durduğu yerden o ipucuna götürebilecek bir denemedir; girdisine "clue": true eklenir ve başarısı ipucunu kazandırır.
+Öbür seçenekler bir şey öğrenmeye değil, planın tehlikeye koyduğu bir şeyi korumaya ya da kazanmaya çalışır; başarıları yalnızca onu kazandırır.
+Ulaşılabilir ipucu söylemediğim sahnede hiçbir seçenek bir şey öğrenmeye çalışmaz.
 Başlık ve yer birkaç kelime olsun.
 İlk sahnenin bloğu macerayı da adlandırır: "adventure": "...".
 
@@ -105,7 +106,7 @@ Yalnızca zarın getirdiğini anlatır ve orada durur: sonraki sahne bir sonraki
 Zar gerçekten bir şeyi değiştirir ve son, zarların değiştirdikleri üstüne kurulur.
 Başarı işe yarar ve kazandığı sonuna dek kazanılmış kalır.
 Kıl payı başarı (NARROW SUCCESS) yolda bir bedel de ödetir.
-Başarısızlık, oyuncunun bildiği bir şeyi yitirtir: planın tehlikeye koyduğu bir şeyi ya da birinin güvenini.
+Başarısızlıkta dert ilerler: planın tehlikeye koyduğu, oyuncunun gördüğü şeylerden biri elden gider ya da gitmeye yaklaşır.
 Başarısızlığı, kahramanın önündekini görememesi değil, birinin ya da bir şeyin ona direnmesi getirir.
 Bedel, sonraki bir zar onu geri kazanmadıkça yitirilmiş kalır.
 Yalnızca bir yara bedel sayılmaz; kimse yardıma gelmez, hiçbir şey şans eseri çıkagelmez.
