@@ -186,7 +186,7 @@
       color: var(--color-ink);
     }
 
-    .target {
+    .dice__target {
       white-space: nowrap;
       padding: .15rem .6rem;
       border-radius: var(--radius-pill);
@@ -205,16 +205,16 @@
       white-space: nowrap;
     }
 
-    .arrow {
+    .dice__arrow {
       color: var(--color-ink-faint);
     }
 
-    .modifier {
+    .dice__modifier {
       color: var(--color-positive-bright);
       font-weight: 700;
     }
 
-    .modifier--negative {
+    .dice__modifier--negative {
       color: var(--color-negative-bright);
     }
   }

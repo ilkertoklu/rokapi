@@ -11,7 +11,7 @@
     <% end %>
   </div>
 
-  <section class="lobby-quest">
+  <section class="lobby__quest">
     <span class="overline"><%= t(".quest") %></span>
     <h2><%= game_session.title %></h2>
     <% if game_session.surprise? %>
@@ -20,17 +20,17 @@
       <p><%= game_session.card.trouble.text %></p>
       <p><%= game_session.card.figure.text %></p>
     <% end %>
-    <span class="overline lobby-quest__meta"><%= lobby_meta(game_session) %></span>
+    <span class="overline lobby__quest-meta"><%= lobby_meta(game_session) %></span>
   </section>
 
   <section>
-    <header class="lobby-players__head">
+    <header class="lobby__players-head">
       <h2 class="overline"><%= t(".players") %></h2>
       <span aria-hidden="true"><%= party.size %> / <%= game_session.max_players %></span>
       <span class="visually-hidden"><%= t(".seats", count: party.size, max: game_session.max_players) %></span>
     </header>
 
-    <ol class="lobby-players">
+    <ol class="lobby__players">
       <% party.each_with_index do |member, seat| %>
         <% you = member == player %>
         <%= tag.li class: [ "lobby-player", { "lobby-player--ready": member.ready?, "lobby-player--you": you } ] do %>

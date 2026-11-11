@@ -103,7 +103,7 @@
     }
   }
 
-  .choice-description {
+  .choice__description {
     display: flex;
     align-items: center;
     gap: var(--inline-space-half);

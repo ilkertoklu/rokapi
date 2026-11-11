@@ -26,7 +26,7 @@ class SoloSetupFlowTest < ActionDispatch::IntegrationTest
 
     get new_game_session_character_path(game_session)
     assert_select "input[name=?][value=?]", "character[stats][strength]", "14"
-    assert_select ".choice-description:not([hidden])", 3
+    assert_select ".choice__description:not([hidden])", 3
 
     assert_enqueued_with job: Scene::NarrateJob do
       post game_session_character_path(game_session), params: {

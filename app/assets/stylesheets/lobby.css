@@ -62,7 +62,7 @@
     white-space: nowrap;
   }
 
-  .lobby-quest {
+  .lobby__quest {
     padding: .875rem var(--inline-space);
     background: var(--color-surface-sunken);
     border: 1px solid var(--color-line-soft);
@@ -98,13 +98,13 @@
     }
   }
 
-  .lobby-quest__meta {
+  .lobby__quest-meta {
     color: var(--color-ink-faint);
     font-weight: 600;
     letter-spacing: .08em;
   }
 
-  .lobby-players__head {
+  .lobby__players-head {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
@@ -118,7 +118,7 @@
     }
   }
 
-  .lobby-players {
+  .lobby__players {
     display: flex;
     flex-direction: column;
     gap: var(--block-space-half);
@@ -224,7 +224,7 @@
       grid-template-rows: auto 1fr auto;
       gap: 1.25rem 2.5rem;
 
-      > section:not(.lobby-quest) {
+      > section:not(.lobby__quest) {
         grid-column: 2;
         grid-row: 1 / span 2;
       }

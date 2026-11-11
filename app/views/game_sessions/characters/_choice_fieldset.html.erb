@@ -11,7 +11,7 @@
     <% end %>
   </div>
   <% options.each do |option| %>
-    <%= tag.p class: "choice-description", hidden: option.key != selected,
+    <%= tag.p class: "choice__description", hidden: option.key != selected,
         data: { choices_target: "description", key: option.key } do %>
       <%= render "glyph", name: option.key %>
       <span><strong><%= option.label %>:</strong> <%= option.description %></span>

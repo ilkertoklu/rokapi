@@ -9,15 +9,15 @@
       <dt><%= t(".difficulty") %> <span><%= t(".difficulty_source") %></span></dt>
       <dd>
         <%= choice.difficulty_label %>
-        <span class="target"><%= t(".target", target: choice.target) %></span>
+        <span class="dice__target"><%= t(".target", target: choice.target) %></span>
       </dd>
     </div>
     <div>
       <dt><%= t(".bonus") %></dt>
       <dd class="dice__bonus">
         <%= choice.stat_label %> <%= choice.stat_value %>
-        <span class="arrow" aria-hidden="true">→</span>
-        <span class="modifier"><%= signed_number(choice.modifier) %></span>
+        <span class="dice__arrow" aria-hidden="true">→</span>
+        <span class="dice__modifier"><%= signed_number(choice.modifier) %></span>
       </dd>
     </div>
     <% character.status_effects.each do |status| %>
@@ -25,8 +25,8 @@
         <dt><%= t(".status") %></dt>
         <dd class="dice__bonus">
           <%= status.name %>
-          <span class="arrow" aria-hidden="true">→</span>
-          <%= tag.span signed_number(status.modifier), class: [ "modifier", "modifier--negative": status.modifier.negative? ] %>
+          <span class="dice__arrow" aria-hidden="true">→</span>
+          <%= tag.span signed_number(status.modifier), class: [ "dice__modifier", "dice__modifier--negative": status.modifier.negative? ] %>
         </dd>
       </div>
     <% end %>
