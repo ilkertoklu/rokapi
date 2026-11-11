@@ -368,8 +368,8 @@ tr:
         text: dert, daha kötü bir şeyi uzak tutuyor
       outsider_framed:
         text: suç bilerek bir yabancının üstüne atıldı
-      two_culprits:
-        text: iki suçlu var ve ikisi de birbirinden habersiz
+      unwitting_helper:
+        text: suçlunun bir yardımcısı vardı ve yardımının ne işe yaradığını hiç bilmedi
       one_of_two:
         text: kurtarılması gereken iki şey var, vakit ancak birine yeter
       dear_price:

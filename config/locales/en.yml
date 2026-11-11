@@ -349,8 +349,8 @@ en:
         text: the trouble is keeping something worse away
       outsider_framed:
         text: the blame was put on an outsider on purpose
-      two_culprits:
-        text: there are two culprits, and neither knows of the other
+      unwitting_helper:
+        text: the culprit had a helper who never knew what the help was for
       one_of_two:
         text: there are two to save, and time for only one
       dear_price:
