@@ -327,7 +327,7 @@ module Rokapi
 
         loop do
           game = self.game
-          stream game, streamed unless options[:json]
+          stream game, streamed if narration && !options[:json]
           return present(game, streamed: streamed, narration: narration) unless busy?(game)
           raise Thor::Error, "Still waiting after #{options[:wait]}s. Run: bin/rokapi show" if Time.now > deadline
 
