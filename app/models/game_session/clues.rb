@@ -2,7 +2,19 @@ module GameSession::Clues
   extend ActiveSupport::Concern
 
   def clues_found
-    (scenes.pluck(:effects) + rolls.pluck(:effects)).filter_map { Integer(it&.dig("clue"), exception: false) }.select(&:positive?).uniq.sort
+    (clues_in(scenes) + clues_in(rolls)).uniq.sort
+  end
+
+  def clues_won
+    clues_in(rolls)
+  end
+
+  def solved?
+    clues_won.size * 2 >= clue_count
+  end
+
+  def earned_outcome
+    solved? ? "victory" : "defeat"
   end
 
   def clues_left
@@ -28,5 +40,9 @@ module GameSession::Clues
   private
     def clue_count
       plan.to_s.scan(/^\W*(\d+)[.)]/).flatten.map(&:to_i).max.to_i
+    end
+
+    def clues_in(records)
+      records.pluck(:effects).filter_map { Integer(it&.dig("clue"), exception: false) }.select(&:positive?).uniq.sort
     end
 end

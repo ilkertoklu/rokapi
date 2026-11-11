@@ -222,11 +222,19 @@ class RollTest < ActiveSupport::TestCase
     assert_nil roll_with(value: 15, target: 12).clue_won
   end
 
-  test "the last roll leaves the ending to the story, whatever the die" do
+  test "the last roll ends as the clues the heroes won decide, whatever the die or the story says" do
+    game_sessions(:ilker_solo).update! plan: CLUES_PLAN
+    roll_with(value: 15, target: 12).resolve resolution: "Mara's shawl hangs on the lighthouse door.", effects: {}
     @scene.update! position: game_sessions(:ilker_solo).scene_budget
 
-    assert_equal "defeat", roll_with(value: 20, target: 12).ending_with("outcome" => "defeat")
-    assert_equal "victory", roll_with(value: 1, target: 12).ending_with("outcome" => "victory")
+    assert_equal "defeat", roll_with(value: 20, target: 12).ending_with("outcome" => "victory")
+
+    @scene.update! position: 2
+    roll_with(value: 15, target: 12).resolve resolution: "The boots under the stairs are dry.", effects: {}
+    @scene.update! position: game_sessions(:ilker_solo).scene_budget
+
+    assert_equal "victory", roll_with(value: 1, target: 12).ending_with("outcome" => "defeat")
+    assert_equal "victory", roll_with(value: 1, target: 12).ending_with("hp" => -99), "a last roll that fells the hero only sets the price"
   end
 
   test "a roll before the last scene ends nothing" do

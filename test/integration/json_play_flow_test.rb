@@ -77,14 +77,14 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
     assert_equal [ 7, "choosing", false ], last_scene.values_at("position", "state", "finale")
 
     post game_session_choice_selection_path(game_session, last_scene["choices"].first["id"]), as: :json
-    stub_understudy(ENDING_RESPONSE.sub(%q("outcome": "victory"), %q("outcome": "defeat"))) do
+    stub_understudy(ENDING_RESPONSE) do
       with_die(2) { perform_enqueued_jobs { post game_session_roll_path(game_session), as: :json } }
     end
 
     get game_session_path(game_session), as: :json
     game = response.parsed_body
     assert game["finished"]
-    assert_equal "defeat", game["outcome"], "the lost last roll decided the ending"
+    assert_equal "victory", game["outcome"], "a lost last roll sets the price, not the ending"
     assert game["scenes"].last["finale"]
     assert_match "the caravan bells echo", game["scenes"].last["roll"]["resolution"]
     assert_equal 0.0, game["cost"]

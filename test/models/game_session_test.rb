@@ -315,6 +315,29 @@ class GameSessionTest < ActiveSupport::TestCase
     assert_equal [ 1, 3 ], game_session.reload.clues_found
   end
 
+  test "the story is solved once the heroes won at least half its clues themselves, not counting those the story brought them" do
+    game_session = game_sessions(:ilker_solo)
+    game_session.update! plan: "Clues:\n1. Mara's shawl hangs on the lighthouse door.\n2. The boy's boots stand dry.\n3. The press gang's list carries his name."
+
+    assert_not game_session.solved?
+    assert_equal "defeat", game_session.earned_outcome
+
+    roll_in(game_session, position: 1).resolve resolution: "The shawl is wet.", effects: {}
+    game_session.scenes.create!(position: 5, active_player: game_session.host).write narration: "The press gang rows in.", effects: {}
+    game_session.reload
+
+    assert_equal [ 1, 2 ], game_session.clues_found
+    assert_equal [ 1 ], game_session.clues_won
+    assert_not game_session.solved?
+
+    roll_in(game_session, position: 6).resolve resolution: "The list carries his name.", effects: {}
+    game_session.reload
+
+    assert_equal [ 1, 3 ], game_session.clues_won
+    assert game_session.solved?
+    assert_equal "victory", game_session.earned_outcome
+  end
+
   test "the next clue is the first of the plan's numbered ones not found yet" do
     game_session = game_sessions(:ilker_solo)
     game_session.update! plan: "Hidden: Mara hid her son.\n\nClues:\n1. Mara's shawl hangs on the lighthouse door.\n2) The boy's boots stand dry.\n- 3. The press gang's list carries his name."

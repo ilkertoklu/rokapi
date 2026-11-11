@@ -36,18 +36,22 @@ So far <%= attempts.join("; ") %>.
 <% if (marks = game.marks).any? %>
 What the rolls have changed so far: <%= marks.join(" / ") %>
 <% end %>
+<% if game.solved? %>
+<%= witness.capitalize %> found what was hidden: the story ends in victory, the question answered their way.
+<% else %>
+<%= witness.capitalize %> won too few of the clues themselves: the story ends in defeat, the question left open.
+<% end %>
+This roll sets only the price.
 A success gets them what their last move reached for.
 A failure gets them none of it: someone or something resists and takes what the move put on the line.
-Tell what this roll does, then the ending.
-It is victory if the question now stands answered the way the heroes set out to, even at a price; if it is left open or answered against them, it is defeat.
-Of the plan's endings, tell the one that fits: what was won is there to be used, what was lost is missing.
-The one who did what the plan hides, or someone who knows, says what was done and why, as far as the clues showed it; what the heroes never found stays unsaid.
-The heroes settle the question with what they did<%= parts %>.
-No one they did not win over steps in to win or lose it for them, and a move that failed does not happen after all.
+Tell what this roll does, then the plan's <%= game.earned_outcome %>: what was won is there to be used, what was lost is missing.
+Whoever decides acts on what they want and on what they were shown.
+The one who did what the plan hides, or someone who knows, says what was done and why, as far as the clues showed it.
+The ending comes of what <%= witness %> did<%= parts %>; no one they did not win over steps in, and a move that failed does not happen after all.
 Tell it as scenes to the last line, not as a summary, with <%= witness %> there to see and hear whatever settles it.
 By the last line it is plain what became of each thing at stake, of everyone the story suspected and of the people it touched.
 No one says what the story meant.
-The block adds "outcome": "victory" or "defeat".
+The block adds "outcome": "<%= game.earned_outcome %>".
 <% elsif roll.life_at_stake? %>
 This roll can take the last of <%= hero %>'s health.
 <% if roll.last_hero_standing? %>

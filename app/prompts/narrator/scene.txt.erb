@@ -28,10 +28,15 @@ What they do brings clue <%= game.next_clue %> to where <%= hero.name %> is and 
 Clue in reach: <%= clue %>.
 <% end %>
 <% if scene.last? %>
-This is the last scene: bring the story to the moment that decides the question.
-Each choice goes at the question its own way, with something the players found or won, and puts a different thing still at stake on the line.
-The more they found and won, the easier a choice is; the more they lost, the harder.
-If what they lost has already answered the question against them, show that plainly, and each choice reaches for something still to be saved.
+<% if game.solved? %>
+This is the last scene, and the players found what was hidden: the story ends in victory whatever the last roll.
+Bring it to the moment they lay what they found before whoever decides; each choice does so its own way.
+<% else %>
+This is the last scene, and the players won too few of the clues themselves: the story ends in defeat whatever the last roll.
+Show plainly why what they know does not settle it; each choice reaches for something still to be saved.
+<% end %>
+Each choice puts a different thing still at stake on the line, and the roll sets only the price.
+The more they won along the way, the easier a choice is; the more they lost, the harder.
 <% end %>
 
 <%= hero.name %>, <%= hero.character.identity %>: <%= hero.character.sheet %>.

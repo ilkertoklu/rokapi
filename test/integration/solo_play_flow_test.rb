@@ -99,6 +99,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     choice = game_session.current_scene.choices.find_by!(stat: "strength")
     post game_session_choice_selection_path(game_session, choice)
     game_session.current_scene.update! position: game_session.scene_budget
+    game_session.update! plan: "Clues:\n1. Mara's shawl hangs on the lighthouse door.\n2. The boy's boots stand dry."
 
     stub_understudy(ENDING_RESPONSE.sub("victory", "defeat")) do
       with_die(1) { perform_enqueued_jobs { post game_session_roll_path(game_session) } }
