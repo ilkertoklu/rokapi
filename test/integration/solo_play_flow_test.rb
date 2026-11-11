@@ -68,7 +68,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".finale__move", text: /Force the drawer open\s+CRITICAL SUCCESS!/
     assert_select ".finale__closing", text: /the caravan bells echo down the valley/
     assert_select ".outcome", count: 0
-    assert_select ".highlights", text: /2\s+Dice rolled/
+    assert_select ".highlights", text: /Dice rolled\s+2/
     assert_select "[data-controller=share][data-share-text-value*=?]", "The Stable — Victory"
     assert_select "[data-share-text-value*=?]", "A fog-bound fishing village"
     assert_equal %w[system user assistant user assistant user assistant user assistant], game_session.conversation.messages.pluck(:role)

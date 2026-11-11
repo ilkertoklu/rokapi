@@ -22,13 +22,13 @@ class RecordFlowTest < ActionDispatch::IntegrationTest
 
     assert_select ".identity + .record"
     assert_select ".record h2", text: "Record"
-    assert_select ".record__figure", text: /2\s+Adventures/
-    assert_select "a.record__figure[href=?]", my_adventures_path, text: /2\s+Adventures/
-    assert_select ".record__figure", text: /1\s+Victory/
-    assert_select ".record__figure", text: /1\s+Defeat/
-    assert_select ".record__figure", text: /3\s+Dice rolled/
-    assert_select ".record__figure", text: /1\s+With a party/
-    assert_select ".record__figure", text: /Warrior\s+Played most/
+    assert_select ".record__figure", text: /Adventures\s+2/
+    assert_select ".record__figure a[href=?]", my_adventures_path, text: "Adventures"
+    assert_select ".record__figure", text: /Victory\s+1/
+    assert_select ".record__figure", text: /Defeat\s+1/
+    assert_select ".record__figure", text: /Dice rolled\s+3/
+    assert_select ".record__figure", text: /With a party\s+1/
+    assert_select ".record__figure", text: /Played most\s+Warrior/
   end
 
   test "a party player's record counts only the games they were in" do
@@ -36,9 +36,9 @@ class RecordFlowTest < ActionDispatch::IntegrationTest
 
     get my_profile_path
 
-    assert_select ".record__figure", text: /1\s+Adventure/
-    assert_select ".record__figure", text: /0\s+Victories/
-    assert_select ".record__figure", text: /1\s+Dice rolled/
+    assert_select ".record__figure", text: /Adventure\s+1/
+    assert_select ".record__figure", text: /Victories\s+0/
+    assert_select ".record__figure", text: /Dice rolled\s+1/
   end
 
   test "a user with no finished game sees the profile without a record" do
@@ -58,10 +58,10 @@ class RecordFlowTest < ActionDispatch::IntegrationTest
     get my_profile_path
 
     assert_select ".record h2", text: "Kayıt"
-    assert_select ".record__figure", text: /2\s+Macera/
-    assert_select ".record__figure", text: /1\s+Zafer/
-    assert_select ".record__figure", text: /3\s+Zar atıldı/
-    assert_select ".record__figure", text: /Savaşçı\s+Favori sınıf/
+    assert_select ".record__figure", text: /Macera\s+2/
+    assert_select ".record__figure", text: /Zafer\s+1/
+    assert_select ".record__figure", text: /Zar atıldı\s+3/
+    assert_select ".record__figure", text: /Favori sınıf\s+Savaşçı/
   end
 
   test "the profile takes as many queries however many games are finished" do
@@ -81,7 +81,7 @@ class RecordFlowTest < ActionDispatch::IntegrationTest
     end
 
     assert_equal two, count_queries { get my_profile_path }
-    assert_select ".record__figure", text: /5\s+Adventures/
+    assert_select ".record__figure", text: /Adventures\s+5/
     assert_equal empty + 5, two
   end
 

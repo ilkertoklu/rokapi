@@ -85,17 +85,23 @@
   .highlights {
     display: flex;
     justify-content: space-evenly;
+    margin: 0;
 
-    strong {
-      display: block;
+    > div {
+      display: flex;
+      flex-direction: column;
+    }
+
+    dd {
+      order: -1;
+      margin: 0;
       font-family: var(--font-display);
       font-size: var(--text-3xl);
       font-weight: 400;
       color: var(--color-ink);
     }
 
-    span {
-      display: block;
+    dt {
       margin-block-start: .1875rem;
       font-size: var(--text-2xs);
       font-weight: 600;

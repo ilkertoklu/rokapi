@@ -22,22 +22,22 @@
 
   <hr>
 
-  <div class="highlights">
+  <dl class="highlights">
     <div>
-      <strong><%= duration_label(game_session.duration) %></strong>
-      <span><%= t(".duration") %></span>
+      <dt><%= t(".duration") %></dt>
+      <dd><%= duration_label(game_session.duration) %></dd>
     </div>
     <div>
-      <strong><%= game_session.dice_rolled %></strong>
-      <span><%= t(".dice_rolled") %></span>
+      <dt><%= t(".dice_rolled") %></dt>
+      <dd><%= game_session.dice_rolled %></dd>
     </div>
     <% if game_session.multiplayer? %>
       <div>
-        <strong><%= party.reject(&:fallen?).size %></strong>
-        <span><%= t(".alive") %></span>
+        <dt><%= t(".alive") %></dt>
+        <dd><%= party.reject(&:fallen?).size %></dd>
       </div>
     <% end %>
-  </div>
+  </dl>
 
   <% if game_session.multiplayer? %>
     <ul class="roster">

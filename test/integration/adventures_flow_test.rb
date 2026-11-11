@@ -49,7 +49,7 @@ class AdventuresFlowTest < ActionDispatch::IntegrationTest
     assert_select ".finale__outcome", text: "Victory"
     assert_select ".finale__move", text: /Climb the broken stair\s+HEAVY FAILURE/
     assert_select ".finale__closing", text: /What came of climb the broken stair/
-    assert_select ".highlights", text: /25 min\s+Duration\s+2\s+Dice rolled/
+    assert_select ".highlights", text: /Duration\s+25 min\s+Dice rolled\s+2/
 
     assert_no_match "Walk away from", response.body
     assert_select "button, form, turbo-cable-stream-source, .sheet", count: 0

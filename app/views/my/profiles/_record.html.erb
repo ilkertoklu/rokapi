@@ -2,32 +2,32 @@
 <section class="record">
   <h2 class="field-label"><%= t(".title") %></h2>
 
-  <div class="record__figures">
-    <%= link_to my_adventures_path, class: "record__figure record__figure--shelf" do %>
-      <strong><%= record.adventures %></strong>
-      <span><%= t(".adventures", count: record.adventures) %></span>
-    <% end %>
-    <div class="record__figure">
-      <strong><%= record.victories %></strong>
-      <span><%= t(".victories", count: record.victories) %></span>
+  <dl class="record__figures">
+    <div class="record__figure record__figure--shelf">
+      <dt><%= link_to t(".adventures", count: record.adventures), my_adventures_path, class: "record__link" %></dt>
+      <dd><%= record.adventures %></dd>
     </div>
     <div class="record__figure">
-      <strong><%= record.defeats %></strong>
-      <span><%= t(".defeats", count: record.defeats) %></span>
+      <dt><%= t(".victories", count: record.victories) %></dt>
+      <dd><%= record.victories %></dd>
     </div>
     <div class="record__figure">
-      <strong><%= record.dice_rolled %></strong>
-      <span><%= t(".dice_rolled") %></span>
+      <dt><%= t(".defeats", count: record.defeats) %></dt>
+      <dd><%= record.defeats %></dd>
     </div>
     <div class="record__figure">
-      <strong><%= record.party_adventures %></strong>
-      <span><%= t(".party_adventures") %></span>
+      <dt><%= t(".dice_rolled") %></dt>
+      <dd><%= record.dice_rolled %></dd>
+    </div>
+    <div class="record__figure">
+      <dt><%= t(".party_adventures") %></dt>
+      <dd><%= record.party_adventures %></dd>
     </div>
     <% if (klass = record.favorite_klass) %>
       <div class="record__figure record__figure--word">
-        <strong><%= klass.label %></strong>
-        <span><%= t(".favorite_klass") %></span>
+        <dt><%= t(".favorite_klass") %></dt>
+        <dd><%= klass.label %></dd>
       </div>
     <% end %>
-  </div>
+  </dl>
 </section>

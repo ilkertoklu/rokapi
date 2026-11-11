@@ -11,10 +11,10 @@ class RecordTest < ApplicationSystemTestCase
 
     find(".profile__badge").click
     within(".record") do
-      assert_text "1\nVictory"
-      assert_text "2\nDice rolled"
-      assert_text "Warrior\nPlayed most"
-      click_on "1 Adventure"
+      assert_text "Victory\n1"
+      assert_text "Dice rolled\n2"
+      assert_text "Played most\nWarrior"
+      click_on "Adventure"
     end
 
     assert_selector ".page-head h1", text: "My adventures"

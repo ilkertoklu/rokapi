@@ -116,7 +116,7 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
 
     get game_session_path(@room)
     assert_select ".finale__outcome", text: "Victory"
-    assert_select ".highlights div", text: /1\s*Alive/
+    assert_select ".highlights div", text: /Alive\s*1/
     assert_select ".roster__member--fallen", text: /Ilker/
     assert_select ".roster__member:not(.roster__member--fallen)", text: /Deniz/
   end

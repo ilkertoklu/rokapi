@@ -17,7 +17,7 @@ class RematchFlowTest < ActionDispatch::IntegrationTest
 
     get game_session_path(@room)
 
-    assert_select ".highlights div", text: /2\s*Alive/
+    assert_select ".highlights div", text: /Alive\s*2/
     assert_select ".roster__member", 3
     assert_select ".roster__member--fallen", text: /Deniz/
     assert_select "form[action=?] button", game_session_rematch_path(@room), text: "New adventure"
