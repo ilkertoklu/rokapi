@@ -250,8 +250,8 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
     assert request["prompt"].start_with?("Scene 7 of 7, the story's last scene, Ilker's turn.")
-    assert_includes request["prompt"], "This is the last scene: bring the story to the moment that decides it.\nThe roll on the choice made here ends the story.\n" \
-      "Each choice settles the question in its own way, with something the players found or won on the way.\n"
+    assert_includes request["prompt"], "This is the last scene: bring the story to the moment that decides it.\nThe roll on the choice made here ends the story, but what the players found, won and lost has already set which way it can end.\n" \
+      "Each choice reaches for one thing still at stake with something the players found or won on the way; none stakes the whole question on this one roll.\n"
     assert @game_session.current_scene.choosing?
     assert_equal 3, @game_session.current_scene.choices.count
     assert_not @game_session.reload.finished?
@@ -745,12 +745,12 @@ class NarratorTest < ActiveSupport::TestCase
     assert @game_session.reload.outcome_victory?
   end
 
-  test "a natural one on the last roll makes the heroes pay, but the whole story earns the ending" do
+  test "a natural one on the last roll costs one more thing at stake, but the whole story earns the ending" do
     roll = play_the_last_scene die: 1
 
     told = stub_understudy(ENDING_RESPONSE) { roll.narrate }.sole
 
-    assert_includes told["prompt"], "\nThis roll shapes how that ending comes and what it costs.\n"
+    assert_includes told["prompt"], "\nA failure gets them none of it: someone or something resists and takes one more thing still at stake, but nothing won before.\n"
     assert @game_session.reload.outcome_victory?
   end
 
