@@ -39,7 +39,11 @@ module Authentication
 
     def request_authentication
       session[:return_to_after_authenticating] = request.url
-      redirect_to welcome_path
+
+      respond_to do |format|
+        format.html { redirect_to welcome_path }
+        format.json { head :unauthorized }
+      end
     end
 
     def after_authentication_url

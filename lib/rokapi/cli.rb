@@ -260,7 +260,7 @@ module Rokapi
         login unless client.logged_in?
         response = yield
 
-        if response.redirect? && response.location.to_s.end_with?("/welcome")
+        if response.unauthorized?
           login
           response = yield
         end

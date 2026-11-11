@@ -14,6 +14,7 @@ module Rokapi
     Response = Data.define(:status, :location, :content_type, :body) do
       def success? = status.between?(200, 299)
       def redirect? = status.between?(300, 399)
+      def unauthorized? = status == 401
       def json? = content_type.to_s.start_with?("application/json")
       def json = JSON.parse(body)
     end

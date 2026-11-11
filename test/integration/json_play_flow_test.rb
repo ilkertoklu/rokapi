@@ -97,6 +97,16 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
     assert_response :conflict
   end
 
+  test "signed out, a request is unauthorized instead of sent to the welcome page" do
+    delete session_path
+
+    get game_session_path(game_sessions(:ilker_solo)), as: :json
+    assert_response :unauthorized
+
+    get game_session_path(game_sessions(:ilker_solo))
+    assert_redirected_to welcome_path
+  end
+
   test "an invalid character is rejected with its errors" do
     post game_sessions_solo_path, params: { game_session: { card: "fishing_village missing_child weather_reader", tone: "balanced", length: "short" } }, as: :json
     game_session = users(:sevval).game_sessions.sole
