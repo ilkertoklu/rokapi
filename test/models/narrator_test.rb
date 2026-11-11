@@ -268,7 +268,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert_no_match(/"clue"|"mark"|no clue is handed over/, request["prompt"].split("</conversation_so_far>").last)
     assert_includes request["prompt"], %(\nThis is the last roll, and the story ends with it.\nSo far Ilker tried "Read the dusty ledger" (failed).\n) +
       %(The hero found what was hidden: the story ends in victory, the question answered their way.\nThis roll sets only the price.\nA success gets them what their last move reached for.\n)
-    assert_includes request["prompt"], "\nWhoever decides acts on what they want and on what they were shown.\n"
+    assert_includes request["prompt"], "\nWhoever decides acts on what they want and on what they were shown; someone who refused before is moved only by something new this move shows them.\n"
     assert request["prompt"].end_with?(%(\nNo one says what the story meant.\nThe block adds "outcome": "victory".))
   end
 
@@ -281,7 +281,7 @@ class NarratorTest < ActiveSupport::TestCase
     told, rewritten = stub_understudy(ENDING_RESPONSE, ENDING_RESPONSE.sub("victory", "defeat")) { roll.narrate }
 
     assert_includes scene["prompt"], "This is the last scene, and the players won too few of the clues themselves: the story ends in defeat whatever the last roll.\n" \
-      "Show plainly why what they know does not settle it; each choice reaches for something still to be saved.\n"
+      "Show plainly why what they know does not settle it.\nNo choice goes at the question itself; each reaches for one thing still at stake that can yet be saved, such as a person, a trust or a thing they hold.\n"
     assert_includes told["prompt"], "\nThe hero won too few of the clues themselves: the story ends in defeat, the question left open.\n"
     assert_includes rewritten["prompt"], %(Your last reply was rejected: the story ends with this roll, in defeat: tell the ending and add "outcome": "defeat" to the block.)
     assert roll.critical?
