@@ -45,13 +45,13 @@
     --btn-background: var(--color-accent);
     --btn-color: var(--color-on-accent);
     --btn-shadow:
-      inset 0 1px 0 color-mix(in oklch, white 30%, transparent),
+      inset 0 1px 0 oklch(var(--lch-white) / .3),
       0 10px 24px -12px var(--color-accent-glow);
     --btn-disabled-opacity: 1;
 
     &:disabled {
-      --btn-background: color-mix(in oklch, var(--color-accent) 12%, transparent);
-      --btn-border-color: color-mix(in oklch, var(--color-accent) 32%, transparent);
+      --btn-background: var(--color-accent-soft);
+      --btn-border-color: var(--color-accent-line);
       --btn-border-width: 1px;
       --btn-color: var(--color-accent-dim);
       --btn-shadow: none;

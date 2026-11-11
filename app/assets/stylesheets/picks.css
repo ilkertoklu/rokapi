@@ -21,7 +21,7 @@
     }
 
     &:has(:checked) {
-      background: color-mix(in oklch, var(--color-accent) 10%, transparent);
+      background: var(--color-accent-soft);
       border-color: var(--color-accent);
     }
 

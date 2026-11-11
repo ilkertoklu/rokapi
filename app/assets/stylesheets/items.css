@@ -84,7 +84,7 @@
   }
 
   .inventory__row--quest {
-    border: 1px dashed color-mix(in oklch, var(--color-accent) 30%, transparent);
+    border: 1px dashed var(--color-accent-line);
   }
 
   .inventory__icon {
@@ -156,7 +156,7 @@
   .inventory__use {
     min-block-size: 44px;
     padding: 0 var(--inline-space);
-    background: color-mix(in oklch, var(--color-accent) 12%, transparent);
+    background: var(--color-accent-soft);
     border: 1px solid var(--color-accent-line);
     border-radius: var(--radius-medium);
     color: var(--color-accent);

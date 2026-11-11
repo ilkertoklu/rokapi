@@ -19,7 +19,7 @@
     inline-size: 72px;
     block-size: 72px;
     padding: 20px;
-    background: color-mix(in oklch, var(--color-accent) 14%, transparent);
+    background: var(--color-accent-soft);
     border: 1px solid color-mix(in oklch, var(--color-accent) 40%, transparent);
     border-radius: 50%;
     color: var(--color-accent-bright);
