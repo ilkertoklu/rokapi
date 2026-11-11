@@ -213,7 +213,7 @@ class NarratorTest < ActiveSupport::TestCase
     scene = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
     assert_includes scene["prompt"], "No clue found yet.\nThe story cannot wait for clue 1 any longer: someone in this scene acts on a want or fear the players have seen.\n"
-    assert_includes scene["prompt"], "What they do shows clue 1 plainly, with no mishap or chance behind it.\nClue in reach: 2.\n"
+    assert_includes scene["prompt"], "What they do brings clue 1 to where Ilker is and shows it plainly, with no mishap or chance behind it.\nClue in reach: 2.\n"
     assert_equal 1, @game_session.current_scene.effects["clue"]
     assert_equal [ 1 ], @game_session.reload.clues_found
 
@@ -250,7 +250,8 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
     assert request["prompt"].start_with?("Scene 7 of 7, the story's last scene, Ilker's turn.")
-    assert_includes request["prompt"], "This is the last scene: bring the story to the moment that decides it.\nThe roll on the choice made here ends the story.\n"
+    assert_includes request["prompt"], "This is the last scene: bring the story to the moment that decides it.\nThe roll on the choice made here ends the story.\n" \
+      "Each choice settles the question in its own way, with something the players found or won on the way.\n"
     assert @game_session.current_scene.choosing?
     assert_equal 3, @game_session.current_scene.choices.count
     assert_not @game_session.reload.finished?
@@ -263,7 +264,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     assert_includes request["prompt"], "\nScene 7 of 7, the story's last scene.\nIlker chose "
     assert_no_match(/"clue"|"mark"|no clue is handed over/, request["prompt"].split("</conversation_so_far>").last)
-    assert_includes request["prompt"], %(\nThis is the last roll, and the story ends with it.\nSo far Ilker tried "Read the dusty ledger" (failed).\nVictory or defeat)
+    assert_includes request["prompt"], %(\nThis is the last roll, and the story ends with it.\nSo far Ilker tried "Read the dusty ledger" (failed).\nThe whole story earns the ending, not this roll alone.\n)
     assert request["prompt"].end_with?(%(\nNo one says what the story meant.\nThe block adds "outcome": "victory" or "defeat".))
   end
 
@@ -281,7 +282,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     assert roll.success?
     assert_includes cue, "So far Ilker tried \"Read the dusty ledger\" (succeeded) and \"Read the dusty ledger\" (succeeded).\n" \
-      "What the rolls have changed so far: The innkeeper trusts Ilker with the ledger.\nAll of it shows in the ending.\n"
+      "What the rolls have changed so far: The innkeeper trusts Ilker with the ledger.\nThe whole story earns the ending, not this roll alone.\n"
     assert_no_match(/"clue"|"mark"/, cue)
   end
 
@@ -612,7 +613,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(ENDING_RESPONSE) { roll.narrate }.sole
 
-    assert_includes request["prompt"], %(So far Ilker tried "Read the dusty ledger" (failed); Deniz tried "Read the dusty ledger" (failed).\nVictory or defeat)
+    assert_includes request["prompt"], %(So far Ilker tried "Read the dusty ledger" (failed); Deniz tried "Read the dusty ledger" (failed).\nThe whole story earns the ending)
     assert_not_includes request["prompt"], "In the scene with Deniz"
   end
 
@@ -632,9 +633,9 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(ENDING_RESPONSE.sub("victory", "defeat")) { roll.narrate }.sole
 
-    assert_includes request["prompt"], %(So far Ilker tried "Read the dusty ledger" (failed); Deniz tried nothing.\nVictory or defeat)
+    assert_includes request["prompt"], %(So far Ilker tried "Read the dusty ledger" (failed); Deniz tried nothing.\nThe whole story earns the ending)
     assert_includes request["prompt"], "The heroes settle the question with what they did, each with a part in it.\n"
-    assert_includes request["prompt"], "Tell it as scenes the heroes see and hear, to the last line"
+    assert_includes request["prompt"], "with the heroes there to see and hear whatever settles it.\n"
   end
 
   test "a roll that leaves the hero standing before the last scene does not end the story" do
@@ -744,24 +745,12 @@ class NarratorTest < ActiveSupport::TestCase
     assert @game_session.reload.outcome_victory?
   end
 
-  test "a natural one on the last roll ends the story in defeat, whatever the story says" do
+  test "a natural one on the last roll makes the heroes pay, but the whole story earns the ending" do
     roll = play_the_last_scene die: 1
-
-    told, rewritten = stub_understudy(ENDING_RESPONSE, ENDING_RESPONSE.sub("victory", "defeat")) { roll.narrate }
-
-    assert_includes told["prompt"], %(\nA natural 1 decides the story alone: it ends in defeat.\nThis roll decides whether their last move works.\n)
-    assert told["prompt"].end_with?(%(\nThe block adds "outcome": "defeat".))
-    assert_includes rewritten["prompt"], %(Your last reply was rejected: the story ends with this roll, in defeat: tell the ending and add "outcome": "defeat" to the block.)
-    assert @game_session.reload.outcome_defeat?
-  end
-
-  test "a natural twenty on the last roll ends the story in victory" do
-    roll = play_the_last_scene die: 20
 
     told = stub_understudy(ENDING_RESPONSE) { roll.narrate }.sole
 
-    assert_includes told["prompt"], "\nA natural 20 decides the story alone: it ends in victory.\n"
-    assert_not_includes told["prompt"], "Victory or defeat is the story's to decide"
+    assert_includes told["prompt"], "\nThis roll shapes how that ending comes and what it costs.\n"
     assert @game_session.reload.outcome_victory?
   end
 

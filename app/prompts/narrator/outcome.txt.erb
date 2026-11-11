@@ -11,7 +11,7 @@
     "#{player.name} tried #{player.attempts.to_sentence.presence || "nothing"}"
   end
   parts = game.party.many? ? ", each with a part in it" : ""
-  witness = game.party.one? ? "the hero sees and hears" : "the heroes see and hear"
+  witness = game.party.one? ? "the hero" : "the heroes"
 %>
 Scene <%= scene.position %> of <%= game.scene_budget %>, <%= scene.part_of_the_story %>.
 <%= hero %> chose "<%= roll.choice.label %>".
@@ -35,25 +35,22 @@ This is the last roll, and the story ends with it.
 So far <%= attempts.join("; ") %>.
 <% if (marks = game.marks).any? %>
 What the rolls have changed so far: <%= marks.join(" / ") %>
-All of it shows in the ending.
-What was won is there to be used; what was lost and never won back is missing.
 <% end %>
-<% if (ending = roll.decided_ending) %>
-A natural <%= roll.value %> decides the story alone: it ends in <%= ending %>.
-<% else %>
-Victory or defeat is the story's to decide: weigh what the heroes found and did against the plan's endings.
-<% end %>
-This roll decides whether their last move works.
-A success gets them what they reached for; a failure gets them none of it, but undoes nothing won before.
+The whole story earns the ending, not this roll alone.
+Of the plan's endings, it is the one that fits what the heroes found and what they won and lost of the things at stake: what was won is there to be used, what was lost and never won back is missing.
+It is victory if they settle the question as they set out to, even at a price, and defeat if not.
+This roll shapes how that ending comes and what it costs.
+A success gets them what their last move reached for.
+A failure makes them pay for it: someone or something resists, and they lose one more thing still at stake, but nothing won before.
 Tell what this roll does, then the ending.
 The ending rests on why it all happened, as the clues showed it; what the heroes never found stays unsaid.
 The heroes settle the question with what they did<%= parts %>.
 They make no move the players did not choose.
-No one else steps in to win or lose it for them.
-Tell it as scenes <%= witness %>, to the last line, not as a summary.
+No one they did not win over steps in to win or lose it for them.
+Tell it as scenes to the last line, not as a summary, with <%= witness %> there to see and hear whatever settles it.
 By the last line it is plain what became of each thing at stake and of the people it touched.
 No one says what the story meant.
-The block adds <%= ending ? %("outcome": "#{ending}") : %("outcome": "victory" or "defeat") %>.
+The block adds "outcome": "victory" or "defeat".
 <% elsif roll.life_at_stake? %>
 This roll can take the last of <%= hero %>'s health.
 <% if roll.last_hero_standing? %>

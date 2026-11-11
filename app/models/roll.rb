@@ -1,7 +1,6 @@
 class Roll < ApplicationRecord
   DIE = 20
   HEALTH_FLOOR = { narrow: -3, failure: -6, heavy: -9, catastrophe: -12 }.freeze
-  DECISIVE = { critical: "victory", catastrophe: "defeat" }.freeze
 
   include Consequential, Stallable
 
@@ -86,12 +85,8 @@ class Roll < ApplicationRecord
     if falls?(effects) && last_hero_standing?
       "defeat"
     elsif scene.last?
-      decided_ending || effects.to_h["outcome"].presence_in(%w[ victory defeat ])
+      effects.to_h["outcome"].presence_in(%w[ victory defeat ])
     end
-  end
-
-  def decided_ending
-    DECISIVE[grade] if scene.last?
   end
 
   def clue_won
