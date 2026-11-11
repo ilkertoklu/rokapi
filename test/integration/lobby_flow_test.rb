@@ -14,7 +14,7 @@ class LobbyFlowTest < ActionDispatch::IntegrationTest
     get game_session_path(@room)
     assert_response :success
     assert_select ".room-code__digits", text: "4821"
-    assert_select ".lobby__quest h2", text: "A fog-bound fishing village"
+    assert_select ".lobby__quest h1", text: "A fog-bound fishing village"
     assert_select ".lobby__quest p", text: "A child went out at dusk and has not come back"
     assert_select ".lobby__quest p", text: "An old weather-reader who pleases no one"
     assert_select ".lobby__quest-meta", text: "5 players · ~15 min · balanced tone"

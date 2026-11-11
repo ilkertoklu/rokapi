@@ -73,7 +73,7 @@
       letter-spacing: .16em;
     }
 
-    h2 {
+    h1 {
       margin: .375rem 0 0;
       font-family: var(--font-display);
       font-size: var(--text-3xl);
