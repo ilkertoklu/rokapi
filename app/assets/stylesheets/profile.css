@@ -3,7 +3,7 @@
     position: absolute;
     inset-block-start: calc(1rem + env(safe-area-inset-top));
     inset-inline-end: 1.25rem;
-    z-index: 5;
+    z-index: var(--z-nav);
   }
 
   @media (min-width: 48rem) {

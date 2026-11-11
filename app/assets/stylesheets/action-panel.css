@@ -2,7 +2,7 @@
   .action-panel {
     flex: none;
     position: relative;
-    z-index: 2;
+    z-index: var(--z-panel);
     padding: .875rem 1.375rem calc(.75rem + env(safe-area-inset-bottom));
     background: var(--color-surface-raised);
     border-start-start-radius: var(--radius-sheet);
@@ -154,7 +154,7 @@
 
       position: sticky;
       inset-block-end: 0;
-      z-index: 1;
+      z-index: var(--z-raised);
       flex: none;
       display: flex;
       align-items: flex-start;
@@ -197,7 +197,7 @@
     }
 
     .choices-cue:has(+ .action-panel[data-out-of-view]) {
-      z-index: 3;
+      z-index: var(--z-sticky);
       transition: none;
 
       .glyph {

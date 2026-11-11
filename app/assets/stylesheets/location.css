@@ -59,14 +59,14 @@
     inline-size: 9px;
     block-size: 9px;
     background: var(--color-accent);
-    box-shadow: 0 0 8px var(--color-accent-glow);
+    box-shadow: var(--shadow-glow-small);
   }
 
   @media (min-width: 48rem) {
     .location {
       position: sticky;
       inset-block-start: 0;
-      z-index: 3;
+      z-index: var(--z-sticky);
       block-size: var(--location-size);
       padding: .4rem 2.5rem 0;
       background: var(--color-bg);

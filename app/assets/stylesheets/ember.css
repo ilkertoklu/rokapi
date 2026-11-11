@@ -17,7 +17,7 @@
     inline-size: 16px;
     block-size: 16px;
     margin: 0 auto 1.125rem;
-    box-shadow: 0 0 26px 6px var(--color-accent-glow);
+    box-shadow: var(--shadow-glow);
   }
 
   .ember--greeting {
@@ -25,6 +25,6 @@
     inline-size: 14px;
     block-size: 14px;
     margin: 0 auto 1.25rem;
-    box-shadow: 0 0 22px 4px var(--color-accent-glow);
+    box-shadow: var(--shadow-glow);
   }
 }

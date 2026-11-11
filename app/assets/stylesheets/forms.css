@@ -46,7 +46,7 @@
   .code input.code__input {
     position: absolute;
     inset: 0;
-    z-index: 1;
+    z-index: var(--z-raised);
     block-size: 100%;
     padding: 0;
     background: transparent;

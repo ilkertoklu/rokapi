@@ -69,7 +69,7 @@
     .ember {
       inline-size: 14px;
       block-size: 14px;
-      box-shadow: 0 0 22px 4px var(--color-accent-glow);
+      box-shadow: var(--shadow-glow);
     }
 
     > span {

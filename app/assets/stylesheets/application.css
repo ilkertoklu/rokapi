@@ -94,6 +94,13 @@
   --shadow-float: 0 18px 44px -10px oklch(var(--lch-black) / .75), 0 4px 14px oklch(var(--lch-black) / .4);
   --shadow-sheet: 0 -24px 50px -10px oklch(var(--lch-black) / .6);
   --shadow-control: 0 6px 18px -6px oklch(var(--lch-black) / .6);
+  --shadow-glow: 0 0 22px 4px var(--color-accent-glow);
+  --shadow-glow-small: 0 0 8px var(--color-accent-glow);
+
+  --z-raised: 1;
+  --z-panel: 2;
+  --z-sticky: 3;
+  --z-nav: 4;
 
   --font-display: "Spectral", serif;
   --font-ui: "Hanken Grotesk", system-ui, sans-serif;
