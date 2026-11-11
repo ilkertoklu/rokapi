@@ -63,7 +63,8 @@ class Scene < ApplicationRecord
   end
 
   def clue_in_reach
-    game_session.clues_unfound.drop(clue_overdue? ? 1 : 0).first unless last?
+    clue = game_session.clues_unfound.drop(clue_overdue? ? 1 : 0).first unless last?
+    clue if clue && position >= game_session.first_scene_for_clue(clue)
   end
 
   def conclude(outcome)

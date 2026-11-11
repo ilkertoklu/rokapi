@@ -377,6 +377,20 @@ class GameSessionTest < ActiveSupport::TestCase
     assert_equal 2, game_session.clues_left
   end
 
+  test "each clue comes into reach no sooner than its share of the story" do
+    game_session = game_sessions(:ilker_solo)
+    game_session.update! plan: "Clues:\n1. Mara's shawl hangs on the lighthouse door.\n2. The press gang's list carries his name."
+    first = roll_in(game_session, position: 1)
+
+    assert_equal 1, first.scene.clue_in_reach
+
+    first.resolve resolution: "The shawl is wet.", effects: {}
+    scenes = (2..game_session.scene_budget).index_with { game_session.scenes.create!(position: it, active_player: game_session.host) }
+
+    assert_equal [ 1 ], game_session.reload.clues_found
+    assert_equal({ 2 => nil, 3 => nil, 4 => 2, 5 => 2, 6 => nil, 7 => nil }, scenes.transform_values(&:clue_in_reach))
+  end
+
   test "the marks are what the rolls changed for good, in the order they were rolled" do
     game_session = game_sessions(:ilker_solo)
 
