@@ -17,9 +17,11 @@
     vertical-align: .1em;
   }
 
-  @media (min-width: 64rem) and (hover: hover) {
-    .key {
-      display: inline-block;
+  @media (min-width: 64rem), (min-width: 48rem) and (min-height: 36rem) {
+    @media (any-hover: hover) {
+      .key {
+        display: inline-block;
+      }
     }
   }
 }
