@@ -150,14 +150,14 @@ class GameSessionTest < ActiveSupport::TestCase
   test "destroying a session cascades through every play record" do
     game_session = game_sessions(:ilker_solo)
     game_session.update! plan: nil
-    stub_understudy(*PLANNING) { game_session.plan_story }
+    stub_llm(*PLANNING) { game_session.plan_story }
     scene = game_session.scenes.create! position: 1, active_player: players(:ilker_solo_host),
       state: :choosing, title: "The Old Inn"
     choice = scene.choices.create! label: "Read the ledger", stat: "intelligence",
       modifier: -1, target: 10
     choice.choose
     scene.roll_dice(by: players(:ilker_solo_host))
-    stub_understudy(OUTCOME_RESPONSE) { game_session.rolls.sole.narrate }
+    stub_llm(OUTCOME_RESPONSE) { game_session.rolls.sole.narrate }
 
     game_session.destroy
 

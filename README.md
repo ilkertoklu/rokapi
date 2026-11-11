@@ -65,10 +65,6 @@ Rokapi is a Rails 8 application: vanilla Rails, Hotwire, SQLite. LLM calls go th
 - Login is by email with a one-time code; in development the mail is written to `tmp/mails/`.
 - `bin/rokapi` plays the game against a running server, one UI step per command (`bin/rokapi help`).
 
-### Narrating without an API key
-
-In development you can send narrator calls to your own command instead of the API: `NARRATOR_COMMAND=~/bin/narrate bin/dev`. The command reads a JSON object with `system` and `prompt` on stdin, finds the requested model in `NARRATOR_MODEL`, and writes the reply to stdout. These calls cost nothing. Without the variable, the narrator calls the API.
-
 ### Tests
 
 ```

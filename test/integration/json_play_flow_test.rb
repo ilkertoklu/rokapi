@@ -29,7 +29,7 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
     assert_nil response.parsed_body["character"]
     assert_not response.parsed_body["started"]
 
-    stub_understudy(*PLANNING, SCENE_RESPONSE) do
+    stub_llm(*PLANNING, SCENE_RESPONSE) do
       perform_enqueued_jobs do
         post game_session_character_path(game_session), params: { character: warrior }, as: :json
       end
@@ -54,7 +54,7 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
     get game_session_path(game_session), as: :json
     assert_equal "rolling", response.parsed_body["scenes"].last["state"]
 
-    stub_understudy(OUTCOME_RESPONSE) do
+    stub_llm(OUTCOME_RESPONSE) do
       with_die(2) { perform_enqueued_jobs { post game_session_roll_path(game_session), as: :json } }
     end
     assert_response :no_content
@@ -68,7 +68,7 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
 
     game_session.current_scene.update! position: game_session.scene_budget - 1
 
-    stub_understudy(SECOND_SCENE_RESPONSE) do
+    stub_llm(SECOND_SCENE_RESPONSE) do
       perform_enqueued_jobs { post game_session_acknowledgement_path(game_session), as: :json }
     end
     assert_response :no_content
@@ -78,7 +78,7 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
     assert_equal [ 7, "choosing", false ], last_scene.values_at("position", "state", "finale")
 
     post game_session_choice_selection_path(game_session, last_scene["choices"].first["id"]), as: :json
-    stub_understudy(ENDING_RESPONSE) do
+    stub_llm(ENDING_RESPONSE) do
       with_die(2) { perform_enqueued_jobs { post game_session_roll_path(game_session), as: :json } }
     end
 
@@ -173,7 +173,7 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
       post game_sessions_solo_path, params: { game_session: { card: "fishing_village missing_child weather_reader", tone: "balanced", length: "short" } }, as: :json
       game_session = users(:sevval).game_sessions.sole
 
-      stub_understudy(*PLANNING, SCENE_RESPONSE) do
+      stub_llm(*PLANNING, SCENE_RESPONSE) do
         perform_enqueued_jobs { post game_session_character_path(game_session), params: { character: warrior }, as: :json }
       end
 

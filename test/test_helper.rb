@@ -9,7 +9,11 @@ RubyLLM.configure do |config|
   config.openai_api_base = "http://127.0.0.1:9"
   config.anthropic_api_key = "unreachable"
   config.anthropic_api_base = "http://127.0.0.1:9"
+  config.openai_protocol = config.anthropic_protocol = :scripted
 end
+
+RubyLLM::Providers::OpenAI.protocol :scripted, LlmStubbing::ScriptedReplies
+RubyLLM::Providers::Anthropic.protocol :scripted, LlmStubbing::ScriptedReplies
 
 module ActiveSupport
   class TestCase

@@ -1,9 +1,0 @@
-#!/bin/sh
-call=$(ls "$1" | grep -c '^request-')
-cat > "$1/request-$call.json"
-reply="$1/reply-$call"
-[ -f "$reply" ] || exit 3
-
-half=$(( $(wc -c < "$reply") / 2 ))
-head -c "$half" "$reply"
-tail -c "+$(( half + 1 ))" "$reply"

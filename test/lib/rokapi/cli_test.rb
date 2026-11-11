@@ -46,7 +46,7 @@ class Rokapi::CLITest < ActionDispatch::IntegrationTest
     @scene.choices.first.choose
 
     output = nil
-    stub_understudy(OUTCOME_RESPONSE) do
+    stub_llm(OUTCOME_RESPONSE) do
       with_die(15) { perform_enqueued_jobs { output = play(:roll) } }
     end
 

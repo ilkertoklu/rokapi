@@ -8,7 +8,7 @@ class Narrator::PlannerTest < ActiveSupport::TestCase
   end
 
   test "a plan the critic finds nothing wrong with is kept as written" do
-    planner, critic = stub_understudy(*PLANNING) { assert_equal PLAN_RESPONSE.strip, Narrator::Planner.for(@game_session).plan }
+    planner, critic = stub_llm(*PLANNING) { assert_equal PLAN_RESPONSE.strip, Narrator::Planner.for(@game_session).plan }
 
     assert_includes planner["system"], "- The place: A fog-bound fishing village\n"
     assert_includes planner["system"], "- What the story turns on: the one asking for help is the cause\n"
@@ -22,18 +22,18 @@ class Narrator::PlannerTest < ActiveSupport::TestCase
   end
 
   test "the planner is told what the players' latest stories hid, and a first story is told nothing" do
-    planner, _ = stub_understudy(*PLANNING) { Narrator::Planner.for(@game_session).plan }
+    planner, _ = stub_llm(*PLANNING) { Narrator::Planner.for(@game_session).plan }
     assert_not_includes planner["system"], "latest stories"
 
     GameSession.create!(creator: users(:ilker), card: "lighthouse_rock called_debt hiding_apprentice",
       plan: "**Question:** Will the debt be paid?\n\n**Opening:** A storm.\n\n**Believed:** The sea took the light.\n\n**Hidden:** The keeper slept and the light went out.\n\n**People:**\n- Edda")
-    planner, _ = stub_understudy(*PLANNING) { Narrator::Planner.for(@game_session).plan }
+    planner, _ = stub_llm(*PLANNING) { Narrator::Planner.for(@game_session).plan }
     assert_includes planner["system"], "The players' latest stories hid these pasts:\n- The keeper slept and the light went out.\nTell a story unlike them.\n\nWrite the plan"
   end
 
   test "a plan with problems is rewritten once, and no more" do
     passes = nil
-    requests = stub_understudy(PLAN_RESPONSE, "The plan has gaps:\n- The mother has no reason to beg for a search.\n", REWRITTEN_PLAN, "- The tide never matters.") do
+    requests = stub_llm(PLAN_RESPONSE, "The plan has gaps:\n- The mother has no reason to beg for a search.\n", REWRITTEN_PLAN, "- The tide never matters.") do
       passes = Narrator::Planner.for(@game_session).passes
     end
 
@@ -47,7 +47,7 @@ class Narrator::PlannerTest < ActiveSupport::TestCase
   end
 
   test "an empty plan is malformed" do
-    stub_understudy("\n\n") do
+    stub_llm("\n\n") do
       error = assert_raises(Narrator::MalformedResponse) { Narrator::Planner.for(@game_session).plan }
       assert_equal "the plan is empty", error.message
     end
@@ -60,7 +60,7 @@ class Narrator::PlannerTest < ActiveSupport::TestCase
 
   test "a plan can be rehearsed from cards without a game" do
     passes = nil
-    planner, critic = stub_understudy(*PLANNING) do
+    planner, critic = stub_llm(*PLANNING) do
       assert_no_difference %w[ GameSession.count User.count Narrator::Conversation.count Narrator::Message.count RubyLLM::ActiveRecord::Usage.count ] do
         passes = Narrator::Planner.rehearse card: "snowbound_pass dry_well ambitious_clerk", twist: "both_hide_same", tone: "dark", length: "short", locale: "tr",
           heroes: [ { name: "İlker", race: "elf", klass: "mage", background: "criminal" } ]

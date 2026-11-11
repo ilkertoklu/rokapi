@@ -19,7 +19,7 @@ class NarratorTest < ActiveSupport::TestCase
   end
 
   test "the first scene streams in and gets its choices" do
-    stub_understudy(SCENE_RESPONSE) do
+    stub_llm(SCENE_RESPONSE) do
       assert_turbo_stream_broadcasts @game_session do
         narrate
       end
@@ -39,7 +39,7 @@ class NarratorTest < ActiveSupport::TestCase
 
   test "the narration streams in before the stage refreshes with the title and the choices" do
     streams = capture_turbo_stream_broadcasts(@game_session) do
-      stub_understudy(SCENE_RESPONSE) { narrate }
+      stub_llm(SCENE_RESPONSE) { narrate }
     end
 
     assert_equal dom_id(@game_session.current_scene, :narration), streams.first["target"], "the first words reach the screen before any refresh"
@@ -52,7 +52,7 @@ class NarratorTest < ActiveSupport::TestCase
     subscriber = ActiveSupport::Notifications.subscribe("sql.active_record") { |event| writes << event.payload[:sql] if event.payload[:sql].start_with?('UPDATE "scenes"') }
 
     streams = capture_turbo_stream_broadcasts(@game_session) do
-      stub_understudy(SCENE_RESPONSE) { narrate }
+      stub_llm(SCENE_RESPONSE) { narrate }
     ensure
       ActiveSupport::Notifications.unsubscribe subscriber
       end
@@ -92,11 +92,11 @@ class NarratorTest < ActiveSupport::TestCase
     roll = play_first_scene
     resolve roll
 
-    assert_empty stub_understudy(SECOND_SCENE_RESPONSE) { narrate }, "the narrator must idle while the outcome is unread"
+    assert_empty stub_llm(SECOND_SCENE_RESPONSE) { narrate }, "the narrator must idle while the outcome is unread"
     assert_equal 1, @game_session.scenes.count
 
     roll.acknowledge
-    stub_understudy(SECOND_SCENE_RESPONSE) { narrate }
+    stub_llm(SECOND_SCENE_RESPONSE) { narrate }
 
     assert_equal 2, @game_session.scenes.count
     assert_equal "The Stable", @game_session.current_scene.title
@@ -107,7 +107,7 @@ class NarratorTest < ActiveSupport::TestCase
     roll = play_first_scene
     items(:healing_potion).use
 
-    request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
+    request = stub_llm(OUTCOME_RESPONSE) { roll.narrate }.sole
 
     assert_includes request["system"], "Sets out with Longsword; Round shield."
     assert request["prompt"].end_with?(<<~CUE.chomp)
@@ -127,7 +127,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "a narrow success is told it costs something" do
     roll = play_first_scene(die: 11)
 
-    request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
+    request = stub_llm(OUTCOME_RESPONSE) { roll.narrate }.sole
 
     assert_equal :narrow, roll.grade
     assert_includes request["prompt"], "NARROW SUCCESS, margin +0.\nIlker now: "
@@ -137,7 +137,7 @@ class NarratorTest < ActiveSupport::TestCase
     @game_session.update! plan: CLUES_PLAN
     roll = play_first_scene(die: 15)
 
-    request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
+    request = stub_llm(OUTCOME_RESPONSE) { roll.narrate }.sole
 
     assert_equal :solid, roll.grade
     assert_includes request["prompt"], "SUCCESS, margin +4.\nThis roll wins clue 1.\n"
@@ -147,7 +147,7 @@ class NarratorTest < ActiveSupport::TestCase
     @game_session.update! plan: CLUES_PLAN
     roll = play_first_scene
 
-    request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
+    request = stub_llm(OUTCOME_RESPONSE) { roll.narrate }.sole
 
     assert_not roll.success?
     assert_includes request["prompt"], "FAILURE, margin -9.\nIlker now: "
@@ -157,12 +157,12 @@ class NarratorTest < ActiveSupport::TestCase
 
   test "a success on a choice that leads to no clue wins only what it reached for" do
     @game_session.update! plan: CLUES_PLAN
-    stub_understudy(SCENE_RESPONSE) { narrate }
+    stub_llm(SCENE_RESPONSE) { narrate }
     aside = @game_session.current_scene.choices.find_by!(label: "Force the drawer open")
     aside.choose
     roll = with_die(15) { @game_session.current_scene.roll_dice(by: @game_session.host) }
 
-    request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
+    request = stub_llm(OUTCOME_RESPONSE) { roll.narrate }.sole
 
     assert roll.success?
     assert_not_includes request["prompt"], "wins clue"
@@ -172,7 +172,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "a success wins no clue from a plan that numbers none" do
     roll = play_first_scene(die: 15)
 
-    request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
+    request = stub_llm(OUTCOME_RESPONSE) { roll.narrate }.sole
 
     assert_includes request["prompt"], "SUCCESS, margin +4.\nIlker now: "
   end
@@ -184,9 +184,9 @@ class NarratorTest < ActiveSupport::TestCase
     roll.acknowledge
     @game_session.current_scene.update! position: 3
 
-    scene = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
+    scene = stub_llm(SECOND_SCENE_RESPONSE) { narrate }.sole
     later = with_die(15) { choose_and_roll @game_session.current_scene }
-    outcome = stub_understudy(OUTCOME_RESPONSE) { later.narrate }.sole
+    outcome = stub_llm(OUTCOME_RESPONSE) { later.narrate }.sole
 
     assert_equal [ 1 ], @game_session.clues_found
     assert_includes scene["prompt"], "\n\nScene 3 of 7, the story's first half, Ilker's turn.\nClues found so far: 1.\nClue in reach: 2.\nIlker, human warrior"
@@ -195,12 +195,12 @@ class NarratorTest < ActiveSupport::TestCase
 
   test "what a roll changed for good is kept and named in every later scene" do
     roll = play_first_scene(die: 15)
-    stub_understudy(OUTCOME_RESPONSE.sub('{"hp": -4}', '{"mark": "The innkeeper trusts Ilker with the ledger."}')) { roll.narrate }
+    stub_llm(OUTCOME_RESPONSE.sub('{"hp": -4}', '{"mark": "The innkeeper trusts Ilker with the ledger."}')) { roll.narrate }
     roll.acknowledge
 
-    scene = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
+    scene = stub_llm(SECOND_SCENE_RESPONSE) { narrate }.sole
     later = choose_and_roll @game_session.current_scene
-    outcome = stub_understudy(OUTCOME_RESPONSE) { later.narrate }.sole
+    outcome = stub_llm(OUTCOME_RESPONSE) { later.narrate }.sole
 
     assert_equal [ "The innkeeper trusts Ilker with the ledger." ], @game_session.marks
     assert_includes scene["prompt"], "No clue found yet.\nWhat the rolls have changed so far, and it stays so: The innkeeper trusts Ilker with the ledger.\n"
@@ -211,7 +211,7 @@ class NarratorTest < ActiveSupport::TestCase
     @game_session.update! plan: CLUES_PLAN
     @game_session.current_scene.update! position: 4
 
-    scene = stub_understudy(SCENE_RESPONSE) { narrate }.sole
+    scene = stub_llm(SCENE_RESPONSE) { narrate }.sole
 
     assert_includes scene["prompt"], "No clue found yet.\nThe story cannot wait for clue 1 any longer: someone in this scene acts on a want or fear the players have seen.\n"
     assert_includes scene["prompt"], "What they do brings clue 1 to where Ilker is and shows it plainly, with no mishap or chance behind it.\nClue in reach: 2.\n"
@@ -219,7 +219,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal [ 1 ], @game_session.reload.clues_found
 
     roll = with_die(15) { choose_and_roll @game_session.current_scene }
-    outcome = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
+    outcome = stub_llm(OUTCOME_RESPONSE) { roll.narrate }.sole
 
     assert_includes outcome["prompt"], "This roll wins clue 2.\n"
     assert_equal [ 1, 2 ], @game_session.reload.clues_found
@@ -229,7 +229,7 @@ class NarratorTest < ActiveSupport::TestCase
     @game_session.update! plan: CLUES_PLAN
     @game_session.current_scene.update! position: 3
 
-    scene = stub_understudy(SCENE_RESPONSE) { narrate }.sole
+    scene = stub_llm(SCENE_RESPONSE) { narrate }.sole
 
     assert_not_includes scene["prompt"], "The story cannot wait"
     assert_not @game_session.current_scene.effects.key?("clue")
@@ -240,7 +240,7 @@ class NarratorTest < ActiveSupport::TestCase
     @game_session.current_scene.update! position: @game_session.scene_budget - 1
     roll = play_first_scene
 
-    request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
+    request = stub_llm(OUTCOME_RESPONSE) { roll.narrate }.sole
 
     assert request["prompt"].end_with?("\nTell what this roll does and stop there.")
   end
@@ -248,7 +248,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "the last scene is played like any other, up to the moment that decides the story" do
     @game_session.current_scene.update! position: @game_session.scene_budget
 
-    request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
+    request = stub_llm(SCENE_RESPONSE) { narrate }.sole
 
     assert request["prompt"].start_with?("Scene 7 of 7, the story's last scene, Ilker's turn.")
     assert_includes request["prompt"], "This is the last scene, and the players found what was hidden: the story ends in victory whatever the last roll.\n" \
@@ -262,7 +262,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "the last roll weighs every roll before it, is told the ending the story earned and hands over no clue" do
     roll = play_the_last_scene
 
-    request = stub_understudy(ENDING_RESPONSE) { roll.narrate }.sole
+    request = stub_llm(ENDING_RESPONSE) { roll.narrate }.sole
 
     assert_includes request["prompt"], "\nScene 7 of 7, the story's last scene.\nIlker chose "
     assert_no_match(/"clue"|"mark"|no clue is handed over/, request["prompt"].split("</conversation_so_far>").last)
@@ -276,9 +276,9 @@ class NarratorTest < ActiveSupport::TestCase
     @game_session.update! plan: CLUES_PLAN
     @game_session.current_scene.update! position: @game_session.scene_budget
 
-    scene = stub_understudy(SCENE_RESPONSE) { narrate }.sole
+    scene = stub_llm(SCENE_RESPONSE) { narrate }.sole
     roll = with_die(20) { choose_and_roll @game_session.current_scene }
-    told, rewritten = stub_understudy(ENDING_RESPONSE, ENDING_RESPONSE.sub("victory", "defeat")) { roll.narrate }
+    told, rewritten = stub_llm(ENDING_RESPONSE, ENDING_RESPONSE.sub("victory", "defeat")) { roll.narrate }
 
     assert_includes scene["prompt"], "This is the last scene, and the players won too few of the clues themselves: the story ends in defeat whatever the last roll.\n" \
       "Show plainly why what they know does not settle it.\nNo choice goes at the question itself; each reaches for one thing still at stake that can yet be saved, such as a person, a trust or a thing they hold.\n"
@@ -291,13 +291,13 @@ class NarratorTest < ActiveSupport::TestCase
   test "the ending shows what the rolls changed" do
     @game_session.update! plan: CLUES_PLAN
     earlier = play_first_scene(die: 15)
-    stub_understudy(OUTCOME_RESPONSE.sub('{"hp": -4}', '{"mark": "The innkeeper trusts Ilker with the ledger."}')) { earlier.narrate }
+    stub_llm(OUTCOME_RESPONSE.sub('{"hp": -4}', '{"mark": "The innkeeper trusts Ilker with the ledger."}')) { earlier.narrate }
     earlier.acknowledge
     @game_session.current_scene.update! position: @game_session.scene_budget
-    stub_understudy(SECOND_SCENE_RESPONSE) { narrate }
+    stub_llm(SECOND_SCENE_RESPONSE) { narrate }
     roll = with_die(15) { choose_and_roll @game_session.current_scene }
 
-    request = stub_understudy(ENDING_RESPONSE) { roll.narrate }.sole
+    request = stub_llm(ENDING_RESPONSE) { roll.narrate }.sole
     cue = request["prompt"].split("</conversation_so_far>").last
 
     assert roll.success?
@@ -309,9 +309,9 @@ class NarratorTest < ActiveSupport::TestCase
   test "the scene and the roll in the middle of the story say so" do
     @game_session.current_scene.update! position: 4
 
-    scene = stub_understudy(SCENE_RESPONSE) { narrate }.sole
+    scene = stub_llm(SCENE_RESPONSE) { narrate }.sole
     roll = with_die(2) { choose_and_roll @game_session.current_scene }
-    outcome = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
+    outcome = stub_llm(OUTCOME_RESPONSE) { roll.narrate }.sole
 
     assert scene["prompt"].start_with?("Scene 4 of 7, the middle of the story, Ilker's turn.")
     assert outcome["prompt"].include?("\nScene 4 of 7, the middle of the story.\nIlker chose ")
@@ -323,7 +323,7 @@ class NarratorTest < ActiveSupport::TestCase
     resolve roll
     roll.acknowledge
 
-    request = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
+    request = stub_llm(SECOND_SCENE_RESPONSE) { narrate }.sole
 
     assert request["prompt"].include?("\n\nScene 2 of 7, the story's first half, Ilker's turn.\nNo clue found yet.\nIlker, human warrior (background: soldier): ")
   end
@@ -332,7 +332,7 @@ class NarratorTest < ActiveSupport::TestCase
     character = characters(:ilker_hero)
     character.status_effects.create! name: "Soaked Through", modifier: -2, turns_left: 1
 
-    stub_understudy(SCENE_RESPONSE) { narrate }
+    stub_llm(SCENE_RESPONSE) { narrate }
     scene = @game_session.current_scene
     choice = scene.choices.find_by!(stat: "strength")
     choice.choose
@@ -342,7 +342,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal roll.value + 3 - 2, roll.total
     assert_equal roll.total >= roll.target, roll.success?
 
-    request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
+    request = stub_llm(OUTCOME_RESPONSE) { roll.narrate }.sole
 
     assert_includes request["prompt"], "statuses -2.\nTotal #{roll.total}"
     assert_empty character.status_effects.reload, "a one-turn status must not outlive its roll"
@@ -351,7 +351,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "a choice's difficulty word sets the target to roll against" do
     worded = SCENE_RESPONSE.sub('"difficulty": 10', '"difficulty": "easy"').sub('"difficulty": 14', '"difficulty": "hard"').sub('"difficulty": 12', '"difficulty": "medium"')
 
-    stub_understudy(worded) { narrate }
+    stub_llm(worded) { narrate }
 
     assert_equal [ 7, 13, 10 ], @game_session.current_scene.choices.order(:id).pluck(:target)
     assert_equal %w[easy hard medium], @game_session.current_scene.choices.order(:id).map(&:difficulty)
@@ -361,13 +361,13 @@ class NarratorTest < ActiveSupport::TestCase
     two = SCENE_RESPONSE.sub('"stat": "intelligence"', '"stat": "strength"').sub('"difficulty": 14', '"difficulty": 25')
       .sub(%(,\n   {"label": "Listen at the stable in silence", "stat": "wisdom", "difficulty": 12}), "")
 
-    stub_understudy(two) { narrate }
+    stub_llm(two) { narrate }
 
     assert_equal [ [ "strength", 10 ], [ "strength", 19 ] ], @game_session.current_scene.choices.order(:id).pluck(:stat, :target)
   end
 
   test "a first scene without a title still opens the game" do
-    stub_understudy(SCENE_RESPONSE.sub('"title": "The Old Inn", ', "")) { narrate }
+    stub_llm(SCENE_RESPONSE.sub('"title": "The Old Inn", ', "")) { narrate }
 
     scene = @game_session.scenes.sole
     assert_nil scene.title
@@ -378,7 +378,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "a choice on a stat the hero does not have is malformed" do
     unknown = SCENE_RESPONSE.sub('"stat": "intelligence"', '"stat": "luck"')
 
-    stub_understudy(*rewrites_of(unknown)) do
+    stub_llm(*rewrites_of(unknown)) do
       assert_raises(Narrator::MalformedResponse) { narrate }
     end
 
@@ -386,7 +386,7 @@ class NarratorTest < ActiveSupport::TestCase
   end
 
   test "a scene without choices is malformed" do
-    stub_understudy(*rewrites_of(ENDING_RESPONSE)) do
+    stub_llm(*rewrites_of(ENDING_RESPONSE)) do
       error = assert_raises(Narrator::MalformedResponse) { narrate }
       assert_equal "the scene has no choices", error.message
     end
@@ -397,7 +397,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "a choice without a label is malformed" do
     unlabeled = SCENE_RESPONSE.sub('"label": "Force the drawer open", ', "")
 
-    stub_understudy(*rewrites_of(unlabeled)) do
+    stub_llm(*rewrites_of(unlabeled)) do
       assert_raises(Narrator::MalformedResponse) { narrate }
     end
 
@@ -406,7 +406,7 @@ class NarratorTest < ActiveSupport::TestCase
   end
 
   test "the brief opens one conversation for the whole game" do
-    first = stub_understudy(SCENE_RESPONSE) { narrate }.sole
+    first = stub_llm(SCENE_RESPONSE) { narrate }.sole
 
     assert_includes first["system"], "The story runs 7 scenes."
     assert_includes first["system"], "Mara hid her son in the lighthouse"
@@ -414,9 +414,9 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal opening, first["prompt"], "the first turn has no story before it"
 
     roll = with_die(2) { choose_and_roll @game_session.current_scene }
-    stub_understudy(OUTCOME_RESPONSE) { roll.narrate }
+    stub_llm(OUTCOME_RESPONSE) { roll.narrate }
     roll.acknowledge
-    second = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
+    second = stub_llm(SECOND_SCENE_RESPONSE) { narrate }.sole
 
     assert_equal 1, Narrator::Conversation.where(game_session: @game_session).count
     assert_equal first["system"], second["system"], "the brief never changes, so the cache holds"
@@ -428,7 +428,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "a game is planned once, before its first scene, and the brief carries the plan" do
     @game_session.update! plan: nil
 
-    planner, critic, scene = stub_understudy(*PLANNING, SCENE_RESPONSE) { narrate }
+    planner, critic, scene = stub_llm(*PLANNING, SCENE_RESPONSE) { narrate }
 
     assert_equal PLAN_RESPONSE.strip, @game_session.reload.plan
     assert_includes planner["system"], "You plan a story for Rokapi"
@@ -437,15 +437,15 @@ class NarratorTest < ActiveSupport::TestCase
     assert @game_session.current_scene.choosing?
 
     roll = with_die(2) { choose_and_roll @game_session.current_scene }
-    assert_equal 1, stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.size, "the plan is written only once"
+    assert_equal 1, stub_llm(OUTCOME_RESPONSE) { roll.narrate }.size, "the plan is written only once"
   end
 
   test "a planned game keeps one conversation for the story beside the planner's and the critic's" do
     @game_session.update! plan: nil
 
-    planner, critic, scene = stub_understudy(*PLANNING, SCENE_RESPONSE) { narrate }
+    planner, critic, scene = stub_llm(*PLANNING, SCENE_RESPONSE) { narrate }
     roll = with_die(2) { choose_and_roll @game_session.current_scene }
-    stub_understudy(OUTCOME_RESPONSE) { roll.narrate }
+    stub_llm(OUTCOME_RESPONSE) { roll.narrate }
 
     assert_equal %w[narration planning planning], @game_session.conversations.pluck(:purpose).sort
     assert_equal [ planner["system"], critic["system"] ], @game_session.conversations.planning.order(:id).map { it.messages.first.content }
@@ -455,7 +455,7 @@ class NarratorTest < ActiveSupport::TestCase
 
   test "a planned game's cost includes the planner and the critic" do
     @game_session.update! plan: nil
-    stub_understudy(*PLANNING, SCENE_RESPONSE) { narrate }
+    stub_llm(*PLANNING, SCENE_RESPONSE) { narrate }
 
     RubyLLM::ActiveRecord::Usage.update_all total_cost: 0.25
     @game_session.reload
@@ -467,7 +467,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "a planner that never answers leaves the game unplanned and the scene unwritten" do
     @game_session.update! plan: nil
 
-    stub_understudy(nil) do
+    stub_llm(nil) do
       assert_raises(RubyLLM::ServerError) { narrate }
     end
 
@@ -480,24 +480,24 @@ class NarratorTest < ActiveSupport::TestCase
     play_and_continue
 
     3.times do
-      stub_understudy(SECOND_SCENE_RESPONSE) { narrate }
+      stub_llm(SECOND_SCENE_RESPONSE) { narrate }
       roll = choose_and_roll(@game_session.current_scene)
       resolve roll
       roll.acknowledge
     end
 
-    request = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
+    request = stub_llm(SECOND_SCENE_RESPONSE) { narrate }.sole
 
     assert_equal 2 * 8, request["prompt"].scan(/^<(user|assistant)>$/).size
     assert request["prompt"].include?("\n\nScene 5 of 7, the story's second half, Ilker's turn.\nNo clue found yet.\nIlker, human warrior (background: soldier): ")
   end
 
   test "a turn the provider never answered is answered on the next attempt" do
-    stub_understudy(nil) do
+    stub_llm(nil) do
       assert_raises(RubyLLM::ServerError) { narrate }
     end
 
-    retry_call = stub_understudy(SCENE_RESPONSE) { narrate }.sole
+    retry_call = stub_llm(SCENE_RESPONSE) { narrate }.sole
 
     assert @game_session.current_scene.choosing?
     assert_equal opening, retry_call["prompt"], "the turn is not asked twice"
@@ -505,7 +505,7 @@ class NarratorTest < ActiveSupport::TestCase
   end
 
   test "the brief of an English game" do
-    request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
+    request = stub_llm(SCENE_RESPONSE) { narrate }.sole
 
     assert_includes request["system"], "Tell the story in English"
     assert_equal <<~GAME, request["system"][/^The story's plan .*?\n(?=\nBe the game master)/m]
@@ -529,7 +529,7 @@ class NarratorTest < ActiveSupport::TestCase
 
   test "a Turkish game is briefed in Turkish, even from the narration job's default locale" do
     @game_session.update! locale: "tr"
-    request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
+    request = stub_llm(SCENE_RESPONSE) { narrate }.sole
 
     assert_includes request["system"], "sade, doğal, gündelik Türkçeyle"
     assert_includes request["system"], "Hikâyenin planı aşağıda ve onu yalnızca sen biliyorsun.\n<plan>\nMara hid her son"
@@ -544,7 +544,7 @@ class NarratorTest < ActiveSupport::TestCase
     @game_session.update! surprise: true
     assert_equal "Surprise adventure", @game_session.title
 
-    named = stub_understudy(SCENE_RESPONSE.sub('{"title"', '{"adventure": "Blizzard Salt", "title"')) { narrate }.sole
+    named = stub_llm(SCENE_RESPONSE.sub('{"title"', '{"adventure": "Blizzard Salt", "title"')) { narrate }.sole
 
     assert_includes named["system"], "names the adventure"
     assert_equal "Blizzard Salt", @game_session.reload.title
@@ -555,7 +555,7 @@ class NarratorTest < ActiveSupport::TestCase
     characters(:ilker_hero).update! hp: 3
     roll = play_first_scene
 
-    told, rewritten = stub_understudy(OUTCOME_RESPONSE, OUTCOME_RESPONSE.sub('{"hp": -4}', '{"hp": -4, "outcome": "defeat"}')) { roll.narrate }
+    told, rewritten = stub_llm(OUTCOME_RESPONSE, OUTCOME_RESPONSE.sub('{"hp": -4}', '{"hp": -4, "outcome": "defeat"}')) { roll.narrate }
 
     assert_includes told["prompt"], %(\nThis roll can take the last of Ilker's health.\nIf it does, Ilker falls and the story ends here in defeat: tell how, and add "outcome": "defeat" to the block.\nIf not)
     assert_includes rewritten["prompt"], %(Your last reply was rejected: the story ends with this roll, in defeat: tell the ending and add "outcome": "defeat" to the block.)
@@ -570,7 +570,7 @@ class NarratorTest < ActiveSupport::TestCase
     characters(:ilker_hero).update! hp: 3
     roll = play_first_scene
 
-    told, rewritten = stub_understudy(OUTCOME_RESPONSE.sub('{"hp": -4}', '{"hp": -4, "outcome": "defeat"}'), OUTCOME_RESPONSE) { roll.narrate }
+    told, rewritten = stub_llm(OUTCOME_RESPONSE.sub('{"hp": -4}', '{"hp": -4, "outcome": "defeat"}'), OUTCOME_RESPONSE) { roll.narrate }
 
     assert told["prompt"].end_with?(%(\nThis roll can take the last of Ilker's health.\nIf it does, Ilker falls and takes no more turns, and the story goes on with the others: tell how.\nEither way, tell what this roll does and stop there; the block has no outcome.))
     assert_includes rewritten["prompt"], "Your last reply was rejected: the story goes on after this roll, so the block has no outcome."
@@ -606,7 +606,7 @@ class NarratorTest < ActiveSupport::TestCase
     characters(:ilker_hero).update! hp: 3
     roll = play_first_scene
 
-    told = stub_understudy(OUTCOME_RESPONSE.sub('{"hp": -4}', '{"hp": -4, "outcome": "defeat"}')) { roll.narrate }.sole
+    told = stub_llm(OUTCOME_RESPONSE.sub('{"hp": -4}', '{"hp": -4, "outcome": "defeat"}')) { roll.narrate }.sole
 
     assert_includes told["prompt"], %(\nThis roll can take the last of Ilker's health.\nIf it does, Ilker falls and the story ends here in defeat: tell how)
     assert @game_session.reload.outcome_defeat?
@@ -617,7 +617,7 @@ class NarratorTest < ActiveSupport::TestCase
     characters(:ilker_hero).update! hp: 3
     roll = play_the_last_scene
 
-    stub_understudy(ENDING_RESPONSE.sub("{", '{"hp": -4, ')) { roll.narrate }
+    stub_llm(ENDING_RESPONSE.sub("{", '{"hp": -4, ')) { roll.narrate }
 
     assert_equal 0, characters(:ilker_hero).reload.hp
     assert @game_session.reload.outcome_victory?
@@ -628,10 +628,10 @@ class NarratorTest < ActiveSupport::TestCase
     play_and_continue
     characters(:ilker_hero).update! hp: 0
     @game_session.current_scene.update! position: @game_session.scene_budget
-    stub_understudy(SCENE_RESPONSE) { narrate }
+    stub_llm(SCENE_RESPONSE) { narrate }
     roll = with_die(2) { choose_and_roll @game_session.current_scene }
 
-    request = stub_understudy(ENDING_RESPONSE) { roll.narrate }.sole
+    request = stub_llm(ENDING_RESPONSE) { roll.narrate }.sole
 
     assert_includes request["prompt"], %(So far Ilker tried "Read the dusty ledger" (failed); Deniz tried "Read the dusty ledger" (failed).\nThe heroes found what was hidden)
     assert_not_includes request["prompt"], "In the scene with Deniz"
@@ -642,7 +642,7 @@ class NarratorTest < ActiveSupport::TestCase
     @game_session.players.create!(user: users(:sevval)).create_character! characters(:deniz_hero).attributes.slice("race", "klass", "background", "stats")
     users(:sevval).destroy!
 
-    request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
+    request = stub_llm(SCENE_RESPONSE) { narrate }.sole
 
     assert request["prompt"].end_with?("\nIn the scene with Ilker: Deniz, human healer (background: soldier), 28/28 health.")
   end
@@ -651,7 +651,7 @@ class NarratorTest < ActiveSupport::TestCase
     players(:deniz_solo_host).update! game_session: @game_session
     roll = play_the_last_scene
 
-    request = stub_understudy(ENDING_RESPONSE) { roll.narrate }.sole
+    request = stub_llm(ENDING_RESPONSE) { roll.narrate }.sole
 
     assert_includes request["prompt"], %(So far Ilker tried "Read the dusty ledger" (failed); Deniz tried nothing.\nThe heroes found what was hidden)
     assert_includes request["prompt"], "The ending comes of what the heroes did, each with a part in it;"
@@ -661,7 +661,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "a roll that leaves the hero standing before the last scene does not end the story" do
     roll = play_first_scene
 
-    stub_understudy(*rewrites_of(OUTCOME_RESPONSE.sub('{"hp": -4}', '{"hp": -4, "outcome": "defeat"}'))) do
+    stub_llm(*rewrites_of(OUTCOME_RESPONSE.sub('{"hp": -4}', '{"hp": -4, "outcome": "defeat"}'))) do
       error = assert_raises(Narrator::MalformedResponse) { roll.narrate }
       assert_equal "the story goes on after this roll, so the block has no outcome", error.message
     end
@@ -674,14 +674,14 @@ class NarratorTest < ActiveSupport::TestCase
     roll = play_first_scene
 
     resolve roll
-    assert_empty stub_understudy(OUTCOME_RESPONSE) { roll.narrate }
+    assert_empty stub_llm(OUTCOME_RESPONSE) { roll.narrate }
 
     assert_equal 31 - 4, characters(:ilker_hero).reload.hp
     assert_equal 2, @game_session.conversation.ruby_llm_usages.count, "one scene and one outcome"
   end
 
   test "nothing is owed while the player is choosing" do
-    requests = stub_understudy(SCENE_RESPONSE) do
+    requests = stub_llm(SCENE_RESPONSE) do
       2.times { narrate }
     end
 
@@ -690,7 +690,7 @@ class NarratorTest < ActiveSupport::TestCase
   end
 
   test "a half-written scene is finished on the next attempt" do
-    stub_understudy(*rewrites_of("Prose arrived but no structure."), SCENE_RESPONSE) do
+    stub_llm(*rewrites_of("Prose arrived but no structure."), SCENE_RESPONSE) do
       assert_raises Narrator::MalformedResponse do
         narrate
       end
@@ -708,7 +708,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "an outcome without its prose is malformed" do
     roll = play_first_scene
 
-    stub_understudy(*rewrites_of(OUTCOME_RESPONSE.sub("The drawer opens, but you cut your hand.", ""))) do
+    stub_llm(*rewrites_of(OUTCOME_RESPONSE.sub("The drawer opens, but you cut your hand.", ""))) do
       assert_raises Narrator::MalformedResponse do
         roll.narrate
       end
@@ -720,7 +720,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "the last roll closes the game on its ending" do
     roll = play_the_last_scene die: 20
 
-    stub_understudy(ENDING_RESPONSE) { roll.narrate }
+    stub_llm(ENDING_RESPONSE) { roll.narrate }
 
     finale = @game_session.current_scene
     assert finale.finale?
@@ -737,7 +737,7 @@ class NarratorTest < ActiveSupport::TestCase
        "statuses_gained": [{"name": "Watched", "modifier": -1, "turns": 2}, {"name": "Blessed", "modifier": 2, "turns": 2}],
     JSON
 
-    stub_understudy(giving) { narrate }
+    stub_llm(giving) { narrate }
 
     character = characters(:ilker_hero).reload
     assert character.items.quest.exists?(name: "Village purse")
@@ -750,7 +750,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "the ending settles what the hero leaves behind" do
     roll = play_the_last_scene die: 20
 
-    stub_understudy(ENDING_RESPONSE.sub('{"outcome"', '{"carries": {"Longsword": "left in the snow", "Healing potion": "kept", "Inn ledger": "kept"}, "outcome"')) { roll.narrate }
+    stub_llm(ENDING_RESPONSE.sub('{"outcome"', '{"carries": {"Longsword": "left in the snow", "Healing potion": "kept", "Inn ledger": "kept"}, "outcome"')) { roll.narrate }
 
     assert_not characters(:ilker_hero).items.exists?(name: "Longsword")
     assert @game_session.reload.finished?
@@ -759,7 +759,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "the ending is the one the story earned, whatever a plain last die" do
     roll = play_the_last_scene
 
-    stub_understudy(ENDING_RESPONSE) { roll.narrate }
+    stub_llm(ENDING_RESPONSE) { roll.narrate }
 
     assert_not roll.success?
     assert @game_session.reload.outcome_victory?
@@ -768,7 +768,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "a natural one on the last roll loses what the move put on the line, and the story tells the ending" do
     roll = play_the_last_scene die: 1
 
-    told = stub_understudy(ENDING_RESPONSE) { roll.narrate }.sole
+    told = stub_llm(ENDING_RESPONSE) { roll.narrate }.sole
 
     assert_includes told["prompt"], "\nA failure gets them none of it: someone or something resists and takes what the move put on the line.\n"
     assert @game_session.reload.outcome_victory?
@@ -777,7 +777,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "a last roll that leaves the ending untold is rewritten with the ending the story earned" do
     roll = play_the_last_scene
 
-    told, rewritten = stub_understudy(OUTCOME_RESPONSE, ENDING_RESPONSE) { roll.narrate }
+    told, rewritten = stub_llm(OUTCOME_RESPONSE, ENDING_RESPONSE) { roll.narrate }
 
     assert_not_includes told["prompt"], "Your last reply was rejected"
     assert_includes rewritten["prompt"], %(Your last reply was rejected: the story ends with this roll, in victory: tell the ending and add "outcome": "victory" to the block.)
@@ -787,7 +787,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "a last roll that ends in neither victory nor defeat is given up after the rewrites" do
     roll = play_the_last_scene
 
-    stub_understudy(*rewrites_of(ENDING_RESPONSE.sub("victory", "stalemate"))) do
+    stub_llm(*rewrites_of(ENDING_RESPONSE.sub("victory", "stalemate"))) do
       error = assert_raises(Narrator::MalformedResponse) { roll.narrate }
       assert_equal %(the story ends with this roll, in victory: tell the ending and add "outcome": "victory" to the block), error.message
     end
@@ -800,7 +800,7 @@ class NarratorTest < ActiveSupport::TestCase
     characters(:ilker_hero).update! hp: 3
     roll = play_the_last_scene
 
-    told = stub_understudy(ENDING_RESPONSE.sub("victory", "defeat").sub("{", '{"hp": -4, ')) { roll.narrate }.sole
+    told = stub_llm(ENDING_RESPONSE.sub("victory", "defeat").sub("{", '{"hp": -4, ')) { roll.narrate }.sole
 
     assert_includes told["prompt"], "falls and the story ends in defeat whatever was found"
     assert_equal 0, characters(:ilker_hero).reload.hp
@@ -810,7 +810,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "a reply that breaks a rule is rewritten with the reason" do
     unfenced = SCENE_RESPONSE.delete("`")
 
-    broken, rewrite = stub_understudy(unfenced, SCENE_RESPONSE) { narrate }
+    broken, rewrite = stub_llm(unfenced, SCENE_RESPONSE) { narrate }
 
     assert @game_session.scenes.sole.choosing?
     assert_equal opening, broken["prompt"]
@@ -824,7 +824,7 @@ class NarratorTest < ActiveSupport::TestCase
   end
 
   test "a reply that keeps breaking the rules is given up after the rewrites, leaving no trace" do
-    stub_understudy(*rewrites_of(ENDING_RESPONSE)) do
+    stub_llm(*rewrites_of(ENDING_RESPONSE)) do
       error = assert_raises(Narrator::MalformedResponse) { narrate }
       assert_equal "the scene has no choices", error.message
     end
@@ -837,7 +837,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "a scene without its fence is malformed" do
     unfenced = SCENE_RESPONSE.delete("`").sub("json\n", "")
 
-    stub_understudy(*rewrites_of(unfenced)) do
+    stub_llm(*rewrites_of(unfenced)) do
       error = assert_raises(Narrator::MalformedResponse) { narrate }
       assert_equal "the ```json block is missing", error.message
     end
@@ -846,7 +846,7 @@ class NarratorTest < ActiveSupport::TestCase
   end
 
   test "a broken structure block is malformed" do
-    stub_understudy(*rewrites_of("Prose arrived. ```json {broken``` ")) do
+    stub_llm(*rewrites_of("Prose arrived. ```json {broken``` ")) do
       assert_raises(Narrator::MalformedResponse) { narrate }
     end
 
@@ -857,7 +857,7 @@ class NarratorTest < ActiveSupport::TestCase
     @game_session.update! length: "long"
     long = SCENE_RESPONSE.sub('"title": "The Old Inn"', '"title": "The Old Coaching Inn by the Frozen Ford"').sub("Inside, a single candle is still burning.", "Snow falls. " * 300)
 
-    stub_understudy(long) { narrate }
+    stub_llm(long) { narrate }
 
     scene = @game_session.scenes.sole
     assert_equal "The Old Coaching Inn by the Frozen Ford", scene.title
@@ -867,7 +867,7 @@ class NarratorTest < ActiveSupport::TestCase
   test "an outcome is kept whole however long the narrator makes it" do
     roll = play_first_scene
 
-    stub_understudy(OUTCOME_RESPONSE.sub("The drawer opens, but you cut your hand.", "The drawer sticks. " * 100)) { roll.narrate }
+    stub_llm(OUTCOME_RESPONSE.sub("The drawer opens, but you cut your hand.", "The drawer sticks. " * 100)) { roll.narrate }
 
     assert_equal 100, roll.reload.resolution.scan("The drawer sticks.").size
   end
@@ -903,7 +903,7 @@ class NarratorTest < ActiveSupport::TestCase
     end
 
     def resolve(roll)
-      stub_understudy(OUTCOME_RESPONSE) { roll.narrate }
+      stub_llm(OUTCOME_RESPONSE) { roll.narrate }
     end
 
     def rewrites_of(reply)
@@ -911,7 +911,7 @@ class NarratorTest < ActiveSupport::TestCase
     end
 
     def play_first_scene(die: 2)
-      stub_understudy(SCENE_RESPONSE) { narrate }
+      stub_llm(SCENE_RESPONSE) { narrate }
       with_die(die) { choose_and_roll @game_session.current_scene }
     end
 

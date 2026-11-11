@@ -40,14 +40,36 @@ module LlmStubbing
     ```
   TEXT
 
-  def stub_understudy(*replies)
-    Dir.mktmpdir("understudy") do |dir|
-      replies.each_with_index { |reply, call| File.write(File.join(dir, "reply-#{call}"), reply) unless reply.nil? }
-      Rails.configuration.x.narrator_command = Shellwords.join([ Rails.root.join("test/fixtures/files/understudy").to_s, dir ])
-      yield
-      Dir[File.join(dir, "request-*.json")].sort_by { File.basename(it)[/\d+/].to_i }.map { JSON.parse File.read(it) }
-    ensure
-      Rails.configuration.x.narrator_command = nil
+  class ScriptedReplies < RubyLLM::Protocol
+    cattr_accessor :replies, :requests
+
+    def complete(messages, **)
+      raise RubyLLM::ConfigurationError, "No replies scripted; wrap the call in stub_llm" unless replies
+
+      system, conversation = messages.partition { it.role == :system }
+      requests << { "system" => system.map(&:content).join("\n\n").presence, "prompt" => transcript(conversation) }
+      reply = replies[requests.size - 1] or raise RubyLLM::ServerError, "No reply scripted for call #{requests.size}"
+
+      reply.each_line { yield RubyLLM::Chunk.new(role: :assistant, content: it, model_id: model.id) } if block_given?
+      RubyLLM::Message.new(role: :assistant, content: reply, model: model.id, cost: RubyLLM::Cost.new(total: 0))
     end
+
+    private
+      def transcript(conversation)
+        *earlier, latest = conversation
+        return latest.content if earlier.empty?
+
+        turns = earlier.map { |message| "<#{message.role}>\n#{message.content}\n</#{message.role}>" }
+        "<conversation_so_far>\n#{turns.join("\n")}\n</conversation_so_far>\n\n#{latest.content}"
+      end
+  end
+
+  def stub_llm(*replies)
+    ScriptedReplies.replies = replies
+    ScriptedReplies.requests = []
+    yield
+    ScriptedReplies.requests
+  ensure
+    ScriptedReplies.replies = nil
   end
 end

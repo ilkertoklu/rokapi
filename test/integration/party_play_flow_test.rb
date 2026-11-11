@@ -59,7 +59,7 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".d20", count: 0
 
     sign_in_as users(:ilker)
-    outcome = stub_understudy(OUTCOME_RESPONSE) do
+    outcome = stub_llm(OUTCOME_RESPONSE) do
       perform_enqueued_jobs { post game_session_roll_path(@room), as: :json }
     end.sole
     assert_includes outcome["prompt"], "\nIn the scene with Ilker: Deniz, human warrior (background: soldier), 31/31 health.\n"
@@ -70,7 +70,7 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".watch", text: /Ilker is reading the outcome/
 
     sign_in_as users(:ilker)
-    second_scene = stub_understudy(SECOND_SCENE_RESPONSE) do
+    second_scene = stub_llm(SECOND_SCENE_RESPONSE) do
       perform_enqueued_jobs { post game_session_acknowledgement_path(@room), as: :json }
     end.sole
     assert second_scene["prompt"].include?("\n\nScene 2 of 7, the story's first half, Deniz's turn.\nNo clue found yet.\nDeniz, human warrior (background: soldier): ")
@@ -96,7 +96,7 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
 
     sign_in_as users(:ilker)
     post game_session_choice_selection_path(@room, @room.current_scene.choices.first), as: :json
-    stub_understudy(OUTCOME_RESPONSE) do
+    stub_llm(OUTCOME_RESPONSE) do
       with_die(2) { perform_enqueued_jobs { post game_session_roll_path(@room), as: :json } }
     end
 
@@ -105,7 +105,7 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
     assert_nil game["outcome"]
     assert_equal [ [ "Ilker", false ], [ "Deniz", true ] ], game["party"].map { it.values_at("name", "alive") }
 
-    second_scene = stub_understudy(SECOND_SCENE_RESPONSE) do
+    second_scene = stub_llm(SECOND_SCENE_RESPONSE) do
       perform_enqueued_jobs { post game_session_acknowledgement_path(@room), as: :json }
     end.sole
     assert_not_includes second_scene["prompt"], "In the scene with Deniz"
@@ -114,7 +114,7 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
     @room.current_scene.update! position: @room.scene_budget
     sign_in_as users(:deniz)
     post game_session_choice_selection_path(@room, @room.current_scene.choices.first), as: :json
-    stub_understudy(ENDING_RESPONSE) do
+    stub_llm(ENDING_RESPONSE) do
       with_die(2) { perform_enqueued_jobs { post game_session_roll_path(@room), as: :json } }
     end
 
@@ -144,7 +144,7 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
         assert_response :created
       end
 
-      stub_understudy(*replies) do
+      stub_llm(*replies) do
         perform_enqueued_jobs { @room.start }
       end
     end

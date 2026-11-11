@@ -10,7 +10,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
   test "playing a solo adventure from setup to victory" do
     game_session = nil
 
-    stub_understudy(*PLANNING, SCENE_RESPONSE) do
+    stub_llm(*PLANNING, SCENE_RESPONSE) do
       perform_enqueued_jobs { game_session = start_playing }
     end
 
@@ -32,7 +32,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".d20__value", text: "?"
     assert_select ".dice__facts dd", text: /Target #{choice.target}/
 
-    stub_understudy(OUTCOME_RESPONSE) do
+    stub_llm(OUTCOME_RESPONSE) do
       with_die(20) { perform_enqueued_jobs { post game_session_roll_path(game_session) } }
     end
 
@@ -43,7 +43,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
 
     game_session.current_scene.update! position: game_session.scene_budget - 1
 
-    stub_understudy(SECOND_SCENE_RESPONSE) do
+    stub_llm(SECOND_SCENE_RESPONSE) do
       perform_enqueued_jobs { post game_session_acknowledgement_path(game_session) }
     end
 
@@ -55,7 +55,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     last_choice = game_session.current_scene.choices.find_by!(stat: "strength")
     post game_session_choice_selection_path(game_session, last_choice)
 
-    stub_understudy(ENDING_RESPONSE) do
+    stub_llm(ENDING_RESPONSE) do
       with_die(20) { perform_enqueued_jobs { post game_session_roll_path(game_session) } }
     end
 
@@ -101,7 +101,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     game_session.current_scene.update! position: game_session.scene_budget
     game_session.update! plan: "Clues:\n1. Mara's shawl hangs on the lighthouse door.\n2. The boy's boots stand dry."
 
-    stub_understudy(ENDING_RESPONSE.sub("victory", "defeat")) do
+    stub_llm(ENDING_RESPONSE.sub("victory", "defeat")) do
       with_die(1) { perform_enqueued_jobs { post game_session_roll_path(game_session) } }
     end
 
@@ -131,7 +131,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".writing", text: /The narrator is resolving the roll/
     assert_select ".narration", count: 0
 
-    stub_understudy(OUTCOME_RESPONSE) { perform_enqueued_jobs }
+    stub_llm(OUTCOME_RESPONSE) { perform_enqueued_jobs }
 
     get game_session_path(game_session)
     assert_select ".d20__strip", count: 0, message: "the outcome shows the rested die, it does not re-roll"
@@ -145,7 +145,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     choice = game_session.current_scene.choices.find_by!(stat: "strength")
     post game_session_choice_selection_path(game_session, choice)
 
-    stub_understudy(OUTCOME_RESPONSE) do
+    stub_llm(OUTCOME_RESPONSE) do
       with_die(2) { perform_enqueued_jobs { post game_session_roll_path(game_session) } }
     end
 
@@ -161,7 +161,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".outcome", count: 0
     assert_select ".writing", text: /The narrator is writing the scene/, message: "no dead screen while the scene starts"
 
-    stub_understudy(SECOND_SCENE_RESPONSE) { perform_enqueued_jobs }
+    stub_llm(SECOND_SCENE_RESPONSE) { perform_enqueued_jobs }
 
     get game_session_path(game_session)
     assert_select ".location p", text: /Stop 2/
@@ -178,7 +178,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     get game_session_path(game_session)
     assert_select ".dice__facts dd", text: /Bruised Shoulder\s+→\s+-1/
 
-    stub_understudy(OUTCOME_RESPONSE) do
+    stub_llm(OUTCOME_RESPONSE) do
       with_die(8) { perform_enqueued_jobs { post game_session_roll_path(game_session) } }
     end
 
@@ -199,7 +199,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".stalled"
     assert_select ".d20__strip", count: 0
 
-    stub_understudy(OUTCOME_RESPONSE) do
+    stub_llm(OUTCOME_RESPONSE) do
       perform_enqueued_jobs { post game_session_narration_path(game_session) }
     end
 
@@ -212,7 +212,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     game_session = start_playing
     clear_enqueued_jobs
 
-    stub_understudy(*PLANNING, *Array.new(1 + Narrator::REWRITES, "No structure.")) do
+    stub_llm(*PLANNING, *Array.new(1 + Narrator::REWRITES, "No structure.")) do
       assert_raises(Narrator::MalformedResponse) { Scene::NarrateJob.new(game_session.current_scene).perform_now }
     end
     clear_enqueued_jobs
@@ -221,7 +221,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     assert_select ".stalled"
     assert_select ".location h1", text: "A fog-bound fishing village"
 
-    stub_understudy(SCENE_RESPONSE) do
+    stub_llm(SCENE_RESPONSE) do
       perform_enqueued_jobs { post game_session_narration_path(game_session) }
     end
 
@@ -237,7 +237,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     get game_session_path(game_session)
     assert_select ".stalled"
 
-    stub_understudy(*PLANNING, SCENE_RESPONSE) do
+    stub_llm(*PLANNING, SCENE_RESPONSE) do
       perform_enqueued_jobs do
         post game_session_narration_path(game_session)
       end
@@ -251,7 +251,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     game_session = play_to_choices
     choice = game_session.current_scene.choices.find_by!(stat: "strength")
     post game_session_choice_selection_path(game_session, choice)
-    stub_understudy(OUTCOME_RESPONSE) do
+    stub_llm(OUTCOME_RESPONSE) do
       perform_enqueued_jobs { post game_session_roll_path(game_session) }
     end
     post game_session_acknowledgement_path(game_session)
@@ -260,7 +260,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     get game_session_path(game_session)
     assert_select ".overdue form[action=?]", game_session_narration_path(game_session)
 
-    stub_understudy(SECOND_SCENE_RESPONSE) do
+    stub_llm(SECOND_SCENE_RESPONSE) do
       perform_enqueued_jobs { post game_session_narration_path(game_session) }
     end
 
@@ -272,14 +272,14 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
     game_session = play_to_choices
     choice = game_session.current_scene.choices.find_by!(stat: "strength")
     post game_session_choice_selection_path(game_session, choice)
-    stub_understudy(OUTCOME_RESPONSE) do
+    stub_llm(OUTCOME_RESPONSE) do
       perform_enqueued_jobs { post game_session_roll_path(game_session) }
     end
     post game_session_acknowledgement_path(game_session)
     post game_session_narration_path(game_session)
     assert_enqueued_jobs 2, only: Scene::NarrateJob
 
-    stub_understudy(SECOND_SCENE_RESPONSE) { perform_enqueued_jobs }
+    stub_llm(SECOND_SCENE_RESPONSE) { perform_enqueued_jobs }
 
     assert_equal 2, game_session.scenes.count
     assert_equal 3, game_session.current_scene.choices.count
@@ -342,7 +342,7 @@ class SoloPlayFlowTest < ActionDispatch::IntegrationTest
 
     def play_to_choices
       start_playing.tap do |game_session|
-        stub_understudy(*PLANNING, SCENE_RESPONSE) { perform_enqueued_jobs }
+        stub_llm(*PLANNING, SCENE_RESPONSE) { perform_enqueued_jobs }
         assert game_session.current_scene.choosing?
       end
     end
