@@ -82,10 +82,10 @@ class Roll < ApplicationRecord
   end
 
   def ending_with(effects)
-    if scene.last?
-      game_session.earned_outcome
-    elsif falls?(effects) && last_hero_standing?
+    if falls?(effects) && last_hero_standing?
       "defeat"
+    elsif scene.last?
+      game_session.earned_outcome
     end
   end
 

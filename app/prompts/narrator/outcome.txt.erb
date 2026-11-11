@@ -42,6 +42,9 @@ What the rolls have changed so far: <%= marks.join(" / ") %>
 <%= witness.capitalize %> won too few of the clues themselves: the story ends in defeat, the question left open.
 <% end %>
 This roll sets only the price.
+<% if roll.life_at_stake? && roll.last_hero_standing? %>
+It can take the last of <%= hero %>'s health: if it does, <%= hero %> falls and the story ends in defeat whatever was found.
+<% end %>
 A success gets them what their last move reached for.
 A failure gets them none of it: someone or something resists and takes what the move put on the line.
 Tell what this roll does, then the plan's <%= game.earned_outcome %>: what was won is there to be used, what was lost is missing.
@@ -51,7 +54,7 @@ The ending comes of what <%= witness %> did<%= parts %>; no one they did not win
 Tell it as scenes to the last line, not as a summary, with <%= witness %> there to see and hear whatever settles it.
 By the last line it is plain what became of each thing at stake, of everyone the story suspected and of the people it touched.
 No one says what the story meant.
-The block adds "outcome": "<%= game.earned_outcome %>".
+The block adds "outcome": "<%= game.earned_outcome %>"<%= %(, or "defeat" if #{hero} falls) if roll.life_at_stake? && roll.last_hero_standing? && game.solved? %>.
 <% elsif roll.life_at_stake? %>
 This roll can take the last of <%= hero %>'s health.
 <% if roll.last_hero_standing? %>

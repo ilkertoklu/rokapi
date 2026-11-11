@@ -796,15 +796,15 @@ class NarratorTest < ActiveSupport::TestCase
     assert_not @game_session.reload.finished?
   end
 
-  test "a last roll that takes the hero's last health only sets the price of the ending the story earned" do
+  test "a last roll that takes the last hero's last health ends in defeat even when the story was solved" do
     characters(:ilker_hero).update! hp: 3
     roll = play_the_last_scene
 
-    told = stub_understudy(ENDING_RESPONSE.sub("{", '{"hp": -4, ')) { roll.narrate }.sole
+    told = stub_understudy(ENDING_RESPONSE.sub("victory", "defeat").sub("{", '{"hp": -4, ')) { roll.narrate }.sole
 
-    assert_includes told["prompt"], "This is the last roll"
+    assert_includes told["prompt"], "falls and the story ends in defeat whatever was found"
     assert_equal 0, characters(:ilker_hero).reload.hp
-    assert @game_session.reload.outcome_victory?
+    assert @game_session.reload.outcome_defeat?
   end
 
   test "a reply that breaks a rule is rewritten with the reason" do

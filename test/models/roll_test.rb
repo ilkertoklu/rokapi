@@ -234,7 +234,8 @@ class RollTest < ActiveSupport::TestCase
     @scene.update! position: game_sessions(:ilker_solo).scene_budget
 
     assert_equal "victory", roll_with(value: 1, target: 12).ending_with("outcome" => "defeat")
-    assert_equal "victory", roll_with(value: 1, target: 12).ending_with("hp" => -99), "a last roll that fells the hero only sets the price"
+    players(:ilker_solo_host).character.update! hp: 3
+    assert_equal "defeat", roll_with(value: 1, target: 12).ending_with("hp" => -99), "a last roll that fells the last hero ends in defeat"
   end
 
   test "a roll before the last scene ends nothing" do
