@@ -36,13 +36,13 @@
     }
 
     dt {
-      font-size: .8125rem;
+      font-size: var(--text-2xs);
       color: var(--color-ink-soft);
     }
 
     dd {
       margin: 0;
-      font-size: .875rem;
+      font-size: var(--text-xs);
       font-weight: 700;
       color: var(--color-ink-muted);
     }
@@ -50,7 +50,7 @@
 
   .receipt__plan {
     font-family: var(--font-display);
-    font-size: 1.0625rem;
+    font-size: var(--text-md);
     color: var(--color-ink);
   }
 

@@ -37,7 +37,7 @@
   .finale h1 {
     margin: .7rem 0 0;
     font-family: var(--font-display);
-    font-size: 2.375rem;
+    font-size: var(--text-7xl);
     font-weight: 600;
     line-height: 1.12;
   }
@@ -52,12 +52,12 @@
     background: var(--color-surface-sunken);
     border: 1px solid var(--color-line-soft);
     font-family: var(--font-display);
-    font-size: .875rem;
+    font-size: var(--text-xs);
     color: var(--color-ink-soft);
 
     strong {
       font-family: var(--font-ui);
-      font-size: .75rem;
+      font-size: var(--text-3xs);
       font-weight: 800;
       letter-spacing: .08em;
     }
@@ -89,7 +89,7 @@
     strong {
       display: block;
       font-family: var(--font-display);
-      font-size: 1.5rem;
+      font-size: var(--text-3xl);
       font-weight: 400;
       color: var(--color-ink);
     }
@@ -97,7 +97,7 @@
     span {
       display: block;
       margin-block-start: .1875rem;
-      font-size: .8125rem;
+      font-size: var(--text-2xs);
       font-weight: 600;
       color: var(--color-ink-soft);
     }
@@ -107,14 +107,14 @@
   .finale__new-place {
     margin: 0 0 .25rem;
     color: var(--color-ink-soft);
-    font-size: .8125rem;
+    font-size: var(--text-2xs);
     text-align: center;
 
     a {
       color: var(--color-accent-bright);
       font-family: var(--font-display);
       font-style: italic;
-      font-size: .9375rem;
+      font-size: var(--text-sm);
       text-decoration: none;
     }
   }

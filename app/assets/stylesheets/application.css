@@ -98,6 +98,23 @@
   --font-display: "Spectral", serif;
   --font-ui: "Hanken Grotesk", system-ui, sans-serif;
 
+  --text-4xs: .6875rem;
+  --text-3xs: .75rem;
+  --text-2xs: .8125rem;
+  --text-xs: .875rem;
+  --text-sm: .9375rem;
+  --text-base: 1rem;
+  --text-md: 1.0625rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.1875rem;
+  --text-2xl: 1.375rem;
+  --text-3xl: 1.5rem;
+  --text-4xl: 1.625rem;
+  --text-5xl: 1.875rem;
+  --text-6xl: 2.125rem;
+  --text-7xl: 2.375rem;
+  --text-8xl: 2.75rem;
+
   --radius-card: 16px;
   --radius-control: 14px;
   --radius-pill: 999px;

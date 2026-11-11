@@ -16,7 +16,7 @@
     flex-direction: column;
     align-items: center;
     gap: .3125rem;
-    font-size: .75rem;
+    font-size: var(--text-3xs);
     color: var(--color-ink-faint);
   }
 

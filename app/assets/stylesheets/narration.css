@@ -13,14 +13,14 @@
     gap: .5rem;
     margin: 0 0 .75rem;
     color: var(--color-ink-soft);
-    font-size: .8125rem;
+    font-size: var(--text-2xs);
     font-weight: 600;
   }
 
   .narration__body,
   .finale__closing {
     font-family: var(--font-display);
-    font-size: 1.0625rem;
+    font-size: var(--text-md);
     line-height: 1.72;
     color: var(--color-ink-prose);
 
@@ -55,7 +55,7 @@
     background: var(--color-surface-sunken);
     border: 1px solid var(--color-line-soft);
     color: var(--color-ink-soft);
-    font-size: .8125rem;
+    font-size: var(--text-2xs);
     font-weight: 600;
     letter-spacing: .02em;
   }
@@ -91,7 +91,7 @@
 
     .narration__body,
     .finale__closing {
-      font-size: 1.1875rem;
+      font-size: var(--text-xl);
     }
   }
 }

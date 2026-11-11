@@ -36,20 +36,20 @@
 
   .statuses__name {
     flex: 1;
-    font-size: .9rem;
+    font-size: var(--text-xs);
     font-weight: 600;
   }
 
   .statuses__duration {
     color: var(--color-ink-dim);
-    font-size: .78rem;
+    font-size: var(--text-3xs);
   }
 
   .statuses__chip {
     inline-size: 56px;
     padding-block: .25rem;
     border-radius: 7px;
-    font-size: .75rem;
+    font-size: var(--text-3xs);
     font-weight: 700;
     text-align: center;
     flex: none;
@@ -122,12 +122,12 @@
 
   .inventory__name {
     font-family: var(--font-display);
-    font-size: 1rem;
+    font-size: var(--text-base);
   }
 
   .inventory__meta {
     color: var(--color-positive-dim);
-    font-size: .75rem;
+    font-size: var(--text-3xs);
     font-weight: 600;
     letter-spacing: .02em;
 
@@ -140,7 +140,7 @@
     padding: .18rem .5rem;
     border: 1px solid var(--color-accent-line);
     border-radius: 6px;
-    font-size: .75rem;
+    font-size: var(--text-3xs);
     font-weight: 700;
     letter-spacing: .03em;
     white-space: nowrap;
@@ -149,7 +149,7 @@
 
   .inventory__count {
     color: var(--color-ink-dim);
-    font-size: .8125rem;
+    font-size: var(--text-2xs);
     font-weight: 700;
   }
 
@@ -161,7 +161,7 @@
     border-radius: 11px;
     color: var(--color-accent);
     font-family: var(--font-ui);
-    font-size: .75rem;
+    font-size: var(--text-3xs);
     font-weight: 700;
     cursor: pointer;
   }

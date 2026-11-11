@@ -26,7 +26,7 @@
     h2 {
       margin: 0;
       font-family: var(--font-display);
-      font-size: 1.625rem;
+      font-size: var(--text-4xl);
       font-weight: 600;
     }
   }
@@ -60,7 +60,7 @@
     gap: .5rem;
     margin: .75rem 0 0;
     color: var(--color-negative-bright);
-    font-size: .875rem;
+    font-size: var(--text-xs);
     font-weight: 600;
 
     .writing__dots span {
@@ -73,7 +73,7 @@
     margin: 1.125rem 0 0;
     color: var(--color-ink-faint);
     font-family: var(--font-display);
-    font-size: .9375rem;
+    font-size: var(--text-sm);
     line-height: 1.6;
   }
 
@@ -87,7 +87,7 @@
     border: 1px solid color-mix(in oklch, var(--color-positive) 28%, transparent);
     border-radius: var(--radius-pill);
     color: var(--color-positive-bright);
-    font-size: .8125rem;
+    font-size: var(--text-2xs);
 
     .glyph {
       inline-size: 14px;
@@ -110,7 +110,7 @@
     }
 
     .btn--neutral {
-      --btn-font-size: .875rem;
+      --btn-font-size: var(--text-xs);
       --btn-font-weight: 600;
       --btn-padding-block: .625rem;
       --btn-padding-inline: 1.25rem;

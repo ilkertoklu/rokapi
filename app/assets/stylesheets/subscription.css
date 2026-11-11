@@ -47,12 +47,12 @@
 
   .subscription__name {
     font-family: var(--font-display);
-    font-size: 1.25rem;
+    font-size: var(--text-xl);
     font-weight: 600;
   }
 
   .subscription__terms {
-    font-size: .75rem;
+    font-size: var(--text-3xs);
     color: var(--color-ink-soft);
   }
 
@@ -64,7 +64,7 @@
     border-radius: var(--radius-pill);
     background: color-mix(in oklch, var(--color-positive) 14%, transparent);
     color: var(--color-positive-bright);
-    font-size: .75rem;
+    font-size: var(--text-3xs);
     font-weight: 700;
 
     &::before {

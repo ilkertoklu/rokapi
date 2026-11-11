@@ -41,12 +41,12 @@
   }
 
   .menu-row__title {
-    font-size: .9375rem;
+    font-size: var(--text-sm);
     font-weight: 600;
   }
 
   .menu-row__text {
-    font-size: .75rem;
+    font-size: var(--text-3xs);
     color: var(--color-ink-soft);
   }
 

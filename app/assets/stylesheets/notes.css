@@ -6,7 +6,7 @@
     margin: 0;
     padding-inline: 2px;
     color: var(--color-ink-soft);
-    font-size: .75rem;
+    font-size: var(--text-3xs);
     line-height: 1.5;
 
     .glyph {
@@ -26,6 +26,6 @@
 
   .note--emphasis {
     color: var(--color-ink-muted);
-    font-size: .875rem;
+    font-size: var(--text-xs);
   }
 }

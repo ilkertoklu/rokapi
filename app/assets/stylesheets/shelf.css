@@ -13,7 +13,7 @@
   }
 
   .shelf__outcome {
-    font-size: .6875rem;
+    font-size: var(--text-4xs);
     letter-spacing: .2em;
   }
 
@@ -27,7 +27,7 @@
 
   .shelf__title {
     font-family: var(--font-display);
-    font-size: 1.125rem;
+    font-size: var(--text-lg);
     font-weight: 600;
     line-height: 1.25;
   }
@@ -51,7 +51,7 @@
   .adventure__summary {
     margin: -.5rem 0 0;
     color: var(--color-ink-soft);
-    font-size: .8125rem;
+    font-size: var(--text-2xs);
     text-align: center;
   }
 
@@ -63,7 +63,7 @@
     h2 {
       margin: .25rem 0 0;
       font-family: var(--font-display);
-      font-size: 1.5rem;
+      font-size: var(--text-3xl);
       font-weight: 600;
       line-height: 1.2;
     }
@@ -79,7 +79,7 @@
       em {
         flex-basis: 100%;
         color: var(--color-ink-muted);
-        font-size: .9375rem;
+        font-size: var(--text-sm);
       }
     }
   }
@@ -92,13 +92,13 @@
   .adventure__place {
     margin: 0;
     color: var(--color-ink-soft);
-    font-size: .75rem;
+    font-size: var(--text-3xs);
     letter-spacing: .02em;
   }
 
   .adventure__actor {
     font-family: var(--font-ui);
-    font-size: .8125rem;
+    font-size: var(--text-2xs);
     font-weight: 600;
     color: var(--color-ink-muted);
   }
@@ -110,7 +110,7 @@
     }
 
     .adventure .narration__body {
-      font-size: 1.1875rem;
+      font-size: var(--text-xl);
     }
   }
 }

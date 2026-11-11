@@ -37,7 +37,7 @@
     border-radius: 18px;
 
     .pick__title {
-      font-size: 1.125rem;
+      font-size: var(--text-lg);
     }
   }
 
@@ -56,7 +56,7 @@
 
   .pick__title {
     font-family: var(--font-display);
-    font-size: 1rem;
+    font-size: var(--text-base);
     font-weight: 600;
     color: var(--color-ink-muted);
   }
@@ -67,7 +67,7 @@
   }
 
   .pick__text {
-    font-size: .75rem;
+    font-size: var(--text-3xs);
     line-height: 1.4;
     color: var(--color-ink-soft);
   }

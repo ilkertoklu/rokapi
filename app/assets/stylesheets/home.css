@@ -31,12 +31,12 @@
 
   .resume__title {
     font-family: var(--font-display);
-    font-size: 1rem;
+    font-size: var(--text-base);
     font-weight: 600;
   }
 
   .resume__text {
-    font-size: .75rem;
+    font-size: var(--text-3xs);
     color: var(--color-ink-soft);
   }
 

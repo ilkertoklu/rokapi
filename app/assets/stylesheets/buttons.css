@@ -4,7 +4,7 @@
     --btn-border-color: transparent;
     --btn-border-width: 0;
     --btn-color: currentColor;
-    --btn-font-size: 1.0625rem;
+    --btn-font-size: var(--text-md);
     --btn-font-weight: 700;
     --btn-inline-size: 100%;
     --btn-padding-block: 1.125rem;
@@ -63,7 +63,7 @@
     --btn-border-color: var(--color-glass-line);
     --btn-border-width: .5px;
     --btn-color: var(--color-ink);
-    --btn-font-size: .9375rem;
+    --btn-font-size: var(--text-sm);
     --btn-font-weight: 600;
     --btn-padding-block: 1rem;
     --btn-shadow: var(--glass-shadow);
@@ -94,7 +94,7 @@
   }
 
   .btn--small {
-    --btn-font-size: .875rem;
+    --btn-font-size: var(--text-xs);
     --btn-font-weight: 600;
     --btn-padding-block: .8125rem;
   }
@@ -117,7 +117,7 @@
     background: none;
     border: 0;
     color: var(--color-accent-bright);
-    font: 600 .9375rem var(--font-ui);
+    font: 600 var(--text-sm) var(--font-ui);
     text-align: center;
     cursor: pointer;
 
@@ -139,7 +139,7 @@
     border-radius: 12px;
     background: var(--color-surface);
     color: var(--color-ink-muted);
-    font-size: 1.125rem;
+    font-size: var(--text-lg);
     cursor: pointer;
   }
 

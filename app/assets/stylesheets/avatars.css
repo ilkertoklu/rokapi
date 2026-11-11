@@ -14,7 +14,7 @@
     border-radius: 50%;
     color: var(--avatar-ink);
     font-family: var(--font-display);
-    font-size: var(--avatar-font-size, .9375rem);
+    font-size: var(--avatar-font-size, var(--text-sm));
     font-weight: 600;
     font-size-adjust: cap-height .71;
     text-transform: uppercase;
@@ -56,11 +56,11 @@
 
   .avatar--small {
     --avatar-size: 28px;
-    --avatar-font-size: .75rem;
+    --avatar-font-size: var(--text-3xs);
   }
 
   .avatar--tiny {
     --avatar-size: 18px;
-    --avatar-font-size: .6875rem;
+    --avatar-font-size: var(--text-4xs);
   }
 }

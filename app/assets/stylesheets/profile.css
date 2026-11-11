@@ -16,7 +16,7 @@
 
   .profile__badge {
     --avatar-size: 44px;
-    --avatar-font-size: 1rem;
+    --avatar-font-size: var(--text-base);
 
     display: flex;
     border-radius: 50%;
@@ -25,7 +25,7 @@
 
   .identity {
     --avatar-size: 58px;
-    --avatar-font-size: 1.45rem;
+    --avatar-font-size: var(--text-3xl);
 
     display: flex;
     align-items: center;
@@ -36,7 +36,7 @@
   .identity__name {
     display: block;
     font-family: var(--font-display);
-    font-size: 1.45rem;
+    font-size: var(--text-3xl);
     font-weight: 600;
   }
 
@@ -44,6 +44,6 @@
     display: block;
     margin-block-start: .2rem;
     color: var(--color-ink-soft);
-    font-size: .8125rem;
+    font-size: var(--text-2xs);
   }
 }

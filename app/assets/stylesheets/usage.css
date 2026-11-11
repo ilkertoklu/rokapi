@@ -22,12 +22,12 @@
 
   .usage__left {
     font-family: var(--font-display);
-    font-size: 1.5rem;
+    font-size: var(--text-3xl);
     font-weight: 600;
     color: var(--color-ink);
 
     span {
-      font-size: .8125rem;
+      font-size: var(--text-2xs);
       color: var(--color-ink-faint);
     }
   }
@@ -49,6 +49,6 @@
   .usage__footer {
     margin-block-start: .625rem;
     color: var(--color-ink-soft);
-    font-size: .75rem;
+    font-size: var(--text-3xs);
   }
 }

@@ -28,7 +28,7 @@
   .page-head h1 {
     grid-column: 2;
     margin: 0;
-    font-size: 1.25rem;
+    font-size: var(--text-xl);
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
@@ -42,7 +42,7 @@
       margin: 0 0 .5rem;
 
       h1 {
-        font-size: 1.625rem;
+        font-size: var(--text-4xl);
         text-align: start;
       }
     }

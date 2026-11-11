@@ -8,12 +8,12 @@
     color: var(--color-ink-faint);
     font-family: var(--font-display);
     font-style: italic;
-    font-size: 1rem;
+    font-size: var(--text-base);
   }
 
   .hint {
     color: var(--color-ink-faint);
-    font-size: .9rem;
+    font-size: var(--text-xs);
     margin: 0;
 
     a {
@@ -27,7 +27,7 @@
   }
 
   .overline {
-    font-size: .75rem;
+    font-size: var(--text-3xs);
     font-weight: 700;
     letter-spacing: .12em;
     text-transform: uppercase;

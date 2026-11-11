@@ -44,7 +44,7 @@
 
       > .btn {
         --btn-color: var(--color-ink-faint);
-        --btn-font-size: .9375rem;
+        --btn-font-size: var(--text-sm);
         --btn-font-weight: 600;
 
         margin-block-start: auto;
@@ -105,7 +105,7 @@
 
   .sheet__header {
     --avatar-size: 34px;
-    --avatar-font-size: .95rem;
+    --avatar-font-size: var(--text-sm);
 
     display: flex;
     align-items: center;
@@ -115,13 +115,13 @@
 
     strong {
       font-family: var(--font-display);
-      font-size: 1.2rem;
+      font-size: var(--text-xl);
       font-weight: 600;
     }
 
     em {
       font-family: var(--font-display);
-      font-size: .82rem;
+      font-size: var(--text-2xs);
       color: var(--color-ink-dim);
     }
   }
@@ -144,19 +144,19 @@
 
     dt {
       color: var(--color-ink-muted);
-      font-size: .85rem;
+      font-size: var(--text-xs);
     }
 
     dd {
       margin: 0;
       font-family: var(--font-display);
-      font-size: 1.05rem;
+      font-size: var(--text-md);
 
       span {
         margin-inline-start: .25rem;
         color: var(--color-accent);
         font-family: var(--font-ui);
-        font-size: .75rem;
+        font-size: var(--text-3xs);
         font-weight: 700;
       }
     }

@@ -21,7 +21,7 @@
 
   .location h1 {
     font-family: var(--font-display);
-    font-size: 1.125rem;
+    font-size: var(--text-lg);
     font-weight: 600;
     line-height: 1.1;
     margin: 0;
@@ -29,7 +29,7 @@
 
   .location p {
     margin: .15rem 0 0;
-    font-size: .75rem;
+    font-size: var(--text-3xs);
     color: var(--color-ink-soft);
     letter-spacing: .02em;
   }
