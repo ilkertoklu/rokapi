@@ -19,8 +19,6 @@ module Rokapi
       def json = JSON.parse(body)
     end
 
-    attr_reader :email
-
     def initialize(url:, email:)
       @url = URI(url)
       @email = email
@@ -37,9 +35,9 @@ module Rokapi
       fetch_csrf_token "/login_codes/new"
 
       unless code
-        clear_mail email
+        clear_mail
         request_login_code
-        code = read_mail(email, /\b\d{6}\b/) || raise(Error, "No login code arrived in #{mailbox(email)}. Read it from the mail and run: bin/rokapi login --code CODE")
+        code = read_login_code or raise Error, "No login code arrived in #{mailbox}. Read it from the mail and run: bin/rokapi login --code CODE"
       end
 
       response = post("/session", code: code)
@@ -47,10 +45,6 @@ module Rokapi
 
       post "/signup/profile", "user[name]" => name, "user[terms]" => "1" if get("/").location.to_s.include?("/signup/profile")
       fetch_csrf_token "/"
-    end
-
-    def clear_mail(address)
-      FileUtils.rm_f mailbox(address)
     end
 
     def game_id
@@ -147,21 +141,25 @@ module Rokapi
         raise Error, "Could not find a CSRF token at #{path}."
       end
 
+      def clear_mail
+        FileUtils.rm_f mailbox
+      end
+
       def request_login_code
-        response = post("/login_codes", email: email)
+        response = post("/login_codes", email: @email)
         return if response.location.to_s.end_with?("/session/new")
 
         alert = get(URI(response.location.to_s).path).body[/class="flash flash--alert">([^<]+)</, 1]&.then { CGI.unescapeHTML(it) }
         raise Error, "No login code was sent: #{alert || "the server refused."}"
       end
 
-      def mailbox(address)
-        File.join(ROOT, "tmp/mails", address)
+      def mailbox
+        File.join(ROOT, "tmp/mails", @email)
       end
 
-      def read_mail(address, pattern)
+      def read_login_code
         MAIL_WAIT.times do
-          found = File.exist?(mailbox(address)) && Mail.read(mailbox(address)).text_part&.decoded.to_s[pattern]
+          found = File.exist?(mailbox) && Mail.read(mailbox).text_part&.decoded.to_s[/\b\d{6}\b/]
           return found if found
 
           sleep 1

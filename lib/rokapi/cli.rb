@@ -45,8 +45,7 @@ module Rokapi
     option :tone, default: "balanced"
     option :length, default: "medium"
     def new
-      response = act(:post, "/game_sessions/solo.json", game_session: setup("solo"))
-      client.game_id = response.location[%r{/game_sessions/(\d+)}, 1].to_i
+      adopt act(:post, "/game_sessions/solo.json", game_session: setup("solo"))
 
       say "Game #{client.game_id} created."
       heroes
@@ -57,17 +56,17 @@ module Rokapi
     option :tone, default: "balanced"
     option :length, default: "medium"
     def multi
-      room = act(:post, "/game_sessions/multi.json", game_session: setup("multi")).json
-      client.game_id = room["id"]
+      response = act(:post, "/game_sessions/multi.json", game_session: setup("multi"))
+      adopt response
+      code = response.json["code"]
 
-      say "Room #{room["code"]} open as game #{room["id"]}. Friends join with: bin/rokapi join #{room["code"]} --as FRIEND"
+      say "Room #{code} open as game #{client.game_id}. Friends join with: bin/rokapi join #{code} --as FRIEND"
       heroes
     end
 
     desc "join CODE", "Join a friend's room by its 4-digit code"
     def join(code)
-      response = act(:post, "/game_sessions/join.json", code: code)
-      client.game_id = response.location[%r{/game_sessions/(\d+)}, 1].to_i
+      adopt act(:post, "/game_sessions/join.json", code: code)
 
       say "Joined room #{code} as game #{client.game_id}."
       heroes
@@ -104,8 +103,7 @@ module Rokapi
 
     desc "rematch", "After a party game, take everyone into a fresh lobby with the same settings"
     def rematch
-      response = act(:post, "#{game_path}/rematch.json")
-      client.game_id = response.location[%r{/game_sessions/(\d+)}, 1].to_i
+      adopt act(:post, "#{game_path}/rematch.json")
 
       say "Game #{client.game_id} is the new lobby."
       present fetch("/game_sessions/#{client.game_id}.json")
@@ -120,7 +118,7 @@ module Rokapi
     desc "story", "Show every scene so far"
     def story
       game = self.game
-      return puts(JSON.pretty_generate(game)) if options[:json]
+      return say_json(game) if options[:json]
 
       game["scenes"].each do |scene|
         say_scene game, scene
@@ -134,7 +132,7 @@ module Rokapi
     desc "adventures", "List your finished adventures, newest first"
     def adventures
       shelf = fetch("/my/adventures.json")
-      return puts(JSON.pretty_generate(shelf)) if options[:json]
+      return say_json(shelf) if options[:json]
       return say("No finished adventures yet.") if shelf.empty?
 
       shelf.each do |adventure|
@@ -147,19 +145,19 @@ module Rokapi
     def adventure(id = nil)
       id ||= options[:game] || client.game_id || raise(Thor::Error, "Pick an adventure: bin/rokapi adventures")
       adventure = fetch("/my/adventures/#{id}.json")
-      return puts(JSON.pretty_generate(adventure)) if options[:json]
+      return say_json(adventure) if options[:json]
 
       say "#{adventure["title"]} · #{adventure["hero"]}"
       adventure["scenes"].each do |scene|
         say_scene adventure, scene
         next unless (choice = scene["choice"])
 
-        say "\n>>> CHOICE#{" by #{choice["by"]}" if adventure["multiplayer"]}: #{choice["label"]} [#{choice["stat"]} #{format("%+d", choice["modifier"])} | #{choice["difficulty"]}, target #{choice["target"]}]"
+        say "\n>>> CHOICE#{" by #{choice["by"]}" if adventure["multiplayer"]}: #{choice["label"]} #{odds(choice)}"
         say_roll scene["roll"], ending: scene["finale"] if scene["roll"]
       end
 
       say "\n*** #{adventure["outcome"].to_s.upcase} ***"
-      say "PARTY: #{adventure["party"].map { |player| "#{player["name"]}#{" (fallen)" unless player["alive"]}" }.join(", ")}" if adventure["multiplayer"]
+      say_survivors adventure
     end
 
     desc "choose NUMBER", "Pick one of the scene's choices"
@@ -183,15 +181,16 @@ module Rokapi
     end
 
     desc "use ITEM", "Use an item by id or name, e.g. a healing potion"
-    def use(item)
+    def use(name)
       character = game["character"]
-      found = character["items"].find { |candidate| candidate["id"].to_s == item || candidate["name"].casecmp?(item) } ||
-        raise(Thor::Error, "No item #{item}. Carried: #{character["items"].map { |candidate| "#{candidate["id"]} #{candidate["name"]}" }.join(", ")}")
-      raise Thor::Error, "#{found["name"]} is not used on its own; it counts when a choice calls for it." unless found["usable"]
+      items = character["items"]
+      item = items.find { |candidate| candidate["id"].to_s == name || candidate["name"].casecmp?(name) }
+      raise Thor::Error, "No item #{name}. Carried: #{items.map { |candidate| "#{candidate["id"]} #{candidate["name"]}" }.join(", ")}" unless item
+      raise Thor::Error, "#{item["name"]} is not used on its own; it counts when a choice calls for it." unless item["usable"]
 
-      act :post, "#{game_path}/items/#{found["id"]}/use.json"
+      act :post, "#{game_path}/items/#{item["id"]}/use.json"
       after = game["character"]
-      say "#{found["name"]} used: HP #{character["hp"]} → #{after["hp"]}/#{after["max_hp"]}."
+      say "#{item["name"]} used: HP #{character["hp"]} → #{after["hp"]}/#{after["max_hp"]}."
     end
 
     desc "resume", "Ask the narrator to retry a stalled scene or outcome"
@@ -212,6 +211,10 @@ module Rokapi
 
       def game
         fetch "#{game_path}.json"
+      end
+
+      def adopt(response)
+        client.game_id = response.location[%r{/game_sessions/(\d+)}, 1].to_i
       end
 
       def setup(mode)
@@ -299,29 +302,35 @@ module Rokapi
 
       def settle(narration: true)
         streamed = {}
-        deadline = Time.now + options[:wait]
 
-        loop do
-          game = self.game
+        game = poll("Still waiting") do |game|
           stream game, streamed if narration && !options[:json]
-          return present(game, streamed: streamed, narration: narration) unless busy?(game)
-          raise Thor::Error, "Still waiting after #{options[:wait]}s. Run: bin/rokapi show" if Time.now > deadline
-
-          sleep POLL_INTERVAL
+          busy?(game)
         end
+
+        present game, streamed: streamed, narration: narration
       end
 
       def watch
         streamed = {}
         reported = []
+
+        game = poll("Still not your turn") do |game|
+          stream game, streamed
+          report game, reported
+          watching?(game) || busy?(game)
+        end
+
+        present game, streamed: streamed
+      end
+
+      def poll(waiting)
         deadline = Time.now + options[:wait]
 
         loop do
           game = self.game
-          stream game, streamed
-          report game, reported
-          return present(game, streamed: streamed) unless watching?(game) || busy?(game)
-          raise Thor::Error, "Still not your turn after #{options[:wait]}s. Run: bin/rokapi show" if Time.now > deadline
+          return game unless yield game
+          raise Thor::Error, "#{waiting} after #{options[:wait]}s. Run: bin/rokapi show" if Time.now > deadline
 
           sleep POLL_INTERVAL
         end
@@ -335,7 +344,7 @@ module Rokapi
         choice = scene["choices"].find { |candidate| candidate["chosen"] }
         roll = scene["roll"]
         events = [ "#{actor}’s turn" ]
-        events << "#{actor} chose: #{choice["label"]} [#{choice["stat"]} #{format("%+d", choice["modifier"])}, target #{choice["target"]}]" if choice
+        events << "#{actor} chose: #{choice["label"]} #{odds(choice)}" if choice
         if roll&.fetch("resolved")
           events << "#{actor} rolled d20=#{roll["value"]} → #{roll["total"]} vs #{roll["target"]}, #{roll["grade"].upcase}: #{roll["resolution"]}"
           roll["effects"]["items_gained"].each { |item| events << "Added to inventory: #{item["name"]} · found by #{actor}" }
@@ -375,7 +384,7 @@ module Rokapi
       end
 
       def present(game, streamed: {}, narration: true)
-        return puts(JSON.pretty_generate(game)) if options[:json]
+        return say_json(game) if options[:json]
 
         case game["step"]
         when "lobby"
@@ -423,7 +432,7 @@ module Rokapi
         when "choosing"
           say "\nCHOICES"
           scene["choices"].each_with_index do |choice, index|
-            say "  #{index + 1}) [#{choice["stat"]} #{format("%+d", choice["modifier"])} | #{choice["difficulty"]}, target #{choice["target"]}] #{choice["label"]}"
+            say "  #{index + 1}) #{odds(choice)} #{choice["label"]}"
           end
           next_step "choose #{(1..scene["choices"].size).to_a.join("|")}#{usable_hint(game)}"
         when "rolling"
@@ -482,7 +491,7 @@ module Rokapi
 
       def say_choice(scene)
         choice = scene["choices"].find { |candidate| candidate["chosen"] } or return
-        say "\n>>> CHOICE: #{choice["label"]} [#{choice["stat"]} #{format("%+d", choice["modifier"])} | #{choice["difficulty"]}, target #{choice["target"]}]"
+        say "\n>>> CHOICE: #{choice["label"]} #{odds(choice)}"
       end
 
       def say_roll(roll, ending: false)
@@ -507,7 +516,19 @@ module Rokapi
         return unless game["finished"]
 
         say "\n*** GAME OVER: #{game["outcome"].to_s.upcase} *** cost #{game["cost"] ? format("$%.3f", game["cost"]) : "unknown"}"
+        say_survivors game
+      end
+
+      def say_survivors(game)
         say "PARTY: #{game["party"].map { |player| "#{player["name"]}#{" (fallen)" unless player["alive"]}" }.join(", ")}" if game["multiplayer"]
+      end
+
+      def say_json(data)
+        puts JSON.pretty_generate(data)
+      end
+
+      def odds(choice)
+        "[#{choice["stat"]} #{format("%+d", choice["modifier"])} | #{choice["difficulty"]}, target #{choice["target"]}]"
       end
 
       def usable_hint(game)
