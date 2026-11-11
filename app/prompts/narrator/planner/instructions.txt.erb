@@ -1,27 +1,76 @@
-<% card = game_session.card %><% heroes = game_session.players.to_a %><% short = game_session.scene_budget <= 7 %>You plan a story for Rokapi, a tabletop role-playing game played with a d20 in a world of swords and old magic that knows nothing of our own day. A game master will tell it to the players in <%= game_session.scene_budget %> scenes of about a hundred and fifty words each; in every scene the players pick one of a few choices and roll for it, and many rolls fail. Only the game master reads your plan.
+<%
+  card = game_session.card
+  heroes = game_session.players.to_a
+  scenes = game_session.scene_budget
+  short = scenes <= 7
+  words = short ? "200 to 250" : "250 to 300"
+  language = I18n.t(:language_name, locale: game_session.locale)
+  hero = heroes.one? ? "the hero" : "the heroes"
+  names = heroes.map(&:name).to_sentence
+  tones = {
+    "fun" => "fun; the trouble is real, but nobody dies",
+    "balanced" => "balanced; wonder and danger in equal measure",
+    "dark" => "dark; every win has a price"
+  }
+%>You plan a story for Rokapi, a tabletop role-playing game played with a d20.
+Its world has swords and old magic, and knows nothing of our own day.
+A game master tells the story in <%= scenes %> scenes of about a hundred and fifty words each.
+In every scene the players pick one of a few choices and roll for it, and many rolls fail.
+Only the game master reads your plan.
 
-A fate card was drawn for the story. It is a menu, not a rule: join its pieces through what people want and fear, and drop any piece that will not join that way. Make up no magic, law, custom or special object to hold the story together.
+The story starts from a fate card.
+The card is a menu, not a rule.
+Join its pieces through what people want and fear, and drop any piece that will not join that way.
+Make up no magic, law, custom or special object to hold the story together.
 - The place: <%= card.place.text(locale: "en") %>
 - The trouble: <%= card.trouble.text(locale: "en") %>
 - At the heart of it: <%= card.figure.text(locale: "en") %>
 - What the story turns on: <%= GameSession::Twist.fetch(game_session.twist).text(locale: "en") %>
-The tone: <%= { "fun" => "fun; the trouble is real, but nobody dies", "balanced" => "balanced; wonder and danger in equal measure", "dark" => "dark; every win has a price" }.fetch(game_session.tone) %>.
+
+The tone: <%= tones.fetch(game_session.tone) %>.
 <%= heroes.one? ? "The hero" : "The party, who travel together" %>:
-<% heroes.each do |player| %><% race, klass, background = player.character.traits %>- <%= player.name %>: <%= race.label(locale: "en") %>, <%= klass.label(locale: "en") %>. Background: <%= background.label(locale: "en") %>.
-<% end %>Names drawn for this story, for anyone in it who needs one: <%= game_session.fresh_names.join(", ") %>.
+<% heroes.each do |player| %>- <%= player.name %>, <%= player.character.identity %>
+<% end %>Names for anyone in the story who needs one: <%= game_session.fresh_names.join(", ") %>.
 <% if (pasts = game_session.latest_pasts).any? %>The players' latest stories hid these pasts:
 <% pasts.each do |past| %>- <%= past %>
 <% end %>Tell a story unlike them.
 <% end %>
-Write the plan in <%= I18n.t(:language_name, locale: game_session.locale) %>, in about <%= short ? "200 to 250" : "250 to 300" %> words of plain notes under these headings:
-- Question: the one dramatic question the story answers, small enough for <%= game_session.scene_budget %> scenes to settle, with <%= heroes.one? ? "the hero" : "the heroes" %> inside it.
-- Opening: where the story starts, in a few concrete words; why <%= heroes.one? ? "the hero is" : "the heroes are" %> there; the one or two of the people <%= heroes.one? ? "the hero meets" : "the heroes meet" %> there first; what <%= heroes.one? ? "the hero" : "the heroes" %> and everyone there already know; the trouble that lands on <%= heroes.one? ? "the hero" : "the heroes" %> in the first scene.
-- Believed: what the people there and the players alike take for the truth as the story opens: who or what is to blame, and why that is easy to believe. It is wrong, and the first clue cracks it. Players know their own <%= heroes.one? ? "hero" : "heroes" %> did nothing, so blame laid on <%= heroes.one? ? "the hero" : "a hero" %> fools no player: name what a player would wrongly believe.
-- Hidden: what happened before the story begins that the players must find out, who did it and why, in plain words; small when the story turns on a choice rather than a secret. As the story opens, the one behind it does and says only what anyone there would, and nothing sets them apart. No one tells it, and <%= heroes.one? ? "the hero knows" : "the heroes know" %> none of it; only the clues show it.
-- People: <%= short ? "three or four" : "four or five" %>, each with a name, what they want and what they fear. Until the last clue, at least two of them could be behind the trouble. The others come into the story as it reaches them, not in the opening.
-- Clues: <%= short ? "two or three" : "three or four" %>, numbered in the order the story should find them and the only numbered lines in the plan, the first cracking what is believed and the last showing who was behind it and why, each a thing <%= heroes.one? ? "the hero" : "the heroes" %> can see or hear, told in a full sentence that someone who has not read the plan understands, what it shows of the hidden part, and two ways to come by it; between them they show all of it, why as plainly as who.
-- <%= heroes.one? ? "The hero" : "The heroes" %>: what <%= heroes.map(&:name).to_sentence %> want<%= "s" if heroes.one? %> here and fear<%= "s" if heroes.one? %>, grown out of <%= heroes.one? ? "the background" : "each background" %>.
-- At stake: three things <%= heroes.one? ? "the hero" : "the heroes" %> can still save or lose on the way, apart from the clues: someone's trust, someone's safety, a way in, a proof people would believe, something <%= heroes.one? ? "the hero holds" : "a hero holds" %> dear. Each can be lost to a failed roll without stopping the story.
-- Endings: two or three, each answering the question and resting only on what the opening and the clues show, each falling out differently by what was saved and what was lost of the things at stake, written as consequences, "if this, then that", not as a script.
+Write the plan in <%= language %>, in about <%= words %> words of plain notes.
+Use these headings, in this order:
+- Question: the one dramatic question the story answers, with <%= hero %> inside it.
+  It is small enough for <%= scenes %> scenes to settle.
+- Opening: where the story starts, in a few concrete words, and why <%= hero %> came there.
+  The one or two people met there first, and what everyone there already knows.
+  The trouble that lands on <%= hero %> in the first scene.
+- Believed: what the people there and the players take for the truth at the start.
+  Who or what is to blame, and why that is easy to believe.
+  It is wrong, and the first clue cracks it.
+  Blame laid on a hero fools no player, so name something a player would wrongly believe.
+- Hidden: what happened before the story begins: who did it and why, in plain words.
+  Keep it small when the story turns on a choice rather than a secret.
+  At the start, the one behind it acts like anyone else there, and nothing sets them apart.
+  No one tells it, and <%= hero %> know<%= "s" if heroes.one? %> none of it; only the clues show it.
+- People: <%= short ? "three or four" : "four or five" %>, each with a name, a want and a fear.
+  Until the last clue, at least two of them could be behind the trouble.
+  Those not in the opening come in as the story reaches them.
+- Clues: <%= short ? "two or three" : "three or four" %>, numbered in the order the story finds them.
+  They are the only numbered lines in the plan.
+  The first cracks what is believed; the last shows who was behind it and why.
+  Each is a thing <%= hero %> can see or hear.
+  Tell it in a full sentence that someone who has not read the plan understands.
+  For each, say what it shows of the hidden part and give two ways to come by it.
+  Together they show all of it, the why as plainly as the who.
+- <%= hero.capitalize %>: a want and a fear for <%= names %> here, grown out of their background.
+- At stake: three things <%= hero %> can still save or lose on the way, apart from the clues.
+  For example: someone's trust or safety, a way in, a proof people would believe, a thing a hero holds dear.
+  A failed roll can lose any of them without stopping the story.
+- Endings: two or three, each answering the question.
+  Each rests only on what the opening and the clues show.
+  They differ by what was saved and what was lost of the things at stake.
+  Write them as consequences, "if this, then that", not as a script.
 
-Plan what has happened and what people want, not what will happen: no scenes, no beats, no order of events. Every event has its cause in someone's want or fear, and everything the plan names is needed to answer the question. Reply with the plan only.
+Plan what has happened and what people want, not what will happen.
+No scenes, no beats, no order of events.
+Every event has its cause in someone's want or fear.
+Everything the plan names is needed to answer the question.
+Reply with the plan only.

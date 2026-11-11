@@ -12,12 +12,12 @@ class Narrator::PlannerTest < ActiveSupport::TestCase
 
     assert_includes planner["system"], "- The place: A fog-bound fishing village\n"
     assert_includes planner["system"], "- What the story turns on: the one asking for help is the cause\n"
-    assert_includes planner["system"], "- Ilker: Human, Warrior. Background: Soldier.\n"
+    assert_includes planner["system"], "- Ilker, human warrior (background: soldier)\n"
     assert_includes planner["system"], "Write the plan in English"
     assert_equal "Write the plan.", planner["prompt"]
 
     assert_includes critic["system"], "The hero: Ilker, human warrior (background: soldier)."
-    assert_includes critic["system"], "a story too big for 7 scenes"
+    assert_includes critic["system"], "A story too big for 7 scenes"
     assert_equal PLAN_RESPONSE.strip, critic["prompt"], "the critic reads the plan without the planner's conversation"
   end
 
@@ -69,9 +69,9 @@ class Narrator::PlannerTest < ActiveSupport::TestCase
 
     assert_equal [ [ PLAN_RESPONSE.strip, [] ] ], passes.map { [ it.plan, it.problems ] }
     assert_includes planner["system"], "- The place: A snowbound mountain pass with a single inn\n"
-    assert_includes planner["system"], "The tone: dark; every win has a price.\nThe hero:\n- İlker: Elf, Mage. Background: Criminal.\n"
+    assert_includes planner["system"], "The tone: dark; every win has a price.\nThe hero:\n- İlker, elf mage (background: criminal)\n"
     assert_includes planner["system"], "Write the plan in Türkçe"
-    assert_equal GameSession::NAMES, (planner["system"][/^Names drawn for this story, for anyone in it who needs one: (.+)\.$/, 1].split(", ") & I18n.t("game_session.names", locale: :tr)).size
+    assert_equal GameSession::NAMES, (planner["system"][/^Names for anyone in the story who needs one: (.+)\.$/, 1].split(", ") & I18n.t("game_session.names", locale: :tr)).size
     assert_includes critic["system"], "The hero: İlker, elf mage (background: criminal)."
   end
 end
