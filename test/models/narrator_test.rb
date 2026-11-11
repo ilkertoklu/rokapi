@@ -206,13 +206,13 @@ class NarratorTest < ActiveSupport::TestCase
     assert_not_includes outcome["prompt"].split("</conversation_so_far>").last, "The innkeeper trusts", "only the ending weighs the marks"
   end
 
-  test "a clue the rolls are too late to win is shown by the trouble itself and counts as found" do
+  test "a clue the rolls are too late to win is shown by what someone does and counts as found" do
     @game_session.update! plan: CLUES_PLAN
     @game_session.current_scene.update! position: 4
 
     scene = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
-    assert_includes scene["prompt"], "No clue found yet.\nThe story cannot wait for clue 1 any longer: the trouble moves on in this scene.\n"
+    assert_includes scene["prompt"], "No clue found yet.\nThe story cannot wait for clue 1 any longer: someone in this scene acts on a want or fear the players have seen.\n"
     assert_includes scene["prompt"], "What they do shows clue 1 plainly, with no mishap or chance behind it.\nClue in reach: 2.\n"
     assert_equal 1, @game_session.current_scene.effects["clue"]
     assert_equal [ 1 ], @game_session.reload.clues_found
