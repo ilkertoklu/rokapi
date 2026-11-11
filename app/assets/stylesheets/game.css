@@ -124,19 +124,15 @@
   }
 
   @media (min-width: 64rem) {
-    .screen:has(.game) {
-      --screen-width: 70rem;
+    body:has(.game) {
+      background: var(--color-backdrop);
     }
 
-    @media (min-width: 72rem) {
-      body:has(.game) {
-        background: var(--color-backdrop);
-      }
+    .screen:has(.game) {
+      --screen-width: 70rem;
 
-      .screen:has(.game) {
-        background: var(--color-bg);
-        border-inline: 1px solid var(--color-line-soft);
-      }
+      background: var(--color-bg);
+      border-inline: 1px solid var(--color-line-soft);
     }
 
     .game {
