@@ -20,7 +20,7 @@ What the rolls have changed so far, and it stays so: <%= marks.join(" / ") %>
 <% end %>
 <% if scene.clue_overdue? %>
 The story cannot wait for clue <%= game.next_clue %> any longer: someone in this scene acts on a want or fear the players have seen.
-What they do shows clue <%= game.next_clue %> plainly, with no mishap or chance behind it.
+What they do brings clue <%= game.next_clue %> to where <%= hero.name %> is and shows it plainly, with no mishap or chance behind it.
 <% end %>
 <% end %>
 
@@ -30,6 +30,7 @@ Clue in reach: <%= clue %>.
 <% if scene.last? %>
 This is the last scene: bring the story to the moment that decides it.
 The roll on the choice made here ends the story.
+Each choice settles the question in its own way, with something the players found or won on the way.
 <% end %>
 
 <%= hero.name %>, <%= hero.character.identity %>: <%= hero.character.sheet %>.
