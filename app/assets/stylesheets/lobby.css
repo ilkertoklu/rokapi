@@ -217,12 +217,6 @@
     text-align: center;
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .lobby-player__status::before {
-      animation: none;
-    }
-  }
-
   @media (min-width: 64rem), (min-width: 48rem) and (min-height: 36rem) {
     .lobby {
       display: grid;

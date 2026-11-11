@@ -1,4 +1,11 @@
 @layer base {
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 0s !important;
+      animation-iteration-count: 1 !important;
+    }
+  }
+
   @keyframes ember-pulse {
     0%, 100% {
       opacity: .5;

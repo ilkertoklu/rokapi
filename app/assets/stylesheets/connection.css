@@ -117,12 +117,6 @@
     }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .connection__icon::after {
-      animation: none;
-    }
-  }
-
   @keyframes connection-spin {
     to {
       rotate: 1turn;
