@@ -31,24 +31,16 @@
     }
   }
 
-  .connection__icon {
+  .connection__spinner {
     position: relative;
-    display: flex;
-    inline-size: 74px;
-    block-size: 74px;
     margin-block-end: 1.375rem;
-    padding: 21px;
-    background: color-mix(in oklch, var(--color-negative) 12%, transparent);
-    border: 1px solid color-mix(in oklch, var(--color-negative) 30%, transparent);
-    border-radius: 50%;
-    color: var(--color-negative-bright);
 
     &::after {
       content: "";
       position: absolute;
       inset: -6px;
-      border: 2px solid color-mix(in oklch, var(--color-negative) 25%, transparent);
-      border-block-start-color: var(--color-negative);
+      border: 2px solid color-mix(in oklch, var(--medallion-color) 25%, transparent);
+      border-block-start-color: var(--medallion-color);
       border-radius: 50%;
       animation: connection-spin 1.6s linear infinite;
     }

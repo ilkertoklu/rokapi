@@ -1,0 +1,33 @@
+@layer components {
+  .medallion {
+    --medallion-color: var(--color-accent);
+    --medallion-ink: var(--color-accent-bright);
+
+    display: grid;
+    place-items: center;
+    flex: none;
+    inline-size: 72px;
+    block-size: 72px;
+    margin-inline: auto;
+    background: color-mix(in oklch, var(--medallion-color) 14%, transparent);
+    border: 1px solid color-mix(in oklch, var(--medallion-color) 40%, transparent);
+    border-radius: 50%;
+    color: var(--medallion-ink);
+
+    .glyph {
+      inline-size: 30px;
+      block-size: 30px;
+      stroke-width: 1.8;
+    }
+  }
+
+  .medallion--negative {
+    --medallion-color: var(--color-negative);
+    --medallion-ink: var(--color-negative-bright);
+  }
+
+  .medallion--positive {
+    --medallion-color: var(--color-positive);
+    --medallion-ink: var(--color-positive-bright);
+  }
+}

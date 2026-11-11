@@ -3,7 +3,7 @@
 <% if @subscription %>
   <% plan = Current.user.monthly_plan %>
   <div class="brand brand--hero">
-    <span class="seal" aria-hidden="true"><%= render "glyph", name: "check" %></span>
+    <span class="medallion medallion--positive" aria-hidden="true"><%= render "glyph", name: "check" %></span>
 
     <h1 class="greeting"><%= t(".heading", plan: plan.name) %></h1>
     <p><%= t(".lede") %></p>

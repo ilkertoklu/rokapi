@@ -14,21 +14,6 @@
     }
   }
 
-  .sent__icon {
-    display: flex;
-    inline-size: 72px;
-    block-size: 72px;
-    padding: 20px;
-    background: var(--color-accent-soft);
-    border: 1px solid color-mix(in oklch, var(--color-accent) 40%, transparent);
-    border-radius: 50%;
-    color: var(--color-accent-bright);
-
-    .glyph {
-      stroke-width: 1.8;
-    }
-  }
-
   .sent__text {
     max-inline-size: 18rem;
     margin: -.5rem 0 0;

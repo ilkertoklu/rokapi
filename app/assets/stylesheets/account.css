@@ -24,21 +24,6 @@
     }
   }
 
-  .warning__icon {
-    display: flex;
-    inline-size: 68px;
-    block-size: 68px;
-    padding: 19px;
-    background: color-mix(in oklch, var(--color-negative) 13%, transparent);
-    border: 1px solid color-mix(in oklch, var(--color-negative) 45%, transparent);
-    border-radius: 50%;
-    color: var(--color-negative-bright);
-
-    .glyph {
-      stroke-width: 2;
-    }
-  }
-
   .losses {
     margin: 0;
     padding: .25rem 1.125rem;

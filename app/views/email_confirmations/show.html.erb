@@ -1,7 +1,7 @@
 <% content_for :title, t(".title") %>
 
 <div class="sent">
-  <span class="sent__icon"><%= render "glyph", name: "mail" %></span>
+  <span class="medallion"><%= render "glyph", name: "mail" %></span>
   <h1><%= t(".title") %></h1>
   <p class="sent__text"><%= t(".text_html", email: @user.unconfirmed_email) %></p>
 </div>
