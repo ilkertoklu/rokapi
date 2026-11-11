@@ -3,7 +3,7 @@ module ActiveTurn
   include GameSessionScoped
 
   included do
-    before_action :refuse_move, if: -> { @game_session.finished? }
+    before_action :refuse_finished_game, if: -> { @game_session.finished? }
     before_action :ensure_active_turn
     rescue_from Scene::OutOfTurn, ActiveRecord::RecordNotUnique, with: :refuse_move
   end
@@ -13,6 +13,13 @@ module ActiveTurn
       @scene = @game_session.current_scene
 
       head :forbidden unless @scene&.turn_of?(@player)
+    end
+
+    def refuse_finished_game
+      respond_to do |format|
+        format.html { redirect_to_game_session }
+        format.json { render json: { error: t("game_sessions.over") }, status: :conflict }
+      end
     end
 
     def refuse_move

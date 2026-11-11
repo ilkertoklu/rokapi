@@ -97,6 +97,15 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
     assert_response :conflict
   end
 
+  test "a move after the game is over is a conflict that says so" do
+    game_session = play_to_choices
+    game_session.finish
+
+    post game_session_roll_path(game_session), as: :json
+    assert_response :conflict
+    assert_equal "The game is over.", response.parsed_body["error"]
+  end
+
   test "signed out, a request is unauthorized instead of sent to the welcome page" do
     delete session_path
 

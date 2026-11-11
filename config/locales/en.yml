@@ -439,6 +439,7 @@ en:
       taken: That email is already in use by another account.
 
   game_sessions:
+    over: The game is over.
     connection:
       title: Connection lost
       reconnecting: Reconnecting

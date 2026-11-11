@@ -458,6 +458,7 @@ tr:
       taken: Bu e-posta başka bir hesapta kullanılıyor.
 
   game_sessions:
+    over: Oyun bitti.
     connection:
       title: Bağlantı koptu
       reconnecting: Yeniden bağlanılıyor
