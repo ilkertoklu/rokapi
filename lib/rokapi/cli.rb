@@ -517,8 +517,14 @@ module Rokapi
       end
 
       def say_effects(effects)
-        changes = effects.to_h.reject { |_, value| value.nil? || value == 0 || value == [] }
-        say "EFFECTS: #{changes.to_json}" if changes.any?
+        effects = effects.to_h
+        changes = []
+        changes << "HP #{format("%+d", effects["hp"])}" if effects["hp"].to_i.nonzero?
+        changes += Array(effects["items_gained"]).map { "Added to inventory: #{it["name"]}" }
+        changes += Array(effects["items_lost"]).map { "Lost: #{it}" }
+        changes += Array(effects["statuses_gained"]).map { "Status: #{it["name"]}" }
+        changes += Array(effects["statuses_lost"]).map { "Status ended: #{it}" }
+        say changes.join(" · ") if changes.any?
       end
 
       def say_footer(game)
