@@ -1,5 +1,5 @@
 class Narrator::Offstage < RubyLLM::Agent
-  MODEL = "claude-opus-5-5"
+  MODEL = "gpt-5.6"
 
   model MODEL
   inputs :game_session

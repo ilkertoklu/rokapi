@@ -53,9 +53,9 @@ class Narrator::PlannerTest < ActiveSupport::TestCase
     end
   end
 
-  test "the planner and the critic run on Opus" do
-    assert_equal [ "claude-opus-5-5", "anthropic" ], Narrator::Planner.for(@game_session).chat.then { [ it.model_id, it.provider ] }
-    assert_equal [ "claude-opus-5-5", "anthropic" ], Narrator::Critic.for(@game_session).chat.then { [ it.model_id, it.provider ] }
+  test "the planner and the critic run on GPT-5.6" do
+    assert_equal [ "gpt-5.6", "openai" ], Narrator::Planner.for(@game_session).chat.then { [ it.model_id, it.provider ] }
+    assert_equal [ "gpt-5.6", "openai" ], Narrator::Critic.for(@game_session).chat.then { [ it.model_id, it.provider ] }
   end
 
   test "a plan can be rehearsed from cards without a game" do
