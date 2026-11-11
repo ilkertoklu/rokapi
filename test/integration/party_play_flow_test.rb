@@ -13,8 +13,12 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
     assert_includes first_scene["system"], "The party, who travel together and take turns:\n- Ilker: "
     assert_includes first_scene["system"], "\n- Deniz: "
     assert_includes first_scene["system"], 'Speak to the one whose turn it is as "you" and call the others by name'
-    assert_equal <<~CUE, first_scene["prompt"]
-      Scene 1 of 7, the story's first half, Ilker's turn. This is the opening, as the plan's opening has it: show where Ilker is and why, and the one or two people the plan's opening has Ilker meet, saying who they are, and end on the trouble landing on Ilker, so the reader knows what is at stake. Reveal nothing of what the plan hides: the people there believe what the plan says is believed, and no one's look or manner gives the hidden part away.
+    assert_equal <<~CUE.chomp, first_scene["prompt"]
+      Scene 1 of 7, the story's first half, Ilker's turn.
+      This is the opening, as the plan's opening has it.
+      Show where Ilker is and why, and the one or two people Ilker meets there, saying who they are.
+      End on the trouble landing on Ilker, so the reader knows what is at stake.
+      Reveal nothing of what the plan hides, and let no one's look or manner give it away.
       Ilker, human warrior (background: soldier): 31/31 health; carries Longsword, Round shield; no statuses.
       In the scene with Ilker: Deniz, human warrior (background: soldier), 31/31 health.
     CUE
@@ -69,8 +73,8 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
     second_scene = stub_understudy(SECOND_SCENE_RESPONSE) do
       perform_enqueued_jobs { post game_session_acknowledgement_path(@room), as: :json }
     end.sole
-    assert second_scene["prompt"].include?("\n\nScene 2 of 7, the story's first half, Deniz's turn. Pick up where the last outcome stopped, without retelling it, and keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left. No clue found yet. The heroes do only what the players chose: where the way forks, the fork goes into the choices, and what a way not taken would have won does not turn up by itself.\nDeniz, human warrior (background: soldier): ")
-    assert_includes second_scene["prompt"], "<user>\nIn scene 1 of 7, the story's first half, Ilker chose \"Force the drawer open\""
+    assert second_scene["prompt"].include?("\n\nScene 2 of 7, the story's first half, Deniz's turn.\nNo clue found yet.\nDeniz, human warrior (background: soldier): ")
+    assert_includes second_scene["prompt"], "<user>\nScene 1 of 7, the story's first half.\nIlker chose \"Force the drawer open\""
 
     get game_session_path(@room), as: :json
     game = response.parsed_body

@@ -1,4 +1,39 @@
-<% hero = scene.active_player %><% game = scene.game_session %>Scene <%= scene.position %> of <%= game.scene_budget %>, <%= scene.part_of_the_story %>, <%= hero.name %>'s turn.<% if scene.first? %> This is the opening, as the plan's opening has it: show where <%= hero.name %> is and why, and the one or two people the plan's opening has <%= hero.name %> meet, saying who they are, and end on the trouble landing on <%= hero.name %>, so the reader knows what is at stake. Reveal nothing of what the plan hides: the people there believe what the plan says is believed, and no one's look or manner gives the hidden part away.<% else %> Pick up where the last outcome stopped, without retelling it, and keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left. <% if (found = game.clues_found).any? %>Clues found so far: <%= found.to_sentence %>.<% else %>No clue found yet.<% end %><% if scene.clue_overdue? %> The story cannot wait for clue <%= game.next_clue %> any longer: the trouble moves on in this scene: someone in it acts on what they want or fear and takes something the plan puts at stake, and what they do shows that clue plainly, with no mishap or chance behind it.<% end %><% if (marks = game.marks).any? %> What the rolls have changed so far, and it stays so: <%= marks.join(" / ") %><% end %> The heroes do only what the players chose: where the way forks, the fork goes into the choices, and what a way not taken would have won does not turn up by itself.<% end %><% if (clue = scene.clue_in_reach) %> At least one choice is a way to come by clue <%= clue %>, one of the two the plan gives or one as likely from where <%= hero.name %> stands, and adds "clue": true to its entry in the block; a success on it wins the clue, and a success on any other choice wins only what it reaches for.<% end %><% if scene.last? %> Bring the story to the moment that decides it: the roll on the choice made here ends it.<% end %>
+<%
+  hero = scene.active_player
+  game = scene.game_session
+%>
+Scene <%= scene.position %> of <%= game.scene_budget %>, <%= scene.part_of_the_story %>, <%= hero.name %>'s turn.
+
+<% if scene.first? %>
+This is the opening, as the plan's opening has it.
+Show where <%= hero.name %> is and why, and the one or two people <%= hero.name %> meets there, saying who they are.
+End on the trouble landing on <%= hero.name %>, so the reader knows what is at stake.
+Reveal nothing of what the plan hides, and let no one's look or manner give it away.
+<% else %>
+<% if (found = game.clues_found).any? %>
+Clues found so far: <%= found.to_sentence %>.
+<% else %>
+No clue found yet.
+<% end %>
+<% if (marks = game.marks).any? %>
+What the rolls have changed so far, and it stays so: <%= marks.join(" / ") %>
+<% end %>
+<% if scene.clue_overdue? %>
+The story cannot wait for clue <%= game.next_clue %> any longer: the trouble moves on in this scene.
+Someone in it acts on what they want or fear and takes something the plan puts at stake.
+What they do shows clue <%= game.next_clue %> plainly, with no mishap or chance behind it.
+<% end %>
+<% end %>
+
+<% if (clue = scene.clue_in_reach) %>
+Clue in reach: <%= clue %>.
+<% end %>
+<% if scene.last? %>
+This is the last scene: bring the story to the moment that decides it.
+The roll on the choice made here ends the story.
+<% end %>
+
 <%= hero.name %>, <%= hero.character.identity %>: <%= hero.character.sheet %>.
-<% if (companions = scene.companions).any? %>In the scene with <%= hero.name %>: <%= companions.map { it.character.portrait }.join("; ") %>.
+<% if (companions = scene.companions).any? %>
+In the scene with <%= hero.name %>: <%= companions.map { it.character.portrait }.join("; ") %>.
 <% end %>

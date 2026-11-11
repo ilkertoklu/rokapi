@@ -1,9 +1,63 @@
-<% character = roll.player.character %><% used = character.items.used_since(roll.scene.created_at) %><% game = roll.scene.game_session %><% hero = roll.player.name %><% found = game.clues_found %><% clues = found.any? ? "found so far: #{found.to_sentence}" : "none found so far" %>In scene <%= roll.scene.position %> of <%= game.scene_budget %>, <%= roll.scene.part_of_the_story %>, <%= hero %> chose "<%= roll.choice.label %>": die <%= roll.value %>, modifier <%= format("%+d", roll.modifier) %>, statuses <%= format("%+d", roll.status_modifier) %>, total <%= roll.total %> against <%= roll.target %>. <%= roll.grade_label %>, margin <%= format("%+d", roll.margin) %>.<% unless roll.scene.last? %><% if roll.success? %> It works<%= ", but not for free: it costs #{hero} something on the way" if roll.grade == :narrow %>. What it wins stays won to the end.<% if (clue = roll.clue_won) %> It also hands <%= hero %> clue <%= clue %> of the plan (<%= clues %>): show it plainly, as this attempt comes by it.<% elsif game.next_clue %> It wins no clue: what the plan hides stays hidden.<% end %><% else %> It does not work, and <%= hero %> pays with something that stays lost unless a later roll wins it back: one of the things the plan puts at stake, someone's trust or a way now closed. A hurt alone is not the price, no one steps in to help and nothing turns up by luck. <%= hero %> learns nothing of what the plan hides from it: no clue is handed over. The story moves on from there, not back for a second try.<% end %> Add "mark" to the block: one short sentence in <%= I18n.t(:language_name, locale: game.locale) %> naming what this roll changed for good.<% end %> Keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left.
-<% if (marks = game.marks).any? %>What the rolls have changed so far, and it stays so: <%= marks.join(" / ") %>
-<% end %><% if used.any? %>Used since the scene began, already applied: <%= used.map { |item| "#{item.name} (#{format("%+d", item.hp_effect)} health)" }.join(", ") %>.
-<% end %><%= hero %> now: <%= character.sheet %>.
-<% if (companions = roll.scene.companions).any? %>In the scene with <%= hero %>: <%= companions.map { it.character.portrait }.join("; ") %>.
-<% end %><% if roll.scene.last? %>This is the last roll, and the story ends with it. So far <%= game.party.reject(&:departed?).map { |player| "#{player.name} tried #{player.attempts.to_sentence.presence || "nothing"}" }.join("; ") %>. Victory or defeat is the story's to decide: weigh what the heroes found and did, this roll as one among the rest, against the plan's endings, and give the ending they have earned. Tell what this roll does, then how the story ends, with only what the story has shown: the ending rests on why it all happened, as the clues showed it; what the heroes never found stays unsaid, and no one explains it. A roll that succeeds here gets the heroes what they reached for; one that fails costs them something, but does not undo what the rolls before it won.<% if marks.any? %> Everything the rolls changed shows in the ending: what was won is there to be used and people act on it, what was lost and never won back is missing.<% end %> The heroes settle the question with what they did<%= ", each with a part in it" if game.party.many? %>, and make no move the players did not choose; the others go on as they want and fear, and no one steps in to win or lose it for them. Tell it as scenes the <%= game.party.one? ? "hero sees and hears" : "heroes see and hear" %>, to the last line: the reckoning happens on the page, not in a summary, and no one says what the story meant. The block adds "outcome": "victory" or "defeat".
-<% elsif roll.life_at_stake? %><% if roll.last_hero_standing? %>This roll can take the last of <%= hero %>'s health. If it does, <%= hero %> falls and the story ends here in defeat: tell how, and add "outcome": "defeat" to the block. If not, tell only what this roll does, in a paragraph or two, and stop there: the next scene comes in my next message.<% else %>This roll can take the last of <%= hero %>'s health. If it does, <%= hero %> falls and takes no more turns, and the story goes on with the others: tell how, and leave "outcome" out of the block. Either way, tell only what this roll does, in a paragraph or two, and stop there: the next scene comes in my next message.<% end %>
-<% else %>Tell only what this roll does, in a paragraph or two, and stop there: the next scene comes in my next message.
+<%
+  scene = roll.scene
+  game = scene.game_session
+  character = roll.player.character
+  hero = roll.player.name
+  modifier, statuses, margin = [ roll.modifier, roll.status_modifier, roll.margin ].map { format("%+d", it) }
+  used = character.items.used_since(scene.created_at).map do |item|
+    "#{item.name} (#{format("%+d", item.hp_effect)} health)"
+  end
+  attempts = game.party.reject(&:departed?).map do |player|
+    "#{player.name} tried #{player.attempts.to_sentence.presence || "nothing"}"
+  end
+  parts = game.party.many? ? ", each with a part in it" : ""
+  witness = game.party.one? ? "the hero sees and hears" : "the heroes see and hear"
+%>
+Scene <%= scene.position %> of <%= game.scene_budget %>, <%= scene.part_of_the_story %>.
+<%= hero %> chose "<%= roll.choice.label %>".
+Die <%= roll.value %>, modifier <%= modifier %>, statuses <%= statuses %>.
+Total <%= roll.total %> against <%= roll.target %>.
+<%= roll.grade_label %>, margin <%= margin %>.
+<% if (clue = roll.clue_won) %>
+This roll wins clue <%= clue %>.
+<% end %>
+
+<% if used.any? %>
+Used since the scene began, already applied: <%= used.join(", ") %>.
+<% end %>
+<%= hero %> now: <%= character.sheet %>.
+<% if (companions = scene.companions).any? %>
+In the scene with <%= hero %>: <%= companions.map { it.character.portrait }.join("; ") %>.
+<% end %>
+
+<% if scene.last? %>
+This is the last roll, and the story ends with it.
+So far <%= attempts.join("; ") %>.
+<% if (marks = game.marks).any? %>
+What the rolls have changed so far: <%= marks.join(" / ") %>
+All of it shows in the ending.
+What was won is there to be used; what was lost and never won back is missing.
+<% end %>
+Victory or defeat is the story's to decide.
+Weigh what the heroes found and did, this roll as one among the rest, against the plan's endings.
+A success here gets the heroes what they reached for; a failure costs them something, but undoes nothing won before.
+Tell what this roll does, then the ending the heroes have earned.
+The ending rests on why it all happened, as the clues showed it; what the heroes never found stays unsaid.
+The heroes settle the question with what they did<%= parts %>.
+They make no move the players did not choose.
+No one else steps in to win or lose it for them.
+Tell it as scenes <%= witness %>, to the last line, not as a summary.
+No one says what the story meant.
+The block adds "outcome": "victory" or "defeat".
+<% elsif roll.life_at_stake? %>
+This roll can take the last of <%= hero %>'s health.
+<% if roll.last_hero_standing? %>
+If it does, <%= hero %> falls and the story ends here in defeat: tell how, and add "outcome": "defeat" to the block.
+If not, tell what this roll does and stop there.
+<% else %>
+If it does, <%= hero %> falls and takes no more turns, and the story goes on with the others: tell how.
+Either way, tell what this roll does and stop there; the block has no outcome.
+<% end %>
+<% else %>
+Tell what this roll does and stop there.
 <% end %>

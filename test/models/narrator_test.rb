@@ -110,13 +110,17 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
 
     assert_includes request["system"], "Sets out with Longsword; Round shield."
-    assert request["prompt"].end_with?(<<~CUE)
+    assert request["prompt"].end_with?(<<~CUE.chomp)
 
 
-      In scene 1 of 7, the story's first half, Ilker chose "#{roll.choice.label}": die 2, modifier #{format("%+d", roll.modifier)}, statuses +0, total #{roll.total} against #{roll.target}. #{roll.grade_label}, margin #{format("%+d", roll.margin)}. It does not work, and Ilker pays with something that stays lost unless a later roll wins it back: one of the things the plan puts at stake, someone's trust or a way now closed. A hurt alone is not the price, no one steps in to help and nothing turns up by luck. Ilker learns nothing of what the plan hides from it: no clue is handed over. The story moves on from there, not back for a second try. Add "mark" to the block: one short sentence in English naming what this roll changed for good. Keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left.
+      Scene 1 of 7, the story's first half.
+      Ilker chose "#{roll.choice.label}".
+      Die 2, modifier #{format("%+d", roll.modifier)}, statuses +0.
+      Total #{roll.total} against #{roll.target}.
+      #{roll.grade_label}, margin #{format("%+d", roll.margin)}.
       Used since the scene began, already applied: Healing potion (+7 health).
       Ilker now: 31/31 health; carries Longsword, Inn ledger (quest item); no statuses.
-      Tell only what this roll does, in a paragraph or two, and stop there: the next scene comes in my next message.
+      Tell what this roll does and stop there.
     CUE
   end
 
@@ -126,7 +130,7 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
 
     assert_equal :narrow, roll.grade
-    assert_includes request["prompt"], %(margin +0. It works, but not for free: it costs Ilker something on the way. What it wins stays won to the end. Add "mark")
+    assert_includes request["prompt"], "NARROW SUCCESS, margin +0.\nIlker now: "
   end
 
   test "a success before the last wins the plan's next clue in order" do
@@ -136,7 +140,7 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
 
     assert_equal :solid, roll.grade
-    assert_includes request["prompt"], %(margin +4. It works. What it wins stays won to the end. It also hands Ilker clue 1 of the plan (none found so far): show it plainly, as this attempt comes by it. Add "mark" to the block: one short sentence in English naming what this roll changed for good. Keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left.\n)
+    assert_includes request["prompt"], "SUCCESS, margin +4.\nThis roll wins clue 1.\n"
   end
 
   test "a failure before the last hands over no clue and costs something lasting" do
@@ -146,9 +150,8 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
 
     assert_not roll.success?
-    assert_includes request["prompt"], "margin -9. It does not work, and Ilker pays with something that stays lost unless a later roll wins it back"
-    assert_includes request["prompt"], %(no clue is handed over. The story moves on from there, not back for a second try. Add "mark")
-    assert_not_includes request["prompt"], "It also hands Ilker clue"
+    assert_includes request["prompt"], "FAILURE, margin -9.\nIlker now: "
+    assert_not_includes request["prompt"], "wins clue"
     assert_not_includes request["prompt"].split("</conversation_so_far>").last, %("clue":)
   end
 
@@ -162,7 +165,7 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
 
     assert roll.success?
-    assert_includes request["prompt"], %(It works. What it wins stays won to the end. It wins no clue: what the plan hides stays hidden. Add "mark")
+    assert_not_includes request["prompt"], "wins clue"
     assert_empty @game_session.reload.clues_found
   end
 
@@ -171,8 +174,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
 
-    assert_includes request["prompt"], %(margin +4. It works. What it wins stays won to the end. Add "mark")
-    assert_not_includes request["prompt"], "It also hands Ilker clue"
+    assert_includes request["prompt"], "SUCCESS, margin +4.\nIlker now: "
   end
 
   test "the clues found so far are named in every later scene and roll" do
@@ -186,11 +188,11 @@ class NarratorTest < ActiveSupport::TestCase
     outcome = stub_understudy(OUTCOME_RESPONSE) { later.narrate }.sole
 
     assert_equal [ 1 ], @game_session.clues_found
-    assert_includes scene["prompt"], "\n\nScene 2 of 7, the story's first half, Ilker's turn. Pick up where the last outcome stopped, without retelling it, and keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left. Clues found so far: 1. The heroes do only what the players chose: where the way forks, the fork goes into the choices, and what a way not taken would have won does not turn up by itself. At least one choice is a way to come by clue 2, one of the two the plan gives or one as likely from where Ilker stands, and adds \"clue\": true to its entry in the block; a success on it wins the clue, and a success on any other choice wins only what it reaches for.\n"
-    assert_includes outcome["prompt"], %(It also hands Ilker clue 2 of the plan (found so far: 1): show it plainly, as this attempt comes by it.)
+    assert_includes scene["prompt"], "\n\nScene 2 of 7, the story's first half, Ilker's turn.\nClues found so far: 1.\nClue in reach: 2.\nIlker, human warrior"
+    assert_includes outcome["prompt"], "This roll wins clue 2.\n"
   end
 
-  test "what a roll changed for good is kept and named in every later scene and roll" do
+  test "what a roll changed for good is kept and named in every later scene" do
     roll = play_first_scene(die: 15)
     stub_understudy(OUTCOME_RESPONSE.sub('{"hp": -4}', '{"mark": "The innkeeper trusts Ilker with the ledger."}')) { roll.narrate }
     roll.acknowledge
@@ -200,8 +202,8 @@ class NarratorTest < ActiveSupport::TestCase
     outcome = stub_understudy(OUTCOME_RESPONSE) { later.narrate }.sole
 
     assert_equal [ "The innkeeper trusts Ilker with the ledger." ], @game_session.marks
-    assert_includes scene["prompt"], "No clue found yet. What the rolls have changed so far, and it stays so: The innkeeper trusts Ilker with the ledger. The heroes do only"
-    assert_includes outcome["prompt"], "how much time is left.\nWhat the rolls have changed so far, and it stays so: The innkeeper trusts Ilker with the ledger.\nIlker now: "
+    assert_includes scene["prompt"], "No clue found yet.\nWhat the rolls have changed so far, and it stays so: The innkeeper trusts Ilker with the ledger.\n"
+    assert_not_includes outcome["prompt"].split("</conversation_so_far>").last, "The innkeeper trusts", "only the ending weighs the marks"
   end
 
   test "a clue the rolls are too late to win is shown by the trouble itself and counts as found" do
@@ -210,15 +212,15 @@ class NarratorTest < ActiveSupport::TestCase
 
     scene = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
-    assert_includes scene["prompt"], "No clue found yet. The story cannot wait for clue 1 any longer: the trouble moves on in this scene: someone in it acts on what they want or fear and takes something the plan puts at stake, and what they do shows that clue plainly, with no mishap or chance behind it. The heroes do only"
-    assert_includes scene["prompt"], "At least one choice is a way to come by clue 2,"
+    assert_includes scene["prompt"], "No clue found yet.\nThe story cannot wait for clue 1 any longer: the trouble moves on in this scene.\n"
+    assert_includes scene["prompt"], "What they do shows clue 1 plainly, with no mishap or chance behind it.\nClue in reach: 2.\n"
     assert_equal 1, @game_session.current_scene.effects["clue"]
     assert_equal [ 1 ], @game_session.reload.clues_found
 
     roll = with_die(15) { choose_and_roll @game_session.current_scene }
     outcome = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
 
-    assert_includes outcome["prompt"], "It also hands Ilker clue 2 of the plan (found so far: 1)"
+    assert_includes outcome["prompt"], "This roll wins clue 2.\n"
     assert_equal [ 1, 2 ], @game_session.reload.clues_found
   end
 
@@ -239,7 +241,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
 
-    assert request["prompt"].end_with?("\nTell only what this roll does, in a paragraph or two, and stop there: the next scene comes in my next message.\n")
+    assert request["prompt"].end_with?("\nTell what this roll does and stop there.")
   end
 
   test "the last scene is played like any other, up to the moment that decides the story" do
@@ -248,7 +250,7 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
     assert request["prompt"].start_with?("Scene 7 of 7, the story's last scene, Ilker's turn.")
-    assert_includes request["prompt"], "the fork goes into the choices, and what a way not taken would have won does not turn up by itself. Bring the story to the moment that decides it: the roll on the choice made here ends it.\n"
+    assert_includes request["prompt"], "This is the last scene: bring the story to the moment that decides it.\nThe roll on the choice made here ends the story.\n"
     assert @game_session.current_scene.choosing?
     assert_equal 3, @game_session.current_scene.choices.count
     assert_not @game_session.reload.finished?
@@ -259,9 +261,10 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(ENDING_RESPONSE.sub("victory", "defeat")) { roll.narrate }.sole
 
-    assert_includes request["prompt"], "\nIn scene 7 of 7, the story's last scene, Ilker chose "
+    assert_includes request["prompt"], "\nScene 7 of 7, the story's last scene.\nIlker chose "
     assert_no_match(/"clue"|"mark"|no clue is handed over/, request["prompt"].split("</conversation_so_far>").last)
-    assert request["prompt"].end_with?(%(\nThis is the last roll, and the story ends with it. So far Ilker tried "Read the dusty ledger" (failed). Victory or defeat is the story's to decide: weigh what the heroes found and did, this roll as one among the rest, against the plan's endings, and give the ending they have earned. Tell what this roll does, then how the story ends, with only what the story has shown: the ending rests on why it all happened, as the clues showed it; what the heroes never found stays unsaid, and no one explains it. A roll that succeeds here gets the heroes what they reached for; one that fails costs them something, but does not undo what the rolls before it won. The heroes settle the question with what they did, and make no move the players did not choose; the others go on as they want and fear, and no one steps in to win or lose it for them. Tell it as scenes the hero sees and hears, to the last line: the reckoning happens on the page, not in a summary, and no one says what the story meant. The block adds "outcome": "victory" or "defeat".\n))
+    assert_includes request["prompt"], %(\nThis is the last roll, and the story ends with it.\nSo far Ilker tried "Read the dusty ledger" (failed).\nVictory or defeat)
+    assert request["prompt"].end_with?(%(\nNo one says what the story meant.\nThe block adds "outcome": "victory" or "defeat".))
   end
 
   test "the ending shows what the rolls changed" do
@@ -277,8 +280,8 @@ class NarratorTest < ActiveSupport::TestCase
     cue = request["prompt"].split("</conversation_so_far>").last
 
     assert roll.success?
-    assert_includes cue, "SUCCESS, margin +4. Keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left.\nWhat the rolls have changed so far, and it stays so: The innkeeper trusts Ilker with the ledger.\n"
-    assert_includes cue, "but does not undo what the rolls before it won. Everything the rolls changed shows in the ending: what was won is there to be used and people act on it, what was lost and never won back is missing. The heroes settle the question"
+    assert_includes cue, "So far Ilker tried \"Read the dusty ledger\" (succeeded) and \"Read the dusty ledger\" (succeeded).\n" \
+      "What the rolls have changed so far: The innkeeper trusts Ilker with the ledger.\nAll of it shows in the ending.\n"
     assert_no_match(/"clue"|"mark"/, cue)
   end
 
@@ -290,7 +293,7 @@ class NarratorTest < ActiveSupport::TestCase
     outcome = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
 
     assert scene["prompt"].start_with?("Scene 4 of 7, the middle of the story, Ilker's turn.")
-    assert outcome["prompt"].include?("\nIn scene 4 of 7, the middle of the story, Ilker chose ")
+    assert outcome["prompt"].include?("\nScene 4 of 7, the middle of the story.\nIlker chose ")
   end
 
   test "a used item is settled by the outcome and not raised again by the next scene" do
@@ -301,7 +304,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
 
-    assert request["prompt"].include?("\n\nScene 2 of 7, the story's first half, Ilker's turn. Pick up where the last outcome stopped, without retelling it, and keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left. No clue found yet. The heroes do only what the players chose: where the way forks, the fork goes into the choices, and what a way not taken would have won does not turn up by itself.\nIlker, human warrior (background: soldier): ")
+    assert request["prompt"].include?("\n\nScene 2 of 7, the story's first half, Ilker's turn.\nNo clue found yet.\nIlker, human warrior (background: soldier): ")
   end
 
   test "statuses weigh on the roll and wear off with it" do
@@ -320,7 +323,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(OUTCOME_RESPONSE) { roll.narrate }.sole
 
-    assert_includes request["prompt"], "statuses -2, total #{roll.total}"
+    assert_includes request["prompt"], "statuses -2.\nTotal #{roll.total}"
     assert_empty character.status_effects.reload, "a one-turn status must not outlive its roll"
   end
 
@@ -409,7 +412,7 @@ class NarratorTest < ActiveSupport::TestCase
     assert_equal PLAN_RESPONSE.strip, @game_session.reload.plan
     assert_includes planner["system"], "You plan a story for Rokapi"
     assert_equal PLAN_RESPONSE.strip, critic["prompt"]
-    assert_includes scene["system"], "that the players have not already seen.\n\n#{PLAN_RESPONSE.strip}\n\nThe tone:"
+    assert_includes scene["system"], "only you know it.\n<plan>\n#{PLAN_RESPONSE.strip}\n</plan>\n"
     assert @game_session.current_scene.choosing?
 
     roll = with_die(2) { choose_and_roll @game_session.current_scene }
@@ -465,7 +468,7 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(SECOND_SCENE_RESPONSE) { narrate }.sole
 
     assert_equal 2 * 8, request["prompt"].scan(/^<(user|assistant)>$/).size
-    assert request["prompt"].include?("\n\nScene 5 of 7, the story's second half, Ilker's turn. Pick up where the last outcome stopped, without retelling it, and keep true what the story has shown: who holds what and who knows what, where everyone is and how much time is left. No clue found yet. The heroes do only what the players chose: where the way forks, the fork goes into the choices, and what a way not taken would have won does not turn up by itself.\nIlker, human warrior (background: soldier): ")
+    assert request["prompt"].include?("\n\nScene 5 of 7, the story's second half, Ilker's turn.\nNo clue found yet.\nIlker, human warrior (background: soldier): ")
   end
 
   test "a turn the provider never answered is answered on the next attempt" do
@@ -485,14 +488,21 @@ class NarratorTest < ActiveSupport::TestCase
 
     assert_includes request["system"], "Tell the story in English"
     assert_equal <<~GAME, request["system"][/^The story's plan .*?\n(?=\nBe the game master)/m]
-      The story's plan is below, and only you know it. Add the detail it leaves out, but never go against it. The players know only what the story has shown them, and their heroes know no more: bring in every person, place and past event plainly, saying who or what it is, before anyone leans on it. As the story opens, everyone believes what the plan says is believed; tell it that way. What the plan hides comes out only through its clues, and a clue is won, in the plan's order, by a successful roll on a choice that leads to it: I tell you when. A clue is shown plainly enough that the players can tell what it points to, as the hero finds it and in your own words: the plan's notes are for you, and a clue not yet found is not hinted at. In the second half the clues turn the story, and by the end the players know the whole of it. A roll truly changes something: what a success wins stays won to the end, what a failure loses stays lost unless a later roll wins it back, and the ending is built on them. Invent only the detail that colours a scene, never a new secret, danger, object or power the plan does not hold, and nothing the ending turns on that the players have not already seen.
-
+      The story's plan is below, and only you know it.
+      <plan>
       Mara hid her son in the lighthouse to keep him from the press gang, then begged the village to search for him.
+      </plan>
+
+      Add the detail the plan leaves out, but never go against it.
+      Invent only the detail that colours a scene: never a new secret, danger, object or power.
+      The ending turns only on what the players have already seen.
 
       The tone: balanced. Wonder and danger in equal measure.
       The story runs 7 scenes.
       The hero:
-      - Ilker: Human, Warrior (Fights at the front, starts with a longsword and a round shield.). Background: Soldier. Health 31. Strength 16, Agility 11, Constitution 15, Intelligence 8, Wisdom 12, Charisma 14. Sets out with Longsword; Round shield.
+      - Ilker: Human, Warrior (Fights at the front, starts with a longsword and a round shield.).
+        Background: Soldier. Health 31. Strength 16, Agility 11, Constitution 15, Intelligence 8, Wisdom 12, Charisma 14.
+        Sets out with Longsword; Round shield.
     GAME
   end
 
@@ -501,10 +511,9 @@ class NarratorTest < ActiveSupport::TestCase
     request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
     assert_includes request["system"], "sade, doğal, gündelik Türkçeyle"
-    assert_includes request["system"], "Hikâyenin planı aşağıda ve onu yalnızca sen biliyorsun. Eksik bıraktığı ayrıntıları sen ekle, ama ona hiçbir yerde ters düşme. "
-    assert_includes request["system"], "sonun dayandığı her şeyi de oyuncular önceden görmüş olsun.\n\nMara hid her son"
+    assert_includes request["system"], "Hikâyenin planı aşağıda ve onu yalnızca sen biliyorsun.\n<plan>\nMara hid her son"
     assert_includes request["system"], "- Ilker: İnsan, Savaşçı (Ön safta dövüşür;"
-    assert_includes request["system"], "Geçmişi: Asker. Can 31. Güç 16, Çeviklik 11,"
+    assert_includes request["system"], "  Geçmişi: Asker. Can 31. Güç 16, Çeviklik 11,"
     assert_includes request["system"], "Yola çıkarken yanında: Uzun kılıç; Yuvarlak kalkan."
     assert_no_match(/Warrior|Strength|The story's plan/, request["system"])
     assert_equal opening, request["prompt"]
@@ -527,7 +536,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     told, rewritten = stub_understudy(OUTCOME_RESPONSE, OUTCOME_RESPONSE.sub('{"hp": -4}', '{"hp": -4, "outcome": "defeat"}')) { roll.narrate }
 
-    assert_includes told["prompt"], %(\nThis roll can take the last of Ilker's health. If it does, Ilker falls and the story ends here in defeat: tell how, and add "outcome": "defeat" to the block. If not, tell only what this roll does)
+    assert_includes told["prompt"], %(\nThis roll can take the last of Ilker's health.\nIf it does, Ilker falls and the story ends here in defeat: tell how, and add "outcome": "defeat" to the block.\nIf not)
     assert_includes rewritten["prompt"], %(Your last reply was rejected: the story ends with this roll, in defeat: tell the ending and add "outcome": "defeat" to the block.)
     assert_equal 0, characters(:ilker_hero).reload.hp
     assert @game_session.current_scene.finale?
@@ -542,7 +551,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     told, rewritten = stub_understudy(OUTCOME_RESPONSE.sub('{"hp": -4}', '{"hp": -4, "outcome": "defeat"}'), OUTCOME_RESPONSE) { roll.narrate }
 
-    assert_includes told["prompt"], %(\nThis roll can take the last of Ilker's health. If it does, Ilker falls and takes no more turns, and the story goes on with the others: tell how, and leave "outcome" out of the block. Either way, tell only what this roll does, in a paragraph or two, and stop there: the next scene comes in my next message.\n)
+    assert told["prompt"].end_with?(%(\nThis roll can take the last of Ilker's health.\nIf it does, Ilker falls and takes no more turns, and the story goes on with the others: tell how.\nEither way, tell what this roll does and stop there; the block has no outcome.))
     assert_includes rewritten["prompt"], "Your last reply was rejected: the story goes on after this roll, so the block has no outcome."
     assert_equal 0, characters(:ilker_hero).reload.hp
     assert_not @game_session.reload.finished?
@@ -555,10 +564,10 @@ class NarratorTest < ActiveSupport::TestCase
   end
 
   test "the solo brief ends the story on the hero's last health, a party's brief lets a hero fall and the story go on" do
-    solo = { "en" => %(\nThe roll that ends the story, the last scene's or one that takes a hero's last health, tells what it does and then the ending the story has earned; its block adds "outcome": "victory" or "defeat".\n\nEvery block),
-             "tr" => %(\nHikâyeyi bitiren zarın sonucu, son sahnenin zarı da olsa bir kahramanın son canını alan zar da olsa, önce zarın getirdiğini, sonra hikâyenin hak ettiği sonu anlatır; bloğuna "outcome": "victory" ya da "defeat" eklenir.\n\nHer blok) }
-    party = { "en" => %(A hero who loses their last health before then falls and takes no more turns, and the story goes on with the others; that roll's block has no outcome.\n\nEvery block),
-              "tr" => %(Ondan önce son canını yitiren kahraman düşer ve bir daha sıra almaz, hikâye öbürleriyle sürer; o zarın bloğunda outcome olmaz.\n\nHer blok) }
+    solo = { "en" => %(\nThe roll that ends the story is the last scene's, or one that takes a hero's last health.\n),
+             "tr" => %(\nHikâyeyi bitiren zar, son sahnenin zarıdır ya da bir kahramanın son canını alan zardır.\n) }
+    party = { "en" => %(The ending can take more words.\nA hero who loses their last health before then falls and takes no more turns.\n),
+              "tr" => %(Son daha uzun olabilir.\nOndan önce son canını yitiren kahraman düşer ve bir daha sıra almaz.\n) }
 
     solo.each { |locale, line| assert_includes RubyLLM.render_prompt("narrator/instructions.#{locale}", game: @game_session), line }
 
@@ -578,7 +587,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     told = stub_understudy(OUTCOME_RESPONSE.sub('{"hp": -4}', '{"hp": -4, "outcome": "defeat"}')) { roll.narrate }.sole
 
-    assert_includes told["prompt"], %(\nThis roll can take the last of Ilker's health. If it does, Ilker falls and the story ends here in defeat: tell how)
+    assert_includes told["prompt"], %(\nThis roll can take the last of Ilker's health.\nIf it does, Ilker falls and the story ends here in defeat: tell how)
     assert @game_session.reload.outcome_defeat?
   end
 
@@ -603,7 +612,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(ENDING_RESPONSE) { roll.narrate }.sole
 
-    assert_includes request["prompt"], %(So far Ilker tried "Read the dusty ledger" (failed); Deniz tried "Read the dusty ledger" (failed). Victory or defeat)
+    assert_includes request["prompt"], %(So far Ilker tried "Read the dusty ledger" (failed); Deniz tried "Read the dusty ledger" (failed).\nVictory or defeat)
     assert_not_includes request["prompt"], "In the scene with Deniz"
   end
 
@@ -614,7 +623,7 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(SCENE_RESPONSE) { narrate }.sole
 
-    assert request["prompt"].end_with?("\nIn the scene with Ilker: Deniz, human healer (background: soldier), 28/28 health.\n")
+    assert request["prompt"].end_with?("\nIn the scene with Ilker: Deniz, human healer (background: soldier), 28/28 health.")
   end
 
   test "a party's ending weighs what each hero tried, and each has a part in it" do
@@ -623,8 +632,8 @@ class NarratorTest < ActiveSupport::TestCase
 
     request = stub_understudy(ENDING_RESPONSE.sub("victory", "defeat")) { roll.narrate }.sole
 
-    assert_includes request["prompt"], %(So far Ilker tried "Read the dusty ledger" (failed); Deniz tried nothing. Victory or defeat)
-    assert_includes request["prompt"], %(The heroes settle the question with what they did, each with a part in it, and make no move the players did not choose;)
+    assert_includes request["prompt"], %(So far Ilker tried "Read the dusty ledger" (failed); Deniz tried nothing.\nVictory or defeat)
+    assert_includes request["prompt"], "The heroes settle the question with what they did, each with a part in it.\n"
     assert_includes request["prompt"], "Tell it as scenes the heroes see and hear, to the last line"
   end
 
@@ -846,11 +855,18 @@ class NarratorTest < ActiveSupport::TestCase
 
   private
     def opening
-      "Scene 1 of 7, the story's first half, Ilker's turn. This is the opening, as the plan's opening has it: show where Ilker is and why, and the one or two people the plan's opening has Ilker meet, saying who they are, and end on the trouble landing on Ilker, so the reader knows what is at stake. Reveal nothing of what the plan hides: the people there believe what the plan says is believed, and no one's look or manner gives the hidden part away.\n#{sheet}"
+      <<~CUE.chomp
+        Scene 1 of 7, the story's first half, Ilker's turn.
+        This is the opening, as the plan's opening has it.
+        Show where Ilker is and why, and the one or two people Ilker meets there, saying who they are.
+        End on the trouble landing on Ilker, so the reader knows what is at stake.
+        Reveal nothing of what the plan hides, and let no one's look or manner give it away.
+        #{sheet}
+      CUE
     end
 
     def sheet(hp: 31)
-      "Ilker, human warrior (background: soldier): #{hp}/31 health; carries Longsword, Healing potion (instant: +7 health, 1 use), Inn ledger (quest item); no statuses.\n"
+      "Ilker, human warrior (background: soldier): #{hp}/31 health; carries Longsword, Healing potion (instant: +7 health, 1 use), Inn ledger (quest item); no statuses."
     end
 
     def narrate

@@ -23,7 +23,7 @@ class Narrator < RubyLLM::Agent
   def narrate_scene(scene)
     return unless scene.narrating?
 
-    prose, data = rewriting RubyLLM.render_prompt("narrator/scene", scene: scene) do |cue|
+    prose, data = rewriting cue_from("scene", scene: scene) do |cue|
       streamed = +""
 
       reply = speak(cue) do |chunk|
@@ -40,7 +40,7 @@ class Narrator < RubyLLM::Agent
   def narrate_outcome(roll)
     return if roll.resolved?
 
-    resolution, effects = rewriting RubyLLM.render_prompt("narrator/outcome", roll: roll) do |cue|
+    resolution, effects = rewriting cue_from("outcome", roll: roll) do |cue|
       check_outcome roll, *told(speak(cue).content)
     end
 
@@ -48,6 +48,10 @@ class Narrator < RubyLLM::Agent
   end
 
   private
+    def cue_from(template, **locals)
+      RubyLLM.render_prompt("narrator/#{template}", **locals).squeeze("\n").strip
+    end
+
     def rewriting(cue)
       prompt = cue
       rewrites = 0
