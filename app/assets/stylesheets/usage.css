@@ -5,7 +5,7 @@
     padding: var(--block-space) var(--inline-space);
     background: var(--color-surface-sunken);
     border: 1px solid var(--color-line-soft);
-    border-radius: 20px;
+    border-radius: var(--radius-panel);
     text-align: start;
   }
 
@@ -35,14 +35,14 @@
   .usage__track {
     block-size: 10px;
     margin-block-start: .75rem;
-    border-radius: 5px;
+    border-radius: var(--radius-pill);
     background: var(--color-well);
     overflow: hidden;
   }
 
   .usage__fill {
     block-size: 100%;
-    border-radius: 5px;
+    border-radius: var(--radius-pill);
     background: var(--color-accent);
   }
 

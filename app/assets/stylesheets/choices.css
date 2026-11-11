@@ -42,7 +42,7 @@
       padding: .875rem .25rem;
       background: none;
       border: 0;
-      border-radius: 10px;
+      border-radius: var(--radius-medium);
       color: var(--color-ink-soft);
       text-align: center;
       font: 600 var(--text-2xs) var(--font-ui);

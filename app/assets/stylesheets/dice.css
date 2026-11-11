@@ -167,7 +167,7 @@
       padding: .7rem .95rem;
       background: var(--color-surface-sunken);
       border: 1px solid var(--color-line-soft);
-      border-radius: 13px;
+      border-radius: var(--radius-medium);
     }
 
     dt {
@@ -334,7 +334,7 @@
     padding: .6rem .9rem;
     background: color-mix(in oklch, var(--color-positive) 10%, transparent);
     border: 1px solid color-mix(in oklch, var(--color-positive) 25%, transparent);
-    border-radius: 14px;
+    border-radius: var(--radius-control);
   }
 
   .outcome__gain-icon {

@@ -5,7 +5,8 @@
     z-index: 2;
     padding: .875rem 1.375rem calc(.75rem + env(safe-area-inset-bottom));
     background: var(--color-surface-raised);
-    border-radius: 30px 30px 0 0;
+    border-start-start-radius: var(--radius-sheet);
+    border-start-end-radius: var(--radius-sheet);
     border-block-start: 2px solid var(--color-accent);
     box-shadow: 0 -18px 40px -8px color-mix(in oklch, var(--color-accent) 28%, transparent);
   }
@@ -66,7 +67,7 @@
     padding: .95rem 1.05rem;
     background: var(--color-surface-lifted);
     border: 1px solid color-mix(in oklch, var(--color-accent) 28%, transparent);
-    border-radius: 15px;
+    border-radius: var(--radius-control);
     color: var(--color-ink);
     font: inherit;
     text-align: start;
@@ -88,7 +89,7 @@
     flex: none;
     padding: .25rem var(--inline-space-half);
     border: 1px solid color-mix(in oklch, var(--color-accent) 40%, transparent);
-    border-radius: 7px;
+    border-radius: var(--radius-small);
     color: var(--color-accent-bright);
     font-size: var(--text-3xs);
     font-weight: 700;
@@ -104,7 +105,7 @@
     padding: .8rem var(--inline-space);
     background: var(--color-surface-sunken);
     border: 1px dashed var(--color-accent-line);
-    border-radius: 15px;
+    border-radius: var(--radius-control);
     color: var(--color-ink-muted);
     font: inherit;
     cursor: pointer;
@@ -138,7 +139,7 @@
       margin: 0 2.5rem 2.5rem;
       padding: 0 1.25rem 1.25rem;
       border: 1px solid color-mix(in oklch, var(--color-accent) 28%, transparent);
-      border-radius: 22px;
+      border-radius: var(--radius-panel);
       box-shadow: none;
     }
 
@@ -165,7 +166,8 @@
       background: var(--color-surface-raised);
       border: 1px solid color-mix(in oklch, var(--color-accent) 28%, transparent);
       border-block-end: 0;
-      border-radius: 22px 22px 0 0;
+      border-start-start-radius: var(--radius-panel);
+      border-start-end-radius: var(--radius-panel);
       color: var(--color-accent);
       text-decoration: none;
       transition: z-index 0s var(--panel-slide);

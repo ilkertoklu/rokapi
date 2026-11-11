@@ -111,7 +111,7 @@
       margin: 0;
       background: var(--color-surface);
       border: 1.5px solid color-mix(in oklch, var(--color-ink) 22%, transparent);
-      border-radius: 8px;
+      border-radius: var(--radius-small);
       cursor: pointer;
 
       &:checked {

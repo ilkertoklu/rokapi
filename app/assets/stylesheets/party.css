@@ -110,7 +110,7 @@
     flex: none;
     inline-size: 30px;
     block-size: 30px;
-    border-radius: 8px;
+    border-radius: var(--radius-small);
     background: color-mix(in oklch, var(--color-positive) 16%, transparent);
     color: var(--color-positive-bright);
 

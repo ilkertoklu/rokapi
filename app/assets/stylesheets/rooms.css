@@ -6,7 +6,7 @@
     padding: .8125rem .9375rem;
     background: color-mix(in oklch, var(--color-negative) 9%, var(--color-surface-raised));
     border: 1px solid color-mix(in oklch, var(--color-negative) 40%, transparent);
-    border-radius: 15px;
+    border-radius: var(--radius-control);
     box-shadow: var(--shadow-float);
 
     > .glyph {

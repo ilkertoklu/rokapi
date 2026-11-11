@@ -34,7 +34,7 @@
   .pick--large {
     gap: .875rem;
     padding: 1.125rem var(--inline-space);
-    border-radius: 18px;
+    border-radius: var(--radius-card);
 
     .pick__title {
       font-size: var(--text-lg);

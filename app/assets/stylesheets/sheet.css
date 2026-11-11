@@ -76,7 +76,8 @@
     overflow-y: auto;
     overscroll-behavior: contain;
     background: var(--color-surface-sunken);
-    border-radius: 32px 32px 0 0;
+    border-start-start-radius: var(--radius-sheet);
+    border-start-end-radius: var(--radius-sheet);
     box-shadow: var(--shadow-sheet);
   }
 
@@ -139,7 +140,7 @@
       gap: var(--inline-space-half);
       padding: var(--block-space-half) .7rem;
       background: var(--color-surface);
-      border-radius: 12px;
+      border-radius: var(--radius-medium);
     }
 
     dt {

@@ -19,7 +19,7 @@
     padding: 1.125rem 1.125rem var(--block-space);
     background: var(--color-surface-sunken);
     border: 1px solid color-mix(in oklch, var(--color-accent) 30%, transparent);
-    border-radius: 20px;
+    border-radius: var(--radius-panel);
     text-align: start;
 
     ul {

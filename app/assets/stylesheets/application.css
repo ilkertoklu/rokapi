@@ -122,8 +122,12 @@
   --inline-space-half: calc(var(--inline-space) / 2);
   --inline-space-double: calc(var(--inline-space) * 2);
 
-  --radius-card: 16px;
+  --radius-small: 8px;
+  --radius-medium: 12px;
   --radius-control: 14px;
+  --radius-card: 16px;
+  --radius-panel: 22px;
+  --radius-sheet: 30px;
   --radius-pill: 999px;
 }
 

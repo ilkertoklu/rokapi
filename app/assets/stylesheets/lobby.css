@@ -66,7 +66,7 @@
     padding: .875rem var(--inline-space);
     background: var(--color-surface-sunken);
     border: 1px solid var(--color-line-soft);
-    border-radius: 20px;
+    border-radius: var(--radius-panel);
 
     > .overline:first-child {
       color: var(--color-accent);
@@ -137,7 +137,7 @@
     gap: .8125rem;
     padding: .4375rem .875rem;
     background: var(--color-surface-sunken);
-    border-radius: 15px;
+    border-radius: var(--radius-control);
   }
 
   .lobby-player__body {

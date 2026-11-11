@@ -6,7 +6,7 @@
     padding: .8125rem var(--inline-space);
     background: var(--color-surface-raised);
     border: 1px solid var(--color-accent-line);
-    border-radius: 22px;
+    border-radius: var(--radius-panel);
     color: inherit;
     text-decoration: none;
 

@@ -50,7 +50,7 @@
     padding: .25rem 1.125rem;
     background: var(--color-surface-sunken);
     border: 1px solid var(--color-line-soft);
-    border-radius: 20px;
+    border-radius: var(--radius-panel);
 
     > div {
       display: flex;

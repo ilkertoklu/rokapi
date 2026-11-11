@@ -8,7 +8,7 @@
     padding: 1.125rem var(--inline-space) var(--block-space);
     background: var(--color-surface-sunken);
     border: 1px solid var(--color-accent-line);
-    border-radius: 20px;
+    border-radius: var(--radius-panel);
 
     .usage {
       margin-block-start: var(--block-space);
@@ -33,7 +33,7 @@
     flex: none;
     padding: 11px;
     background: var(--color-accent-soft);
-    border-radius: 12px;
+    border-radius: var(--radius-medium);
     color: var(--color-accent-bright);
   }
 

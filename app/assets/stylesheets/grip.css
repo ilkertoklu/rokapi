@@ -4,7 +4,7 @@
     inline-size: 42px;
     block-size: 4px;
     margin-inline: auto;
-    border-radius: 3px;
+    border-radius: var(--radius-pill);
     background: color-mix(in oklch, var(--color-ink) 22%, transparent);
   }
 }
