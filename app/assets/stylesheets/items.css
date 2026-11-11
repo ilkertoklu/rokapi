@@ -154,7 +154,7 @@
   }
 
   .inventory__use {
-    min-block-size: 44px;
+    min-block-size: var(--target-size);
     padding: 0 var(--inline-space);
     background: var(--color-accent-soft);
     border: 1px solid var(--color-accent-line);

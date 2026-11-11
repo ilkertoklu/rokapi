@@ -6,6 +6,8 @@
   }
 
   .locales__option {
+    min-block-size: var(--target-size);
+    margin-block: -.3rem;
     padding: .4rem .7rem;
     background: none;
     border: 0;

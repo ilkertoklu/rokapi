@@ -15,7 +15,7 @@
     display: block;
     inline-size: var(--btn-inline-size);
     min-inline-size: var(--btn-min-inline-size, auto);
-    min-block-size: 44px;
+    min-block-size: var(--target-size);
     padding: var(--btn-padding-block) var(--btn-padding-inline);
     background: var(--btn-background);
     border: var(--btn-border-width) solid var(--btn-border-color);
@@ -113,6 +113,8 @@
 
   .resend {
     inline-size: 100%;
+    min-block-size: var(--target-size);
+    margin-block: -.1875rem;
     padding: var(--block-space-half) var(--inline-space-half);
     background: none;
     border: 0;
@@ -132,8 +134,8 @@
   }
 
   .stepper {
-    inline-size: 44px;
-    block-size: 44px;
+    inline-size: var(--target-size);
+    block-size: var(--target-size);
     flex: none;
     border: 1px solid var(--color-line-strong);
     border-radius: var(--radius-medium);

@@ -91,8 +91,8 @@
   .sheet__handle {
     display: block;
     inline-size: 60px;
-    block-size: 22px;
-    margin: 0 auto var(--block-space);
+    block-size: var(--target-size);
+    margin: -11px auto 5px;
     padding: 0;
     background: none;
     border: 0;

@@ -15,7 +15,7 @@
   }
 
   .profile__badge {
-    --avatar-size: 44px;
+    --avatar-size: var(--target-size);
     --avatar-font-size: var(--text-base);
 
     display: flex;

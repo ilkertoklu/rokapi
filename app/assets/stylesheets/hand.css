@@ -1,8 +1,8 @@
 @layer components {
   .redraw {
     display: grid;
-    inline-size: 44px;
-    block-size: 44px;
+    inline-size: var(--target-size);
+    block-size: var(--target-size);
     margin-block: -12px;
     margin-inline-end: -13px;
     padding: 13px;

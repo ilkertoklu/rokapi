@@ -97,6 +97,8 @@
   --shadow-glow: 0 0 22px 4px var(--color-accent-glow);
   --shadow-glow-small: 0 0 8px var(--color-accent-glow);
 
+  --target-size: 44px;
+
   --z-raised: 1;
   --z-panel: 2;
   --z-sticky: 3;

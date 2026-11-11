@@ -8,7 +8,7 @@
 
   .room-code {
     display: grid;
-    grid-template-columns: 44px auto 44px;
+    grid-template-columns: var(--target-size) auto var(--target-size);
     justify-content: center;
     align-items: center;
     padding-block: .375rem .625rem;
@@ -38,8 +38,8 @@
 
   .room-code__copy {
     display: flex;
-    inline-size: 44px;
-    block-size: 44px;
+    inline-size: var(--target-size);
+    block-size: var(--target-size);
     padding: 13.5px;
     background: none;
     border: 0;
