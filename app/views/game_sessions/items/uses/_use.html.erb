@@ -11,8 +11,8 @@
       </span>
     </div>
     <div class="vitals__track">
-      <div class="vitals__fill vitals__fill--restored" style="inline-size: <%= character.hp_percentage %>%"></div>
-      <div class="vitals__mark" style="inset-inline-start: <%= character.hp_percentage(character.hp - restored) %>%"></div>
+      <div class="vitals__fill vitals__fill--restored" style="--fill: <%= character.hp_percentage %>%"></div>
+      <div class="vitals__mark" style="--mark: <%= character.hp_percentage(character.hp - restored) %>%"></div>
     </div>
   </div>
 

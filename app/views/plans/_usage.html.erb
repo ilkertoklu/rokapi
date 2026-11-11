@@ -5,7 +5,7 @@
     <span class="usage__left"><%= number_to_percentage user.usage_left_percentage, precision: 0 %> <span><%= t("plans.usage.left") %></span></span>
   </div>
   <div class="usage__track">
-    <div class="usage__fill" style="inline-size: <%= user.usage_left_percentage %>%"></div>
+    <div class="usage__fill" style="--fill: <%= user.usage_left_percentage %>%"></div>
   </div>
   <div class="usage__row usage__footer">
     <span><%= user.monthly_plan.name %></span>
