@@ -297,12 +297,12 @@ class NarratorTest < ActiveSupport::TestCase
     stub_understudy(SECOND_SCENE_RESPONSE) { narrate }
     roll = with_die(15) { choose_and_roll @game_session.current_scene }
 
-    request = stub_understudy(ENDING_RESPONSE.sub("victory", "defeat")) { roll.narrate }.sole
+    request = stub_understudy(ENDING_RESPONSE) { roll.narrate }.sole
     cue = request["prompt"].split("</conversation_so_far>").last
 
     assert roll.success?
     assert_includes cue, "So far Ilker tried \"Read the dusty ledger\" (succeeded) and \"Read the dusty ledger\" (succeeded).\n" \
-      "What the rolls have changed so far: The innkeeper trusts Ilker with the ledger.\nThe hero won too few of the clues themselves"
+      "What the rolls have changed so far: The innkeeper trusts Ilker with the ledger.\nThe hero found what was hidden"
     assert_no_match(/"clue"|"mark"/, cue)
   end
 

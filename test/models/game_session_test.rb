@@ -315,9 +315,9 @@ class GameSessionTest < ActiveSupport::TestCase
     assert_equal [ 1, 3 ], game_session.reload.clues_found
   end
 
-  test "the story is solved once the heroes won at least half its clues themselves, not counting those the story brought them" do
+  test "the story is solved once the heroes won a third of its clues themselves, not counting those the story brought them" do
     game_session = game_sessions(:ilker_solo)
-    game_session.update! plan: "Clues:\n1. Mara's shawl hangs on the lighthouse door.\n2. The boy's boots stand dry.\n3. The press gang's list carries his name."
+    game_session.update! plan: "Clues:\n1. Mara's shawl hangs on the lighthouse door.\n2. The boy's boots stand dry.\n3. The press gang's list carries his name.\n4. The skipper keeps the boy's knife."
 
     assert_not game_session.solved?
     assert_equal "defeat", game_session.earned_outcome

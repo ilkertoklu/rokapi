@@ -10,7 +10,7 @@ module GameSession::Clues
   end
 
   def solved?
-    clues_won.size * 2 >= clue_count
+    clues_won.size * 3 >= clue_count
   end
 
   def earned_outcome

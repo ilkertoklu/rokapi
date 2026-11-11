@@ -224,7 +224,6 @@ class RollTest < ActiveSupport::TestCase
 
   test "the last roll ends as the clues the heroes won decide, whatever the die or the story says" do
     game_sessions(:ilker_solo).update! plan: CLUES_PLAN
-    roll_with(value: 15, target: 12).resolve resolution: "Mara's shawl hangs on the lighthouse door.", effects: {}
     @scene.update! position: game_sessions(:ilker_solo).scene_budget
 
     assert_equal "defeat", roll_with(value: 20, target: 12).ending_with("outcome" => "victory")
