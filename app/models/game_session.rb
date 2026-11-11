@@ -98,6 +98,25 @@ class GameSession < ApplicationRecord
     [ scene&.roll, scene ].compact.find(&:stalled?)
   end
 
+  def step_for(player)
+    scene = current_scene
+    roll = scene&.roll
+
+    case
+    when lobby? then "lobby"
+    when !player.ready? then "character"
+    when scene.nil? then "opening"
+    when finished? then "finished"
+    when scene.narrator_writing? then "writing"
+    when roll&.narrator_writing? then "resolving"
+    when !scene.turn_of?(player) then "watching"
+    when stalled_narration then "stalled"
+    when scene.choosing? then "choosing"
+    when scene.rolling? then "rolling"
+    when roll&.unseen? then "outcome"
+    end
+  end
+
   def finished?
     ended_at.present?
   end

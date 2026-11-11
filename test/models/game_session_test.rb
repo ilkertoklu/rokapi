@@ -474,6 +474,54 @@ class GameSessionTest < ActiveSupport::TestCase
     assert_equal [ false, true ], room.party.map(&:fallen?)
   end
 
+  test "a hero's step runs from making the character to the end of the game" do
+    game_session = game_sessions(:ilker_without_character)
+    player = players(:ilker_without_character_host)
+    assert_equal "character", game_session.step_for(player)
+
+    ready_warrior player
+    assert_equal "opening", game_session.step_for(player)
+
+    scene = game_session.scenes.create!(position: 1, active_player: player)
+    assert_equal "writing", game_session.step_for(player)
+
+    scene.stall_narration
+    assert_equal "stalled", game_session.step_for(player)
+
+    scene.update! state: :choosing, stalled_at: nil
+    assert_equal "choosing", game_session.step_for(player)
+
+    choice = scene.choices.create!(label: "Press on", stat: "strength", modifier: 3, target: 11)
+    choice.choose
+    assert_equal "rolling", game_session.step_for(player)
+
+    roll = choice.create_roll!(player: player, value: 15)
+    scene.played!
+    assert_equal "resolving", game_session.step_for(player)
+
+    roll.stall_narration
+    assert_equal "stalled", game_session.step_for(player)
+
+    roll.update! resolution: "The door gives way.", stalled_at: nil
+    assert_equal "outcome", game_session.step_for(player)
+
+    game_session.finish
+    assert_equal "finished", game_session.step_for(player)
+  end
+
+  test "in a room, the others watch a hero's turn once the narrator has written it" do
+    room = game_sessions(:ilker_room)
+    host, deniz = players(:ilker_room_host), players(:deniz_room_guest)
+    assert_equal "lobby", room.step_for(deniz)
+
+    room.players.each { it.ready_up(character_attributes) }
+    room.start
+    assert_equal [ "writing", "writing" ], [ room.step_for(host), room.step_for(deniz) ]
+
+    room.current_scene.choosing!
+    assert_equal [ "choosing", "watching" ], [ room.step_for(host), room.step_for(deniz) ]
+  end
+
   test "dice rolled counts every roll of the adventure" do
     game_session = game_sessions(:ilker_solo)
     roll_in game_session, position: 1

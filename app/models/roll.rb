@@ -41,6 +41,10 @@ class Roll < ApplicationRecord
     !resolved?
   end
 
+  def narrator_writing?
+    pending? && !stalled?
+  end
+
   def critical?
     grade == :critical
   end

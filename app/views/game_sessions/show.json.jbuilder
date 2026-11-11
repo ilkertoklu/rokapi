@@ -10,6 +10,7 @@ unless @game_session.surprise?
 end
 
 json.finished @game_session.finished?
+json.step @game_session.step_for(@player)
 json.your_turn @game_session.current_scene&.active_player == @player
 json.multiplayer @game_session.multiplayer?
 json.rematch_id @game_session.rematch&.id

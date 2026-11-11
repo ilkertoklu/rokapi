@@ -39,6 +39,7 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
     get game_session_path(game_session), as: :json
     game = response.parsed_body
     assert game["your_turn"]
+    assert_equal "choosing", game["step"]
     assert_equal 31, game["character"]["max_hp"]
     assert_includes game["character"]["items"].pluck("name"), "Longsword"
     scene = game["scenes"].sole
@@ -124,6 +125,8 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
     warrior = response.parsed_body["klasses"].find { it["key"] == "warrior" }
     assert_equal Character::Klass.fetch("warrior").suggested_stats, warrior["suggested_stats"]
 
+    get game_session_path(game_session), as: :json
+    assert_equal "character", response.parsed_body["step"]
   end
 
   test "an invalid character is rejected with its errors" do

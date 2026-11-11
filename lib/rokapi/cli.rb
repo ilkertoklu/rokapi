@@ -114,7 +114,7 @@ module Rokapi
     desc "show", "Show where the game stands and what to do next; in a party game, wait for your turn"
     def show
       game = self.game
-      spectating?(game) && !options[:json] ? watch : present(game)
+      watching?(game) && !options[:json] ? watch : present(game)
     end
 
     desc "story", "Show every scene so far"
@@ -320,7 +320,7 @@ module Rokapi
           game = self.game
           stream game, streamed
           report game, reported
-          return present(game, streamed: streamed) unless spectating?(game) || busy?(game)
+          return present(game, streamed: streamed) unless watching?(game) || busy?(game)
           raise Thor::Error, "Still not your turn after #{options[:wait]}s. Run: bin/rokapi show" if Time.now > deadline
 
           sleep POLL_INTERVAL
@@ -328,9 +328,9 @@ module Rokapi
       end
 
       def report(game, reported)
-        scene = current_scene(game) or return
-        return if scene["state"] == "narrating" || !spectating?(game)
+        return unless watching?(game)
 
+        scene = current_scene(game)
         actor = scene["active_player"]
         choice = scene["choices"].find { |candidate| candidate["chosen"] }
         roll = scene["roll"]
@@ -350,18 +350,12 @@ module Rokapi
         end
       end
 
-      def spectating?(game)
-        game["multiplayer"] && game["started"] && !game["finished"] && !game["your_turn"]
+      def watching?(game)
+        game["step"] == "watching"
       end
 
       def busy?(game)
-        scene = current_scene(game)
-        roll = scene&.fetch("roll")
-
-        return false if game["finished"] || game["lobby"]
-        return !game["multiplayer"] if scene.nil?
-
-        (scene["state"] == "narrating" && !scene["stalled"]) || (roll && !roll["resolved"] && !roll["stalled"])
+        %w[ opening writing resolving ].include?(game["step"])
       end
 
       def stream(game, streamed)
@@ -383,16 +377,23 @@ module Rokapi
       def present(game, streamed: {}, narration: true)
         return puts(JSON.pretty_generate(game)) if options[:json]
 
-        return say_lobby(game) if game["lobby"]
-
-        scene = current_scene(game)
-        if scene.nil? && game["character"]
-          say "Your character is ready. The game starts when the host starts it."
-          return next_step("show")
-        elsif scene.nil?
+        case game["step"]
+        when "lobby"
+          say_lobby game
+        when "character"
           say "The game has no character yet."
-          return next_step("heroes")
+          next_step "heroes"
+        when "opening"
+          say "The narrator is getting the opening scene ready."
+          next_step "show"
+        else
+          say_stage game, streamed: streamed, narration: narration
         end
+      end
+
+      def say_stage(game, streamed:, narration:)
+        scene = current_scene(game)
+        roll = scene["roll"]
 
         if streamed.key?(scene["position"])
           puts
@@ -404,35 +405,34 @@ module Rokapi
         say_status game
         say_party game, scene if game["multiplayer"]
 
-        roll = scene["roll"]
-        case
-        when game["finished"]
+        case game["step"]
+        when "finished"
           say_choice scene
           say_roll roll, ending: true if roll
           say_footer game
           next_step game["multiplayer"] ? "rematch" : "new"
-        when spectating?(game)
+        when "watching"
           say "\n#{scene["active_player"]}’s turn. You are watching."
           next_step "show (waits for your turn)"
-        when scene["stalled"] || roll&.fetch("stalled")
+        when "stalled"
           say "\nThe narrator stalled."
           next_step "resume"
-        when scene["state"] == "narrating"
+        when "writing"
           say "\nThe narrator is still writing."
           next_step "show"
-        when scene["state"] == "choosing"
+        when "choosing"
           say "\nCHOICES"
           scene["choices"].each_with_index do |choice, index|
             say "  #{index + 1}) [#{choice["stat"]} #{format("%+d", choice["modifier"])} | #{choice["difficulty"]}, target #{choice["target"]}] #{choice["label"]}"
           end
           next_step "choose #{(1..scene["choices"].size).to_a.join("|")}#{usable_hint(game)}"
-        when scene["state"] == "rolling"
+        when "rolling"
           say_choice scene
           next_step "roll#{usable_hint(game)}"
-        when roll && !roll["resolved"]
+        when "resolving"
           say "\nThe narrator is resolving the roll."
           next_step "show"
-        when roll && !roll["acknowledged"]
+        when "outcome"
           say_choice scene
           say_roll roll
           next_step "continue#{usable_hint(game)}"
