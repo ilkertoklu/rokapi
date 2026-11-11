@@ -113,7 +113,7 @@
 
   .resend {
     inline-size: 100%;
-    padding: .5rem;
+    padding: var(--block-space-half) var(--inline-space-half);
     background: none;
     border: 0;
     color: var(--color-accent-bright);

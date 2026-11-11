@@ -3,7 +3,7 @@
     display: flex;
     align-items: center;
     gap: .8125rem;
-    padding: .9375rem 1rem;
+    padding: .9375rem var(--inline-space);
     background: var(--color-surface-sunken);
     border: 1px solid var(--color-line-soft);
     border-radius: var(--radius-card);

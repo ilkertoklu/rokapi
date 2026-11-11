@@ -30,7 +30,7 @@
   form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: var(--block-space);
     margin: 0;
   }
 }

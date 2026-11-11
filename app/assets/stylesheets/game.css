@@ -8,7 +8,7 @@
   }
 
   .screen:has(.game) .flash {
-    margin: .75rem 1rem 0;
+    margin: .75rem var(--inline-space) 0;
   }
 
   @media (min-width: 48rem) {
@@ -103,7 +103,7 @@
       :is(.dice, .outcome) {
         flex: none;
         overflow-y: visible;
-        padding-block: 2rem 1rem;
+        padding-block: var(--block-space-double) var(--block-space);
       }
     }
 

@@ -14,8 +14,8 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: .5rem;
-    padding: 1rem 1.125rem 1.125rem;
+    gap: var(--block-space-half);
+    padding: var(--block-space) 1.125rem 1.125rem;
     background: var(--color-surface-sunken);
     border: 1px solid var(--color-line-soft);
     border-radius: 18px;
@@ -103,7 +103,7 @@
   .plan-option__perk {
     display: flex;
     align-items: center;
-    gap: .5rem;
+    gap: var(--inline-space-half);
     font-size: var(--text-2xs);
     color: var(--color-ink-soft);
 
@@ -132,7 +132,7 @@
     .paywall {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 1rem;
+      gap: var(--block-space) var(--inline-space);
 
       > .note {
         grid-column: 1 / -1;

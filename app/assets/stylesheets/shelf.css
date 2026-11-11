@@ -58,7 +58,7 @@
   .adventure__scene {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: var(--block-space);
 
     h2 {
       margin: .25rem 0 0;
@@ -71,7 +71,7 @@
     .finale__move {
       flex-wrap: wrap;
       align-self: flex-start;
-      gap: .375rem .5rem;
+      gap: .375rem var(--inline-space-half);
       margin: 0;
       padding: .625rem .875rem;
       border-radius: var(--radius-control);

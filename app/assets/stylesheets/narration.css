@@ -10,7 +10,7 @@
   .scene__speaker {
     display: flex;
     align-items: center;
-    gap: .5rem;
+    gap: var(--inline-space-half);
     margin: 0 0 .75rem;
     color: var(--color-ink-soft);
     font-size: var(--text-2xs);
@@ -85,7 +85,7 @@
     .narration {
       flex: none;
       overflow: visible;
-      padding: 1.5rem 2.5rem 2rem;
+      padding: 1.5rem 2.5rem var(--block-space-double);
       mask-image: none;
     }
 

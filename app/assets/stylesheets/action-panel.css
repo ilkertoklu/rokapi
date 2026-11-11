@@ -86,7 +86,7 @@
 
   .stat-chip {
     flex: none;
-    padding: .25rem .5rem;
+    padding: .25rem var(--inline-space-half);
     border: 1px solid color-mix(in oklch, var(--color-accent) 40%, transparent);
     border-radius: 7px;
     color: var(--color-accent-bright);
@@ -101,7 +101,7 @@
     align-items: center;
     gap: .6rem;
     inline-size: 100%;
-    padding: .8rem 1rem;
+    padding: .8rem var(--inline-space);
     background: var(--color-surface-sunken);
     border: 1px dashed var(--color-accent-line);
     border-radius: 15px;

@@ -112,7 +112,7 @@
       turbo-frame {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        gap: var(--block-space);
       }
 
       .field-label {

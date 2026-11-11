@@ -50,14 +50,14 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;
-    margin-block-start: 1rem;
+    gap: var(--block-space);
+    margin-block-start: var(--block-space);
   }
 
   .feed__action {
     display: inline-flex;
     align-items: center;
-    gap: .5rem;
+    gap: var(--inline-space-half);
     margin: 0;
     padding: .45rem .75rem;
     border-radius: var(--radius-pill);

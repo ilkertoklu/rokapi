@@ -39,9 +39,9 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: .5rem;
+    gap: var(--block-space-half);
     min-block-size: 6.5rem;
-    padding: 1rem 1rem .875rem;
+    padding: var(--block-space) var(--inline-space) .875rem;
     background: var(--color-surface-raised);
     border: 1px solid var(--color-accent-line);
     border-radius: 18px;

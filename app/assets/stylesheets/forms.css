@@ -3,7 +3,7 @@
   fieldset.choices legend {
     display: block;
     padding: 0;
-    margin-block-end: .5rem;
+    margin-block-end: var(--block-space-half);
     color: var(--color-ink-faint);
     font-size: var(--text-2xs);
     font-weight: 600;
@@ -40,7 +40,7 @@
     display: grid;
     grid-auto-flow: column;
     grid-auto-columns: 1fr;
-    gap: .5rem;
+    gap: var(--block-space-half) var(--inline-space-half);
   }
 
   .code input.code__input {
@@ -130,7 +130,7 @@
   .stat-row {
     display: flex;
     align-items: center;
-    gap: .5rem;
+    gap: var(--inline-space-half);
 
     .stat-row__label {
       flex: 1;

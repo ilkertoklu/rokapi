@@ -115,6 +115,13 @@
   --text-7xl: 2.375rem;
   --text-8xl: 2.75rem;
 
+  --block-space: 1rem;
+  --block-space-half: calc(var(--block-space) / 2);
+  --block-space-double: calc(var(--block-space) * 2);
+  --inline-space: 1rem;
+  --inline-space-half: calc(var(--inline-space) / 2);
+  --inline-space-double: calc(var(--inline-space) * 2);
+
   --radius-card: 16px;
   --radius-control: 14px;
   --radius-pill: 999px;

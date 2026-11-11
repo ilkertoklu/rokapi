@@ -11,7 +11,7 @@
   }
 
   .btn .key {
-    margin-inline-start: .5rem;
+    margin-inline-start: var(--inline-space-half);
     border-color: color-mix(in oklch, currentColor 45%, transparent);
     color: inherit;
     vertical-align: .1em;

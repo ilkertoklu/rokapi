@@ -38,8 +38,8 @@
   @media (min-width: 64rem), (min-width: 48rem) and (min-height: 36rem) {
     .page-head {
       display: flex;
-      gap: 1rem;
-      margin: 0 0 .5rem;
+      gap: var(--inline-space);
+      margin: 0 0 var(--block-space-half);
 
       h1 {
         font-size: var(--text-4xl);

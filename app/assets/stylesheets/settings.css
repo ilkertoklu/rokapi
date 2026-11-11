@@ -4,7 +4,7 @@
   }
 
   .settings__heading {
-    margin: 1rem 0 0;
+    margin: var(--block-space) 0 0;
     color: var(--color-ink-faint);
   }
 
@@ -12,7 +12,7 @@
     display: flex;
     flex-direction: column;
     gap: .3rem;
-    padding: .8125rem 1rem;
+    padding: .8125rem var(--inline-space);
     background: var(--color-surface-sunken);
     border: 1px solid var(--color-line-soft);
     border-radius: var(--radius-card);
@@ -62,7 +62,7 @@
     .settings {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1rem 1.25rem;
+      gap: var(--block-space) 1.25rem;
       align-items: center;
 
       > * {

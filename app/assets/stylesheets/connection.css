@@ -57,7 +57,7 @@
   .connection__status {
     display: flex;
     align-items: center;
-    gap: .5rem;
+    gap: var(--inline-space-half);
     margin: .75rem 0 0;
     color: var(--color-negative-bright);
     font-size: var(--text-xs);
@@ -80,7 +80,7 @@
   .connection__saved {
     display: flex;
     align-items: center;
-    gap: .5rem;
+    gap: var(--inline-space-half);
     margin: 1.375rem 0 0;
     padding: .5625rem .9375rem;
     background: color-mix(in oklch, var(--color-positive) 10%, transparent);

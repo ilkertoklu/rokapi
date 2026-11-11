@@ -45,7 +45,7 @@
   .finale__move {
     display: inline-flex;
     align-items: center;
-    gap: .5rem;
+    gap: var(--inline-space-half);
     margin: 1.1rem 0 0;
     padding: .45rem .8rem;
     border-radius: var(--radius-pill);

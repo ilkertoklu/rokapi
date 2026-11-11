@@ -5,14 +5,14 @@
   }
 
   .subscription {
-    padding: 1.125rem 1rem 1rem;
+    padding: 1.125rem var(--inline-space) var(--block-space);
     background: var(--color-surface-sunken);
     border: 1px solid var(--color-accent-line);
     border-radius: 20px;
 
     .usage {
-      margin-block-start: 1rem;
-      padding: 1rem 0 0;
+      margin-block-start: var(--block-space);
+      padding: var(--block-space) 0 0;
       background: none;
       border: 0;
       border-block-start: 1px solid var(--color-line-soft);

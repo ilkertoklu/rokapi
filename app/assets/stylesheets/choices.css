@@ -75,7 +75,7 @@
   .chips {
     display: flex;
     flex-wrap: wrap;
-    gap: .5rem;
+    gap: var(--block-space-half) var(--inline-space-half);
 
     .chip {
       position: relative;
@@ -106,7 +106,7 @@
   .choice-description {
     display: flex;
     align-items: center;
-    gap: .5rem;
+    gap: var(--inline-space-half);
     margin: 0;
     color: var(--color-ink-dim);
     font-family: var(--font-display);

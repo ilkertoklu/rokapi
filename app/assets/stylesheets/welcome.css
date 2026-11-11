@@ -16,7 +16,7 @@
   .plan {
     inline-size: 100%;
     margin-block-start: 1.875rem;
-    padding: 1.125rem 1.125rem 1rem;
+    padding: 1.125rem 1.125rem var(--block-space);
     background: var(--color-surface-sunken);
     border: 1px solid color-mix(in oklch, var(--color-accent) 30%, transparent);
     border-radius: 20px;
@@ -41,7 +41,7 @@
   }
 
   .plan__headline {
-    margin: .5rem 0 0;
+    margin: var(--block-space-half) 0 0;
     font-family: var(--font-display);
     font-size: var(--text-5xl);
     font-weight: 600;

@@ -2,7 +2,7 @@
   .usage {
     inline-size: 100%;
     margin-block-start: 1.75rem;
-    padding: 1rem;
+    padding: var(--block-space) var(--inline-space);
     background: var(--color-surface-sunken);
     border: 1px solid var(--color-line-soft);
     border-radius: 20px;

@@ -33,7 +33,7 @@
 
   .pick--large {
     gap: .875rem;
-    padding: 1.125rem 1rem;
+    padding: 1.125rem var(--inline-space);
     border-radius: 18px;
 
     .pick__title {
@@ -96,7 +96,7 @@
     .stack:has(> .pick--large) {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1rem;
+      gap: var(--block-space) var(--inline-space);
 
       .pick {
         padding: 1.25rem 1.5rem;

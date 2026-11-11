@@ -30,7 +30,7 @@
     display: flex;
     align-items: center;
     gap: .95rem;
-    margin-block: .5rem;
+    margin-block: var(--block-space-half);
   }
 
   .identity__name {

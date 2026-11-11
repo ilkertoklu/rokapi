@@ -68,7 +68,7 @@
   .inventory {
     display: flex;
     flex-direction: column;
-    gap: .5rem;
+    gap: var(--block-space-half);
     margin: .625rem 0 1.25rem;
     padding: 0;
     list-style: none;
@@ -137,7 +137,7 @@
   }
 
   .inventory__badge {
-    padding: .18rem .5rem;
+    padding: .18rem var(--inline-space-half);
     border: 1px solid var(--color-accent-line);
     border-radius: 6px;
     font-size: var(--text-3xs);
@@ -155,7 +155,7 @@
 
   .inventory__use {
     min-block-size: 44px;
-    padding: 0 1rem;
+    padding: 0 var(--inline-space);
     background: color-mix(in oklch, var(--color-accent) 12%, transparent);
     border: 1px solid var(--color-accent-line);
     border-radius: 11px;
