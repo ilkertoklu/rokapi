@@ -90,10 +90,9 @@ module Rokapi
     desc "character RACE CLASS BACKGROUND", "Create the character and wait for the opening scene"
     option :stats, desc: "Final stat values, e.g. strength=16,constitution=15; unlisted stats stay at the class base. Points are spent automatically when omitted"
     def character(race, klass, background)
-      catalog = character_catalog
-      base = catalog["klasses"].find { |candidate| candidate["key"] == klass }&.fetch("base_stats") || raise(Thor::Error, "No such class: #{klass}")
+      chosen = character_catalog["klasses"].find { |candidate| candidate["key"] == klass } or raise Thor::Error, "No such class: #{klass}"
 
-      act :post, "#{game_path}/character.json", character: { race: race, klass: klass, background: background, stats: allocate(base, catalog) }
+      act :post, "#{game_path}/character.json", character: { race: race, klass: klass, background: background, stats: stats_for(chosen) }
       settle
     end
 
@@ -242,6 +241,17 @@ module Rokapi
         response.json
       end
 
+      def stats_for(klass)
+        if options[:stats]
+          options[:stats].split(",").each_with_object(klass["base_stats"].dup) do |pair, stats|
+            stat, value = pair.split("=")
+            stats[stat.strip] = value.to_i
+          end
+        else
+          klass["suggested_stats"]
+        end
+      end
+
       def fetch(path)
         response = authenticated { client.get(path) }
         raise Thor::Error, failure(response) unless response.success?
@@ -285,24 +295,6 @@ module Rokapi
         return "Rejected: #{response.body}" unless response.json?
 
         response.json.map { |field, messages| messages.is_a?(Array) ? "#{field} #{messages.join(", ")}" : messages }.join("; ")
-      end
-
-      def allocate(base, catalog)
-        stats = base.dup
-
-        if options[:stats]
-          options[:stats].split(",").each do |pair|
-            stat, value = pair.split("=")
-            stats[stat.strip] = value.to_i
-          end
-        else
-          catalog["free_points"].times do
-            stat = stats.select { |_, value| value < catalog["stat_cap"] }.max_by { |_, value| value }.first
-            stats[stat] += 1
-          end
-        end
-
-        stats
       end
 
       def settle(narration: true)

@@ -116,6 +116,16 @@ class JsonPlayFlowTest < ActionDispatch::IntegrationTest
     assert_redirected_to welcome_path
   end
 
+  test "the character catalog suggests how each class spends its free points" do
+    post game_sessions_solo_path, params: { game_session: { card: "fishing_village missing_child weather_reader", tone: "balanced", length: "short" } }, as: :json
+    game_session = users(:sevval).game_sessions.sole
+
+    get new_game_session_character_path(game_session), as: :json
+    warrior = response.parsed_body["klasses"].find { it["key"] == "warrior" }
+    assert_equal Character::Klass.fetch("warrior").suggested_stats, warrior["suggested_stats"]
+
+  end
+
   test "an invalid character is rejected with its errors" do
     post game_sessions_solo_path, params: { game_session: { card: "fishing_village missing_child weather_reader", tone: "balanced", length: "short" } }, as: :json
     game_session = users(:sevval).game_sessions.sole

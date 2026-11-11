@@ -35,6 +35,14 @@ class CharacterTest < ActiveSupport::TestCase
     assert_not build_character(@base.merge("strength" => 20)).valid?
   end
 
+  test "every class suggests spending its free points on its strongest stats, up to the cap" do
+    assert_equal @base.merge("strength" => 18, "constitution" => 15), Character::Klass.fetch("warrior").suggested_stats
+
+    Character::Klass.all.each do |klass|
+      assert build_character(klass.suggested_stats).tap { it.klass = klass.key }.valid?, klass.key
+    end
+  end
+
   test "bonus_for follows the modifier formula" do
     character = characters(:ilker_hero)
 

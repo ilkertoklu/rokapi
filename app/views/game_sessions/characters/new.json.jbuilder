@@ -10,7 +10,7 @@ json.races Character::Race.all do |race|
 end
 
 json.klasses Character::Klass.all do |klass|
-  json.(klass, :key, :label, :description, :base_hp, :base_stats)
+  json.(klass, :key, :label, :description, :base_hp, :base_stats, :suggested_stats)
 end
 
 json.backgrounds Character::Background.all do |background|

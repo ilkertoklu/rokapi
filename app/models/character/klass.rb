@@ -26,6 +26,17 @@ class Character::Klass < Data.define(:key, :base_hp, :base_stats, :gear)
 
   def self.base_stats_by_key = by_key.transform_values(&:base_stats)
 
+  def suggested_stats
+    stats = base_stats.dup
+
+    Character::FREE_POINTS.times do
+      strongest, _ = stats.select { |_, value| value < Character::STAT_CAP }.max_by { |_, value| value }
+      stats[strongest] += 1
+    end
+
+    stats
+  end
+
   def starting_items(locale:)
     gear.map do |piece|
       scope = [ "character.gear", piece[:key] ]
