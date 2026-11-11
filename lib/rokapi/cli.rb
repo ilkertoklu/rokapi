@@ -188,6 +188,7 @@ module Rokapi
       character = game["character"]
       found = character["items"].find { |candidate| candidate["id"].to_s == item || candidate["name"].casecmp?(item) } ||
         raise(Thor::Error, "No item #{item}. Carried: #{character["items"].map { |candidate| "#{candidate["id"]} #{candidate["name"]}" }.join(", ")}")
+      raise Thor::Error, "#{found["name"]} is not used on its own; it counts when a choice calls for it." unless found["usable"]
 
       act :post, "#{game_path}/items/#{found["id"]}/use.json"
       after = game["character"]
