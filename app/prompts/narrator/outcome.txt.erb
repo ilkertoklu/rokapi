@@ -38,17 +38,22 @@ What the rolls have changed so far: <%= marks.join(" / ") %>
 All of it shows in the ending.
 What was won is there to be used; what was lost and never won back is missing.
 <% end %>
-Victory or defeat is the story's to decide.
-Weigh what the heroes found and did, this roll as one among the rest, against the plan's endings.
-A success here gets the heroes what they reached for; a failure costs them something, but undoes nothing won before.
-Tell what this roll does, then the ending the heroes have earned.
+<% if (ending = roll.decided_ending) %>
+A natural <%= roll.value %> decides the story alone: it ends in <%= ending %>.
+<% else %>
+Victory or defeat is the story's to decide: weigh what the heroes found and did against the plan's endings.
+<% end %>
+This roll decides whether their last move works.
+A success gets them what they reached for; a failure gets them none of it, but undoes nothing won before.
+Tell what this roll does, then the ending.
 The ending rests on why it all happened, as the clues showed it; what the heroes never found stays unsaid.
 The heroes settle the question with what they did<%= parts %>.
 They make no move the players did not choose.
 No one else steps in to win or lose it for them.
 Tell it as scenes <%= witness %>, to the last line, not as a summary.
+By the last line it is plain what became of each thing at stake and of the people it touched.
 No one says what the story meant.
-The block adds "outcome": "victory" or "defeat".
+The block adds <%= ending ? %("outcome": "#{ending}") : %("outcome": "victory" or "defeat") %>.
 <% elsif roll.life_at_stake? %>
 This roll can take the last of <%= hero %>'s health.
 <% if roll.last_hero_standing? %>

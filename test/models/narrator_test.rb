@@ -735,12 +735,33 @@ class NarratorTest < ActiveSupport::TestCase
     assert @game_session.reload.finished?
   end
 
-  test "the ending is the one the story earned, whatever the last die" do
+  test "the ending is the one the story earned, whatever a plain last die" do
     roll = play_the_last_scene
 
     stub_understudy(ENDING_RESPONSE) { roll.narrate }
 
     assert_not roll.success?
+    assert @game_session.reload.outcome_victory?
+  end
+
+  test "a natural one on the last roll ends the story in defeat, whatever the story says" do
+    roll = play_the_last_scene die: 1
+
+    told, rewritten = stub_understudy(ENDING_RESPONSE, ENDING_RESPONSE.sub("victory", "defeat")) { roll.narrate }
+
+    assert_includes told["prompt"], %(\nA natural 1 decides the story alone: it ends in defeat.\nThis roll decides whether their last move works.\n)
+    assert told["prompt"].end_with?(%(\nThe block adds "outcome": "defeat".))
+    assert_includes rewritten["prompt"], %(Your last reply was rejected: the story ends with this roll, in defeat: tell the ending and add "outcome": "defeat" to the block.)
+    assert @game_session.reload.outcome_defeat?
+  end
+
+  test "a natural twenty on the last roll ends the story in victory" do
+    roll = play_the_last_scene die: 20
+
+    told = stub_understudy(ENDING_RESPONSE) { roll.narrate }.sole
+
+    assert_includes told["prompt"], "\nA natural 20 decides the story alone: it ends in victory.\n"
+    assert_not_includes told["prompt"], "Victory or defeat is the story's to decide"
     assert @game_session.reload.outcome_victory?
   end
 

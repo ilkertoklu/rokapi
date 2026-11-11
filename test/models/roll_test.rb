@@ -222,6 +222,20 @@ class RollTest < ActiveSupport::TestCase
     assert_nil roll_with(value: 15, target: 12).clue_won
   end
 
+  test "a natural twenty or one on the last roll decides the ending alone, any other roll leaves it to the story" do
+    @scene.update! position: game_sessions(:ilker_solo).scene_budget
+
+    assert_equal "victory", roll_with(value: 20, target: 12).ending_with("outcome" => "defeat")
+    assert_equal "defeat", roll_with(value: 1, target: 12).ending_with("outcome" => "victory")
+    assert_equal "victory", roll_with(value: 2, target: 12).ending_with("outcome" => "victory")
+    assert_equal "defeat", roll_with(value: 19, target: 12).ending_with("outcome" => "defeat")
+  end
+
+  test "a natural twenty or one before the last scene decides nothing" do
+    assert_nil roll_with(value: 1, target: 12).decided_ending
+    assert_nil roll_with(value: 20, target: 12).ending_with("outcome" => "victory")
+  end
+
   test "a roll keeps what its reply says it changed for good" do
     marked = roll_with(value: 15, target: 12)
     marked.resolve resolution: "The keeper hands you the lamp room key.", effects: { "mark" => "The keeper trusts Ilker with the lamp room." }
