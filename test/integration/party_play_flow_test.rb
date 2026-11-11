@@ -12,7 +12,7 @@ class PartyPlayFlowTest < ActionDispatch::IntegrationTest
 
     assert_includes first_scene["system"], "The party, who travel together and take turns:\n- Ilker: "
     assert_includes first_scene["system"], "\n- Deniz: "
-    assert_includes first_scene["system"], 'Speak to the one whose turn it is as "you" and call the others by name'
+    assert_includes first_scene["system"], 'Speak to the one whose turn it is as "you", even where the plan and my messages use their name, and call the others by name'
     assert_equal <<~CUE.chomp, first_scene["prompt"]
       Scene 1 of 7, the story's first half, Ilker's turn.
       This is the opening, as the plan's opening has it.

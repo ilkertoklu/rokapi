@@ -515,7 +515,7 @@ class NarratorTest < ActiveSupport::TestCase
       </plan>
 
       Add the detail the plan leaves out, but never go against it.
-      Invent only the detail that colours a scene: never a new secret, danger, object or power.
+      Invent only the detail that colours a scene: never a new secret, danger, object or power, nor a trace that looks like a clue.
       The ending turns only on what the players have already seen.
 
       The tone: balanced. Wonder and danger in equal measure.
