@@ -70,7 +70,7 @@ group :test do
   gem "selenium-webdriver"
 end
 
-gem "ruby_llm", "~> 2.1"
+gem "ruby_llm", "~> 2.2"
 
 # In-app subscriptions through the App Store and Google Play [https://purchasekit.com]
 gem "pay", "~> 12.4"
